@@ -1,0 +1,5 @@
+flask
+openai
+yfinance
+pdfplumber
+langchain
