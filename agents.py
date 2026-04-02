@@ -1,7 +1,7 @@
 from groq import Groq
 
 # Initialize Groq client
-client = Groq(api_key="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")
+client = Groq(api_key="YOUR_API_KEY")
 
 # -----------------------
 # SIP AGENT
