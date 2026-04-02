@@ -4,7 +4,7 @@ import os
 from groq import Groq
 
 # ---------------- 🔐 SET API KEY ----------------
-os.environ["GROQ_API_KEY"] = "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"
+os.environ["GROQ_API_KEY"] = "YOUR_API_KEY"
 
 # ---------------- IMPORT UTILS ----------------
 from utils.sip import calculate_sip
