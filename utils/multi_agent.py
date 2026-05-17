@@ -9,31 +9,26 @@ from .tax import calculate_tax
 from .stock import get_stock_price
 from .money_score import calculate_money_score
 
-# ✅ CORRECT WAY
 client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
 
-# ---------------- 🔍 ROUTER ----------------
+# ---------------- ROUTER ----------------
 def route_query(query):
     query = query.lower()
 
     if any(word in query for word in ["sip", "mutual fund", "investment"]):
         return "SIP"
-
     elif any(word in query for word in ["tax", "income tax", "itr"]):
         return "TAX"
-
     elif any(word in query for word in ["stock", "share", "price"]):
         return "STOCK"
-
     elif any(word in query for word in ["score", "financial health", "money score"]):
         return "SCORE"
-
     else:
         return "AI"
 
 
-# ---------------- 🤖 AI AGENT ----------------
+# ---------------- AI AGENT ----------------
 def ai_agent(query):
     try:
         res = client.chat.completions.create(
@@ -45,14 +40,13 @@ def ai_agent(query):
         )
         return res.choices[0].message.content
     except Exception as e:
-        print("AI ERROR:", e)
-        return "AI service error ❌"
+        return f"AI service error: {e}"
 
 
-# ---------------- 📈 SIP ----------------
+# ---------------- SIP ----------------
 def sip_agent(query):
     try:
-        nums = list(map(float, re.findall(r"\d+", query)))
+        nums = list(map(float, re.findall(r"\d+\.?\d*", query)))
 
         if len(nums) >= 3:
             monthly, rate, years = nums[0], nums[1], int(nums[2])
@@ -62,42 +56,46 @@ def sip_agent(query):
         return "Provide: SIP amount, rate, years"
 
     except Exception as e:
-        print("SIP ERROR:", e)
-        return "SIP error ❌"
+        return f"SIP error: {e}"
 
 
-# ---------------- 💸 TAX ----------------
+# ---------------- TAX ----------------
 def tax_agent(query):
     try:
-        income = float(re.findall(r"\d+", query)[0])
+        nums = re.findall(r"\d+\.?\d*", query)
+        if not nums:
+            return "Provide a valid income amount"
+        income = float(nums[0])
         tax = calculate_tax(income)
         return f"Estimated Tax: ₹ {tax}"
 
     except Exception as e:
-        print("TAX ERROR:", e)
-        return "Provide valid income"
+        return f"Tax error: {e}"
 
 
-# ---------------- 📊 STOCK ----------------
+# ---------------- STOCK ----------------
 def stock_agent(query):
     try:
-        symbol = query.split()[-1].upper()
+        # Find the last alphabetic word of 2–10 chars as the ticker
+        words = query.upper().split()
+        symbol = next(
+            (w for w in reversed(words) if w.isalpha() and 2 <= len(w) <= 10),
+            words[-1]
+        )
         price = get_stock_price(symbol)
 
-        if price:
+        if price is not None:
             return f"{symbol} Price: ₹ {price}"
-
-        return "Invalid stock symbol"
+        return "Invalid stock symbol or no data found"
 
     except Exception as e:
-        print("STOCK ERROR:", e)
-        return "Stock error ❌"
+        return f"Stock error: {e}"
 
 
-# ---------------- 💰 SCORE ----------------
+# ---------------- SCORE ----------------
 def score_agent(query):
     try:
-        nums = list(map(float, re.findall(r"\d+", query)))
+        nums = list(map(float, re.findall(r"\d+\.?\d*", query)))
 
         if len(nums) >= 6:
             score = calculate_money_score(*nums[:6])
@@ -116,27 +114,20 @@ def score_agent(query):
         return "Provide 6 values (income, expenses, savings, investments, debt, emergency)"
 
     except Exception as e:
-        print("SCORE ERROR:", e)
-        return "Score error ❌"
+        return f"Score error: {e}"
 
 
-# ---------------- 🧠 MAIN ----------------
+# ---------------- MAIN ----------------
 def run_multi_agent(query):
     task = route_query(query)
 
-    print("ROUTED TO:", task)   # ✅ DEBUG
-
     if task == "SIP":
         return sip_agent(query)
-
     elif task == "TAX":
         return tax_agent(query)
-
     elif task == "STOCK":
         return stock_agent(query)
-
     elif task == "SCORE":
         return score_agent(query)
-
     else:
         return ai_agent(query)
