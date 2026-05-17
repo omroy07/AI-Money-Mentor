@@ -1,4 +1,8 @@
 def calculate_money_score(income, expenses, savings, investments, debt, emergency_fund):
+    if income <= 0:
+        raise ValueError("Income must be greater than zero")
+    if expenses <= 0:
+        raise ValueError("Expenses must be greater than zero")
 
     score = 0
 
