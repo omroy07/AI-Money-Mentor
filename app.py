@@ -2,9 +2,9 @@ from flask import Flask, request, jsonify, render_template
 import yfinance as yf
 import os
 from groq import Groq
+from dotenv import load_dotenv
 
-# ---------------- 🔐 SET API KEY ----------------
-os.environ["GROQ_API_KEY"] = "YOUR_API_KEY"
+load_dotenv()
 
 # ---------------- IMPORT UTILS ----------------
 from utils.sip import calculate_sip
