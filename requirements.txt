@@ -1,5 +1,5 @@
 flask
-openai
+groq
 yfinance
 pdfplumber
-langchain
+python-dotenv
