@@ -1,10 +1,12 @@
 from flask import Flask, request, jsonify, render_template
 import yfinance as yf
 import os
+import logging
 from groq import Groq
 
 # ---------------- 🔐 SET API KEY ----------------
-os.environ["GROQ_API_KEY"] = "YOUR_API_KEY"
+# Set GROQ API key via environment variable (recommended for production)
+os.environ.setdefault("GROQ_API_KEY", "YOUR_API_KEY")
 
 # ---------------- IMPORT UTILS ----------------
 from utils.sip import calculate_sip
@@ -50,22 +52,34 @@ def chat():
 def sip():
     try:
         data = request.json
+
+        # ✅ Validation (safe check)
+        if (
+            "monthly" not in data or
+            "rate" not in data or
+            "years" not in data
+        ):
+            return jsonify({"error": "Missing input values"})
+
+        if data["monthly"] <= 0 or data["rate"] <= 0 or data["years"] <= 0:
+            return jsonify({"error": "Invalid SIP input values"})
+
         result = calculate_sip(
             float(data["monthly"]),
             float(data["rate"]),
             int(data["years"])
         )
+
         return jsonify({"future_value": result})
 
     except Exception as e:
         return jsonify({"error": str(e)})
 
-
 # ---------------- 📊 STOCK ----------------
 @app.route("/portfolio", methods=["POST"])
 def portfolio():
     try:
-        stock = request.json["stock"].upper()
+        stock = request.json["stock"].strip().upper()
 
         # Add .NS for Indian stocks (important!)
         if not stock.endswith(".NS"):
@@ -82,7 +96,8 @@ def portfolio():
         return jsonify({"price": round(price, 2)})
 
     except Exception as e:
-        return jsonify({"error": str(e)})
+    print("Error:", e)
+    return jsonify({"error": "Internal server error"})
     
 # ---------------- 💸 TAX ----------------
 @app.route("/tax", methods=["POST"])
@@ -150,7 +165,10 @@ def money_score():
 
     except Exception as e:
         return jsonify({"error": str(e)})
-
+        
+@app.route("/health")
+def health():
+    return jsonify({"status": "ok"})
 
 # ---------------- RUN ----------------
 if __name__ == "__main__":
