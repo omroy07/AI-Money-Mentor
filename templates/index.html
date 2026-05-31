@@ -774,7 +774,9 @@
     <!-- ── MONEY SCORE ─────────────── -->
     <div id="score" class="page">
       <div class="page-title">💰 Money <span>Score</span></div>
-      <div class="card" style="max-width:600px">
+      <div style="display: flex; gap: 24px; flex-wrap: wrap; align-items: flex-start;">
+        
+        <div class="card" style="flex: 1; min-width: 320px; max-width: 600px;"> 
         <div class="card-title">Enter your financial details</div>
         <div class="form-grid">
           <div><label>Monthly Income (₹)</label><input type="number" id="s_income" placeholder="e.g. 80000"></div>
@@ -787,9 +789,21 @@
         <button class="btn btn-gold" style="margin-top:16px;width:100%" onclick="calcScore()" id="scoreBtn">Calculate
           Money Score</button>
 
-        <div id="scoreResult" class="result-box"></div>
+        <div id="scoreError" class="result-box" style="color: #e05252; display: none;"></div>
       </div>
-    </div>
+      <div class="card" id="chartCard" style="flex: 1; min-width: 320px; display: none; flex-direction: column; align-items: center;">
+          <div class="card-title" style="width: 100%;">Financial Breakdown</div>
+
+          <div id="scoreResult" class="result-box" style="width: 100%; border: none; background: transparent; padding: 0;"></div>
+        <div style="position: relative; height: 250px; width: 100%; margin-bottom: 30px; display: flex; justify-content: center;">
+            <canvas id="scorePieChart"></canvas>
+          </div>
+        <div style="position: relative; height: 250px; width: 100%; display: flex; justify-content: center;">
+            <canvas id="scoreBarChart"></canvas>
+          </div>
+        </div>
+      
+    </div></div>
 
     <!-- ── SIP CALCULATOR ─────────────── -->
     <div id="sip" class="page">
@@ -862,7 +876,7 @@
       </div>
     </div>
 
-  </div><!-- /main -->
+  </div><script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <script>
     /* ══════════════════════════════════════════════
@@ -887,11 +901,15 @@
     function setLoading(btnId, loading) {
       const btn = document.getElementById(btnId);
       if (!btn) return;
+
+      // 1. Save the original label BEFORE changing innerHTML
+      if (!btn.dataset.label) {
+       btn.dataset.label = btn.innerHTML;
+     }
+
       btn.disabled = loading;
-      btn.innerHTML = loading ? '<span class="spinner"></span>' : btn.dataset.label || btn.innerHTML;
-      if (!btn.dataset.label && !loading) return;
-      if (!btn.dataset.label) btn.dataset.label = btn.innerHTML;
-      if (!loading) btn.innerHTML = btn.dataset.label;
+      // Cleanly swap between the spinner and the saved label
+      btn.innerHTML = loading ? '<span class="spinner"></span>' : btn.dataset.label;
     }
 
     function showResult(id, html) {
@@ -971,6 +989,8 @@
     /* ══════════════════════════════════════════════
        MONEY SCORE → POST /money-score
     ══════════════════════════════════════════════ */
+    let moneyPieChart = null;
+    let moneyBarChart = null; 
     async function calcScore() {
       const income = document.getElementById('s_income').value;
       const expenses = document.getElementById('s_expenses').value;
@@ -996,19 +1016,73 @@
         });
 
         if (data.error) {
-          showResult('scoreResult', `⚠ ${data.error}`);
+          showResult('scoreError', `⚠ ${data.error}`);
+          document.getElementById('scoreError').style.display = 'block';
+          document.getElementById('chartCard').style.display = 'none'; // Hide chart on error
         } else {
+          document.getElementById('scoreError').style.display = 'none';
+          document.getElementById('scoreError').innerHTML = '';
           const color = data.score >= 80 ? '#2ecc8a' : data.score >= 60 ? '#d4a843' : '#e05252';
+
           showResult('scoreResult', `
-        <div style="text-align:center;margin-bottom:10px">
+        <div style="text-align:center;margin-bottom:20px">
           <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em">Your Money Score</div>
-          <div style="font-family:'Syne',sans-serif;font-size:52px;font-weight:800;color:${color}">${data.score}</div>
+          <div style="font-family:'Syne',sans-serif;font-size:52px;font-weight:800;color:${color};text-shadow: 0 0 10px ${color}40;">${data.score}</div>
           <div style="font-size:16px;font-weight:600">${data.status}</div>
         </div>
       `);
+      // Switch to flex so our column layout works
+          document.getElementById('chartCard').style.display = 'flex';
+          
+          if (moneyPieChart) moneyPieChart.destroy();
+          if (moneyBarChart) moneyBarChart.destroy();
+          // High contrast neon theme matching your UI
+          Chart.defaults.color = '#a0aec0';
+          Chart.defaults.borderColor = 'rgba(255,255,255,0.05)';
+
+          // Render Doughnut/Pie Chart
+          const ctxPie = document.getElementById('scorePieChart').getContext('2d');
+          moneyPieChart = new Chart(ctxPie, {
+            type: 'doughnut',
+            data: {
+              labels: ['Expenses', 'Savings', 'Investments', 'Debt'],
+              datasets: [{
+                data: [parseFloat(expenses), parseFloat(savings), parseFloat(invest), parseFloat(debt)],
+                // Upgraded to high-contrast neon palette
+                backgroundColor: ['#ff0055', '#ffea00', '#00ff9d', '#00d0ff'],
+                borderColor: '#121212', 
+                borderWidth: 2,
+                hoverOffset: 6
+              }]
+            },
+            // maintainAspectRatio: false is required to respect our wrapper height
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+          });
+
+         // Render Bar Chart
+          const ctxBar = document.getElementById('scoreBarChart').getContext('2d');
+          moneyBarChart = new Chart(ctxBar, {
+            type: 'bar',
+            data: {
+              labels: ['Income', 'Expenses', 'Savings'],
+              datasets: [{
+                label: 'Amount (₹)',
+                data: [parseFloat(income), parseFloat(expenses), parseFloat(savings)],
+                // Upgraded to high-contrast neon palette
+                backgroundColor: ['#00ff9d', '#ff0055', '#ffea00'],
+                borderColor: '#121212',
+                borderWidth: 1,
+                borderRadius: 6
+              }]
+            },
+            // maintainAspectRatio: false is required here too
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+          });
         }
       } catch (e) {
-        showResult('scoreResult', '⚠ Could not reach server.');
+        console.error("Chart or Server Error: ", e); // Logs the real error for you
+        showResult('scoreError', '⚠ Error processing data. Check console.');
+        document.getElementById('scoreError').style.display = 'block';
       }
       setLoading('scoreBtn', false);
     }
