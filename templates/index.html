@@ -122,7 +122,8 @@
       flex-direction: column;
       gap: 24px;
       animation: pageFadeIn 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-      padding-bottom: 60px; /* Crucial bottom padding so bottom items aren't cut off */
+      padding-bottom: 60px;
+      /* Crucial bottom padding so bottom items aren't cut off */
     }
 
     .page.active {
@@ -134,6 +135,7 @@
         opacity: 0;
         transform: translateY(8px);
       }
+
       to {
         opacity: 1;
         transform: translateY(0);
@@ -291,8 +293,15 @@
     }
 
     @keyframes fadeInMsg {
-      from { opacity: 0; transform: translateY(6px); }
-      to { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     .msg.user {
@@ -644,8 +653,16 @@
     }
 
     @keyframes bounce {
-      0%, 60%, 100% { transform: translateY(0); }
-      30% { transform: translateY(-4px); }
+
+      0%,
+      60%,
+      100% {
+        transform: translateY(0);
+      }
+
+      30% {
+        transform: translateY(-4px);
+      }
     }
 
     /* ── TAX GRID ─────────────────────────────────── */
@@ -865,40 +882,73 @@
   <!-- ══════════ SIDEBAR ══════════ -->
   <div class="sidebar">
     <div class="logo">
-      <svg class="icon-svg" style="stroke: var(--gold); width: 22px; height: 22px; fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round;" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+      <svg class="icon-svg"
+        style="stroke: var(--gold); width: 22px; height: 22px; fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round;"
+        viewBox="0 0 24 24">
+        <line x1="12" y1="1" x2="12" y2="23"></line>
+        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+      </svg>
       <span>Money Mentor</span>
     </div>
 
     <div class="nav-item active" data-page="dashboard">
-      <svg class="icon-svg" viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <svg class="icon-svg" viewBox="0 0 24 24">
+        <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+        <polyline points="9 22 9 12 15 12 15 22" />
+      </svg>
       Dashboard
     </div>
     <div class="nav-item" data-page="chat">
-      <svg class="icon-svg" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <svg class="icon-svg" viewBox="0 0 24 24">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+      </svg>
       AI Chat
     </div>
     <div class="nav-item" data-page="score">
-      <svg class="icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="8" r="7"/><path d="M8.21 13.89 7 23l5-3 5 3-1.21-9.12"/></svg>
+      <svg class="icon-svg" viewBox="0 0 24 24">
+        <circle cx="12" cy="8" r="7" />
+        <path d="M8.21 13.89 7 23l5-3 5 3-1.21-9.12" />
+      </svg>
       Money Score
     </div>
     <div class="nav-item" data-page="sip">
-      <svg class="icon-svg" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+      <svg class="icon-svg" viewBox="0 0 24 24">
+        <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+        <polyline points="17 6 23 6 23 12" />
+      </svg>
       SIP Calc
     </div>
     <div class="nav-item" data-page="stock">
-      <svg class="icon-svg" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      <svg class="icon-svg" viewBox="0 0 24 24">
+        <line x1="18" y1="20" x2="18" y2="10" />
+        <line x1="12" y1="20" x2="12" y2="4" />
+        <line x1="6" y1="20" x2="6" y2="14" />
+      </svg>
       Stock Check
     </div>
     <div class="nav-item" data-page="tax">
-      <svg class="icon-svg" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"/><line x1="9" y1="9" x2="15" y2="15"/><circle cx="9" cy="15" r="1"/><circle cx="15" cy="9" r="1"/></svg>
+      <svg class="icon-svg" viewBox="0 0 24 24">
+        <rect x="4" y="4" width="16" height="16" rx="2" ry="2" />
+        <line x1="9" y1="9" x2="15" y2="15" />
+        <circle cx="9" cy="15" r="1" />
+        <circle cx="15" cy="9" r="1" />
+      </svg>
       Tax Planner
     </div>
     <div class="nav-item" data-page="pdf">
-      <svg class="icon-svg" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      <svg class="icon-svg" viewBox="0 0 24 24">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+        <polyline points="14 2 14 8 20 8" />
+      </svg>
       PDF Parser
     </div>
     <div class="nav-item" data-page="agent">
-      <svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+      <svg class="icon-svg" viewBox="0 0 24 24">
+        <rect x="3" y="3" width="7" height="9" />
+        <rect x="14" y="3" width="7" height="5" />
+        <rect x="14" y="12" width="7" height="9" />
+        <rect x="3" y="16" width="7" height="5" />
+      </svg>
       Multi Agent
     </div>
   </div>
@@ -940,7 +990,12 @@
         <!-- AI CHAT PANEL -->
         <div class="card">
           <div class="card-title">
-            <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4M8 16h.01M16 16h.01"/></svg>
+            <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="10" rx="2" />
+              <circle cx="12" cy="5" r="2" />
+              <path d="M12 7v4M8 16h.01M16 16h.01" />
+            </svg>
             <span>AI Financial Advisor</span>
           </div>
           <div class="chat-messages" id="dashChat"></div>
@@ -948,20 +1003,41 @@
             <input type="text" id="dashMsg" placeholder="Ask anything about your finances…"
               onkeypress="if(event.key==='Enter') dashSend()">
             <button class="btn btn-gold" onclick="dashSend()" id="dashBtn">
-              <svg class="icon-svg" style="width: 14px; height: 14px; stroke: currentColor; stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round;" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+              <svg class="icon-svg"
+                style="width: 14px; height: 14px; stroke: currentColor; stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round;"
+                viewBox="0 0 24 24">
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+              </svg>
             </button>
           </div>
           <div class="quick-btns">
             <button class="btn btn-ghost" onclick="dashQuick('Should I rebalance my portfolio now?')">
-              <svg class="icon-svg" style="width: 12px; height: 12px; stroke: currentColor; stroke-width: 2.2; fill: none; stroke-linecap: round; stroke-linejoin: round; margin-right: 4px;" viewBox="0 0 24 24"><path d="M16 3h5v5M4 20L21 3M21 16v5h-5M4 4l5 5"/></svg>
+              <svg class="icon-svg"
+                style="width: 12px; height: 12px; stroke: currentColor; stroke-width: 2.2; fill: none; stroke-linecap: round; stroke-linejoin: round; margin-right: 4px;"
+                viewBox="0 0 24 24">
+                <path d="M16 3h5v5M4 20L21 3M21 16v5h-5M4 4l5 5" />
+              </svg>
               Rebalance
             </button>
             <button class="btn btn-ghost" onclick="dashQuick('Give me tax saving tips for FY 2024-25')">
-              <svg class="icon-svg" style="width: 12px; height: 12px; stroke: currentColor; stroke-width: 2.2; fill: none; stroke-linecap: round; stroke-linejoin: round; margin-right: 4px;" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="16" y1="2" x2="16" y2="4"/><line x1="8" y1="2" x2="8" y2="4"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              <svg class="icon-svg"
+                style="width: 12px; height: 12px; stroke: currentColor; stroke-width: 2.2; fill: none; stroke-linecap: round; stroke-linejoin: round; margin-right: 4px;"
+                viewBox="0 0 24 24">
+                <rect x="3" y="4" width="18" height="16" rx="2" />
+                <line x1="16" y1="2" x2="16" y2="4" />
+                <line x1="8" y1="2" x2="8" y2="4" />
+                <line x1="3" y1="10" x2="21" y2="10" />
+              </svg>
               Tax Tips
             </button>
             <button class="btn btn-ghost" onclick="dashQuick('Best SIP strategy for ₹10,000/month?')">
-              <svg class="icon-svg" style="width: 12px; height: 12px; stroke: currentColor; stroke-width: 2.2; fill: none; stroke-linecap: round; stroke-linejoin: round; margin-right: 4px;" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+              <svg class="icon-svg"
+                style="width: 12px; height: 12px; stroke: currentColor; stroke-width: 2.2; fill: none; stroke-linecap: round; stroke-linejoin: round; margin-right: 4px;"
+                viewBox="0 0 24 24">
+                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+                <polyline points="17 6 23 6 23 12" />
+              </svg>
               SIP
             </button>
           </div>
@@ -972,7 +1048,10 @@
 
           <div class="card">
             <div class="card-title">
-              <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2; stroke-linecap: round; stroke-linejoin: round;"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2.2; stroke-linecap: round; stroke-linejoin: round;">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+              </svg>
               <span>Core AI Agents</span>
             </div>
             <div class="agent-tag">
@@ -991,7 +1070,10 @@
 
           <div class="card">
             <div class="card-title">
-              <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83M22 12A10 10 0 0 0 12 2v10z"/></svg>
+              <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21.21 15.89A10 10 0 1 1 8 2.83M22 12A10 10 0 0 0 12 2v10z" />
+              </svg>
               <span>Portfolio Allocation</span>
             </div>
             <div class="alloc-row">
@@ -1029,7 +1111,11 @@
         <!-- SIP SLIDER -->
         <div class="card">
           <div class="card-title">
-            <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+            <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+              <polyline points="17 6 23 6 23 12" />
+            </svg>
             <span>SIP Quick Calc</span>
           </div>
           <label>Monthly ₹ <strong id="sipAmtLbl">10,000</strong></label>
@@ -1045,15 +1131,24 @@
         <!-- TAX INSIGHTS -->
         <div class="card">
           <div class="card-title">
-            <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A5 5 0 0 0 8 8c0 1 .3 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5M9 18h6M10 22h4"/></svg>
+            <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path
+                d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A5 5 0 0 0 8 8c0 1 .3 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5M9 18h6M10 22h4" />
+            </svg>
             <span>Tax Insights</span>
           </div>
           <div class="tax-row"><span>80C Used</span><span>₹1.2L / ₹1.5L <span class="badge badge-gold">80%</span></span>
           </div>
           <div class="tax-row"><span>Health Insurance</span><span>₹18K / ₹25K</span></div>
           <div class="tax-row"><span>HRA Benefit</span><span>₹60K / ₹72K</span></div>
-          <div style="margin-top:12px;padding:12px 14px;background:rgba(20,200,191,0.06);border:1px solid rgba(20,200,191,0.15);border-radius:10px;font-size:12.5px;color:var(--teal);display:flex;align-items:center;gap:8px">
-            <svg class="icon-svg" style="width:16px;height:16px;stroke:currentColor;stroke-width:2.2;flex-shrink:0" viewBox="0 0 24 24" fill="none"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A5 5 0 0 0 8 8c0 1 .3 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5M9 18h6M10 22h4"/></svg>
+          <div
+            style="margin-top:12px;padding:12px 14px;background:rgba(20,200,191,0.06);border:1px solid rgba(20,200,191,0.15);border-radius:10px;font-size:12.5px;color:var(--teal);display:flex;align-items:center;gap:8px">
+            <svg class="icon-svg" style="width:16px;height:16px;stroke:currentColor;stroke-width:2.2;flex-shrink:0"
+              viewBox="0 0 24 24" fill="none">
+              <path
+                d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A5 5 0 0 0 8 8c0 1 .3 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5M9 18h6M10 22h4" />
+            </svg>
             <span>Save ₹38,500 more via NPS + ELSS contributions</span>
           </div>
         </div>
@@ -1061,7 +1156,10 @@
         <!-- COMPLIANCE -->
         <div class="card">
           <div class="card-title">
-            <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            </svg>
             <span>Compliance</span>
           </div>
           <div style="display:flex;flex-direction:column;gap:7px;margin-bottom:14px">
@@ -1071,7 +1169,11 @@
             <div style="font-size:13px"><span class="badge badge-green">OK</span> &nbsp; KYC Verified</div>
           </div>
           <button class="btn btn-ghost" onclick="showPage('pdf',event)" style="width:100%">
-            <svg class="icon-svg" style="width: 14px; height: 14px; stroke: currentColor; stroke-width: 2.2; fill: none; stroke-linecap: round; stroke-linejoin: round;" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+            <svg class="icon-svg"
+              style="width: 14px; height: 14px; stroke: currentColor; stroke-width: 2.2; fill: none; stroke-linecap: round; stroke-linejoin: round;"
+              viewBox="0 0 24 24">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12" />
+            </svg>
             Upload Form 16
           </button>
         </div>
@@ -1093,9 +1195,15 @@
     </div>
 
     <!-- ── MONEY SCORE ─────────────── -->
+
+   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <div id="score" class="page">
       <div class="page-title">Money <span>Score</span></div>
-      <div class="card" style="max-width:600px">
+
+      <div class="score-layout-container" style="display: flex; gap: 24px; flex-wrap: wrap; width: 100%; align-items: flex-start;">
+
+      <div class="card" style="flex: 12; min-width: 320px; max-width: 580px; margin: 0;">
         <div class="card-title">Enter your financial details</div>
         <div class="form-grid">
           <div><label>Monthly Income (₹)</label><input type="number" id="s_income" placeholder="e.g. 80000"></div>
@@ -1105,11 +1213,15 @@
           <div><label>Total Debt (₹)</label><input type="number" id="s_debt" placeholder="e.g. 100000"></div>
           <div><label>Emergency Fund (months)</label><input type="number" id="s_emergency" placeholder="e.g. 6"></div>
         </div>
-        <button class="btn btn-gold" style="margin-top:16px;width:100%" onclick="calcScore()" id="scoreBtn">Calculate
-          Money Score</button>
-
-        <div id="scoreResult" class="result-box"></div>
+          <button class="btn btn-gold" style="margin-top:16px;width:100%" onclick="calcScore()" id="scoreBtn">Calculate Money Score</button>
       </div>
+         <div class="card" id="scoreVisualsCard" style="flex: 10; min-width: 320px; max-width: 480px; margin: 0; display: none; flex-direction: column; gap: 20px; align-items: center; justify-content: center;">
+          <div class="card-title" style="width: 100%; text-align: center; border-bottom: 1px solid var(--border); padding-bottom: 8px;">Financial Analytics</div>
+          <div id="scoreResult" class="result-box" style="width: 100%; border: none; background: transparent; padding: 0; box-shadow: none; margin: 0;"></div>
+          <div style="position: relative; width: 100%; height: 240px; margin-top: 10px;">
+             <canvas id="moneyScoreChart"></canvas>
+          </div>
+        </div> </div>
     </div>
 
     <!-- ── SIP CALCULATOR ─────────────── -->
@@ -1188,23 +1300,38 @@
   <!-- ══════════ MOBILE BOTTOM NAV ══════════ -->
   <div class="mobile-nav">
     <div class="mobile-nav-item active" data-page="dashboard">
-      <svg class="icon-svg" viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <svg class="icon-svg" viewBox="0 0 24 24">
+        <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+        <polyline points="9 22 9 12 15 12 15 22" />
+      </svg>
       Dashboard
     </div>
     <div class="mobile-nav-item" data-page="chat">
-      <svg class="icon-svg" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <svg class="icon-svg" viewBox="0 0 24 24">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+      </svg>
       AI Chat
     </div>
     <div class="mobile-nav-item" data-page="score">
-      <svg class="icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="8" r="7"/><path d="M8.21 13.89 7 23l5-3 5 3-1.21-9.12"/></svg>
+      <svg class="icon-svg" viewBox="0 0 24 24">
+        <circle cx="12" cy="8" r="7" />
+        <path d="M8.21 13.89 7 23l5-3 5 3-1.21-9.12" />
+      </svg>
       Money Score
     </div>
     <div class="mobile-nav-item" data-page="sip">
-      <svg class="icon-svg" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+      <svg class="icon-svg" viewBox="0 0 24 24">
+        <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+        <polyline points="17 6 23 6 23 12" />
+      </svg>
       SIP Calc
     </div>
     <div class="mobile-nav-item" onclick="toggleDrawer()">
-      <svg class="icon-svg" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      <svg class="icon-svg" viewBox="0 0 24 24">
+        <line x1="3" y1="12" x2="21" y2="12" />
+        <line x1="3" y1="6" x2="21" y2="6" />
+        <line x1="3" y1="18" x2="21" y2="18" />
+      </svg>
       More
     </div>
   </div>
@@ -1214,22 +1341,41 @@
 
   <!-- ══════════ MOBILE DRAWER ══════════ -->
   <div class="mobile-drawer" id="mobileDrawer">
-    <div style="font-family: 'Outfit', sans-serif; font-size: 16px; font-weight: 700; color: var(--gold); border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 16px;">More Tools</div>
+    <div
+      style="font-family: 'Outfit', sans-serif; font-size: 16px; font-weight: 700; color: var(--gold); border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 16px;">
+      More Tools</div>
     <div class="drawer-grid">
       <div class="drawer-item" onclick="showPage('stock', event)">
-        <svg class="icon-svg" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        <svg class="icon-svg" viewBox="0 0 24 24">
+          <line x1="18" y1="20" x2="18" y2="10" />
+          <line x1="12" y1="20" x2="12" y2="4" />
+          <line x1="6" y1="20" x2="6" y2="14" />
+        </svg>
         <span>Stock Check</span>
       </div>
       <div class="drawer-item" onclick="showPage('tax', event)">
-        <svg class="icon-svg" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"/><line x1="9" y1="9" x2="15" y2="15"/><circle cx="9" cy="15" r="1"/><circle cx="15" cy="9" r="1"/></svg>
+        <svg class="icon-svg" viewBox="0 0 24 24">
+          <rect x="4" y="4" width="16" height="16" rx="2" ry="2" />
+          <line x1="9" y1="9" x2="15" y2="15" />
+          <circle cx="9" cy="15" r="1" />
+          <circle cx="15" cy="9" r="1" />
+        </svg>
         <span>Tax Planner</span>
       </div>
       <div class="drawer-item" onclick="showPage('pdf', event)">
-        <svg class="icon-svg" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        <svg class="icon-svg" viewBox="0 0 24 24">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+          <polyline points="14 2 14 8 20 8" />
+        </svg>
         <span>PDF Parser</span>
       </div>
       <div class="drawer-item" onclick="showPage('agent', event)">
-        <svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+        <svg class="icon-svg" viewBox="0 0 24 24">
+          <rect x="3" y="3" width="7" height="9" />
+          <rect x="14" y="3" width="7" height="5" />
+          <rect x="14" y="12" width="7" height="9" />
+          <rect x="3" y="16" width="7" height="5" />
+        </svg>
         <span>Multi Agent</span>
       </div>
     </div>
@@ -1243,13 +1389,13 @@
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
       document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
       document.querySelectorAll('.mobile-nav-item').forEach(m => m.classList.remove('active'));
-      
+
       document.getElementById(name).classList.add('active');
       document.querySelector(`.nav-item[data-page="${name}"]`)?.classList.add('active');
       document.querySelector(`.mobile-nav-item[data-page="${name}"]`)?.classList.add('active');
-      
+
       closeDrawer();
-      
+
       document.querySelector('.main').scrollTop = 0;
     }
 
@@ -1321,7 +1467,7 @@
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
-      
+
       clean = clean.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
       clean = clean.split('\n').map(line => {
         const trimmed = line.trim();
@@ -1407,6 +1553,8 @@
     /* ══════════════════════════════════════════════
        MONEY SCORE → POST /money-score
     ══════════════════════════════════════════════ */
+    let moneyScoreChartInstance = null;
+
     async function calcScore() {
       const income = document.getElementById('s_income').value;
       const expenses = document.getElementById('s_expenses').value;
@@ -1434,6 +1582,9 @@
         if (data.error) {
           showResult('scoreResult', `⚠ ${data.error}`);
         } else {
+          const visualsCard = document.getElementById('scoreVisualsCard');
+          if (visualsCard) visualsCard.style.display = 'flex';
+
           const color = data.score >= 80 ? 'var(--green)' : data.score >= 60 ? 'var(--gold)' : 'var(--red)';
           const circumference = 339.292;
           const offset = circumference - (data.score / 100) * circumference;
@@ -1455,6 +1606,50 @@
           </div>
         </div>
       `);
+      // Render High-Contrast Neon Graph Metrics
+          const ctx = document.getElementById('moneyScoreChart').getContext('2d');
+          if (moneyScoreChartInstance) {
+            moneyScoreChartInstance.destroy(); // Clear out previous data sets smoothly
+          }
+
+          moneyScoreChartInstance = new Chart(ctx, {
+            type: 'bar',
+            data: {
+              labels: ['Expenses', 'Savings', 'Investments', 'Total Debt'],
+              datasets: [{
+                label: 'Financial Breakdown (₹)', // Added label for the bar chart tooltip
+                data: [parseFloat(expenses), parseFloat(savings), parseFloat(invest), parseFloat(debt)],
+                backgroundColor: [
+                  '#ff3838', // Vibrant Neon Red
+                  '#00e676', // Electric Green
+                  '#00e5ff', // Neon Cyan
+                  '#ff9100'  // Stark Orange
+                ],
+                borderColor: '#16161a',
+                borderWidth: 2,
+                borderRadius: 4 // Adds a slight rounding to the top of the neon bars
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: {
+                  display: false // Hides the top legend since the x-axis labels do the job
+                }
+              },
+              scales: {
+                y: {
+                  ticks: { color: '#ffffff', font: { family: 'Outfit' } },
+                  grid: { color: 'rgba(255, 255, 255, 0.1)' } // Faint grid lines for the dark theme
+                },
+                x: {
+                  ticks: { color: '#ffffff', font: { family: 'Outfit', size: 12 } },
+                  grid: { display: false }
+                }
+              }
+            }
+          });
         }
       } catch (e) {
         showResult('scoreResult', '⚠ Could not reach server.');
