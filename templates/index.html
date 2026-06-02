@@ -1055,6 +1055,30 @@
         font-size: 18px;
       }
     }
+    .expense-charts-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.chart-box {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 20px;
+}
+
+.chart-box h3 {
+    text-align: center;
+    margin-bottom: 15px;
+    color: #fff;
+}
+
+.chart-box canvas {
+    width: 100% !important;
+    max-height: 350px;
+}
   </style>
 </head>
 
@@ -1081,7 +1105,7 @@
     <div class="nav-item" data-page="tax"><span class="icon">💸</span> Tax Planner</div>
     <div class="nav-item" data-page="pdf"><span class="icon">📄</span> PDF Parser</div>
     <div class="nav-item" data-page="agent"><span class="icon">🧠</span> Multi Agent</div>
-    <div class="nav-item" data-page="expense"><span class="icon">💲</span>Expense Track</div>
+    <div class="nav-item" data-page="expense" onclick="showPage('expense')"><span class="icon">💲</span>Expense Track</div>
     <div class="nav-item" data-page="networth"><span class="icon">💎</span> Net Worth</div>
   </div>
 
@@ -1327,20 +1351,6 @@
             <canvas id="sipChart"></canvas>
           </div>
         </div>
-        =======
-        <div class="page-title">📈 SIP <span>Calculator</span></div>
-        <div class="card" style="max-width:480px">
-          <div class="card-title">SIP Projection</div>
-          <label>Monthly Investment (₹)</label>
-          <input type="number" id="sip_monthly" placeholder="e.g. 10000">
-          <label>Annual Return Rate (%)</label>
-          <input type="number" id="sip_rate" placeholder="e.g. 12">
-          <label>Investment Period (Years)</label>
-          <input type="number" id="sip_years" placeholder="e.g. 10">
-          <button class="btn btn-gold" style="margin-top:16px;width:100%" onclick="calcSIP()"
-            id="sipBtn">Calculate</button>
-          <div id="sipResult" class="result-box"></div>
-          >>>>>>> upstream/main
         </div>
     <div id="sip" class="page center-page">
       <div class="page-title">📈 SIP <span>Calculator</span></div>
@@ -1557,14 +1567,24 @@
       </div>
     </div>
 
-    <canvas id="expenseChart"></canvas>
+    <div class="expense-charts-container">
+    <div class="chart-box">
+        <h3>Category Breakdown</h3>
+        <canvas id="expenseChart"></canvas>
+    </div>
 
+    <div class="chart-box">
+        <h3>Monthly Spending</h3>
+        <canvas id="monthlyExpenseChart"></canvas>
+    </div>
 
+    <div class="chart-box">
+        <h3>Savings Trend</h3>
+        <canvas id="savingsTrendChart"></canvas>
+    </div>
+</div>
 
   </div><!-- /main -->
-
-  <!-- Loading charts -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <script>
     /* ══════════════════════════════════════════════
