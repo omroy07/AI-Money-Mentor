@@ -1068,6 +1068,34 @@
     }
 
 
+  .page-title {
+    font-size: 18px;
+  }
+
+/* ===== GOAL TRACKER STYLING FIX ===== */
+
+    .page-title {
+      font-size: 18px;
+    }
+    
+
+/* Skeleton Loaders */
+.skeleton-line {
+  height: 16px;
+  margin: 10px 0;
+  background: linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.03) 75%);
+  background-size: 200% 100%;
+  animation: loading-pulse 1.5s infinite;
+  border-radius: 4px;
+}
+.skeleton-line.short { width: 40%; }
+.skeleton-line.medium { width: 70%; }
+.skeleton-line.long { width: 100%; }
+
+@keyframes loading-pulse {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
 
     /* ===== GOAL TRACKER STYLING FIX ===== */
 

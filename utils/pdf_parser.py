@@ -100,6 +100,28 @@ def extract_income(file):
             except ValueError:
                 pass
                 
+        # Fallback extraction for allowances/deductions (80C, 80D, HRA)
+        hra_match = re.search(r"(?:hra|house\s+rent\s+allowance)\D*(\d[\d,]*\d)", text, re.IGNORECASE)
+        if hra_match:
+            try:
+                result["allowances_deductions"]["HRA"] = float(hra_match.group(1).replace(",", ""))
+            except ValueError:
+                pass
+
+        ded_80c_match = re.search(r"(?:80c|section\s+80c)\D*(\d[\d,]*\d)", text, re.IGNORECASE)
+        if ded_80c_match:
+            try:
+                result["allowances_deductions"]["80C"] = float(ded_80c_match.group(1).replace(",", ""))
+            except ValueError:
+                pass
+
+        ded_80d_match = re.search(r"(?:80d|section\s+80d)\D*(\d[\d,]*\d)", text, re.IGNORECASE)
+        if ded_80d_match:
+            try:
+                result["allowances_deductions"]["80D"] = float(ded_80d_match.group(1).replace(",", ""))
+            except ValueError:
+                pass
+                
         return result
 
     except Exception as e:

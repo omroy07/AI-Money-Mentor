@@ -92,7 +92,7 @@ def sip_agent(query):
         if len(nums) >= 3:
             monthly, rate, years = nums[0], nums[1], int(nums[2])
             result = calculate_sip(monthly, rate, years)
-            return f"SIP Future Value: ₹ {round(result, 2)}"
+            return f"SIP Future Value: ₹ {round(result['nominal_value'], 2)}"
 
         return "Provide: SIP amount, rate, years"
 

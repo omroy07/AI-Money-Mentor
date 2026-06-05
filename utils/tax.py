@@ -1,4 +1,4 @@
-def calculate_tax(income):
+def calculate_tax(income, deduction_80c=0.0, deduction_80d=0.0, deduction_hra=0.0):
     # Income represents Gross Annual Income
     
     # 1. New Regime Calculation (FY 2024-25 / FY 2025-26)
@@ -27,16 +27,23 @@ def calculate_tax(income):
         tax_new = 400000 * 0.05 + 300000 * 0.10 + 200000 * 0.15 + 300000 * 0.20 + (taxable_new - 1500000) * 0.30
         
     # Rebate under Sec 87A for New Regime:
-    # Under New Regime, if taxable income <= 700,000, tax rebate equals tax payable (i.e. zero tax)
     if taxable_new <= 700000:
         tax_new = 0.0
         
     cess_new = tax_new * 0.04
     total_new = round(tax_new + cess_new, 2)
     
-    # 2. Old Regime Calculation
+    # 2. Old Regime Calculation with custom deductions
+    # Deductions cap logic:
+    # 80C capped at 1.5 Lakhs (150,000)
+    # 80D capped at 25,000 (standard limit)
+    ded_80c = min(150000.0, float(deduction_80c))
+    ded_80d = min(25000.0, float(deduction_80d))
+    ded_hra = float(deduction_hra)
+    
     std_deduction_old = 50000
-    taxable_old = max(0.0, income - std_deduction_old)
+    total_deductions_old = std_deduction_old + ded_80c + ded_80d + ded_hra
+    taxable_old = max(0.0, income - total_deductions_old)
     
     tax_old = 0.0
     # Slabs:
@@ -54,7 +61,6 @@ def calculate_tax(income):
         tax_old = 250000 * 0.05 + 500000 * 0.20 + (taxable_old - 1000000) * 0.30
         
     # Rebate under Sec 87A for Old Regime:
-    # Under Old Regime, if taxable income <= 500,000, rebate is 100% of tax up to 12500
     if taxable_old <= 500000:
         tax_old = 0.0
         
@@ -63,6 +69,12 @@ def calculate_tax(income):
     
     return {
         "gross_income": income,
+        "deductions_applied": {
+            "80c": ded_80c,
+            "80d": ded_80d,
+            "hra": ded_hra,
+            "total": total_deductions_old
+        },
         "new_regime": {
             "standard_deduction": std_deduction_new,
             "taxable_income": taxable_new,
@@ -79,4 +91,5 @@ def calculate_tax(income):
         },
         "recommended": "New Regime" if total_new < total_old else "Old Regime",
         "savings": round(abs(total_old - total_new), 2)
-    }
+    }
+

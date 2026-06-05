@@ -110,20 +110,41 @@ Database
 ---
 
 
-## 🛠️ Installation
+## 🛠️ Installation & Getting Started
+
+Follow these steps to configure your local development environment:
 
 ```bash
-# Clone the repository
+# 1. Clone the repository
 git clone https://github.com/omroy07/AI-Money-Mentor.git
-
-# Navigate into the project folder
 cd AI-Money-Mentor
 
-# Install dependencies
+# 2. Configure python virtual environment
+python -m venv venv
+source venv/bin/activate       # Linux / macOS
+venv\Scripts\activate          # Windows PowerShell
+
+# 3. Install required dependencies
 pip install -r requirements.txt
 
-# Run the application
+# 4. Copy env file template and add keys
+cp .env.example .env
+# Open .env and insert your GROQ_API_KEY
+
+# 5. Run the local application
 python app.py
+```
+
+## 🧪 Verification & Running Tests
+
+Validate your setup by executing the pytest suite:
+
+```bash
+# Execute test suite
+pytest
+
+# Execute specific tests with verbosity
+pytest tests/test_tax.py -v
 ```
 
 

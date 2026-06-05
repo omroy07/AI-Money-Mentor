@@ -80,3 +80,14 @@ class TestCalculateTax:
         result = calculate_tax(income)
         assert result["new_regime"]["total_tax"] >= 0
         assert result["old_regime"]["total_tax"] >= 0
+
+    def test_custom_deductions_applied_old_regime(self):
+        result = calculate_tax(1000000, deduction_80c=100000, deduction_80d=20000, deduction_hra=30000)
+        assert result["deductions_applied"]["80c"] == 100000
+        assert result["deductions_applied"]["80d"] == 20000
+        assert result["deductions_applied"]["hra"] == 30000
+        # Total deductions = 50k (std) + 100k + 20k + 30k = 200k
+        assert result["deductions_applied"]["total"] == 200000
+        # Taxable income = 1M - 200k = 800k
+        assert result["old_regime"]["taxable_income"] == 800000
+

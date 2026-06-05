@@ -1,0 +1,26 @@
+# Areas
+frontend:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'templates/**'
+          - 'static/**'
+
+backend:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'utils/**'
+          - '*.py'
+
+docs:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'README.md'
+          - 'CONTRIBUTING.md'
+          - 'docs/**'
+          - '*.md'
+
+workflows:
+  - changed-files:
+      - any-glob-to-any-file:
+          - '.github/workflows/**'
+          - '.github/*.yml'

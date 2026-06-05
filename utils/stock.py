@@ -1,9 +1,14 @@
 import yfinance as yf
+import re
 
 def get_stock_price(symbol):
     try:
         # Clean input
         symbol = symbol.strip().upper()
+        
+        # Security sanitization check: only allow alphanumeric, dots, hyphens, and underscores
+        if not symbol or not re.match(r"^[A-Z0-9.\-_]+$", symbol):
+            return {"error": "Invalid stock symbol format"}
 
         # Try finding as is first (especially for global stocks like AAPL, MSFT)
         stock = yf.Ticker(symbol)
