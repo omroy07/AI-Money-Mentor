@@ -93,3 +93,24 @@ class TestCalculateMoneyScore:
         # Savings component alone should provide at least expected points
         # (score = savings_component + min points from other dims)
         assert score >= expected_min_addition
+
+    def test_calculate_money_score_details(self):
+        from utils.money_score import calculate_money_score_details
+        details = calculate_money_score_details(
+            income=100_000,
+            expenses=10_000,
+            savings=35_000,
+            investments=25_000,
+            debt=10_000,
+            emergency_fund=70_000,
+        )
+        assert details["score"] == 100
+        assert details["savings_rate"] == 35.0
+        assert details["savings_score"] == 30
+        assert details["investment_rate"] == 25.0
+        assert details["investment_score"] == 25
+        assert details["debt_ratio"] == 10.0
+        assert details["debt_score"] == 25
+        assert details["months_cover"] == 7.0
+        assert details["emergency_score"] == 20
+

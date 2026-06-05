@@ -80,3 +80,22 @@ class TestCalculateTax:
         result = calculate_tax(income)
         assert result["new_regime"]["total_tax"] >= 0
         assert result["old_regime"]["total_tax"] >= 0
+
+    # ── Deductions ──────────────────────────────────────
+    def test_old_regime_deductions_applied(self):
+        """Old regime: applying deductions should reduce taxable income and total tax."""
+        no_deductions = calculate_tax(1000000)
+        with_deductions = calculate_tax(1000000, deductions_80c=150000, deductions_80d=25000, hra=50000)
+        
+        assert with_deductions["old_regime"]["deductions_80c_applied"] == 150000.0
+        assert with_deductions["old_regime"]["deductions_80d_applied"] == 25000.0
+        assert with_deductions["old_regime"]["hra_applied"] == 50000.0
+        assert with_deductions["old_regime"]["total_deductions"] == 50000 + 150000 + 25000 + 50000
+        assert with_deductions["old_regime"]["total_tax"] < no_deductions["old_regime"]["total_tax"]
+
+    def test_deductions_caps(self):
+        """Deductions should be capped to their maximum allowed limits (1.5L for 80C, 25k for 80D)."""
+        result = calculate_tax(1000000, deductions_80c=200000, deductions_80d=40000)
+        assert result["old_regime"]["deductions_80c_applied"] == 150000.0
+        assert result["old_regime"]["deductions_80d_applied"] == 25000.0
+

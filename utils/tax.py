@@ -1,4 +1,4 @@
-def calculate_tax(income):
+def calculate_tax(income, deductions_80c=0.0, deductions_80d=0.0, hra=0.0):
     # Income represents Gross Annual Income
     
     # 1. New Regime Calculation (FY 2024-25 / FY 2025-26)
@@ -36,7 +36,13 @@ def calculate_tax(income):
     
     # 2. Old Regime Calculation
     std_deduction_old = 50000
-    taxable_old = max(0.0, income - std_deduction_old)
+    # Apply deductions under 80C (max 1.5L), 80D (max 25k), and HRA
+    allowed_80c = min(float(deductions_80c or 0.0), 150000.0)
+    allowed_80d = min(float(deductions_80d or 0.0), 25000.0)
+    allowed_hra = float(hra or 0.0)
+    
+    total_deductions = std_deduction_old + allowed_80c + allowed_80d + allowed_hra
+    taxable_old = max(0.0, income - total_deductions)
     
     tax_old = 0.0
     # Slabs:
@@ -75,8 +81,13 @@ def calculate_tax(income):
             "taxable_income": taxable_old,
             "base_tax": round(tax_old, 2),
             "cess": round(cess_old, 2),
-            "total_tax": total_old
+            "total_tax": total_old,
+            "deductions_80c_applied": allowed_80c,
+            "deductions_80d_applied": allowed_80d,
+            "hra_applied": allowed_hra,
+            "total_deductions": total_deductions
         },
         "recommended": "New Regime" if total_new < total_old else "Old Regime",
         "savings": round(abs(total_old - total_new), 2)
-    }
+    }
+

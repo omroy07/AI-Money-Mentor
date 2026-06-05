@@ -2,17 +2,41 @@
 
 Replaces the previous module-level in-memory lists (expense_data,
 assets_data, liabilities_data) with SQLite-backed storage via
-Flask-SQLAlchemy, so data survives server restarts.
+Flask-SQLAlchemy, so data survives server restarts. Added User model
+for authentication.
 """
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+from werkzeug.security import generate_password_hash, check_password_hash
 
 db = SQLAlchemy()
+
+
+class User(db.Model):
+    __tablename__ = "users"
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    password_hash = db.Column(db.String(256), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    # Relationships
+    portfolio = db.relationship("Portfolio", backref="user", lazy=True, cascade="all, delete-orphan")
+    price_alerts = db.relationship("PriceAlert", backref="user", lazy=True, cascade="all, delete-orphan")
+    expenses = db.relationship("Expense", backref="user", lazy=True, cascade="all, delete-orphan")
+    assets = db.relationship("Asset", backref="user", lazy=True, cascade="all, delete-orphan")
+    liabilities = db.relationship("Liability", backref="user", lazy=True, cascade="all, delete-orphan")
+
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
 
 
 class Portfolio(db.Model):
     __tablename__ = "portfolio"
     id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
     symbol = db.Column(db.String(20), nullable=False)
     name = db.Column(db.String(100), nullable=False)
     quantity = db.Column(db.Float, nullable=False)
@@ -48,6 +72,7 @@ class Portfolio(db.Model):
 class PriceAlert(db.Model):
     __tablename__ = "price_alerts"
     id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
     symbol = db.Column(db.String(20), nullable=False)
     target_price = db.Column(db.Float, nullable=False)
     condition = db.Column(db.String(10), default="above")
@@ -67,6 +92,7 @@ class PriceAlert(db.Model):
 class Expense(db.Model):
     __tablename__ = "expenses"
     id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
     category = db.Column(db.String(120), nullable=False)
     amount = db.Column(db.Float, nullable=False)
     date = db.Column(db.String(40), nullable=False)
@@ -90,25 +116,28 @@ class Expense(db.Model):
             "user_corrected": self.user_corrected,
             "is_subscription": self.is_subscription,
             "is_recurring": self.is_recurring,
-            "is_anomaly": self.is_anomaly
+            "is_anomaly": self.is_anomaly,
+            "merchant_name": self.merchant_name or ""
         }
 
 
 class Asset(db.Model):
     __tablename__ = "assets"
     id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
     name = db.Column(db.String(120), nullable=False)
     amount = db.Column(db.Float, nullable=False)
 
-    def to_dict(self, index):
-        return {"id": index, "name": self.name, "amount": self.amount}
+    def to_dict(self):
+        return {"id": self.id, "name": self.name, "amount": self.amount}
 
 
 class Liability(db.Model):
     __tablename__ = "liabilities"
     id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
     name = db.Column(db.String(120), nullable=False)
     amount = db.Column(db.Float, nullable=False)
 
-    def to_dict(self, index):
-        return {"id": index, "name": self.name, "amount": self.amount}
+    def to_dict(self):
+        return {"id": self.id, "name": self.name, "amount": self.amount}

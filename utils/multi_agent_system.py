@@ -8,6 +8,12 @@ from urllib import response
 from groq import Groq
 import re
 
+# Import local mathematical calculators
+from utils.sip import calculate_sip
+from utils.tax import calculate_tax
+from utils.stock import get_stock_price
+from utils.money_score import calculate_money_score_details
+
 class FinancialAgent:
     """Base class for specialized financial agents"""
     
@@ -225,6 +231,130 @@ Remember: You're the generalist - help with basic finance but defer to specialis
     keywords=["money", "finance", "budget", "save", "emergency fund", "financial goal", "spending", "expense", "salary", "income", "monthly budget", "financial planning", "wealth", "saving money"]
 )
 
+
+# ---------------- 🔢 ROBUST FINANCIAL NUMBER PARSER & TOOL CALLERS ----------------
+def extract_financial_numbers(query):
+    query_clean = query.lower()
+    # Matches numbers with optional commas/decimals and optional financial scale suffixes
+    pattern = r"(\d[\d,]*\.?\d*)\s*(lakh[s]?|l|crore[s]?|cr|k|thousand[s]?|m|million[s]?)?"
+    matches = re.finditer(pattern, query_clean)
+    
+    nums = []
+    for match in matches:
+        num_str = match.group(1).replace(",", "")
+        if not num_str or num_str == ".":
+            continue
+        try:
+            val = float(num_str)
+            suffix = match.group(2)
+            if suffix:
+                if "lakh" in suffix or suffix == "l":
+                    val *= 100000
+                elif "crore" in suffix or suffix == "cr":
+                    val *= 10000000
+                elif "thousand" in suffix or suffix == "k":
+                    val *= 1000
+                elif "million" in suffix or suffix == "m":
+                    val *= 1000000
+            nums.append(val)
+        except ValueError:
+            continue
+    return nums
+
+
+def check_and_run_local_tools(query: str) -> Tuple[str, str]:
+    """Check if query is mathematical and run local calculators to provide precise context.
+    Returns (tool_name, tool_result_text)
+    """
+    query_lower = query.lower()
+    
+    # 1. Tax check
+    if any(w in query_lower for w in ["tax", "itr", "income tax"]):
+        nums = extract_financial_numbers(query)
+        if nums:
+            income = nums[0]
+            # check if other nums can be deductions
+            deductions_80c = nums[1] if len(nums) > 1 else 0.0
+            deductions_80d = nums[2] if len(nums) > 2 else 0.0
+            hra = nums[3] if len(nums) > 3 else 0.0
+            try:
+                res = calculate_tax(income, deductions_80c, deductions_80d, hra)
+                res_text = (
+                    f"Income Tax Calculation Results for Income ₹{income:,}:\n"
+                    f"- Recommended Regime: {res['recommended']}\n"
+                    f"- Tax Savings: ₹{res['savings']:,}\n"
+                    f"- Old Regime Tax Payable: ₹{res['old_regime']['total_tax']:,}\n"
+                    f"- New Regime Tax Payable: ₹{res['new_regime']['total_tax']:,}"
+                )
+                return "Tax Calculator", res_text
+            except Exception as e:
+                return "Tax Calculator", f"Error calculating tax: {str(e)}"
+                
+    # 2. SIP check
+    if any(w in query_lower for w in ["sip", "mutual fund", "investment returns"]):
+        nums = extract_financial_numbers(query)
+        if len(nums) >= 3:
+            monthly, rate, years = nums[0], nums[1], int(nums[2])
+            try:
+                fv = calculate_sip(monthly, rate, years)
+                total_invested = monthly * years * 12
+                wealth_gained = fv - total_invested
+                res_text = (
+                    f"SIP Growth Calculation Results:\n"
+                    f"- Monthly Investment: ₹{monthly:,}\n"
+                    f"- Expected Rate: {rate}%\n"
+                    f"- Tenure: {years} years\n"
+                    f"- Total Invested: ₹{total_invested:,}\n"
+                    f"- Estimated Returns: ₹{wealth_gained:,}\n"
+                    f"- Future Value: ₹{fv:,}"
+                )
+                return "SIP Calculator", res_text
+            except Exception as e:
+                return "SIP Calculator", f"Error calculating SIP: {str(e)}"
+                
+    # 3. Money Score check
+    if any(w in query_lower for w in ["score", "financial health", "money score"]):
+        nums = extract_financial_numbers(query)
+        if len(nums) >= 6:
+            try:
+                res = calculate_money_score_details(*nums[:6])
+                res_text = (
+                    f"Financial Money Score Results:\n"
+                    f"- Total Score: {res['score']}/100\n"
+                    f"- Savings Rate: {res['savings_rate']}% (Score: {res['savings_score']}/30)\n"
+                    f"- Investment Rate: {res['investment_rate']}% (Score: {res['investment_score']}/25)\n"
+                    f"- Debt Ratio: {res['debt_ratio']}% (Score: {res['debt_score']}/25)\n"
+                    f"- Emergency Fund: {res['months_cover']} months expenses (Score: {res['emergency_score']}/20)"
+                )
+                return "Money Score Calculator", res_text
+            except Exception as e:
+                return "Money Score Calculator", f"Error calculating Money Score: {str(e)}"
+                
+    # 4. Stock check
+    if any(w in query_lower for w in ["stock", "share", "price of"]):
+        # Extract stock symbol (usually uppercase word)
+        words = query.split()
+        for w in words:
+            w_clean = re.sub(r'[^a-zA-Z\.\-]', '', w).upper()
+            if len(w_clean) >= 2 and len(w_clean) <= 10 and not w_clean.isdigit():
+                # Avoid general financial terms
+                if w_clean not in ["STOCK", "PRICE", "SHARE", "MUTUAL", "FUND", "TAX", "SIP", "CIBIL", "LOAN", "EMI"]:
+                    try:
+                        res = get_stock_price(w_clean)
+                        if res and "error" not in res:
+                            res_text = (
+                                f"Stock Market Price for {res['symbol']}:\n"
+                                f"- Price: ₹{res['price']:.2f}\n"
+                                f"- PE Ratio: {res['metrics']['pe_ratio']}\n"
+                                f"- Market Cap: {res['metrics']['market_cap']}"
+                            )
+                            return "Stock Checker", res_text
+                    except:
+                        pass
+                        
+    return "", ""
+
+
 class MultiAgentRouter:
     """Routes user queries to the most appropriate specialized agent"""
     
@@ -285,11 +415,46 @@ class MultiAgentRouter:
     def process_query(self, query: str, chat_history: List = None) -> Dict:
         """Process query using the best suited agent"""
         try:
+            # 1. Run local mathematical tools first to get accurate context
+            tool_name, tool_context = check_and_run_local_tools(query)
+            
             # Select the right agent
             selected_agent = self.route_query(query)
             
+            # 2. If client is offline, return calculated tool results or standard fallback answers
+            if not self.client:
+                response_text = ""
+                if tool_context:
+                    response_text = f"Here is the precise calculation from the {tool_name}:\n\n{tool_context}\n\n*(Note: Chatbot is in offline mode due to missing GROQ_API_KEY)*"
+                else:
+                    # Generic offline fallback response based on agent
+                    if selected_agent.name == "Tax Advisor":
+                        response_text = "I am in offline mode. Standard deduction is ₹75,000 for New Regime and ₹50,000 for Old Regime. Use the Tax Planner tab to calculate side-by-side comparison with deductions under 80C and 80D."
+                    elif selected_agent.name == "Investment Advisor":
+                        response_text = "I am in offline mode. For investments: consider starting a SIP (Mutual Funds) for long-term compounding. Fixed Deposits offer safe 6-7% returns. Use the SIP Calculator tab to simulate your returns."
+                    elif selected_agent.name == "Debt Management Expert":
+                        response_text = "I am in offline mode. To manage debt: list loans by interest rate. Use the Debt Snowball (pay smallest first) or Debt Avalanche (pay highest interest rate first) method. Keep your Credit Score (CIBIL) high by paying EMI on time."
+                    elif selected_agent.name == "Retirement Planner":
+                        response_text = "I am in offline mode. For retirement: calculate your monthly expenses adjusted for inflation. Invest in NPS, PPF, or equity mutual funds for long-term growth."
+                    elif selected_agent.name == "Insurance Advisor":
+                        response_text = "I am in offline mode. For protection: buy a pure Term Life Insurance (10-15x annual income) and a Family Health Insurance policy (minimum ₹5-10 lakhs sum insured)."
+                    else:
+                        response_text = "I am in offline mode. Let's talk about budgeting: use the 50/30/20 rule (50% Needs, 30% Wants, 20% Savings). You can track expenses in the Expense Tracker tab."
+                
+                return {
+                    "agent": selected_agent.name,
+                    "specialization": selected_agent.specialization,
+                    "response": response_text,
+                    "confidence": 1.0,
+                    "response_time": 0.0
+                }
+                
             # Get context from previous conversations
             context = self.get_cross_agent_context(selected_agent)
+            
+            # 3. Inject mathematical calculation output as context to the LLM agent
+            if tool_context:
+                context += f" | Precise Tool Calculation Output: {tool_context}" if context else f"Precise Tool Calculation Output: {tool_context}"
             
             # Add chat history context if available
             if chat_history and len(chat_history) > 0:
