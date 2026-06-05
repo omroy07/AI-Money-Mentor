@@ -25,24 +25,23 @@
       --border: rgba(255, 255, 255, 0.06);
       --glow: rgba(212, 168, 67, 0.18);
     }
-
     body.light-theme {
-      --bg: #f4f6f9;
-      --bg2: #ffffff;
-      --bg3: #e8edf3;
+  --bg: #f4f6f9;
+  --bg2: #ffffff;
+  --bg3: #e8edf3;
 
-      --text: #1f2937;
-      --muted: #6b7280;
+  --text: #1f2937;
+  --muted: #6b7280;
 
-      --border: rgba(0, 0, 0, 0.08);
+  --border: rgba(0,0,0,0.08);
 
-      --gold: #d4a843;
-      --gold2: #f0cc6e;
+  --gold: #d4a843;
+  --gold2: #f0cc6e;
 
-      --teal: #14c8bf;
-      --red: #e05252;
-      --green: #2ecc8a;
-    }
+  --teal: #14c8bf;
+  --red: #e05252;
+  --green: #2ecc8a;
+}
 
     *,
     *::before,
@@ -51,7 +50,6 @@
       padding: 0;
       box-sizing: border-box;
     }
-
     body {
       font-family: 'Instrument Sans', sans-serif;
       background: var(--bg);
@@ -72,27 +70,26 @@
         radial-gradient(circle at 50% 96%, rgba(255, 255, 255, 0.04), transparent 20%);
       z-index: -1;
     }
-
     .goal-box {
-      background: white;
-      padding: 10px;
-      margin-top: 10px;
-      border-radius: 10px;
-    }
+  background: white;
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 10px;
+}
 
-    .bar {
-      width: 100%;
-      height: 10px;
-      background: #ddd;
-      border-radius: 5px;
-    }
+.bar {
+  width: 100%;
+  height: 10px;
+  background: #ddd;
+  border-radius: 5px;
+}
 
-    .fill {
-      height: 10px;
-      background: green;
-      border-radius: 5px;
-    }
-
+.fill {
+  height: 10px;
+  background: green;
+  border-radius: 5px;
+}
+  
     /* ── SIDEBAR ──────────────────────────────────── */
     .sidebar {
       width: 220px;
@@ -278,7 +275,7 @@
       content: '';
       position: absolute;
       inset: -1px;
-      background: linear-gradient(90deg, rgba(20, 200, 191, 0.06), rgba(212, 168, 67, 0.06));
+      background: linear-gradient(90deg, rgba(20,200,191,0.06), rgba(212,168,67,0.06));
       z-index: 0;
       filter: blur(16px);
       opacity: 0;
@@ -288,18 +285,13 @@
 
     .card:hover {
       transform: translateY(-6px);
-      box-shadow: 0 30px 80px rgba(6, 8, 12, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.02);
+      box-shadow: 0 30px 80px rgba(6,8,12,0.75), inset 0 1px 0 rgba(255,255,255,0.02);
     }
 
-    .card:hover::before {
-      opacity: 1;
-    }
+    .card:hover::before { opacity: 1; }
 
     /* make card content appear above decorative pseudo element */
-    .card>* {
-      position: relative;
-      z-index: 1;
-    }
+    .card > * { position: relative; z-index: 1; }
 
     .card-title {
       font-family: 'Syne', sans-serif;
@@ -391,8 +383,8 @@
       scrollbar-color: var(--bg3) transparent;
       flex: 1;
     }
-
-    .msg {
+     
+  .msg {
       max-width: 88%;
       padding: 12px 16px;
       border-radius: 18px;
@@ -522,7 +514,7 @@
     .chat-input-row input {
       flex: 1;
     }
-
+   
     .chat-input-row .btn {
       flex-shrink: 0;
       min-width: 50px;
@@ -576,8 +568,8 @@
     }
 
     .chat-feature-item {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.06);
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
       border-radius: 14px;
       padding: 12px;
       font-size: 12px;
@@ -589,22 +581,15 @@
     }
 
     .chat-feature-item:hover {
-      background: rgba(255, 255, 255, 0.08);
+      background: rgba(255,255,255,0.08);
       color: var(--text);
-      border-color: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255,255,255,0.12);
       transform: translateY(-2px);
     }
 
     @keyframes float {
-
-      0%,
-      100% {
-        transform: translateY(0px);
-      }
-
-      50% {
-        transform: translateY(-8px);
-      }
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-8px); }
     }
 
 
@@ -1180,295 +1165,270 @@
         font-size: 18px;
       }
     }
-
     body.light-theme .sidebar {
-      background: #ffffff;
-      border-right: 1px solid rgba(0, 0, 0, 0.08);
-    }
+  background: #ffffff;
+  border-right: 1px solid rgba(0,0,0,0.08);
+}
 
-    body.light-theme .card {
-      background: #ffffff;
-      color: var(--text);
-    }
+body.light-theme .card {
+  background: #ffffff;
+  color: var(--text);
+}
 
-    body.light-theme .stat-card {
-      background: #ffffff;
-    }
+body.light-theme .stat-card {
+  background: #ffffff;
+}
 
-    body.light-theme .chat-messages {
-      background: #f9fafb;
-    }
+body.light-theme .chat-messages {
+  background: #f9fafb;
+}
 
-    body.light-theme .msg.bot {
-      background: #ffffff;
-    }
+body.light-theme .msg.bot {
+  background: #ffffff;
+}
 
-    body.light-theme input,
-    body.light-theme textarea,
-    body.light-theme select {
-      background: #ffffff;
-      color: #111827;
-      border: 1px solid #d1d5db;
-    }
+body.light-theme input,
+body.light-theme textarea,
+body.light-theme select {
+  background: #ffffff;
+  color: #111827;
+  border: 1px solid #d1d5db;
+}
 
-    body.light-theme {
-      background: #f4f6f9;
-    }
+body.light-theme {
+  background: #f4f6f9;
+}
 
-    body.light-theme::before {
-      background:
-        radial-gradient(circle at 16% 16%, rgba(20, 200, 191, 0.08), transparent 18%),
-        radial-gradient(circle at 88% 12%, rgba(212, 168, 67, 0.08), transparent 14%);
-    }
-
+body.light-theme::before {
+  background:
+    radial-gradient(circle at 16% 16%, rgba(20,200,191,0.08), transparent 18%),
+    radial-gradient(circle at 88% 12%, rgba(212,168,67,0.08), transparent 14%);
+}
 
   .page-title {
     font-size: 18px;
   }
-
+}
 /* ===== GOAL TRACKER STYLING FIX ===== */
 
-    .page-title {
-      font-size: 18px;
-    }
-    
-
-/* Skeleton Loaders */
-.skeleton-line {
-  height: 16px;
-  margin: 10px 0;
-  background: linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.03) 75%);
-  background-size: 200% 100%;
-  animation: loading-pulse 1.5s infinite;
-  border-radius: 4px;
-}
-.skeleton-line.short { width: 40%; }
-.skeleton-line.medium { width: 70%; }
-.skeleton-line.long { width: 100%; }
-
-@keyframes loading-pulse {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+#goalTracker {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 16px;
+  border-radius: 12px;
+  color: #eef0f5;
+  margin-top: 20px;
 }
 
-    /* ===== GOAL TRACKER STYLING FIX ===== */
+/* Inputs */
+#goalTracker input {
+  width: 100%;
+  margin: 8px 0;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.04);
+  color: #fff;
+  outline: none;
+}
 
-    #goalTracker {
-      background: rgba(15, 23, 42, 0.6);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      padding: 16px;
-      border-radius: 12px;
-      color: #eef0f5;
-      margin-top: 20px;
-    }
+#goalTracker input::placeholder {
+  color: rgba(255,255,255,0.4);
+}
 
-    /* Inputs */
-    #goalTracker input {
-      width: 100%;
-      margin: 8px 0;
-      padding: 10px 12px;
-      border-radius: 8px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      background: rgba(255, 255, 255, 0.04);
-      color: #fff;
-      outline: none;
-    }
+/* Button */
+#goalTracker button {
+  margin-top: 10px;
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #d4a843, #14c8bf);
+  color: #0b1220;
+  font-weight: 700;
+  cursor: pointer;
+}
 
-    #goalTracker input::placeholder {
-      color: rgba(255, 255, 255, 0.4);
-    }
+/* Goal Card */
+.goal-box {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
+  padding: 12px;
+  margin-top: 12px;
+  border-radius: 10px;
+}
 
-    /* Button */
-    #goalTracker button {
-      margin-top: 10px;
-      width: 100%;
-      padding: 10px;
-      border: none;
-      border-radius: 8px;
-      background: linear-gradient(135deg, #d4a843, #14c8bf);
-      color: #0b1220;
-      font-weight: 700;
-      cursor: pointer;
-    }
+/* Progress Bar Container */
+.goal-box .bar {
+  width: 100%;
+  height: 8px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 50px;
+  overflow: hidden;
+  margin: 8px 0;
+}
 
-    /* Goal Card */
-    .goal-box {
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      padding: 12px;
-      margin-top: 12px;
-      border-radius: 10px;
-    }
+/* Fill */
+.goal-box .fill {
+  height: 100%;
+  background: linear-gradient(90deg, #2ecc8a, #14c8bf);
+  border-radius: 50px;
+  transition: width 0.4s ease;
+}
 
-    /* Progress Bar Container */
-    .goal-box .bar {
-      width: 100%;
-      height: 8px;
-      background: rgba(255, 255, 255, 0.08);
-      border-radius: 50px;
-      overflow: hidden;
-      margin: 8px 0;
-    }
+/* Input inside goal */
+.goal-box input {
+  width: 100%;
+  padding: 8px;
+  border-radius: 6px;
+  background: rgba(0,0,0,0.2);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: white;
+}
+.goal-card{
+margin-top:20px;
+padding:20px;
+border-radius:14px;
+background:rgba(255,255,255,0.03);
+border:1px solid rgba(255,255,255,0.08);
+}
 
-    /* Fill */
-    .goal-box .fill {
-      height: 100%;
-      background: linear-gradient(90deg, #2ecc8a, #14c8bf);
-      border-radius: 50px;
-      transition: width 0.4s ease;
-    }
+.goal-top{
+display:flex;
+justify-content:space-between;
+align-items:center;
+flex-wrap:wrap;
+gap:15px;
+}
 
-    /* Input inside goal */
-    .goal-box input {
-      width: 100%;
-      padding: 8px;
-      border-radius: 6px;
-      background: rgba(0, 0, 0, 0.2);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      color: white;
-    }
+.goal-top h3{
+font-size:30px;
+margin:0;
+}
 
-    .goal-card {
-      margin-top: 20px;
-      padding: 20px;
-      border-radius: 14px;
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-    }
+.goal-amount{
+font-size:18px;
+color:#14c8bf;
+margin-top:10px;
+}
 
-    .goal-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 15px;
-    }
+.goal-progress{
+height:12px;
+background:#2d3748;
+border-radius:20px;
+overflow:hidden;
+margin:18px 0;
+}
 
-    .goal-top h3 {
-      font-size: 30px;
-      margin: 0;
-    }
+.goal-fill{
+height:100%;
+background:linear-gradient(
+90deg,
+#14c8bf,
+#2ecc8a
+);
+}
 
-    .goal-amount {
-      font-size: 18px;
-      color: #14c8bf;
-      margin-top: 10px;
-    }
+.goal-percent{
+background:rgba(20,200,191,.15);
+color:#14c8bf;
+padding:8px 16px;
+border-radius:30px;
+font-weight:700;
+}
 
-    .goal-progress {
-      height: 12px;
-      background: #2d3748;
-      border-radius: 20px;
-      overflow: hidden;
-      margin: 18px 0;
-    }
+.goal-save-row{
+display:flex;
+gap:12px;
+margin-top:15px;
+align-items:center;
+}
 
-    .goal-fill {
-      height: 100%;
-      background: linear-gradient(90deg,
-          #14c8bf,
-          #2ecc8a);
-    }
+.goal-save-row input{
+width:300px !important;
+min-width:300px !important;
+height:44px;
+padding:12px;
+background:rgba(255,255,255,0.05);
+border:1px solid rgba(255,255,255,0.1);
+color:#eef0f5;
+border-radius:8px;
+}
 
-    .goal-percent {
-      background: rgba(20, 200, 191, .15);
-      color: #14c8bf;
-      padding: 8px 16px;
-      border-radius: 30px;
-      font-weight: 700;
-    }
+.save-btn{
+width:220px;
+background:linear-gradient(
+135deg,
+#d4a843,
+#f0cc6e
+);
+border:none;
+border-radius:10px;
+font-weight:700;
+cursor:pointer;
+}
 
-    .goal-save-row {
-      display: flex;
-      gap: 12px;
-      margin-top: 15px;
-      align-items: center;
-    }
+.delete-btn{
+background:transparent;
+border:1px solid #ff4d4f;
+color:#ff4d4f;
+padding:8px 12px;
+border-radius:8px;
+cursor:
+pointer;
+}
+#expenseForm select,
+#expenseForm input[type="date"],
+#expenseForm input[type="number"],
+#expenseForm input[type="text"]{
+    background: rgba(255,255,255,0.05);
+    color: #e2e8f0;
+    border: 1px solid rgba(255,255,255,0.1);
+}
 
-    .goal-save-row input {
-      width: 300px !important;
-      min-width: 300px !important;
-      height: 44px;
-      padding: 12px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      color: #eef0f5;
-      border-radius: 8px;
-    }
+#expenseForm select:focus,
+#expenseForm input:focus{
+    border-color:#d4a843;
+    box-shadow:0 0 10px rgba(212,168,67,.3);
+}
 
-    .save-btn {
-      width: 220px;
-      background: linear-gradient(135deg,
-          #d4a843,
-          #f0cc6e);
-      border: none;
-      border-radius: 10px;
-      font-weight: 700;
-      cursor: pointer;
-    }
+#expenseForm select option{
+    background:#0d1320;
+    color:#e2e8f0;
+}
+.goal-input{
+    flex:1;
+    background:rgba(255,255,255,0.05);
+    border:1px solid rgba(255,255,255,0.1);
+    color:#eef0f5;
+}
 
-    .delete-btn {
-      background: transparent;
-      border: 1px solid #ff4d4f;
-      color: #ff4d4f;
-      padding: 8px 12px;
-      border-radius: 8px;
-      cursor:
-        pointer;
-    }
+.goal-input::placeholder{
+    color:#5a6a82;
+}
+.chart-wrap{
+    width:100%;
+    max-width:320px;
+    height:220px;
+    margin:0 auto;
+    position:relative;
+    overflow:hidden;
+}
 
-    #expenseForm select,
-    #expenseForm input[type="date"],
-    #expenseForm input[type="number"],
-    #expenseForm input[type="text"] {
-      background: rgba(255, 255, 255, 0.05);
-      color: #e2e8f0;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-    }
+#portfolioChart{
+    width:100% !important;
+    height:220px !important;
+}
 
-    #expenseForm select:focus,
-    #expenseForm input:focus {
-      border-color: #d4a843;
-      box-shadow: 0 0 10px rgba(212, 168, 67, .3);
-    }
+.chart-wrap{
+    width:100%;
+    height:280px;
+    max-height:280px;
+    overflow:hidden;
+    position:relative;
+}
 
-    #expenseForm select option {
-      background: #0d1320;
-      color: #e2e8f0;
-    }
 
-    .goal-input {
-      flex: 1;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      color: #eef0f5;
-    }
-
-    .goal-input::placeholder {
-      color: #5a6a82;
-    }
-
-    .chart-wrap {
-      width: 100%;
-      max-width: 320px;
-      height: 220px;
-      margin: 0 auto;
-      position: relative;
-      overflow: hidden;
-    }
-
-    #portfolioChart {
-      width: 100% !important;
-      height: 220px !important;
-    }
-
-    .chart-wrap {
-      width: 100%;
-      height: 280px;
-      max-height: 280px;
-      overflow: hidden;
-      position: relative;
-    }
   </style>
 </head>
 
@@ -1486,9 +1446,21 @@
   <!-- ══════════ SIDEBAR ══════════ -->
   <div class="sidebar">
     <div class="logo">₹ Money Mentor</div>
-    <button class="btn btn-ghost" id="themeToggle" onclick="toggleTheme()" style="margin-bottom:15px;width:100%;">
-      ☀️ Light Mode
-    </button>
+    <div style="margin-bottom:15px; width:100%; display:flex; gap:8px;">
+      <button
+         class="btn btn-ghost"
+         id="themeToggle"
+         onclick="toggleTheme()"
+         style="flex: 1.2; padding: 7px 12px; min-height: 38px; font-size: 12px;">
+         ☀️ Light
+      </button>
+      <select id="currencySelector" onchange="changeCurrency()" style="flex: 1.8; padding: 7px 12px; border-radius: 999px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); color: var(--text); font-family: inherit; font-size: 13px; font-weight: 700; outline: none; cursor: pointer; height: 38px;">
+        <option value="INR" selected>₹ INR</option>
+        <option value="USD">$ USD</option>
+        <option value="EUR">€ EUR</option>
+        <option value="GBP">£ GBP</option>
+      </select>
+    </div>
 
     <div class="nav-item active" data-page="dashboard"><span class="icon">🏠</span> Dashboard</div>
     <div class="nav-item" data-page="chat"><span class="icon">🤖</span> AI Chat</div>
@@ -1546,7 +1518,7 @@
       <!-- DASH GRID -->
       <div class="dash-grid">
 
-        <!-- AI CHAT PANEL -->
+            <!-- AI CHAT PANEL -->
         <div class="card">
           <div class="card-title">🤖 AI Financial Advisor</div>
           <div class="chat-messages" id="dashChat">
@@ -1599,8 +1571,8 @@
             </div>
             <div style="position:relative;height:220px;width:100%;max-width:320px;margin:0 auto;">
               <div class="chart-wrap">
-                <canvas id="portfolioChart"></canvas>
-              </div>
+    <canvas id="portfolioChart"></canvas>
+</div>
             </div>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 11px; margin-top: 10px;">
               <div style="display:flex; align-items:center; gap:6px;"><span
@@ -1687,31 +1659,23 @@
           <input type="text" id="chatInput" placeholder="Ask anything financial…"
             onkeypress="if(event.key==='Enter') chatSend()">
           <button class="btn btn-gold" onclick="chatSend()" id="chatBtn">Send</button>
-          <button class="btn btn-ghost" onclick="clearChat()" id="clearBtn" title="Clear conversation">Clear</button>
         </div>
       </div>
     </div>
 
     <!-- ── MONEY SCORE ─────────────── -->
-
     <div id="score" class="page">
       <div class="page-title">Money <span>Score</span></div>
       <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 20px; align-items: start; max-width: 900px;">
         <div class="card">
           <div class="card-title">Enter your financial details</div>
           <div class="form-grid">
-            <div><label>Monthly Income (₹)</label><input type="number" required min="0" id="s_income"
-                placeholder="e.g. 80000"></div>
-            <div><label>Monthly Expenses (₹)</label><input type="number" required min="0" id="s_expenses"
-                placeholder="e.g. 40000"></div>
-            <div><label>Monthly Savings (₹)</label><input type="number" required min="0" id="s_savings"
-                placeholder="e.g. 20000"></div>
-            <div><label>Investments (₹)</label><input type="number" required min="0" id="s_invest"
-                placeholder="e.g. 500000"></div>
-            <div><label>Total Debt (₹)</label><input type="number" required min="0" id="s_debt"
-                placeholder="e.g. 100000"></div>
-            <div><label>Emergency Fund (₹)</label><input type="number" required min="0" id="s_emergency"
-                placeholder="e.g. 240000"></div>
+            <div><label>Monthly Income (₹)</label><input type="number" required min="0" id="s_income" placeholder="e.g. 80000"></div>
+            <div><label>Monthly Expenses (₹)</label><input type="number" required min="0" id="s_expenses" placeholder="e.g. 40000"></div>
+            <div><label>Monthly Savings (₹)</label><input type="number" required min="0" id="s_savings" placeholder="e.g. 20000"></div>
+            <div><label>Investments (₹)</label><input type="number" required min="0" id="s_invest" placeholder="e.g. 500000"></div>
+            <div><label>Total Debt (₹)</label><input type="number" required min="0" id="s_debt" placeholder="e.g. 100000"></div>
+            <div><label>Emergency Fund (₹)</label><input type="number" required min="0" id="s_emergency" placeholder="e.g. 240000"></div>
           </div>
           <button class="btn btn-gold" style="margin-top:16px;width:100%" onclick="calcScore()" id="scoreBtn">Calculate
             Money Score</button>
@@ -1722,530 +1686,643 @@
           <div style="position: relative; height: 320px; display: flex; justify-content: center; align-items: center;">
             <canvas id="scoreChart"></canvas>
           </div>
-        </div>
+<!-- ── SIP CALCULATOR ─────────────── -->
+<div id="sip" class="page">
+  <div class="page-title">📈 SIP <span>Calculator</span></div>
+
+  <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 20px; align-items: start; max-width: 900px;">
+
+    <div class="card">
+      <div class="card-title">SIP Projection</div>
+
+      <label>Monthly Investment (₹)</label>
+      <input type="number" required min="0" id="sip_monthly" placeholder="e.g. 10000">
+
+      <label>Annual Return Rate (%)</label>
+      <input type="number" required min="0" id="sip_rate" placeholder="e.g. 12">
+
+      <label>Investment Period (Years)</label>
+      <input type="number" required min="0" id="sip_years" placeholder="e.g. 10">
+
+      <button class="btn btn-gold" style="margin-top:16px;width:100%" onclick="calcSIP()" id="sipBtn">
+        Calculate
+      </button>
+
+      <div id="sipResult" class="result-box"></div>
+    </div>
+
+    <div class="card" style="min-height: 380px;">
+      <div class="card-title">Wealth Growth Curve</div>
+      <div style="position: relative; height: 320px;">
+        <canvas id="sipChart"></canvas>
       </div>
     </div>
 
-    <!-- ── SIP CALCULATOR ─────────────── -->
-    <div id="sip" class="page">
-      <div class="page-title">📈 SIP <span>Calculator</span></div>
+  </div>
+</div>
 
-      <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 20px; align-items: start; max-width: 900px;">
+<!-- ── STOCK CHECK ─────────────── -->
+<div id="stock" class="page">
+  <div class="page-title">Stock <span>Checker</span></div>
 
-        <div class="card">
-          <div class="card-title">SIP Projection</div>
+  <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 20px; align-items: start; max-width: 900px;">
+    <div class="card">
+      <div class="card-title">Live Stock Price (NSE/Global)</div>
 
-          <label>Monthly Investment (₹)</label>
-          <input type="number" required min="0" id="sip_monthly" placeholder="e.g. 10000">
+      <label>Stock Symbol</label>
+      <input type="text" id="stockSym" placeholder="e.g. TCS, RELIANCE, AAPL">
 
-          <label>Annual Return Rate (%)</label>
-          <input type="number" required min="0" id="sip_rate" placeholder="e.g. 12">
+      <button class="btn btn-gold" style="margin-top:16px;width:100%" onclick="checkStock()" id="stockBtn">
+        Get Price
+      </button>
 
-          <label>Investment Period (Years)</label>
-          <input type="number" required min="0" id="sip_years" placeholder="e.g. 10">
-
-          <button class="btn btn-gold" style="margin-top:16px;width:100%" onclick="calcSIP()" id="sipBtn">
-            Calculate
-          </button>
-
-          <div id="sipResult" class="result-box"></div>
-        </div>
-
-        <div class="card" style="min-height: 380px;">
-          <div class="card-title">Wealth Growth Curve</div>
-          <div style="position: relative; height: 320px;">
-            <canvas id="sipChart"></canvas>
-          </div>
-        </div>
-
-      </div>
+      <div id="stockResult" class="result-box"></div>
     </div>
 
-    <!-- ── STOCK CHECK ─────────────── -->
-    <div id="stock" class="page">
-      <div class="page-title">Stock <span>Checker</span></div>
-
-      <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 20px; align-items: start; max-width: 900px;">
-        <div class="card">
-          <div class="card-title">Live Stock Price (NSE/Global)</div>
-
-          <label>Stock Symbol</label>
-          <input type="text" id="stockSym" placeholder="e.g. TCS, RELIANCE, AAPL">
-
-          <button class="btn btn-gold" style="margin-top:16px;width:100%" onclick="checkStock()" id="stockBtn">
-            Get Price
-          </button>
-
-          <div id="stockResult" class="result-box"></div>
-        </div>
-
-        <div class="card" style="min-height: 380px;">
-          <div class="card-title">30-Day Historical Trend</div>
-          <div style="position: relative; height: 320px;">
-            <canvas id="stockChart"></canvas>
-          </div>
-        </div>
+    <div class="card" style="min-height: 380px;">
+      <div class="card-title">30-Day Historical Trend</div>
+      <div style="position: relative; height: 320px;">
+        <canvas id="stockChart"></canvas>
       </div>
     </div>
+  </div>
+</div>
 
-    <!-- ── TAX PLANNER ─────────────── -->
-    <div id="tax" class="page">
-      <div class="page-title">💸 Tax <span>Planner</span></div>
-      <div style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 20px; align-items: start; max-width: 950px;">
-        <div class="card">
-          <div class="card-title">Income Tax Calculator (New Regime)</div>
-          <label>Gross Annual Income (₹)</label>
-          <input type="number" required min="0" id="taxIncome" placeholder="e.g. 1200000">
-          <button class="btn btn-gold" style="margin-top:16px;width:100%" onclick="calcTax()" id="taxBtn">
-            Calculate Tax
-          </button>
-          <div id="taxResult" class="result-box"></div>
-        </div>
-        <div class="card" id="taxComparisonCard" style="display:none; min-height: 280px;">
-          <div class="card-title">Regime Comparison (Old vs. New)</div>
-          <div id="taxComparisonResult"></div>
-        </div>
-      </div>
-    </div>
+              <!-- ── STOCK CHECK ─────────────── -->
+              <div id="stock" class="page">
+                <div class="page-title">Stock <span>Checker</span></div>
+                <div
+                  style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 20px; align-items: start; max-width: 900px;">
+                  <div class="card">
+                    <div class="card-title">Live Stock Price (NSE/Global)</div>
+                    <label>Stock Symbol</label>
+                    <input type="text" id="stockSym" placeholder="e.g. TCS, RELIANCE, AAPL">
+                    <button class="btn btn-gold" style="margin-top:16px;width:100%" onclick="checkStock()"
+                      id="stockBtn">Get
+                      Price</button>
+                    <div id="stockResult" class="result-box"></div>
+                  </div>
+                  <div class="card" style="min-height: 380px;">
+                    <div class="card-title">30-Day Historical Trend</div>
+                    <div style="position: relative; height: 320px;">
+                      <canvas id="stockChart"></canvas>
+                    </div>
+                  </div>
+                  <div id="stock" class="page center-page">
+                    <div class="page-title">📊 Stock <span>Checker</span></div>
+                    <div class="card" style="max-width:480px">
+                      <div class="card-title">Live Stock Price (NSE)</div>
+                      <label>Stock Symbol</label>
+                      <input type="text" id="stockSym" placeholder="e.g. TCS, RELIANCE, INFY">
+                      <button class="btn btn-gold" style="margin-top:16px;width:100%" onclick="checkStock()"
+                        id="stockBtn">Get
+                        Price</button>
+                      <div id="stockResult" class="result-box"></div>
+                    </div>
+                  </div>
 
-    <!-- ── PDF PARSER ─────────────── -->
-    <div id="pdf" class="page center-page">
-      <div class="page-title">📄 PDF <span>Parser</span></div>
-      <div class="card" style="max-width:480px">
-        <div class="card-title">Upload Financial Document</div>
-        <label>Select PDF (Form 16, Salary Slip, etc.)</label>
-        <input type="file" id="pdfFile" accept=".pdf" style="margin-top:8px">
-        <button class="btn btn-gold" style="margin-top:16px;width:100%" onclick="uploadPDF()" id="pdfBtn">
-          Parse Document
-        </button>
-        <div id="pdfResult" class="result-box"></div>
-      </div>
-    </div>
+                  <!-- ── TAX PLANNER ─────────────── -->
+                  <div id="tax" class="page">
+                    <div class="page-title">Tax <span>Planner</span></div>
+                    <div
+                      style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 20px; align-items: start; max-width: 950px;">
+                      <div class="card">
+                        <div class="card-title">Income Tax Calculator</div>
+                        <label>Gross Annual Income (₹)</label>
+                        <input type="number" required min="0" id="taxIncome" placeholder="e.g. 1200000">
+                        <button class="btn btn-gold" style="margin-top:16px;width:100%" onclick="calcTax()"
+                          id="taxBtn">Calculate
+                          Tax</button>
+                        <div id="taxResult" class="result-box"></div>
+                      </div>
+                      <div class="card" id="taxComparisonCard" style="display:none; min-height: 280px;">
+                        <div class="card-title">Regime Comparison (Old vs. New)</div>
+                        <div id="taxComparisonResult"></div>
+                      </div>
+                      <div id="tax" class="page center-page">
+                        <div class="page-title">💸 Tax <span>Planner</span></div>
+                        <div class="card" style="max-width:480px">
+                          <div class="card-title">Income Tax Calculator (New Regime)</div>
+                          <label>Annual Income (₹)</label>
+                          <input type="number" required min="0" id="taxIncome" placeholder="e.g. 1200000">
+                          <button class="btn btn-gold" style="margin-top:16px;width:100%" onclick="calcTax()"
+                            id="taxBtn">Calculate
+                            Tax</button>
+                          <div id="taxResult" class="result-box"></div>
+                        </div>
+                      </div>
 
-    <!-- ── MULTI AGENT ─────────────── -->
-    <div id="agent" class="page center-page">
-      <div class="page-title">🧠 Multi <span>Agent</span></div>
-      <div class="card" style="max-width:600px">
-        <div class="card-title">AI Multi-Agent Financial Analysis</div>
-        <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px">
-          <div class="agent-tag">
-            <div class="dot"></div> Financial Planning Agent
-          </div>
-          <div class="agent-tag">
-            <div class="dot"></div> Tax Optimization Agent
-          </div>
-          <div class="agent-tag">
-            <div class="dot"></div> Investment Advisor Agent
-          </div>
-          <div class="agent-tag">
-            <div class="dot"></div> Insurance Advisor Agent
-          </div>
-        </div>
-        <label>Your Financial Query</label>
-        <textarea id="agentQuery" rows="4" placeholder="e.g. Should I invest in NPS or ELSS? I earn ₹12L/year…"
-          style="resize:vertical;margin-top:8px"></textarea>
-        <button class="btn btn-gold" style="margin-top:16px;width:100%" onclick="runAgent()" id="agentBtn">
-          Run Multi-Agent Analysis
-        </button>
-        <div id="agentResult" class="result-box"></div>
-      </div>
-    </div>
+                      <!-- ── PDF PARSER ─────────────── -->
+                      <div id="pdf" class="page center-page">
+                        <div class="page-title">📄 PDF <span>Parser</span></div>
+                        <div class="card" style="max-width:480px">
+                          <div class="card-title">Upload Financial Document</div>
+                          <label>Select PDF (Form 16, Salary Slip, etc.)</label>
+                          <input type="file" id="pdfFile" accept=".pdf" style="margin-top:8px">
+                          <button class="btn btn-gold" style="margin-top:16px;width:100%" onclick="uploadPDF()"
+                            id="pdfBtn">Parse
+                            Document</button>
+                          <div id="pdfResult" class="result-box"></div>
+                        </div>
+                      </div>
 
-    <!---------- EXPENSE TRACK------------------->
-    <div id="expense" class="page">
-      <div class="page-title">💲 Expense Track and Insights</div>
-      <form id="expenseForm">
-        <select id="category" required>
-          <option value="">Select Category</option>
-          <option value="Food">Food</option>
-          <option value="Rent">Rent</option>
-          <option value="Travel">Travel</option>
-          <option value="Shopping">Shopping</option>
-          <option value="Other">Other</option>
-        </select>
+<div id="expense" class="page">
+
+<div class="page-title">💲 Expense Track and Insights</div>
+
+<div class="card" id="goalTracker">
+
+<h2 style="margin-bottom:15px;color:#d4a843;">
+🎯 Financial Goal Tracker
+</h2>
+
+<div style="display:flex;gap:15px;flex-wrap:wrap;">
+
+<input
+type="text"
+id="goalName"
+placeholder="Goal name (e.g. Phone)"
+class="goal-input"
+>
+
+<input
+type="number"
+id="goalTarget"
+placeholder="Target amount (₹)"
+class="goal-input"
+>
+<button
+onclick="addGoal()"
+class="btn btn-gold"
+style="width:220px;"
+>
++ Add Goal
+</button>
+
+</div>
+
+<div id="goalContainer"></div>
+
+</div>
+<!-- FINANCIAL GOAL TRACKER -->
+
+<form id="expenseForm">
+    <select id="category" required>
+        <option value="">Select Category</option>
+        <option value="Food">Food</option>
+        <option value="Rent">Rent</option>
+        <option value="Travel">Travel</option>
+        <option value="Shopping">Shopping</option>
+        <option value="Other">Other</option>
+    </select>
         <input type="number" required min="0" id="amount" placeholder="Amount (₹)" required>
         <input type="date" id="date" required>
         <button type="submit">Add Expense</button>
       </form>
 
-      <div class="cards">
-        <div class="card" id="totalCard">
-          <h2>Total Spend</h2>
-        </div>
-        <div class="card" id="avgCard">
-          <h2>Average Expense</h2>
-        </div>
-      </div>
+                      <!---------- EXPENSE TRACK------------------->
+                      <div id="expense" class="page">
+                        <div class="page-title">💲 Expense Track and Insights</div>
+                        <form id="expenseForm">
+                          <select id="category" required>
+                            <option value="">Select Category</option>
+                            <option value="Food">Food</option>
+                            <option value="Rent">Rent</option>
+                            <option value="Travel">Travel</option>
+                            <option value="Shopping">Shopping</option>
+                            <option value="Other">Other</option>
+                          </select>
+                          <input type="number" required min="0" id="amount" placeholder="Amount (₹)" required>
+                          <input type="date" id="date" required>
+                          <button type="submit">Add Expense</button>
+                        </form>
 
-      <h2>Expense History</h2>
-      <table id="expenseTable" style="width: 90%; margin: 20px; border-collapse: collapse; text-align: center;">
-        <thead>
-          <tr>
-            <th style="text-align: center; padding: 10px; border-bottom: 1px solid #333;">Date</th>
-            <th style="text-align: center; padding: 10px; border-bottom: 1px solid #333;">Category
-            </th>
-            <th style="text-align: center; padding: 10px; border-bottom: 1px solid #333;">Amount</th>
-          </tr>
-        </thead>
-        <tbody id="expenseTableBody"></tbody>
-      </table>
+                        <div class="cards">
+                          <div class="card" id="totalCard">
+                            <h2>Total Spend</h2>
+                          </div>
+                          <div class="card" id="avgCard">
+                            <h2>Average Expense</h2>
+                          </div>
+                        </div>
 
-      <div class="cards" id="categoryCards"></div>
+                        <h2>Expense History</h2>
+                        <table id="expenseTable"
+                          style="width: 90%; margin: 20px; border-collapse: collapse; text-align: center;">
+                          <thead>
+                            <tr>
+                              <th style="text-align: center; padding: 10px; border-bottom: 1px solid #333;">Date</th>
+                              <th style="text-align: center; padding: 10px; border-bottom: 1px solid #333;">Category
+                              </th>
+                              <th style="text-align: center; padding: 10px; border-bottom: 1px solid #333;">Amount</th>
+                            </tr>
+                          </thead>
+                          <tbody id="expenseTableBody"></tbody>
+                        </table>
+
+                        <div class="cards" id="categoryCards"></div>
 
 
       <div class="glass-container">
-        ...
-      </div>
+    ...
+</div>
 
-      <div style="margin-top:20px;">
-        <canvas id="expenseChart"></canvas>
-      </div>
-      <div class="glass-container">
-        <h2>AI-Money Mentor's Insights</h2>
-        <br>
-        <div id="insights">
-          <div class="gold-loader"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ── NET WORTH TRACKER ────────────────────── -->
-    <div id="networth" class="page">
-      <div class="page-title">💎 Net <span>Worth Tracker</span></div>
-
-      <div class="stats-row" style="margin-bottom: 20px;">
-        <div class="stat-card">
-          <div class="stat-label">Total Assets</div>
-          <div class="stat-val" id="nwAssets">₹0</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Total Liabilities</div>
-          <div class="stat-val" id="nwLiabilities" style="color: var(--red);">₹0</div>
-        </div>
-        <div class="stat-card"
-          style="grid-column: span 2; background: rgba(212, 168, 67, 0.1); border-color: var(--gold);">
-          <div class="stat-label" style="color: var(--gold);">Current Net Worth</div>
-          <div class="stat-val" id="nwTotal" style="font-size: 32px;">₹0</div>
-        </div>
-      </div>
-
-      <div class="dash-grid">
-        <!-- ASSETS -->
-        <div class="card">
-          <div class="card-title">Assets (What you own)</div>
-          <div class="chat-input-row" style="margin-bottom: 15px;">
-            <input type="text" id="assetName" placeholder="Asset name (e.g. HDFC Savings)">
-            <input type="number" required min="0" id="assetAmt" placeholder="Amount (₹)">
-            <button class="btn btn-gold" onclick="addNWItem('asset')">Add</button>
-          </div>
-          <table style="width: 100%; border-collapse: collapse; font-size: 13px; color: var(--text);">
-            <thead style="color: var(--muted); text-align: left; border-bottom: 1px solid var(--border);">
-              <tr>
-                <th style="padding: 8px;">Asset</th>
-                <th style="padding: 8px; text-align: right;">Value</th>
-                <th style="padding: 8px; text-align: center;">Action</th>
-              </tr>
-            </thead>
-            <tbody id="assetList"></tbody>
-          </table>
-        </div>
-
-        <!-- LIABILITIES -->
-        <div class="card">
-          <div class="card-title">Liabilities (What you owe)</div>
-          <div class="chat-input-row" style="margin-bottom: 15px;">
-            <input type="text" id="liabName" placeholder="Liability name (e.g. Home Loan)">
-            <input type="number" required min="0" id="liabAmt" placeholder="Amount (₹)">
-            <button class="btn btn-gold" onclick="addNWItem('liability')">Add</button>
-          </div>
-          <table style="width: 100%; border-collapse: collapse; font-size: 13px; color: var(--text);">
-            <thead style="color: var(--muted); text-align: left; border-bottom: 1px solid var(--border);">
-              <tr>
-                <th style="padding: 8px;">Liability</th>
-                <th style="padding: 8px; text-align: right;">Amount</th>
-                <th style="padding: 8px; text-align: center;">Action</th>
-              </tr>
-            </thead>
-            <tbody id="liabList"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
+<div style="margin-top:20px;">
     <canvas id="expenseChart"></canvas>
+</div>
+                        <div class="glass-container">
+                          <h2>AI-Money Mentor's Insights</h2>
+                          <br>
+                          <div id="insights">
+                            <div class="gold-loader"></div>
+                          </div>
+                        </div>
+                      </div>
 
-  </div>
+                      <!-- ── NET WORTH TRACKER ────────────────────── -->
+                      <div id="networth" class="page">
+                        <div class="page-title">💎 Net <span>Worth Tracker</span></div>
 
-  </div><!-- /main -->
+                        <div class="stats-row" style="margin-bottom: 20px;">
+                          <div class="stat-card">
+                            <div class="stat-label">Total Assets</div>
+                            <div class="stat-val" id="nwAssets">₹0</div>
+                          </div>
+                          <div class="stat-card">
+                            <div class="stat-label">Total Liabilities</div>
+                            <div class="stat-val" id="nwLiabilities" style="color: var(--red);">₹0</div>
+                          </div>
+                          <div class="stat-card"
+                            style="grid-column: span 2; background: rgba(212, 168, 67, 0.1); border-color: var(--gold);">
+                            <div class="stat-label" style="color: var(--gold);">Current Net Worth</div>
+                            <div class="stat-val" id="nwTotal" style="font-size: 32px;">₹0</div>
+                          </div>
+                        </div>
 
+                        <div class="dash-grid">
+                          <!-- ASSETS -->
+                          <div class="card">
+                            <div class="card-title">Assets (What you own)</div>
+                            <div class="chat-input-row" style="margin-bottom: 15px;">
+                              <input type="text" id="assetName" placeholder="Asset name (e.g. HDFC Savings)">
+                              <input type="number" required min="0" id="assetAmt" placeholder="Amount (₹)">
+                              <button class="btn btn-gold" onclick="addNWItem('asset')">Add</button>
+                            </div>
+                            <table style="width: 100%; border-collapse: collapse; font-size: 13px; color: var(--text);">
+                              <thead
+                                style="color: var(--muted); text-align: left; border-bottom: 1px solid var(--border);">
+                                <tr>
+                                  <th style="padding: 8px;">Asset</th>
+                                  <th style="padding: 8px; text-align: right;">Value</th>
+                                  <th style="padding: 8px; text-align: center;">Action</th>
+                                </tr>
+                              </thead>
+                              <tbody id="assetList"></tbody>
+                            </table>
+                          </div>
+
+                          <!-- LIABILITIES -->
+                          <div class="card">
+                            <div class="card-title">Liabilities (What you owe)</div>
+                            <div class="chat-input-row" style="margin-bottom: 15px;">
+                              <input type="text" id="liabName" placeholder="Liability name (e.g. Home Loan)">
+                              <input type="number" required min="0" id="liabAmt" placeholder="Amount (₹)">
+                              <button class="btn btn-gold" onclick="addNWItem('liability')">Add</button>
+                            </div>
+                            <table style="width: 100%; border-collapse: collapse; font-size: 13px; color: var(--text);">
+                              <thead
+                                style="color: var(--muted); text-align: left; border-bottom: 1px solid var(--border);">
+                                <tr>
+                                  <th style="padding: 8px;">Liability</th>
+                                  <th style="padding: 8px; text-align: right;">Amount</th>
+                                  <th style="padding: 8px; text-align: center;">Action</th>
+                                </tr>
+                              </thead>
+                              <tbody id="liabList"></tbody>
+                            </table>
+                          </div>
+                        </div>
+                      </div>
+
+                      <canvas id="expenseChart"></canvas>
+
+</div>
+
+</div><!-- /main -->
+    
   <!-- Loading charts -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-  <!-- Scroll to Top Button -->
-  <button id="scrollTopBtn" onclick="document.querySelector('.main').scrollTo({top: 0, behavior: 'smooth'})"
-    style="display:none; position:fixed; bottom:30px; right:30px; z-index:100; border-radius:50%; width:44px; height:44px; font-size:20px; align-items:center; justify-content:center;"
-    class="btn btn-gold">↑</button>
+                    <!-- Scroll to Top Button -->
+                    <button id="scrollTopBtn" onclick="document.querySelector('.main').scrollTo({top: 0, behavior: 'smooth'})" style="display:none; position:fixed; bottom:30px; right:30px; z-index:100; border-radius:50%; width:44px; height:44px; font-size:20px; align-items:center; justify-content:center;" class="btn btn-gold">↑</button>
 
-  </div><!-- /main -->
+                    </div><!-- /main -->
 
-  <!-- Loading charts -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                    <!-- Loading charts -->
+                    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-  <script>
-    // Scroll to Top visibility toggle
-    document.querySelector('.main').addEventListener('scroll', function () {
-      const btn = document.getElementById('scrollTopBtn');
-      if (this.scrollTop > 300) {
-        btn.style.display = 'flex';
-      } else {
-        btn.style.display = 'none';
-      }
-    });
+                    <script>
+                    // Scroll to Top visibility toggle
+                    document.querySelector('.main').addEventListener('scroll', function() {
+                      const btn = document.getElementById('scrollTopBtn');
+                      if (this.scrollTop > 300) {
+                        btn.style.display = 'flex';
+                      } else {
+                        btn.style.display = 'none';
+                      }
+                    });
 
-    /* ══════════════════════════════════════════════
-       GLOBAL CHART INSTANCES & HELPERS
-    ══════════════════════════════════════════════ */
-    let sipChartInstance = null;
-    let stockChartInstance = null;
-    let scoreChartInstance = null;
-    let portfolioChartInstance = null;
+/* ══════════════════════════════════════════════
+   GLOBAL CHART INSTANCES & HELPERS
+══════════════════════════════════════════════ */
+let sipChartInstance = null;
+let stockChartInstance = null;
+let scoreChartInstance = null;
+let portfolioChartInstance = null;
 
-    function initPortfolioChart() {
-      const canvasEl = document.getElementById('portfolioChart');
-      if (!canvasEl) return;
-      const ctx = canvasEl.getContext('2d');
-      portfolioChartInstance = new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-          labels: ['Equity', 'ELSS', 'Debt', 'Insurance'],
-          datasets: [{
-            data: [40, 27, 18, 15],
-            backgroundColor: ['#d4a843', '#14c8bf', '#5a6a82', '#2ecc8a'],
-            borderWidth: 0
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { display: false }
-          },
-          cutout: '70%'
-        }
-      });
+function initPortfolioChart() {
+  const canvasEl = document.getElementById('portfolioChart');
+  if (!canvasEl) return;
+
+  const ctx = canvasEl.getContext('2d');
+
+  portfolioChartInstance = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Equity', 'ELSS', 'Debt', 'Insurance'],
+      datasets: [{
+        data: [40, 27, 18, 15],
+        backgroundColor: ['#d4a843', '#14c8bf', '#5a6a82', '#2ecc8a'],
+        borderWidth: 0
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: {
+        legend: { display: false }
+      },
+      cutout: '70%'
     }
+  });
+}
 
-    window.addEventListener('DOMContentLoaded', () => {
-      initPortfolioChart();
-    });
+                      function initPortfolioChart() {
+                        const canvasEl = document.getElementById('portfolioChart');
+                        if (!canvasEl) return;
+                        const ctx = canvasEl.getContext('2d');
+                        portfolioChartInstance = new Chart(ctx, {
+                          type: 'doughnut',
+                          data: {
+                            labels: ['Equity', 'ELSS', 'Debt', 'Insurance'],
+                            datasets: [{
+                              data: [40, 27, 18, 15],
+                              backgroundColor: ['#d4a843', '#14c8bf', '#5a6a82', '#2ecc8a'],
+                              borderWidth: 0
+                            }]
+                          },
+                          options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                              legend: { display: false }
+                            },
+                            cutout: '70%'
+                          }
+                        });
+                      }
 
-    /* ── NAVIGATION ──────────────────────────────── */
-    function toggleMobileMenu() {
-      const sidebar = document.querySelector('.sidebar');
-      const overlay = document.querySelector('.menu-overlay');
-      if (sidebar && overlay) {
-        sidebar.classList.toggle('open');
-        overlay.classList.toggle('active');
-      }
-    }
+                      window.addEventListener('DOMContentLoaded', () => {
+                        initPortfolioChart();
+                      });
 
-    function showPage(name, e) {
-      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+                      /* ── NAVIGATION ──────────────────────────────── */
+                      function toggleMobileMenu() {
+                        const sidebar = document.querySelector('.sidebar');
+                        const overlay = document.querySelector('.menu-overlay');
+                        if (sidebar && overlay) {
+                          sidebar.classList.toggle('open');
+                          overlay.classList.toggle('active');
+                        }
+                      }
 
-      const targetPage = document.getElementById(name);
-      if (targetPage) targetPage.classList.add('active');
+                      function showPage(name, e) {
+                        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+                        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
 
-      document.querySelector(`.nav-item[data-page="${name}"]`)?.classList.add('active');
+                        const targetPage = document.getElementById(name);
+                        if (targetPage) targetPage.classList.add('active');
 
-      // Automatically close drawer menu on mobile
-      const sidebar = document.querySelector('.sidebar');
-      const overlay = document.querySelector('.menu-overlay');
-      if (sidebar && sidebar.classList.contains('open')) {
-        sidebar.classList.remove('open');
-        overlay.classList.remove('active');
-      }
-    }
+                        document.querySelector(`.nav-item[data-page="${name}"]`)?.classList.add('active');
 
-
-    // Nav-item click listeners — script is at bottom of body, DOM is fully ready
-    document.querySelectorAll('.nav-item').forEach(el => {
-      el.addEventListener('click', function (e) {
-        showPage(this.dataset.page, e);
-      });
-    });
-
-    // Mobile overlay dismiss
-    const overlay = document.querySelector('.menu-overlay');
-    if (overlay) {
-      overlay.addEventListener('click', () => {
-        const sidebar = document.querySelector('.sidebar');
-        if (sidebar) sidebar.classList.remove('open');
-        overlay.classList.remove('active');
-      });
-    }
-
-    /* ══════════════════════════════════════════════
-       HELPERS
-    ══════════════════════════════════════════════ */
-    function setLoading(btnId, loading) {
-      const btn = document.getElementById(btnId);
-      if (!btn) return;
-      btn.disabled = loading;
-      btn.innerHTML = loading ? '<span class="spinner"></span>' : btn.dataset.label || btn.innerHTML;
-      if (!btn.dataset.label && !loading) return;
-      if (!btn.dataset.label) btn.dataset.label = btn.innerHTML;
-      if (!loading) btn.innerHTML = btn.dataset.label;
-    }
-
-    function showResult(id, html) {
-      const el = document.getElementById(id);
-      el.innerHTML = html;
-      el.classList.add('visible');
-    }
-
-    async function apiFetch(url, body, isForm = false) {
-      const opts = { method: 'POST' };
-      if (isForm) {
-        opts.body = body;
-      } else {
-        opts.headers = { 'Content-Type': 'application/json' };
-        opts.body = JSON.stringify(body);
-      }
-      const res = await fetch(url, opts);
-      return res.json();
-    }
-
-    function fmtNum(n) {
-      return new Intl.NumberFormat('en-IN').format(Math.round(n));
-    }
+                        // Automatically close drawer menu on mobile
+                        const sidebar = document.querySelector('.sidebar');
+                        const overlay = document.querySelector('.menu-overlay');
+                        if (sidebar && sidebar.classList.contains('open')) {
+                          sidebar.classList.remove('open');
+                          overlay.classList.remove('active');
+                        }
+                      }
 
     /* ══════════════════════════════════════════════
        DASHBOARD CHAT
     ══════════════════════════════════════════════ */
+
     function appendMsg(boxId, role, text) {
       const box = document.getElementById(boxId);
-      const dashWelcome = document.getElementById('chatWelcome');
-      const chatWelcome = document.getElementById('chatPageWelcome');
-      if (dashWelcome && !dashWelcome.classList.contains('hidden')) {
-        dashWelcome.classList.add('hidden');
-      }
-      if (chatWelcome && !chatWelcome.classList.contains('hidden')) {
-        chatWelcome.classList.add('hidden');
-      }
       const d = document.createElement('div');
       d.className = `msg ${role}`;
       d.innerHTML = `<div class="sender">${role === 'user' ? 'You' : 'AI Advisor'}</div>${text}`;
       box.appendChild(d);
       box.scrollTop = box.scrollHeight;
     }
+async function dashSend() {
+  const inp = document.getElementById('dashMsg');
+  const msg = inp.value.trim();
+  if (!msg) return;
 
-    async function dashSend() {
-      const inp = document.getElementById('dashMsg');
-      const msg = inp.value.trim();
-      if (!msg) return;
-      inp.value = '';
-      appendMsg('dashChat', 'user', msg);
-      setLoading('dashBtn', true);
-      try {
-        const data = await apiFetch('/chat', { message: msg });
-        appendMsg('dashChat', 'bot', data.reply || data.error || 'No response');
-      } catch (e) {
-        appendMsg('dashChat', 'bot', '⚠ Could not reach server. Is Flask running?');
-      }
-      setLoading('dashBtn', false);
+  inp.value = '';
+  appendMsg('dashChat', 'user', msg);
+
+  setLoading('dashBtn', true);
+
+  try {
+    const data = await apiFetch('/chat', { message: msg });
+
+    if (data.reply) {
+      appendMsg('dashChat', 'bot', data.reply);
+    } else if (data.error) {
+      appendMsg(
+        'dashChat',
+        'bot',
+        "⚠ " + (data.error.message || "AI error occurred")
+      );
+    } else {
+      appendMsg('dashChat', 'bot', "⚠ No response from server");
     }
+
+  } catch (e) {
+    appendMsg('dashChat', 'bot', '⚠ Could not reach server. Is Flask running?');
+  }
+
+  setLoading('dashBtn', false);
+}
 
     function dashQuick(text) {
       document.getElementById('dashMsg').value = text;
       dashSend();
     }
+                      document.querySelectorAll('.nav-item').forEach(el => {
+                        el.addEventListener('click', function (e) {
+                          showPage(this.dataset.page, e);
+                        });
+                      });
 
-    /* ══════════════════════════════════════════════
-        FULL CHAT PAGE
-     ══════════════════════════════════════════════ */
-    // Stores conversation history as {role, content} pairs for context
-    const chatHistory = [];
+                      document.addEventListener('DOMContentLoaded', () => {
+                        const overlay = document.querySelector('.menu-overlay');
+                        if (overlay) {
+                          overlay.addEventListener('click', () => {
+                            const sidebar = document.querySelector('.sidebar');
+                            if (sidebar) sidebar.classList.remove('open');
+                            overlay.classList.remove('active');
+                          });
+                        }
+                      });
 
-    async function chatSend() {
-      const inp = document.getElementById('chatInput');
-      const msg = inp.value.trim();
-      if (!msg) return;
-      inp.value = '';
-      appendMsg('chatMessages', 'user', msg);
-      setLoading('chatBtn', true);
-      try {
-        const data = await apiFetch('/chat', { message: msg, history: chatHistory });
-        const reply = data.reply || data.error;
-        // Save both turns to history so context is passed on next message
-        chatHistory.push({ role: 'user', content: msg });
-        chatHistory.push({ role: 'assistant', content: reply });
-        appendMsg('chatMessages', 'bot', reply);
-      } catch (e) {
-        appendMsg('chatMessages', 'bot', '⚠ Could not reach server.');
-      }
-      setLoading('chatBtn', false);
-    }
+                      /* ══════════════════════════════════════════════
+                         HELPERS
+                      ══════════════════════════════════════════════ */
+                      function setLoading(btnId, loading) {
+                        const btn = document.getElementById(btnId);
+                        if (!btn) return;
+                        btn.disabled = loading;
+                        btn.innerHTML = loading ? '<span class="spinner"></span>' : btn.dataset.label || btn.innerHTML;
+                        if (!btn.dataset.label && !loading) return;
+                        if (!btn.dataset.label) btn.dataset.label = btn.innerHTML;
+                        if (!loading) btn.innerHTML = btn.dataset.label;
+                      }
 
-    function chatQuick(text) {
-      document.getElementById('chatInput').value = text;
-      chatSend();
-    }
+                      function showResult(id, html) {
+                        const el = document.getElementById(id);
+                        el.innerHTML = html;
+                        el.classList.add('visible');
+                      }
 
-    function clearChat() {
-      chatHistory.length = 0;
-      const box = document.getElementById('chatMessages');
-      box.innerHTML = '';
-      const welcome = document.createElement('div');
-      welcome.id = 'chatPageWelcome';
-      welcome.className = 'chat-welcome';
-      welcome.innerHTML = `
-                          <div class="chat-welcome-icon">🎯</div>
-                          <h3>Financial Guidance at Your Fingertips</h3>
-                          <p>Ask questions about investments, tax planning, portfolio strategy, SIPs, risk assessment, or any financial topic.</p>
-                          <div class="chat-features">
-                            <div class="chat-feature-item" onclick="chatQuick('How should I diversify my portfolio?')">📊 Portfolio</div>
-                            <div class="chat-feature-item" onclick="chatQuick('Best tax saving strategies for 2024-25')">💸 Tax Strategy</div>
-                            <div class="chat-feature-item" onclick="chatQuick('Should I invest in mutual funds or stocks?')">📈 Investments</div>
-                            <div class="chat-feature-item" onclick="chatQuick('How much emergency fund do I need?')">🛡️ Emergency Fund</div>
-                          </div>`;
-      box.appendChild(welcome);
-    }
+                      async function apiFetch(url, body, isForm = false) {
+                        const opts = { method: 'POST' };
+                        if (isForm) {
+                          opts.body = body;
+                        } else {
+                          opts.headers = { 'Content-Type': 'application/json' };
+                          opts.body = JSON.stringify(body);
+                        }
+                        const res = await fetch(url, opts);
+                        return res.json();
+                      }
 
-    /* ══════════════════════════════════════════════
-       MONEY SCORE → POST /money-score
-    ══════════════════════════════════════════════ */
-    async function calcScore() {
-      const income = document.getElementById('s_income').value;
-      const expenses = document.getElementById('s_expenses').value;
-      const savings = document.getElementById('s_savings').value;
-      const invest = document.getElementById('s_invest').value;
-      const debt = document.getElementById('s_debt').value;
-      const emergency = document.getElementById('s_emergency').value;
+                      function fmtNum(n) {
+                        return new Intl.NumberFormat('en-IN').format(Math.round(n));
+                      }
 
-      if (!income || !expenses || !savings || !invest || !debt || !emergency) {
-        showResult('scoreResult', '⚠ Please fill in all fields.');
-        return;
-      }
+                      /* ══════════════════════════════════════════════
+                         DASHBOARD CHAT
+                      ══════════════════════════════════════════════ */
+                      function appendMsg(boxId, role, text) {
+                        const box = document.getElementById(boxId);
+                        const dashWelcome = document.getElementById('chatWelcome');
+                        const chatWelcome = document.getElementById('chatPageWelcome');
+                        if (dashWelcome && !dashWelcome.classList.contains('hidden')) {
+                          dashWelcome.classList.add('hidden');
+                        }
+                        if (chatWelcome && !chatWelcome.classList.contains('hidden')) {
+                          chatWelcome.classList.add('hidden');
+                        }
+                        const d = document.createElement('div');
+                        d.className = `msg ${role}`;
+                        d.innerHTML = `<div class="sender">${role === 'user' ? 'You' : 'AI Advisor'}</div>${text}`;
+                        box.appendChild(d);
+                        box.scrollTop = box.scrollHeight;
+                      }
 
-      setLoading('scoreBtn', true);
-      try {
-        const data = await apiFetch('/money-score', {
-          income: parseFloat(income),
-          expenses: parseFloat(expenses),
-          savings: parseFloat(savings),
-          investments: parseFloat(invest),
-          debt: parseFloat(debt),
-          emergency: parseFloat(emergency)
-        });
+                      async function dashSend() {
+                        const inp = document.getElementById('dashMsg');
+                        const msg = inp.value.trim();
+                        if (!msg) return;
+                        inp.value = '';
+                        appendMsg('dashChat', 'user', msg);
+                        setLoading('dashBtn', true);
+                        try {
+                          const data = await apiFetch('/chat', { message: msg });
+                          appendMsg('dashChat', 'bot', data.reply || data.error || 'No response');
+                        } catch (e) {
+                          appendMsg('dashChat', 'bot', '⚠ Could not reach server. Is Flask running?');
+                        }
+                        setLoading('dashBtn', false);
+                      }
 
-        if (data.error) {
-          showResult('scoreResult', `⚠ ${data.error}`);
-        } else {
-          const color = data.score >= 80 ? '#2ecc8a' : data.score >= 60 ? '#d4a843' : '#e05252';
-          const circumference = 2 * Math.PI * 54;
-          const offset = circumference - (data.score / 100) * circumference;
-          showResult('scoreResult', `
+                      function dashQuick(text) {
+                        document.getElementById('dashMsg').value = text;
+                        dashSend();
+                      }
+
+                      /* ══════════════════════════════════════════════
+                         FULL CHAT PAGE
+                      ══════════════════════════════════════════════ */
+                      async function chatSend() {
+                        const inp = document.getElementById('chatInput');
+                        const msg = inp.value.trim();
+                        if (!msg) return;
+                        inp.value = '';
+                        appendMsg('chatMessages', 'user', msg);
+                        setLoading('chatBtn', true);
+                        try {
+                          const data = await apiFetch('/chat', { message: msg });
+                          appendMsg('chatMessages', 'bot', data.reply || data.error);
+                        } catch (e) {
+                          appendMsg('chatMessages', 'bot', '⚠ Could not reach server.');
+                        }
+                        setLoading('chatBtn', false);
+                      }
+
+                      function chatQuick(text) {
+                        document.getElementById('chatInput').value = text;
+                        chatSend();
+                      }
+
+                      /* ══════════════════════════════════════════════
+                         MONEY SCORE → POST /money-score
+                      ══════════════════════════════════════════════ */
+                      async function calcScore() {
+                        const income = document.getElementById('s_income').value;
+                        const expenses = document.getElementById('s_expenses').value;
+                        const savings = document.getElementById('s_savings').value;
+                        const invest = document.getElementById('s_invest').value;
+                        const debt = document.getElementById('s_debt').value;
+                        const emergency = document.getElementById('s_emergency').value;
+
+                        if (!income || !expenses || !savings || !invest || !debt || !emergency) {
+                          showResult('scoreResult', '⚠ Please fill in all fields.');
+                          return;
+                        }
+
+                        setLoading('scoreBtn', true);
+                        try {
+                          const data = await apiFetch('/money-score', {
+                            income: parseFloat(income),
+                            expenses: parseFloat(expenses),
+                            savings: parseFloat(savings),
+                            investments: parseFloat(invest),
+                            debt: parseFloat(debt),
+                            emergency: parseFloat(emergency)
+                          });
+
+                          if (data.error) {
+                            showResult('scoreResult', `⚠ ${data.error}`);
+                          } else {
+                            const color = data.score >= 80 ? '#2ecc8a' : data.score >= 60 ? '#d4a843' : '#e05252';
+                            const circumference = 2 * Math.PI * 54;
+                            const offset = circumference - (data.score / 100) * circumference;
+                            showResult('scoreResult', `
             <div style="text-align:center;margin-bottom:10px">
               <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:12px">Your Money Score</div>
               <div class="score-container">
@@ -2264,87 +2341,87 @@
             </div>
           `);
 
-          // Compute sub-scores locally for visual rendering
-          const savingsRateVal = parseFloat(savings) / parseFloat(income);
-          const savingsScore = savingsRateVal >= 0.3 ? 30 : savingsRateVal >= 0.2 ? 20 : 10;
+                            // Compute sub-scores locally for visual rendering
+                            const savingsRateVal = parseFloat(savings) / parseFloat(income);
+                            const savingsScore = savingsRateVal >= 0.3 ? 30 : savingsRateVal >= 0.2 ? 20 : 10;
 
-          const investRateVal = parseFloat(invest) / parseFloat(income);
-          const investScore = investRateVal >= 0.2 ? 25 : investRateVal >= 0.1 ? 15 : 5;
+                            const investRateVal = parseFloat(invest) / parseFloat(income);
+                            const investScore = investRateVal >= 0.2 ? 25 : investRateVal >= 0.1 ? 15 : 5;
 
-          const debtRatioVal = parseFloat(debt) / parseFloat(income);
-          const debtScore = debtRatioVal <= 0.2 ? 25 : debtRatioVal <= 0.4 ? 15 : 5;
+                            const debtRatioVal = parseFloat(debt) / parseFloat(income);
+                            const debtScore = debtRatioVal <= 0.2 ? 25 : debtRatioVal <= 0.4 ? 15 : 5;
 
-          const monthsCoverVal = parseFloat(emergency) / parseFloat(expenses);
-          const emergencyScore = monthsCoverVal >= 6 ? 20 : monthsCoverVal >= 3 ? 10 : 5;
+                            const monthsCoverVal = parseFloat(emergency) / parseFloat(expenses);
+                            const emergencyScore = monthsCoverVal >= 6 ? 20 : monthsCoverVal >= 3 ? 10 : 5;
 
-          // Draw Horizontal Bar Chart
-          if (scoreChartInstance) scoreChartInstance.destroy();
-          const scoreCtx = document.getElementById('scoreChart').getContext('2d');
-          scoreChartInstance = new Chart(scoreCtx, {
-            type: 'bar',
-            data: {
-              labels: ['Savings Rate', 'Investment Rate', 'Debt Ratio', 'Emergency Fund'],
-              datasets: [{
-                label: 'Your Score',
-                data: [savingsScore, investScore, debtScore, emergencyScore],
-                backgroundColor: ['#d4a843', '#14c8bf', '#5a6a82', '#2ecc8a'],
-                borderRadius: 6,
-                barThickness: 16
-              }]
-            },
-            options: {
-              indexAxis: 'y',
-              responsive: true,
-              maintainAspectRatio: false,
-              plugins: {
-                legend: { display: false }
-              },
-              scales: {
-                x: {
-                  grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                  ticks: { color: '#5a6a82' },
-                  max: 30
-                },
-                y: {
-                  grid: { display: false },
-                  ticks: { color: '#eef0f5' }
-                }
-              }
-            }
-          });
-        }
-      } catch (e) {
-        showResult('scoreResult', '⚠ Could not reach server.');
-      }
-      setLoading('scoreBtn', false);
-    }
+                            // Draw Horizontal Bar Chart
+                            if (scoreChartInstance) scoreChartInstance.destroy();
+                            const scoreCtx = document.getElementById('scoreChart').getContext('2d');
+                            scoreChartInstance = new Chart(scoreCtx, {
+                              type: 'bar',
+                              data: {
+                                labels: ['Savings Rate', 'Investment Rate', 'Debt Ratio', 'Emergency Fund'],
+                                datasets: [{
+                                  label: 'Your Score',
+                                  data: [savingsScore, investScore, debtScore, emergencyScore],
+                                  backgroundColor: ['#d4a843', '#14c8bf', '#5a6a82', '#2ecc8a'],
+                                  borderRadius: 6,
+                                  barThickness: 16
+                                }]
+                              },
+                              options: {
+                                indexAxis: 'y',
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                  legend: { display: false }
+                                },
+                                scales: {
+                                  x: {
+                                    grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                                    ticks: { color: '#5a6a82' },
+                                    max: 30
+                                  },
+                                  y: {
+                                    grid: { display: false },
+                                    ticks: { color: '#eef0f5' }
+                                  }
+                                }
+                              }
+                            });
+                          }
+                        } catch (e) {
+                          showResult('scoreResult', '⚠ Could not reach server.');
+                        }
+                        setLoading('scoreBtn', false);
+                      }
 
-    /* ══════════════════════════════════════════════
-       SIP → POST /sip
-    ══════════════════════════════════════════════ */
-    async function calcSIP() {
-      const monthly = document.getElementById('sip_monthly').value;
-      const rate = document.getElementById('sip_rate').value;
-      const years = document.getElementById('sip_years').value;
+                      /* ══════════════════════════════════════════════
+                         SIP → POST /sip
+                      ══════════════════════════════════════════════ */
+                      async function calcSIP() {
+                        const monthly = document.getElementById('sip_monthly').value;
+                        const rate = document.getElementById('sip_rate').value;
+                        const years = document.getElementById('sip_years').value;
 
-      if (!monthly || !rate || !years) {
-        showResult('sipResult', '⚠ Please fill all fields.');
-        return;
-      }
+                        if (!monthly || !rate || !years) {
+                          showResult('sipResult', '⚠ Please fill all fields.');
+                          return;
+                        }
 
-      setLoading('sipBtn', true);
-      try {
-        const data = await apiFetch('/sip', {
-          monthly: parseFloat(monthly),
-          rate: parseFloat(rate),
-          years: parseInt(years)
-        });
+                        setLoading('sipBtn', true);
+                        try {
+                          const data = await apiFetch('/sip', {
+                            monthly: parseFloat(monthly),
+                            rate: parseFloat(rate),
+                            years: parseInt(years)
+                          });
 
-        if (data.error) {
-          showResult('sipResult', `⚠ ${data.error}`);
-        } else {
-          const fv = data.future_value;
-          showResult('sipResult', `
+                          if (data.error) {
+                            showResult('sipResult', `⚠ ${data.error}`);
+                          } else {
+                            const fv = data.future_value;
+                            showResult('sipResult', `
             <div style="font-size:11px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.06em">Estimated Future Value</div>
             <div class="result-big">₹${fmtNum(fv)}</div>
             <div style="font-size:12px;color:var(--muted);margin-top:6px">
@@ -2353,109 +2430,109 @@
             </div>
           `);
 
-          // Compute compounding points
-          const monthlyFloat = parseFloat(monthly);
-          const rateFloat = parseFloat(rate);
-          const yearsInt = parseInt(years);
+                            // Compute compounding points
+                            const monthlyFloat = parseFloat(monthly);
+                            const rateFloat = parseFloat(rate);
+                            const yearsInt = parseInt(years);
 
-          const labels = [];
-          const investedData = [];
-          const totalData = [];
+                            const labels = [];
+                            const investedData = [];
+                            const totalData = [];
 
-          const r = rateFloat / 100 / 12;
-          for (let y = 1; y <= yearsInt; y++) {
-            const n = y * 12;
-            const fv_point = monthlyFloat * ((Math.pow(1 + r, n) - 1) / r) * (1 + r);
-            const invested_point = monthlyFloat * n;
-            labels.push(`Year ${y}`);
-            investedData.push(Math.round(invested_point));
-            totalData.push(Math.round(fv_point));
-          }
+                            const r = rateFloat / 100 / 12;
+                            for (let y = 1; y <= yearsInt; y++) {
+                              const n = y * 12;
+                              const fv_point = monthlyFloat * ((Math.pow(1 + r, n) - 1) / r) * (1 + r);
+                              const invested_point = monthlyFloat * n;
+                              labels.push(`Year ${y}`);
+                              investedData.push(Math.round(invested_point));
+                              totalData.push(Math.round(fv_point));
+                            }
 
-          // Draw compounding line chart
-          if (sipChartInstance) sipChartInstance.destroy();
-          const sipCtx = document.getElementById('sipChart').getContext('2d');
-          sipChartInstance = new Chart(sipCtx, {
-            type: 'line',
-            data: {
-              labels: labels,
-              datasets: [
-                {
-                  label: 'Est. Wealth Value',
-                  data: totalData,
-                  borderColor: '#d4a843',
-                  backgroundColor: 'rgba(212, 168, 67, 0.1)',
-                  fill: true,
-                  tension: 0.3
-                },
-                {
-                  label: 'Amount Invested',
-                  data: investedData,
-                  borderColor: '#5a6a82',
-                  backgroundColor: 'transparent',
-                  borderDash: [5, 5],
-                  tension: 0.1
-                }
-              ]
-            },
-            options: {
-              responsive: true,
-              maintainAspectRatio: false,
-              plugins: {
-                legend: {
-                  labels: { color: '#eef0f5', font: { family: 'Instrument Sans' } }
-                }
-              },
-              scales: {
-                x: {
-                  grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                  ticks: { color: '#5a6a82' }
-                },
-                y: {
-                  grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                  ticks: {
-                    color: '#5a6a82',
-                    callback: function (value) { return '₹' + fmtNum(value); }
-                  }
-                }
-              }
-            }
-          });
-        }
-      } catch (e) {
-        showResult('sipResult', '⚠ Could not reach server.');
-      }
-      setLoading('sipBtn', false);
-    }
+                            // Draw compounding line chart
+                            if (sipChartInstance) sipChartInstance.destroy();
+                            const sipCtx = document.getElementById('sipChart').getContext('2d');
+                            sipChartInstance = new Chart(sipCtx, {
+                              type: 'line',
+                              data: {
+                                labels: labels,
+                                datasets: [
+                                  {
+                                    label: 'Est. Wealth Value',
+                                    data: totalData,
+                                    borderColor: '#d4a843',
+                                    backgroundColor: 'rgba(212, 168, 67, 0.1)',
+                                    fill: true,
+                                    tension: 0.3
+                                  },
+                                  {
+                                    label: 'Amount Invested',
+                                    data: investedData,
+                                    borderColor: '#5a6a82',
+                                    backgroundColor: 'transparent',
+                                    borderDash: [5, 5],
+                                    tension: 0.1
+                                  }
+                                ]
+                              },
+                              options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                  legend: {
+                                    labels: { color: '#eef0f5', font: { family: 'Instrument Sans' } }
+                                  }
+                                },
+                                scales: {
+                                  x: {
+                                    grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                                    ticks: { color: '#5a6a82' }
+                                  },
+                                  y: {
+                                    grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                                    ticks: {
+                                      color: '#5a6a82',
+                                      callback: function (value) { return '₹' + fmtNum(value); }
+                                    }
+                                  }
+                                }
+                              }
+                            });
+                          }
+                        } catch (e) {
+                          showResult('sipResult', '⚠ Could not reach server.');
+                        }
+                        setLoading('sipBtn', false);
+                      }
 
-    /* ══════════════════════════════════════════════
-       STOCK → POST /portfolio
-    ══════════════════════════════════════════════ */
-    async function checkStock() {
-      const sym = document.getElementById('stockSym').value.trim();
-      if (!sym) { showResult('stockResult', '⚠ Enter a stock symbol.'); return; }
+                      /* ══════════════════════════════════════════════
+                         STOCK → POST /portfolio
+                      ══════════════════════════════════════════════ */
+                      async function checkStock() {
+                        const sym = document.getElementById('stockSym').value.trim();
+                        if (!sym) { showResult('stockResult', '⚠ Enter a stock symbol.'); return; }
 
-      setLoading('stockBtn', true);
-      try {
-        const data = await apiFetch('/portfolio', { stock: sym });
+                        setLoading('stockBtn', true);
+                        try {
+                          const data = await apiFetch('/portfolio', { stock: sym });
 
-        if (data.error) {
-          showResult('stockResult', `⚠ ${data.error}`);
-        } else {
-          // Display Stock details table
-          const metrics = data.metrics || {};
-          const pe = metrics.pe_ratio !== "N/A" && metrics.pe_ratio !== null ? parseFloat(metrics.pe_ratio).toFixed(1) : "N/A";
-          let cap = metrics.market_cap;
-          if (cap && cap !== "N/A") {
-            if (cap >= 1e12) cap = (cap / 1e12).toFixed(2) + "T";
-            else if (cap >= 1e9) cap = (cap / 1e9).toFixed(2) + "B";
-            else if (cap >= 1e7) cap = (cap / 1e7).toFixed(2) + "Cr";
-            else if (cap >= 1e5) cap = (cap / 1e5).toFixed(2) + "L";
-          } else {
-            cap = "N/A";
-          }
+                          if (data.error) {
+                            showResult('stockResult', `⚠ ${data.error}`);
+                          } else {
+                            // Display Stock details table
+                            const metrics = data.metrics || {};
+                            const pe = metrics.pe_ratio !== "N/A" && metrics.pe_ratio !== null ? parseFloat(metrics.pe_ratio).toFixed(1) : "N/A";
+                            let cap = metrics.market_cap;
+                            if (cap && cap !== "N/A") {
+                              if (cap >= 1e12) cap = (cap / 1e12).toFixed(2) + "T";
+                              else if (cap >= 1e9) cap = (cap / 1e9).toFixed(2) + "B";
+                              else if (cap >= 1e7) cap = (cap / 1e7).toFixed(2) + "Cr";
+                              else if (cap >= 1e5) cap = (cap / 1e5).toFixed(2) + "L";
+                            } else {
+                              cap = "N/A";
+                            }
 
-          let html = `
+                            let html = `
             <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em">${data.symbol} — Last Price</div>
             <div class="result-big">₹${fmtNum(data.price)}</div>
             <div style="margin-top: 14px; display: flex; flex-direction: column; gap: 6px; font-size: 12px; border-top: 1px solid var(--border); padding-top: 10px;">
@@ -2465,75 +2542,75 @@
               <div style="display:flex; justify-content:space-between"><span>P/E Ratio</span><strong>${pe}</strong></div>
             </div>
           `;
-          showResult('stockResult', html);
+                            showResult('stockResult', html);
 
-          // Draw Stock history chart
-          const dates = data.history.map(h => h.date);
-          const prices = data.history.map(h => h.close);
+                            // Draw Stock history chart
+                            const dates = data.history.map(h => h.date);
+                            const prices = data.history.map(h => h.close);
 
-          if (stockChartInstance) stockChartInstance.destroy();
-          const stockCtx = document.getElementById('stockChart').getContext('2d');
-          stockChartInstance = new Chart(stockCtx, {
-            type: 'line',
-            data: {
-              labels: dates,
-              datasets: [{
-                label: data.symbol,
-                data: prices,
-                borderColor: '#14c8bf',
-                backgroundColor: 'rgba(20, 200, 191, 0.05)',
-                fill: true,
-                tension: 0.1,
-                pointRadius: 1,
-                borderWidth: 2
-              }]
-            },
-            options: {
-              responsive: true,
-              maintainAspectRatio: false,
-              plugins: {
-                legend: { display: false }
-              },
-              scales: {
-                x: {
-                  grid: { display: false },
-                  ticks: { color: '#5a6a82', maxTicksLimit: 6 }
-                },
-                y: {
-                  grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                  ticks: {
-                    color: '#5a6a82',
-                    callback: function (value) { return '₹' + fmtNum(value); }
-                  }
-                }
-              }
-            }
-          });
-        }
-      } catch (e) {
-        showResult('stockResult', '⚠ Could not reach server.');
-      }
-      setLoading('stockBtn', false);
-    }
+                            if (stockChartInstance) stockChartInstance.destroy();
+                            const stockCtx = document.getElementById('stockChart').getContext('2d');
+                            stockChartInstance = new Chart(stockCtx, {
+                              type: 'line',
+                              data: {
+                                labels: dates,
+                                datasets: [{
+                                  label: data.symbol,
+                                  data: prices,
+                                  borderColor: '#14c8bf',
+                                  backgroundColor: 'rgba(20, 200, 191, 0.05)',
+                                  fill: true,
+                                  tension: 0.1,
+                                  pointRadius: 1,
+                                  borderWidth: 2
+                                }]
+                              },
+                              options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                  legend: { display: false }
+                                },
+                                scales: {
+                                  x: {
+                                    grid: { display: false },
+                                    ticks: { color: '#5a6a82', maxTicksLimit: 6 }
+                                  },
+                                  y: {
+                                    grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                                    ticks: {
+                                      color: '#5a6a82',
+                                      callback: function (value) { return '₹' + fmtNum(value); }
+                                    }
+                                  }
+                                }
+                              }
+                            });
+                          }
+                        } catch (e) {
+                          showResult('stockResult', '⚠ Could not reach server.');
+                        }
+                        setLoading('stockBtn', false);
+                      }
 
-    /* ══════════════════════════════════════════════
-       TAX → POST /tax
-    ══════════════════════════════════════════════ */
-    async function calcTax() {
-      const income = document.getElementById('taxIncome').value;
-      if (!income) { showResult('taxResult', '⚠ Enter your annual income.'); return; }
+                      /* ══════════════════════════════════════════════
+                         TAX → POST /tax
+                      ══════════════════════════════════════════════ */
+                      async function calcTax() {
+                        const income = document.getElementById('taxIncome').value;
+                        if (!income) { showResult('taxResult', '⚠ Enter your annual income.'); return; }
 
-      setLoading('taxBtn', true);
-      try {
-        const data = await apiFetch('/tax', { income: parseFloat(income) });
+                        setLoading('taxBtn', true);
+                        try {
+                          const data = await apiFetch('/tax', { income: parseFloat(income) });
 
-        if (data.error) {
-          showResult('taxResult', `⚠ ${data.error}`);
-        } else {
-          const taxRes = data.tax;
-          document.getElementById('taxComparisonCard').style.display = 'block';
+                          if (data.error) {
+                            showResult('taxResult', `⚠ ${data.error}`);
+                          } else {
+                            const taxRes = data.tax;
+                            document.getElementById('taxComparisonCard').style.display = 'block';
 
-          let tableHtml = `
+                            let tableHtml = `
             <table style="width:100%; border-collapse:collapse; font-size:13px; text-align:left; color:var(--text);">
               <thead>
                 <tr style="border-bottom:1px solid var(--border); color:var(--muted); font-size:11px; text-transform:uppercase;">
@@ -2581,56 +2658,56 @@
               You will save <strong>₹${fmtNum(taxRes.savings)}</strong> annually with this regime.
             </div>
           `;
-          document.getElementById('taxComparisonResult').innerHTML = tableHtml;
+                            document.getElementById('taxComparisonResult').innerHTML = tableHtml;
 
-          showResult('taxResult', `
+                            showResult('taxResult', `
             <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em">Tax Payable (${taxRes.recommended})</div>
             <div class="result-big" style="color:#2ecc8a;">₹${fmtNum(taxRes.recommended === "New Regime" ? taxRes.new_regime.total_tax : taxRes.old_regime.total_tax)}</div>
             <div style="font-size:12px;color:var(--muted);margin-top:4px">Annual Savings: ₹${fmtNum(taxRes.savings)}</div>
           `);
-        }
-      } catch (e) {
-        showResult('taxResult', '⚠ Could not reach server.');
-      }
-      setLoading('taxBtn', false);
-    }
+                          }
+                        } catch (e) {
+                          showResult('taxResult', '⚠ Could not reach server.');
+                        }
+                        setLoading('taxBtn', false);
+                      }
 
-    /* ══════════════════════════════════════════════
-       PDF → POST /upload  (multipart)
-    ══════════════════════════════════════════════ */
-    async function uploadPDF() {
-      const file = document.getElementById('pdfFile').files[0];
-      if (!file) { showResult('pdfResult', '⚠ Please select a PDF file.'); return; }
+                      /* ══════════════════════════════════════════════
+                         PDF → POST /upload  (multipart)
+                      ══════════════════════════════════════════════ */
+                      async function uploadPDF() {
+                        const file = document.getElementById('pdfFile').files[0];
+                        if (!file) { showResult('pdfResult', '⚠ Please select a PDF file.'); return; }
 
-      const form = new FormData();
-      form.append('file', file);
+                        const form = new FormData();
+                        form.append('file', file);
 
-      setLoading('pdfBtn', true);
-      try {
-        const data = await apiFetch('/upload', form, true);
-        if (data.error) {
-          showResult('pdfResult', `⚠ ${data.error}`);
-        } else {
-          // Parse structured document data
-          if (data.data && typeof data.data === 'object') {
-            const docData = data.data;
-            const docType = docData.document_type || "Unknown Document";
-            const emp = docData.employer_organization || "N/A";
-            const gross = docData.gross_income ? "₹" + fmtNum(docData.gross_income) : "N/A";
-            const tds = docData.tax_deducted_tds ? "₹" + fmtNum(docData.tax_deducted_tds) : "N/A";
-            const score = docData.confidence_score ? (docData.confidence_score * 100).toFixed(0) + "%" : "N/A";
-            const summary = docData.summary_findings || "No summary available.";
+                        setLoading('pdfBtn', true);
+                        try {
+                          const data = await apiFetch('/upload', form, true);
+                          if (data.error) {
+                            showResult('pdfResult', `⚠ ${data.error}`);
+                          } else {
+                            // Parse structured document data
+                            if (data.data && typeof data.data === 'object') {
+                              const docData = data.data;
+                              const docType = docData.document_type || "Unknown Document";
+                              const emp = docData.employer_organization || "N/A";
+                              const gross = docData.gross_income ? "₹" + fmtNum(docData.gross_income) : "N/A";
+                              const tds = docData.tax_deducted_tds ? "₹" + fmtNum(docData.tax_deducted_tds) : "N/A";
+                              const score = docData.confidence_score ? (docData.confidence_score * 100).toFixed(0) + "%" : "N/A";
+                              const summary = docData.summary_findings || "No summary available.";
 
-            let deductionsHtml = "";
-            if (docData.allowances_deductions && Object.keys(docData.allowances_deductions).length > 0) {
-              deductionsHtml = Object.entries(docData.allowances_deductions)
-                .map(([k, v]) => `<div style="display:flex; justify-content:space-between"><span>${k}:</span> <strong>₹${fmtNum(v)}</strong></div>`)
-                .join("");
-            } else {
-              deductionsHtml = "None detected";
-            }
+                              let deductionsHtml = "";
+                              if (docData.allowances_deductions && Object.keys(docData.allowances_deductions).length > 0) {
+                                deductionsHtml = Object.entries(docData.allowances_deductions)
+                                  .map(([k, v]) => `<div style="display:flex; justify-content:space-between"><span>${k}:</span> <strong>₹${fmtNum(v)}</strong></div>`)
+                                  .join("");
+                              } else {
+                                deductionsHtml = "None detected";
+                              }
 
-            let html = `
+                              let html = `
               <div style="font-size:13px; font-weight:700; color:var(--gold); border-bottom: 1px solid var(--border); padding-bottom: 6px; margin-bottom: 10px;">
                 Parsed: ${docType} (Confidence: ${score})
               </div>
@@ -2649,156 +2726,198 @@
                 </div>
               </div>
             `;
-            showResult('pdfResult', html);
-          } else {
-            const content = data.data || data.text || JSON.stringify(data);
-            showResult('pdfResult', `<pre style="white-space:pre-wrap;font-family:'JetBrains Mono',monospace;font-size:12px">${content}</pre>`);
-          }
-        }
-      } catch (e) {
-        showResult('pdfResult', '⚠ Could not reach server.');
-      }
-      setLoading('pdfBtn', false);
-    }
+                              showResult('pdfResult', html);
+                            } else {
+                              const content = data.data || data.text || JSON.stringify(data);
+                              showResult('pdfResult', `<pre style="white-space:pre-wrap;font-family:'JetBrains Mono',monospace;font-size:12px">${content}</pre>`);
+                            }
+                          }
+                        } catch (e) {
+                          showResult('pdfResult', '⚠ Could not reach server.');
+                        }
+                        setLoading('pdfBtn', false);
+                      }
 
-    /* ══════════════════════════════════════════════
-       MULTI AGENT → POST /agent
-    ══════════════════════════════════════════════ */
-    async function runAgent() {
-      const query = document.getElementById('agentQuery').value.trim();
-      if (!query) { showResult('agentResult', '⚠ Enter a query.'); return; }
+                      /* ══════════════════════════════════════════════
+                         MULTI AGENT → POST /agent
+                      ══════════════════════════════════════════════ */
+                      async function runAgent() {
+                        const query = document.getElementById('agentQuery').value.trim();
+                        if (!query) { showResult('agentResult', '⚠ Enter a query.'); return; }
 
-      setLoading('agentBtn', true);
-      try {
-        const data = await apiFetch('/agent', { query });
-        if (data.error) {
-          showResult('agentResult', `⚠ ${data.error}`);
-        } else {
-          const resp = data.response || JSON.stringify(data);
-          showResult('agentResult', `<div style="white-space:pre-wrap;font-size:13px;line-height:1.7">${resp}</div>`);
-        }
-      } catch (e) {
-        showResult('agentResult', '⚠ Could not reach server.');
-      }
-      setLoading('agentBtn', false);
-    }
+                        setLoading('agentBtn', true);
+                        try {
+                          const data = await apiFetch('/agent', { query });
+                          if (data.error) {
+                            showResult('agentResult', `⚠ ${data.error}`);
+                          } else {
+                            const resp = data.response || JSON.stringify(data);
+                            showResult('agentResult', `<div style="white-space:pre-wrap;font-size:13px;line-height:1.7">${resp}</div>`);
+                          }
+                        } catch (e) {
+                          showResult('agentResult', '⚠ Could not reach server.');
+                        }
+                        setLoading('agentBtn', false);
+                      }
 
-    /* ══════════════════════════════════════════════
-       SIP SLIDER (dashboard)
-    ══════════════════════════════════════════════ */
-    function updateSIP() {
-      const m = +document.getElementById('sipAmt').value;
-      const y = +document.getElementById('sipYrs').value;
-      const r = +document.getElementById('sipRt').value / 100 / 12;
-      const n = y * 12;
-      const fv = m * ((Math.pow(1 + r, n) - 1) / r) * (1 + r);
+                      /* ══════════════════════════════════════════════
+                         SIP SLIDER (dashboard)
+                      ══════════════════════════════════════════════ */
+                      function updateSIP() {
+                        const m = +document.getElementById('sipAmt').value;
+                        const y = +document.getElementById('sipYrs').value;
+                        const r = +document.getElementById('sipRt').value / 100 / 12;
+                        const n = y * 12;
+                        const fv = m * ((Math.pow(1 + r, n) - 1) / r) * (1 + r);
 
-      document.getElementById('sipAmtLbl').textContent = fmtNum(m);
-      document.getElementById('sipYrLbl').textContent = y;
-      document.getElementById('sipRtLbl').textContent = document.getElementById('sipRt').value;
-      document.getElementById('sipOut').textContent = fv >= 1e7
-        ? '₹' + (fv / 1e7).toFixed(2) + 'Cr'
-        : '₹' + (fv / 1e5).toFixed(1) + 'L';
-    }
+                        document.getElementById('sipAmtLbl').textContent = fmtNum(m);
+                        document.getElementById('sipYrLbl').textContent = y;
+                        document.getElementById('sipRtLbl').textContent = document.getElementById('sipRt').value;
+                        document.getElementById('sipOut').textContent = fv >= 1e7
+                          ? '₹' + (fv / 1e7).toFixed(2) + 'Cr'
+                          : '₹' + (fv / 1e5).toFixed(1) + 'L';
+                      }
 
     updateSIP();
 
+  
+/* ══════════════════════════════════════════════
+          EXPENSE TRACKER
+══════════════════════════════════════════════ */
+document.getElementById("expenseForm").addEventListener("submit", async function (e) {
+    e.preventDefault();
 
-    /* ══════════════════════════════════════════════
-              EXPENSE TRACKER
-    ══════════════════════════════════════════════ */
-    /* ══════════════════════════════════════════════
-              EXPENSE TRACKER
-    ══════════════════════════════════════════════ */
+    const category = document.getElementById("category").value;
+    const amount = document.getElementById("amount").value;
+    const date = document.getElementById("date").value;
 
-    const _expenseForm = document.getElementById("expenseForm");
-    if (_expenseForm) {
-      _expenseForm.addEventListener("submit", async function (e) {
-        e.preventDefault();
+    console.log(category, amount, date);
 
-        const expense = {
-          category: document.getElementById("category").value,
-          amount: parseFloat(document.getElementById("amount").value),
-          date: document.getElementById("date").value
-        };
-
-        try {
-          const response = await fetch("/add_expense", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify(expense)
-          });
-
-          const data = await response.json();
-
-          if (data.status === "success") {
-            document.getElementById("expenseForm").reset();
-            loadExpenses();
-          }
-        } catch (error) {
-          console.error(error);
-          alert("Error adding expense");
-        }
-      });
+    if (!category || !amount || !date) {
+        alert("Please fill all fields");
+        return;
     }
 
+    const expense = {
+        category: category,
+        amount: parseFloat(amount),
+        date: date
+    };
 
-    async function loadExpenses() {
-      try {
+console.log("Sending Expense:", expense);
 
-        const calcRes = await fetch("/calculate");
-        const calcData = await calcRes.json();
+    try {
+        const response = await fetch("/add_expense", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(expense)
+        });
 
-        document.getElementById("insights").innerHTML = `
+       const data = await response.json();
+console.log(data);
+
+        if (data.status === "success") {
+            document.getElementById("expenseForm").reset();
+            loadExpenses();
+        }
+    } catch (error) {
+        console.error(error);
+        alert("Error adding expense");
+    }
+});
+
+
+                      /* ══════════════════════════════════════════════
+                                EXPENSE TRACKER
+                      ══════════════════════════════════════════════ */
+
+                      document.getElementById("expenseForm").addEventListener("submit", async function (e) {
+                        e.preventDefault();
+
+                        const expense = {
+                          category: document.getElementById("category").value,
+                          amount: parseFloat(document.getElementById("amount").value),
+                          date: document.getElementById("date").value
+                        };
+
+                        try {
+                          const response = await fetch("/add_expense", {
+                            method: "POST",
+                            headers: {
+                              "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify(expense)
+                          });
+
+                          const data = await response.json();
+
+                          if (data.status === "success") {
+                            document.getElementById("expenseForm").reset();
+                            loadExpenses();
+                          }
+                        } catch (error) {
+                          console.error(error);
+                          alert("Error adding expense");
+                        }
+                      });
+
+
+                      async function loadExpenses() {
+                        try {
+
+                          const calcRes = await fetch("/calculate");
+                          const calcData = await calcRes.json();
+
+                          document.getElementById("insights").innerHTML = `
               <div class="ai-loader-wrapper">
                   <div class="ai-loader"></div>
               </div>
               `;
 
-        let insightData = {
-          insights: "No insights available"
-        };
+       let insightData = {
+    insights: "No insights available"
+};
 
-        try {
-          const insightRes = await fetch("/insights");
-          insightData = await insightRes.json();
-        } catch (err) {
-          console.log("Insights failed", err);
-        }
+try{
+    const insightRes = await fetch("/insights");
+    insightData = await insightRes.json();
+}catch(err){
+    console.log("Insights failed", err);
+}
 
-        /* ---------- TOTAL CARD ---------- */
+                          /* ---------- TOTAL CARD ---------- */
 
-        document.getElementById("totalCard").innerHTML = `
+                          document.getElementById("totalCard").innerHTML = `
             <h2>Total Spend</h2>
             <p>₹${calcData.Total || 0}</p>
         `;
 
-        /* ---------- AVERAGE CARD ---------- */
+                          /* ---------- AVERAGE CARD ---------- */
 
-        document.getElementById("avgCard").innerHTML = `
+                          document.getElementById("avgCard").innerHTML = `
             <h2>Average Expense</h2>
             <p>₹${(calcData.Average || 0).toFixed(2)}</p>
         `;
 
-        /* ---------- EXPENSE HISTORY TABLE ---------- */
+                          /* ---------- EXPENSE HISTORY TABLE ---------- */
 
-        const tableBody =
-          document.getElementById("expenseTableBody");
+                          const tableBody =
+                            document.getElementById("expenseTableBody");
 
-        tableBody.innerHTML = "";
+                          tableBody.innerHTML = "";
 
-        (calcData.expenses || []).forEach(expense => {
+                          (calcData.expenses || []).forEach(expense => {
 
-          const formattedDate = new Date(expense.date)
-            .toLocaleDateString("en-IN", {
-              day: "numeric",
-              month: "short",
-              year: "numeric"
-            });
+                            const formattedDate = new Date(expense.date)
+                              .toLocaleDateString("en-IN", {
+                                day: "numeric",
+                                month: "short",
+                                year: "numeric"
+                              });
 
-          tableBody.innerHTML += `
+                            tableBody.innerHTML += `
                 <tr>
                     <td style="padding:10px;border-bottom:1px solid #222;">
                         ${formattedDate}
@@ -2813,280 +2932,227 @@
                     </td>
                 </tr>
             `;
-        });
+                          });
 
-        /* ---------- PIE CHART ---------- */
+                          /* ---------- PIE CHART ---------- */
 
-        // Get category data from Flask response
-        const categories = calcData["By Category"] || {};
+                          // Get category data from Flask response
+                          const categories = calcData["By Category"] || {};
 
-        // Check if canvas exists
-        const chartCanvas = document.getElementById("expenseChart");
+                          // Check if canvas exists
+                          const chartCanvas = document.getElementById("expenseChart");
 
-        if (chartCanvas) {
+                          if (chartCanvas) {
 
-          const ctx = chartCanvas.getContext("2d");
+                            const ctx = chartCanvas.getContext("2d");
 
-          // Destroy old chart before creating new one
-          if (window.expenseChartInstance) {
-            window.expenseChartInstance.destroy();
-          }
+                            // Destroy old chart before creating new one
+                            if (window.expenseChartInstance) {
+                              window.expenseChartInstance.destroy();
+                            }
 
-          // If no expense data available
-          if (Object.keys(categories).length === 0) {
+                            // If no expense data available
+                            if (Object.keys(categories).length === 0) {
 
-            ctx.clearRect(
-              0,
-              0,
-              chartCanvas.width,
-              chartCanvas.height
-            );
+                              ctx.clearRect(
+                                0,
+                                0,
+                                chartCanvas.width,
+                                chartCanvas.height
+                              );
 
-          } else {
+                            } else {
 
-            // Ensure Chart.js is loaded
-            if (typeof Chart === "undefined") {
-              console.error("Chart.js is not loaded");
-              return;
-            }
+                              // Ensure Chart.js is loaded
+                              if (typeof Chart === "undefined") {
+                                console.error("Chart.js is not loaded");
+                                return;
+                              }
 
-            window.expenseChartInstance = new Chart(ctx, {
-              type: "pie",
-              data: {
-                labels: Object.keys(categories),
-                datasets: [{
-                  data: Object.values(categories),
-                  backgroundColor: [
-                    "#ff6384",
-                    "#36a2eb",
-                    "#ffce56",
-                    "#4caf50",
-                    "#9c27b0",
-                    "#ff9800",
-                    "#00bcd4"
-                  ],
-                  borderWidth: 1
-                }]
-              },
-              options: {
-                responsive: true,
-                maintainAspectRatio: true,
-                plugins: {
-                  legend: {
-                    position: "bottom",
-                    labels: {
-                      color: "white",
-                      font: {
-                        size: 12
+                              window.expenseChartInstance = new Chart(ctx, {
+                                type: "pie",
+                                data: {
+                                  labels: Object.keys(categories),
+                                  datasets: [{
+                                    data: Object.values(categories),
+                                    backgroundColor: [
+                                      "#ff6384",
+                                      "#36a2eb",
+                                      "#ffce56",
+                                      "#4caf50",
+                                      "#9c27b0",
+                                      "#ff9800",
+                                      "#00bcd4"
+                                    ],
+                                    borderWidth: 1
+                                  }]
+                                },
+                                options: {
+                                  responsive: true,
+                                  maintainAspectRatio: true,
+                                  plugins: {
+                                    legend: {
+                                      position: "bottom",
+                                      labels: {
+                                        color: "white",
+                                        font: {
+                                          size: 12
+                                        }
+                                      }
+                                    },
+                                    tooltip: {
+                                      callbacks: {
+                                        label: function (context) {
+                                          return (
+                                            context.label +
+                                            ": ₹" +
+                                            context.raw
+                                          );
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              });
+                            }
+                          }
+
+                          /* ---------- AI INSIGHTS ---------- */
+
+                          document.getElementById("insights").innerHTML = insightData.insights || "No insights available";
+
+                        } catch (error) {
+                          console.error(
+                            "Expense Loading Error:",
+                            error
+                          );
+                        }
                       }
-                    }
-                  },
-                  tooltip: {
-                    callbacks: {
-                      label: function (context) {
-                        return (
-                          context.label +
-                          ": ₹" +
-                          context.raw
-                        );
-                      }
-                    }
-                  }
-                }
-              }
-            });
-          }
-        }
 
-        /* ---------- AI INSIGHTS ---------- */
+                      loadExpenses();
+                      /* ══════════════════════════════════════════════
+                         NET WORTH TRACKER
+                      ══════════════════════════════════════════════ */
+                      async function loadNetWorth() {
+                        try {
+                          const data = await apiFetch('/net-worth', {});
 
-        document.getElementById("insights").innerHTML = insightData.insights || "No insights available";
+                          document.getElementById('nwAssets').textContent = '₹' + fmtNum(data.total_assets);
+                          document.getElementById('nwLiabilities').textContent = '₹' + fmtNum(data.total_liabilities);
+                          document.getElementById('nwTotal').textContent = '₹' + fmtNum(data.net_worth);
 
-      } catch (error) {
-        console.error(
-          "Expense Loading Error:",
-          error
-        );
-      }
-    }
-
-    loadExpenses();
-
-    /* ══════════════════════════════════════════════
-       NET WORTH TRACKER — Add / Delete helpers
-    ══════════════════════════════════════════════ */
-    async function addNWItem(type) {
-      const nameEl = document.getElementById(type === 'asset' ? 'assetName' : 'liabName');
-      const amtEl  = document.getElementById(type === 'asset' ? 'assetAmt'  : 'liabAmt');
-      const name   = nameEl.value.trim();
-      const amount = parseFloat(amtEl.value);
-      if (!name || !amount || amount <= 0) { alert('Enter a valid name and amount.'); return; }
-      try {
-        await apiFetch('/net-worth', { action: 'add', type, name, amount });
-        nameEl.value = '';
-        amtEl.value  = '';
-        loadNetWorth();
-      } catch (e) { alert('Could not save. Is Flask running?'); }
-    }
-
-    async function deleteNWItem(type, index) {
-      try {
-        await apiFetch('/net-worth', { action: 'delete', type, index });
-        loadNetWorth();
-      } catch (e) { alert('Could not delete. Is Flask running?'); }
-    }
-
-    /* ══════════════════════════════════════════════
-       NET WORTH TRACKER
-    ══════════════════════════════════════════════ */
-    async function loadNetWorth() {
-      try {
-        const data = await apiFetch('/net-worth', {});
-
-        document.getElementById('nwAssets').textContent = '₹' + fmtNum(data.total_assets);
-        document.getElementById('nwLiabilities').textContent = '₹' + fmtNum(data.total_liabilities);
-        document.getElementById('nwTotal').textContent = '₹' + fmtNum(data.net_worth);
-
-        const assetList = document.getElementById('assetList');
-        assetList.innerHTML = '';
-        if (data.assets.length === 0) {
-          assetList.innerHTML = '<tr><td colspan="3" style="text-align: center; padding: 20px; color: var(--muted); font-style: italic;">No assets added yet</td></tr>';
-        } else {
-          data.assets.forEach((item, idx) => {
-            assetList.innerHTML += `
+                          const assetList = document.getElementById('assetList');
+                          assetList.innerHTML = '';
+                          if (data.assets.length === 0) {
+                            assetList.innerHTML = '<tr><td colspan="3" style="text-align: center; padding: 20px; color: var(--muted); font-style: italic;">No assets added yet</td></tr>';
+                          } else {
+                            data.assets.forEach((item, idx) => {
+                              assetList.innerHTML += `
               <tr style="border-bottom: 1px solid var(--border);">
                 <td style="padding: 8px;">${item.name}</td>
                 <td style="padding: 8px; text-align: right;">₹${fmtNum(item.amount)}</td>
                 <td style="padding: 8px; text-align: center;"><button class="btn btn-ghost" style="padding: 4px 8px; font-size: 10px;" onclick="deleteNWItem('asset', ${idx})">✖</button></td>
               </tr>
             `;
-          });
-        }
+                            });
+                          }
 
-        const liabList = document.getElementById('liabList');
-        liabList.innerHTML = '';
-        if (data.liabilities.length === 0) {
-          liabList.innerHTML = '<tr><td colspan="3" style="text-align: center; padding: 20px; color: var(--muted); font-style: italic;">No liabilities added yet</td></tr>';
-        } else {
-          data.liabilities.forEach((item, idx) => {
-            liabList.innerHTML += `
+                          const liabList = document.getElementById('liabList');
+                          liabList.innerHTML = '';
+                          if (data.liabilities.length === 0) {
+                            liabList.innerHTML = '<tr><td colspan="3" style="text-align: center; padding: 20px; color: var(--muted); font-style: italic;">No liabilities added yet</td></tr>';
+                          } else {
+                            data.liabilities.forEach((item, idx) => {
+                              liabList.innerHTML += `
                 <tr style="border-bottom: 1px solid var(--border);">
                   <td style="padding: 8px;">${item.name}</td>
                   <td style="padding: 8px; text-align: right;">₹${fmtNum(item.amount)}</td>
                   <td style="padding: 8px; text-align: center;"><button class="btn btn-ghost" style="padding: 4px 8px; font-size: 10px;" onclick="deleteNWItem('liability', ${idx})">✖</button></td>
                 </tr>
               `;
-
                             });
                           }
-                             } catch(error){
-            console.log(error);
-        }
-}
 
 loadExpenses();
-
 let goals = [];
-                          
 
+function addGoal(){
 
-          });
-        }
-      } catch (e) {
-        console.error('Net worth error:', e);
-      }
-    }
+const name =
+document.getElementById("goalName").value.trim();
 
-    // ── Override showPage to auto-load net worth ──
-    const _origShowPage = showPage;
-    showPage = function (name, e) {
-      _origShowPage(name, e);
-      if (name === 'networth') loadNetWorth();
-    };
+const target =
+parseFloat(
+document.getElementById("goalTarget").value
+);
 
+if(!name || !target){
+alert("Enter valid goal details");
+return;
+}
 
-    /* ══════════════════════════════════════════════
-       GOAL TRACKER (global scope)
-    ══════════════════════════════════════════════ */
-    let goals = [];
+goals.push({
+name:name,
+target:target,
+saved:0
+});
 
-        function addGoal() {
+document.getElementById("goalName").value="";
+document.getElementById("goalTarget").value="";
 
-          const name =
-            document.getElementById("goalName").value.trim();
+renderGoals();
+}
 
-          const target =
-            parseFloat(
-              document.getElementById("goalTarget").value
-            );
+function addSavings(index){
 
-          if (!name || !target) {
-            alert("Enter valid goal details");
-            return;
-          }
+const amount =
+parseFloat(
+document.getElementById(
+`save-${index}`
+).value
+);
 
-          goals.push({
-            name: name,
-            target: target,
-            saved: 0
-          });
+if(!amount || amount<=0){
+alert("Enter valid amount");
+return;
+}
 
-          document.getElementById("goalName").value = "";
-          document.getElementById("goalTarget").value = "";
+goals[index].saved += amount;
 
-          renderGoals();
-        }
+renderGoals();
+}
 
-        function addSavings(index) {
+function deleteGoal(index){
 
-          const amount =
-            parseFloat(
-              document.getElementById(
-                `save-${index}`
-              ).value
-            );
+goals.splice(index,1);
 
-          if (!amount || amount <= 0) {
-            alert("Enter valid amount");
-            return;
-          }
+renderGoals();
+}
 
-          goals[index].saved += amount;
+function renderGoals(){
 
-          renderGoals();
-        }
+const container =
+document.getElementById(
+"goalContainer"
+);
 
-        function deleteGoal(index) {
+container.innerHTML="";
 
-          goals.splice(index, 1);
+goals.forEach((goal,index)=>{
 
-          renderGoals();
-        }
+const percent =
+Math.min(
+(goal.saved/goal.target)*100,
+100
+);
 
-        function renderGoals() {
+const remaining =
+Math.max(
+goal.target-goal.saved,
+0
+);
 
-          const container =
-            document.getElementById(
-              "goalContainer"
-            );
-
-          container.innerHTML = "";
-
-          goals.forEach((goal, index) => {
-
-            const percent =
-              Math.min(
-                (goal.saved / goal.target) * 100,
-                100
-              );
-
-            const remaining =
-              Math.max(
-                goal.target - goal.saved,
-                0
-              );
-
-            container.innerHTML += `
+container.innerHTML += `
 
 <div class="goal-card">
 
@@ -3158,114 +3224,82 @@ Add Savings
 
 </div>
 `;
-
 });
-}
 
-          });
-        }
+                      // Update loadNetWorth when navigating to the page
+                      const originalShowPage = showPage;
+                      showPage = function (name, e) {
+                        originalShowPage(name, e);
+                        if (name === 'networth') loadNetWorth();
+                      };
 
+                      window.activeCurrencySymbol = localStorage.getItem("preferredCurrencySymbol") || "₹";
+                      
+                      function changeCurrency() {
+                        const sel = document.getElementById("currencySelector");
+                        const symbol = sel.value === "USD" ? "$" : sel.value === "EUR" ? "€" : sel.value === "GBP" ? "£" : "₹";
+                        window.activeCurrencySymbol = symbol;
+                        localStorage.setItem("preferredCurrency", sel.value);
+                        localStorage.setItem("preferredCurrencySymbol", symbol);
+                        updateCurrencySymbolDisplay();
+                      }
 
-    /* ══════════════════════════════════════════════
-       THEME TOGGLE (global scope)
-    ══════════════════════════════════════════════ */
-    function toggleTheme() {
-      document.body.classList.toggle("light-theme");
-      const btn = document.getElementById("themeToggle");
-      if (document.body.classList.contains("light-theme")) {
-        localStorage.setItem("theme", "light");
-        btn.innerHTML = "🌙 Dark Mode";
-      } else {
-        localStorage.setItem("theme", "dark");
-        btn.innerHTML = "☀️ Light Mode";
-      }
-    }
+                      function updateCurrencySymbolDisplay() {
+                        const elements = document.querySelectorAll(".currency-symbol");
+                        elements.forEach(el => {
+                          el.textContent = window.activeCurrencySymbol;
+                        });
+                        
+                        const inputs = document.querySelectorAll("[placeholder*='(₹)']");
+                        inputs.forEach(input => {
+                          input.placeholder = input.placeholder.replace(/₹|\$|€|£/g, window.activeCurrencySymbol);
+                        });
+                        
+                        const labelElements = document.querySelectorAll("label, .stat-label, .card-title, .result-box, #sipAmtLbl, #sipOut, #nwAssets, #nwLiabilities, #nwTotal");
+                        labelElements.forEach(el => {
+                          if (el.id !== "sipAmtLbl" && el.id !== "sipOut" && el.id !== "nwAssets" && el.id !== "nwLiabilities" && el.id !== "nwTotal") {
+                            el.childNodes.forEach(child => {
+                              if (child.nodeType === Node.TEXT_NODE) {
+                                child.textContent = child.textContent.replace(/₹/g, window.activeCurrencySymbol);
+                              }
+                            });
+                          }
+                        });
+                      }
 
-    // Restore saved theme on load (script is at bottom, DOM is ready)
-    (function () {
-      const savedTheme = localStorage.getItem("theme");
-      const btn = document.getElementById("themeToggle");
-      if (savedTheme === "light") {
-        document.body.classList.add("light-theme");
-        if (btn) btn.innerHTML = "🌙 Dark Mode";
-      }
-    })();
+                      function toggleTheme() {
+                        document.body.classList.toggle("light-theme");
+                        const btn = document.getElementById("themeToggle");
+                        if(document.body.classList.contains("light-theme")) {
+                          localStorage.setItem("theme","light");
+                          btn.innerHTML = "🌙 Dark Mode";
+                        } else {
+                          localStorage.setItem("theme","dark");
+                          btn.innerHTML = "☀️ Light Mode";
+                        }
+                      }
 
-
-                   </script>
-
- <script>
-
-async function chatSend() {
-
-    const input = document.getElementById("chatInput");
-    const messages = document.getElementById("chatMessages");
-    const welcome = document.getElementById("chatPageWelcome");
-
-    const text = input.value.trim();
-
-    if (!text) return;
-
-    welcome?.classList.add("hidden");
-
-    messages.innerHTML += `
-        <div class="msg user">
-            <div class="sender">YOU</div>
-            ${text}
-        </div>
-    `;
-
-    input.value = "";
-
-    try {
-
-        const res = await fetch("http://127.0.0.1:5000/chat", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                message: text
-            })
-        });
-
-        const data = await res.json();
-
-        messages.innerHTML += `
-            <div class="msg bot">
-                <div class="sender">AI</div>
-                ${data.reply}
-            </div>
-        `;
-
-    } catch (err) {
-
-        messages.innerHTML += `
-            <div class="msg bot">
-                <div class="sender">AI</div>
-                Backend not connected. /chat endpoint missing.
-            </div>
-        `;
-
-        console.log(err);
-    }
-
-    messages.scrollTop = messages.scrollHeight;
-}
-
-function chatQuick(text){
-
-    document.getElementById(
-        "chatInput"
-    ).value = text;
-
-    chatSend();
-}
-
-</script>
-
-  </script>
-
+                      window.addEventListener("DOMContentLoaded", () => {
+                        const savedTheme = localStorage.getItem("theme");
+                        const btn = document.getElementById("themeToggle");
+                        if(savedTheme === "light") {
+                          document.body.classList.add("light-theme");
+                          btn.innerHTML = "🌙 Dark Mode";
+                        }
+                        
+                        const preferredCurrency = localStorage.getItem("preferredCurrency");
+                        if (preferredCurrency) {
+                          const sel = document.getElementById("currencySelector");
+                          if (sel) {
+                            sel.value = preferredCurrency;
+                            window.activeCurrencySymbol = localStorage.getItem("preferredCurrencySymbol") || "₹";
+                          }
+                        }
+                        updateCurrencySymbolDisplay();
+                      });
+                    </script>
+</body>
+</html>
 </body>
 
 </html>
