@@ -354,10 +354,13 @@ def expense_insights():
 def get_net_worth():
     assets = Asset.query.order_by(Asset.id).all()
     liabilities = Liability.query.order_by(Liability.id).all()
-    assets_data = [a.to_dict(i) for i, a in enumerate(assets)]
-    liabilities_data = [l.to_dict(i) for i, l in enumerate(liabilities)]
+
+    assets_data = [a.to_dict() for a in assets]
+    liabilities_data = [l.to_dict() for l in liabilities]
+
     total_assets = sum(item['amount'] for item in assets_data)
     total_liabilities = sum(item['amount'] for item in liabilities_data)
+
     return jsonify({
         "assets": assets_data,
         "liabilities": liabilities_data,
@@ -392,18 +395,24 @@ def add_liability():
 def delete_item():
     try:
         data = request.json
-        item_type = data["type"] # 'asset' or 'liability'
-        item_id = int(data["id"]) # positional index from the frontend
+        item_type = data["type"]
+        item_id = int(data["id"])
 
-        if item_type == 'asset':
-            rows = Asset.query.order_by(Asset.id).all()
-            db.session.delete(rows[item_id])
+        if item_type == "asset":
+            item = Asset.query.get(item_id)
+        elif item_type == "liability":
+            item = Liability.query.get(item_id)
         else:
-            rows = Liability.query.order_by(Liability.id).all()
-            db.session.delete(rows[item_id])
+            return jsonify({"error": "Invalid item type"}), 400
 
+        if item is None:
+            return jsonify({"error": "Item not found"}), 404
+
+        db.session.delete(item)
         db.session.commit()
+
         return jsonify({"status": "success"})
+
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 
