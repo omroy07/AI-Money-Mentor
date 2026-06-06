@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+
+{% block title %}Stock Checker{% endblock %}
+
+{% block content %}
+<div id="stock" class="page active">
+  <div class="page-title">Stock <span>Checker</span></div>
+
+  <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 20px; align-items: start; max-width: 900px;">
+    <div class="card">
+      <div class="card-title">Live Stock Price (NSE/Global)</div>
+
+      <label>Stock Symbol</label>
+      <input type="text" id="stockSym" placeholder="e.g. TCS, RELIANCE, AAPL">
+
+      <div style="display:flex;gap:10px;margin-top:16px;">
+        <button class="btn btn-gold" style="flex:1" onclick="checkStock()" id="stockBtn">Get Price</button>
+        <button class="btn btn-ghost" style="flex:1" onclick="resetStock()" id="stockResetBtn">Reset</button>
+      </div>
+
+      <div id="stockResult" class="result-box"></div>
+    </div>
+
+    <div class="card" style="min-height: 380px;">
+      <div class="card-title">30-Day Historical Trend</div>
+      <div style="position: relative; height: 320px;">
+        <canvas id="stockChart"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  let stockChartInstance = null;
+
+  async function checkStock() {
+    const sym = document.getElementById('stockSym').value.trim();
+    if (!sym) { showResult('stockResult', '⚠ Enter a stock symbol.'); return; }
+
+    setLoading('stockBtn', true);
+    try {
+      const data = await apiFetch('/portfolio', { stock: sym });
+
+      if (data.error) {
+        showResult('stockResult', `⚠ ${data.error}`);
+      } else {
+        const metrics = data.metrics || {};
+        const pe = metrics.pe_ratio !== "N/A" && metrics.pe_ratio !== null ? parseFloat(metrics.pe_ratio).toFixed(1) : "N/A";
+        let cap = metrics.market_cap;
+        if (cap && cap !== "N/A") {
+          if (cap >= 1e12) cap = (cap / 1e12).toFixed(2) + "T";
+          else if (cap >= 1e9) cap = (cap / 1e9).toFixed(2) + "B";
+          else if (cap >= 1e7) cap = (cap / 1e7).toFixed(2) + "Cr";
+          else if (cap >= 1e5) cap = (cap / 1e5).toFixed(2) + "L";
+        } else {
+          cap = "N/A";
+        }
+
+        let html = `
+          <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em">${data.symbol} — Last Price</div>
+          <div class="result-big">₹${fmtNum(data.price)}</div>
+          <div style="margin-top: 14px; display: flex; flex-direction: column; gap: 6px; font-size: 12px; border-top: 1px solid var(--border); padding-top: 10px;">
+            <div style="display:flex; justify-content:space-between"><span>52W High</span><strong>₹${metrics.high_52w !== "N/A" && metrics.high_52w !== null ? fmtNum(metrics.high_52w) : "N/A"}</strong></div>
+            <div style="display:flex; justify-content:space-between"><span>52W Low</span><strong>₹${metrics.low_52w !== "N/A" && metrics.low_52w !== null ? fmtNum(metrics.low_52w) : "N/A"}</strong></div>
+            <div style="display:flex; justify-content:space-between"><span>Market Cap</span><strong>${cap}</strong></div>
+            <div style="display:flex; justify-content:space-between"><span>P/E Ratio</span><strong>${pe}</strong></div>
+          </div>
+        `;
+        showResult('stockResult', html);
+
+        const dates = data.history.map(h => h.date);
+        const prices = data.history.map(h => h.close);
+
+        if (stockChartInstance) stockChartInstance.destroy();
+        const stockCtx = document.getElementById('stockChart').getContext('2d');
+        stockChartInstance = new Chart(stockCtx, {
+          type: 'line',
+          data: {
+            labels: dates,
+            datasets: [{
+              label: data.symbol,
+              data: prices,
+              borderColor: '#14c8bf',
+              backgroundColor: 'rgba(20, 200, 191, 0.05)',
+              fill: true,
+              tension: 0.1,
+              pointRadius: 1,
+              borderWidth: 2
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false }
+            },
+            scales: {
+              x: {
+                grid: { display: false },
+                ticks: { color: '#5a6a82', maxTicksLimit: 6 }
+              },
+              y: {
+                grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                ticks: {
+                  color: '#5a6a82',
+                  callback: function (value) { return '₹' + fmtNum(value); }
+                }
+              }
+            }
+          }
+        });
+      }
+    } catch (e) {
+      showResult('stockResult', '⚠ Could not reach server.');
+    }
+    setLoading('stockBtn', false);
+  }
+
+  function resetStock() {
+    document.getElementById('stockSym').value = '';
+    const res = document.getElementById('stockResult');
+    res.innerHTML = '';
+    res.classList.remove('visible');
+    if (stockChartInstance) {
+      stockChartInstance.destroy();
+      stockChartInstance = null;
+    }
+  }
+</script>
+{% endblock %}

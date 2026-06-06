@@ -14,13 +14,15 @@ load_dotenv()
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 if not GROQ_API_KEY or GROQ_API_KEY.strip() in ("", "your_groq_api_key_here"):
     print(
-        "\n[ERROR] GROQ_API_KEY is not configured.\n"
+        "\n[WARNING] GROQ_API_KEY is not configured. AI features will run in offline mode.\n"
         "  1. Copy .env.example to .env\n"
         "  2. Set your GROQ_API_KEY in .env\n"
         "  Obtain a free key at: https://console.groq.com/\n",
         file=sys.stderr,
     )
-    sys.exit(1)
+    client = None
+else:
+    client = Groq(api_key=GROQ_API_KEY)
 # ---------------- IMPORT UTILS ----------------
 from utils.sip import calculate_sip
 from utils.tax import calculate_tax
@@ -33,7 +35,7 @@ from utils.expense_track import calculate_expense, insights
 app = Flask(__name__)
 
 # ---------------- INIT DATABASE ----------------
-from models import db, Expense, Asset, Liability
+from models import db, Expense, Asset, Liability, BudgetLimit, BudgetAlert
 
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///money_mentor.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
@@ -43,15 +45,42 @@ with app.app_context():
     db.create_all()
 
 # ---------------- INIT GROQ ----------------
-client = Groq(api_key=GROQ_API_KEY)
+# client is initialized in the startup validation block above
 
 # ── Dev-mode startup message ─────────────────────────────────
 if os.getenv("FLASK_ENV", "development") != "production":
-    print("[OK] Groq client initialised successfully.")
-# ---------------- HOME ----------------
+    if client:
+        print("[OK] Groq client initialised successfully.")
+    else:
+        print("[WARNING] Groq client is running in offline mode.")
+# ---------------- HOME / PAGES ----------------
 @app.route("/")
 def home():
-    return render_template("index.html")
+    return render_template("dashboard.html", active_page="dashboard")
+
+@app.route("/stock", methods=["GET"])
+def stock():
+    return render_template("stock.html", active_page="stock")
+
+@app.route("/pdf-parser", methods=["GET"])
+def pdf_parser():
+    return render_template("pdf.html", active_page="pdf")
+
+@app.route("/agent-page", methods=["GET"])
+def agent_page():
+    return render_template("agent.html", active_page="agent")
+
+@app.route("/expense", methods=["GET"])
+def expense():
+    return render_template("expense.html", active_page="expense")
+
+@app.route("/networth", methods=["GET"])
+def networth():
+    return render_template("networth.html", active_page="networth")
+
+@app.route("/budget", methods=["GET"])
+def budget():
+    return render_template("budget.html", active_page="budget")
 
 
 # ---------------- HEALTH CHECK ----------------
@@ -99,9 +128,16 @@ def internal_server_error(error):
 
 
 # ---------------- 🤖 AI CHAT ----------------
-@app.route("/chat", methods=["POST"])
+@app.route("/chat", methods=["GET", "POST"])
 def chat():
+    if request.method == "GET":
+        return render_template("chat.html", active_page="chat")
     try:
+        if client is None:
+            return jsonify({
+                "reply": "AI Money Mentor is offline because GROQ_API_KEY is not configured. Please set GROQ_API_KEY in your env/config files."
+            })
+
         data = request.json
         msg = data.get("message")
         history = data.get("history", [])
@@ -129,8 +165,10 @@ def chat():
 
 
 # ---------------- 💸 SIP ----------------
-@app.route("/sip", methods=["POST"])
+@app.route("/sip", methods=["GET", "POST"])
 def sip():
+    if request.method == "GET":
+        return render_template("sip.html", active_page="sip")
     try:
         data = request.json
         result = calculate_sip(
@@ -162,8 +200,10 @@ def portfolio():
         return jsonify({"error": str(e)})
     
 # ---------------- 💸 TAX ----------------
-@app.route("/tax", methods=["POST"])
+@app.route("/tax", methods=["GET", "POST"])
 def tax():
+    if request.method == "GET":
+        return render_template("tax.html", active_page="tax")
     try:
         data = request.json
         income = float(data["income"])
@@ -199,6 +239,10 @@ def upload():
 @app.route("/agent", methods=["POST"])
 def run_agent_route():
     try:
+        if client is None:
+            return jsonify({
+                "error": "AI Multi-Agent is offline because GROQ_API_KEY is not configured. Please set GROQ_API_KEY in your env/config files."
+            })
         query = request.json["query"]
         response = run_multi_agent(client, query)
         return jsonify({"response": response})
@@ -208,8 +252,10 @@ def run_agent_route():
 
 
 # ---------------- 💰 MONEY SCORE ----------------
-@app.route("/money-score", methods=["POST"])
+@app.route("/money-score", methods=["GET", "POST"])
 def money_score():
+    if request.method == "GET":
+        return render_template("score.html", active_page="score")
     try:
         data = request.json
 
@@ -253,6 +299,11 @@ def add_expense():
         )
         db.session.add(expense)
         db.session.commit()
+        
+        # Check thresholds
+        ym = expense.date[:7] if len(expense.date) >= 7 else None
+        run_threshold_checks(expense.category, ym)
+        
         return jsonify({"status": "success"})
 
     except Exception as e:

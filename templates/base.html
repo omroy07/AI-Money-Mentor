@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Money Mentor - {% block title %}{% endblock %}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles/main.css') }}">
+  {% block head %}{% endblock %}
+</head>
+<body>
+  <!-- Menu Overlay for Mobile Drawer -->
+  <div class="menu-overlay"></div>
+
+  <!-- Mobile Top Navigation Header -->
+  <div class="mobile-header">
+    <button class="menu-toggle-btn" onclick="toggleMobileMenu()">☰</button>
+    <div class="mobile-logo">₹ Money Mentor</div>
+  </div>
+
+  <!-- ══════════ SIDEBAR ══════════ -->
+  <div class="sidebar">
+    <div class="logo">₹ Money Mentor</div>
+    <button class="btn btn-ghost" id="themeToggle" onclick="toggleTheme()" style="margin-bottom:15px;width:100%;">
+      ☀️ Light Mode
+    </button>
+
+    <a href="/" class="nav-item {% if active_page == 'dashboard' %}active{% endif %}"><span class="icon">🏠</span> Dashboard</a>
+    <a href="/chat" class="nav-item {% if active_page == 'chat' %}active{% endif %}"><span class="icon">🤖</span> AI Chat</a>
+    <a href="/money-score" class="nav-item {% if active_page == 'score' %}active{% endif %}"><span class="icon">💰</span> Money Score</a>
+    <a href="/sip" class="nav-item {% if active_page == 'sip' %}active{% endif %}"><span class="icon">📈</span> SIP Calc</a>
+    <a href="/stock" class="nav-item {% if active_page == 'stock' %}active{% endif %}"><span class="icon">📊</span> Stock Check</a>
+    <a href="/tax" class="nav-item {% if active_page == 'tax' %}active{% endif %}"><span class="icon">💸</span> Tax Planner</a>
+    <a href="/pdf-parser" class="nav-item {% if active_page == 'pdf' %}active{% endif %}"><span class="icon">📄</span> PDF Parser</a>
+    <a href="/agent-page" class="nav-item {% if active_page == 'agent' %}active{% endif %}"><span class="icon">🧠</span> Multi Agent</a>
+    <a href="/expense" class="nav-item {% if active_page == 'expense' %}active{% endif %}"><span class="icon">💲</span>Expense Track</a>
+    <a href="/networth" class="nav-item {% if active_page == 'networth' %}active{% endif %}"><span class="icon">💎</span> Net Worth</a>
+    <a href="/budget" class="nav-item {% if active_page == 'budget' %}active{% endif %}"><span class="icon">🎯</span> Smart Budget</a>
+  </div>
+
+  <!-- ══════════ MAIN ══════════ -->
+  <div class="main">
+    {% block content %}{% endblock %}
+  </div>
+
+  <!-- Scroll to Top Button -->
+  <button id="scrollTopBtn" onclick="document.querySelector('.main').scrollTo({top: 0, behavior: 'smooth'})"
+    style="display:none; position:fixed; bottom:30px; right:30px; z-index:100; border-radius:50%; width:44px; height:44px; font-size:20px; align-items:center; justify-content:center;"
+    class="btn btn-gold">↑</button>
+
+  <script>
+    // Theme Toggle State Persistence
+    function toggleTheme() {
+      document.body.classList.toggle("light-theme");
+      const btn = document.getElementById("themeToggle");
+      if (document.body.classList.contains("light-theme")) {
+        localStorage.setItem("theme", "light");
+        if (btn) btn.innerHTML = "🌙 Dark Mode";
+      } else {
+        localStorage.setItem("theme", "dark");
+        if (btn) btn.innerHTML = "☀️ Light Mode";
+      }
+    }
+
+    // Apply saved theme immediately
+    (function () {
+      const savedTheme = localStorage.getItem("theme");
+      const btn = document.getElementById("themeToggle");
+      if (savedTheme === "light") {
+        document.body.classList.add("light-theme");
+        if (btn) btn.innerHTML = "🌙 Dark Mode";
+      }
+    })();
+
+    // Scroll to Top visibility toggle
+    document.querySelector('.main').addEventListener('scroll', function () {
+      const btn = document.getElementById('scrollTopBtn');
+      if (this.scrollTop > 300) {
+        btn.style.display = 'flex';
+      } else {
+        btn.style.display = 'none';
+      }
+    });
+
+    // Mobile Menu Toggle
+    function toggleMobileMenu() {
+      const sidebar = document.querySelector('.sidebar');
+      const overlay = document.querySelector('.menu-overlay');
+      if (sidebar && overlay) {
+        sidebar.classList.toggle('open');
+        overlay.classList.toggle('active');
+      }
+    }
+
+    const overlay = document.querySelector('.menu-overlay');
+    if (overlay) {
+      overlay.addEventListener('click', () => {
+        const sidebar = document.querySelector('.sidebar');
+        if (sidebar) sidebar.classList.remove('open');
+        overlay.classList.remove('active');
+      });
+    }
+
+    // Common helpers
+    function fmtNum(n) {
+      return new Intl.NumberFormat('en-IN').format(Math.round(n));
+    }
+
+    function setLoading(btnId, loading) {
+      const btn = document.getElementById(btnId);
+      if (!btn) return;
+      btn.disabled = loading;
+      if (!btn.dataset.label) btn.dataset.label = btn.innerHTML;
+      btn.innerHTML = loading ? '<span class="spinner"></span>' : btn.dataset.label;
+    }
+
+    function showResult(id, html) {
+      const el = document.getElementById(id);
+      if (el) {
+        el.innerHTML = html;
+        el.classList.add('visible');
+      }
+    }
+
+    async function apiFetch(url, body, isForm = false) {
+      const opts = { method: 'POST' };
+      if (isForm) {
+        opts.body = body;
+      } else {
+        opts.headers = { 'Content-Type': 'application/json' };
+        opts.body = JSON.stringify(body);
+      }
+      const res = await fetch(url, opts);
+      return res.json();
+    }
+  </script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

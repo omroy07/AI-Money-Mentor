@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+
+{% block title %}AI Chat{% endblock %}
+
+{% block content %}
+<div id="chat" class="page active">
+  <div class="page-title">🤖 AI <span>Chat</span></div>
+  <div class="card" style="max-width:900px;margin:0 auto;flex:1;width:100%">
+    <div class="chat-messages" id="chatMessages" style="height:420px">
+      <div class="chat-welcome" id="chatPageWelcome">
+        <div class="chat-welcome-icon">🎯</div>
+        <h3>Financial Guidance at Your Fingertips</h3>
+        <p>Ask questions about investments, tax planning, portfolio strategy, SIPs, risk assessment, or any financial topic.</p>
+        <div class="chat-features">
+          <div class="chat-feature-item" onclick="chatQuick('How should I diversify my portfolio?')">📊 Portfolio</div>
+          <div class="chat-feature-item" onclick="chatQuick('Best tax saving strategies for 2024-25')">💸 Tax Strategy</div>
+          <div class="chat-feature-item" onclick="chatQuick('Should I invest in mutual funds or stocks?')">📈 Investments</div>
+          <div class="chat-feature-item" onclick="chatQuick('How much emergency fund do I need?')">🛡️ Emergency Fund</div>
+        </div>
+      </div>
+    </div>
+    <div class="chat-input-row">
+      <input type="text" id="chatInput" placeholder="Ask anything financial…"
+        onkeypress="if(event.key==='Enter') chatSend()">
+      <button class="btn btn-gold" onclick="chatSend()" id="chatBtn">Send</button>
+      <button class="btn btn-ghost" onclick="clearChat()" id="clearBtn" title="Clear conversation">Clear</button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const chatHistory = [];
+
+  function appendMsg(boxId, role, text) {
+    const box = document.getElementById(boxId);
+    const welcome = document.getElementById('chatPageWelcome');
+    if (welcome && !welcome.classList.contains('hidden')) {
+      welcome.classList.add('hidden');
+    }
+    const d = document.createElement('div');
+    d.className = `msg ${role}`;
+    d.innerHTML = `<div class="sender">${role === 'user' ? 'You' : 'AI Advisor'}</div>${text}`;
+    box.appendChild(d);
+    box.scrollTop = box.scrollHeight;
+  }
+
+  async function chatSend() {
+    const inp = document.getElementById('chatInput');
+    const msg = inp.value.trim();
+    if (!msg) return;
+    inp.value = '';
+    appendMsg('chatMessages', 'user', msg);
+    setLoading('chatBtn', true);
+    try {
+      const data = await apiFetch('/chat', { message: msg, history: chatHistory });
+      const reply = data.reply || data.error || 'No response';
+      chatHistory.push({ role: 'user', content: msg });
+      chatHistory.push({ role: 'assistant', content: reply });
+      appendMsg('chatMessages', 'bot', reply);
+    } catch (e) {
+      appendMsg('chatMessages', 'bot', '⚠ Could not reach server.');
+    }
+    setLoading('chatBtn', false);
+  }
+
+  function chatQuick(text) {
+    document.getElementById('chatInput').value = text;
+    chatSend();
+  }
+
+  function clearChat() {
+    chatHistory.length = 0;
+    const box = document.getElementById('chatMessages');
+    box.innerHTML = '';
+    const welcome = document.createElement('div');
+    welcome.id = 'chatPageWelcome';
+    welcome.className = 'chat-welcome';
+    welcome.innerHTML = `
+      <div class="chat-welcome-icon">🎯</div>
+      <h3>Financial Guidance at Your Fingertips</h3>
+      <p>Ask questions about investments, tax planning, portfolio strategy, SIPs, risk assessment, or any financial topic.</p>
+      <div class="chat-features">
+        <div class="chat-feature-item" onclick="chatQuick('How should I diversify my portfolio?')">📊 Portfolio</div>
+        <div class="chat-feature-item" onclick="chatQuick('Best tax saving strategies for 2024-25')">💸 Tax Strategy</div>
+        <div class="chat-feature-item" onclick="chatQuick('Should I invest in mutual funds or stocks?')">📈 Investments</div>
+        <div class="chat-feature-item" onclick="chatQuick('How much emergency fund do I need?')">🛡️ Emergency Fund</div>
+      </div>`;
+    box.appendChild(welcome);
+  }
+</script>
+{% endblock %}

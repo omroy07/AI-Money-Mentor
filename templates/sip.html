@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+
+{% block title %}SIP Calculator{% endblock %}
+
+{% block content %}
+<div id="sip" class="page active">
+  <div class="page-title">📈 SIP <span>Calculator</span></div>
+
+  <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 20px; align-items: start; max-width: 900px;">
+    <div class="card">
+      <div class="card-title">SIP Projection</div>
+
+      <label>Monthly Investment (₹)</label>
+      <input type="number" required min="0" id="sip_monthly" placeholder="e.g. 10000">
+
+      <label>Annual Return Rate (%)</label>
+      <input type="number" required min="0" id="sip_rate" placeholder="e.g. 12">
+
+      <label>Investment Period (Years)</label>
+      <input type="number" required min="0" id="sip_years" placeholder="e.g. 10">
+
+      <div style="display:flex;gap:10px;margin-top:16px;">
+        <button class="btn btn-gold" style="flex:1" onclick="calcSIP()" id="sipBtn">Calculate</button>
+        <button class="btn btn-ghost" style="flex:1" onclick="resetSIP()" id="sipResetBtn">Reset</button>
+      </div>
+
+      <div id="sipResult" class="result-box"></div>
+    </div>
+
+    <div class="card" style="min-height: 380px;">
+      <div class="card-title">Wealth Growth Curve</div>
+      <div style="position: relative; height: 320px;">
+        <canvas id="sipChart"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  let sipChartInstance = null;
+
+  async function calcSIP() {
+    const monthly = document.getElementById('sip_monthly').value;
+    const rate = document.getElementById('sip_rate').value;
+    const years = document.getElementById('sip_years').value;
+
+    if (!monthly || !rate || !years) {
+      showResult('sipResult', '⚠ Please fill all fields.');
+      return;
+    }
+
+    setLoading('sipBtn', true);
+    try {
+      const data = await apiFetch('/sip', {
+        monthly: parseFloat(monthly),
+        rate: parseFloat(rate),
+        years: parseInt(years)
+      });
+
+      if (data.error) {
+        showResult('sipResult', `⚠ ${data.error}`);
+      } else {
+        const fv = data.future_value;
+        showResult('sipResult', `
+          <div style="font-size:11px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.06em">Estimated Future Value</div>
+          <div class="result-big">₹${fmtNum(fv)}</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:6px">
+            Invested: ₹${fmtNum(monthly * years * 12)} &nbsp;·&nbsp; 
+            Gains: ₹${fmtNum(fv - monthly * years * 12)}
+          </div>
+        `);
+
+        // Compute compounding points
+        const monthlyFloat = parseFloat(monthly);
+        const rateFloat = parseFloat(rate);
+        const yearsInt = parseInt(years);
+
+        const labels = [];
+        const investedData = [];
+        const totalData = [];
+
+        const r = rateFloat / 100 / 12;
+        for (let y = 1; y <= yearsInt; y++) {
+          const n = y * 12;
+          const fv_point = monthlyFloat * ((Math.pow(1 + r, n) - 1) / r) * (1 + r);
+          const invested_point = monthlyFloat * n;
+          labels.push(`Year ${y}`);
+          investedData.push(Math.round(invested_point));
+          totalData.push(Math.round(fv_point));
+        }
+
+        // Draw compounding line chart
+        if (sipChartInstance) sipChartInstance.destroy();
+        const sipCtx = document.getElementById('sipChart').getContext('2d');
+        sipChartInstance = new Chart(sipCtx, {
+          type: 'line',
+          data: {
+            labels: labels,
+            datasets: [
+              {
+                label: 'Est. Wealth Value',
+                data: totalData,
+                borderColor: '#d4a843',
+                backgroundColor: 'rgba(212, 168, 67, 0.1)',
+                fill: true,
+                tension: 0.3
+              },
+              {
+                label: 'Amount Invested',
+                data: investedData,
+                borderColor: '#5a6a82',
+                backgroundColor: 'transparent',
+                borderDash: [5, 5],
+                tension: 0.1
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                labels: { color: '#eef0f5', font: { family: 'Instrument Sans' } }
+              }
+            },
+            scales: {
+              x: {
+                grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                ticks: { color: '#5a6a82' }
+              },
+              y: {
+                grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                ticks: {
+                  color: '#5a6a82',
+                  callback: function (value) { return '₹' + fmtNum(value); }
+                }
+              }
+            }
+          }
+        });
+      }
+    } catch (e) {
+      showResult('sipResult', '⚠ Could not reach server.');
+    }
+    setLoading('sipBtn', false);
+  }
+
+  function resetSIP() {
+    document.getElementById('sip_monthly').value = '';
+    document.getElementById('sip_rate').value = '';
+    document.getElementById('sip_years').value = '';
+    const res = document.getElementById('sipResult');
+    res.innerHTML = '';
+    res.classList.remove('visible');
+    if (sipChartInstance) {
+      sipChartInstance.destroy();
+      sipChartInstance = null;
+    }
+  }
+</script>
+{% endblock %}

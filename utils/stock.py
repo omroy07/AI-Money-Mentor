@@ -1,5 +1,9 @@
 import yfinance as yf
 import re
+import time
+
+STOCK_CACHE = {}
+CACHE_EXPIRY = 600  # 10 minutes in seconds
 
 def get_stock_price(symbol):
     try:
@@ -9,6 +13,12 @@ def get_stock_price(symbol):
         # Security sanitization check: only allow alphanumeric, dots, hyphens, and underscores
         if not symbol or not re.match(r"^[A-Z0-9.\-_]+$", symbol):
             return {"error": "Invalid stock symbol format"}
+
+        now = time.time()
+        if symbol in STOCK_CACHE:
+            cached_res, timestamp = STOCK_CACHE[symbol]
+            if now - timestamp < CACHE_EXPIRY:
+                return cached_res
 
         # Try finding as is first (especially for global stocks like AAPL, MSFT)
         stock = yf.Ticker(symbol)
@@ -54,27 +64,24 @@ def get_stock_price(symbol):
         except Exception as info_err:
             print(f"Info fetch failed for {symbol}: {info_err}")
 
-        # Get latest 5 news items
-        news_items = []
+        # Get news safely
+        news_data = []
         try:
-            raw_news = stock.news
-            if raw_news:
-                for item in raw_news[:5]:
-                    news_items.append({
-                        "title": item.get("title", ""),
-                        "publisher": item.get("publisher", ""),
-                        "link": item.get("link", "")
-                    })
-        except Exception as news_err:
-            print(f"News fetch failed for {symbol}: {news_err}")
+            news = stock.news
+            if news:
+                news_data = news
+        except Exception:
+            pass
 
-        return {
+        ret = {
             "symbol": symbol,
             "price": round(price, 2),
             "history": history_data,
             "metrics": metrics,
-            "news": news_items
+            "news": news_data
         }
+        STOCK_CACHE[symbol] = (ret, time.time())
+        return ret
 
     except Exception as e:
-        return {"error": str(e)}
+        return {"error": str(e)}

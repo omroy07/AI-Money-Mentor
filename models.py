@@ -112,3 +112,35 @@ class Liability(db.Model):
 
     def to_dict(self, index):
         return {"id": index, "name": self.name, "amount": self.amount}
+
+
+class BudgetLimit(db.Model):
+    __tablename__ = "budget_limits"
+    id = db.Column(db.Integer, primary_key=True)
+    category = db.Column(db.String(120), unique=True, nullable=False)
+    limit_amount = db.Column(db.Float, nullable=False)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "category": self.category,
+            "limit_amount": self.limit_amount
+        }
+
+
+class BudgetAlert(db.Model):
+    __tablename__ = "budget_alerts"
+    id = db.Column(db.Integer, primary_key=True)
+    category = db.Column(db.String(120), nullable=False)
+    year_month = db.Column(db.String(7), nullable=False)  # e.g., "2026-06"
+    threshold = db.Column(db.Integer, nullable=False)    # 80, 90, or 100
+    triggered_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "category": self.category,
+            "year_month": self.year_month,
+            "threshold": self.threshold,
+            "triggered_at": self.triggered_at.isoformat()
+        }

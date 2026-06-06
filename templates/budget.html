@@ -1,0 +1,229 @@
+{% extends 'base.html' %}
+
+{% block title %}Smart Budget Planner{% endblock %}
+
+{% block content %}
+<div id="budget" class="page active">
+  <div class="page-title">🎯 Smart <span>Budget Planner</span></div>
+
+  <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 20px; align-items: start; max-width: 950px;">
+    <!-- SET BUDGET LIMITS CARD -->
+    <div class="card">
+      <div class="card-title">Set Monthly Category Limits</div>
+      <form id="limitForm">
+        <label for="limitCategory">Category</label>
+        <select id="limitCategory" required style="margin-bottom: 12px;">
+          <option value="">Select Category</option>
+          <option value="Food">Food</option>
+          <option value="Rent">Rent</option>
+          <option value="Travel">Travel</option>
+          <option value="Shopping">Shopping</option>
+          <option value="Other">Other</option>
+        </select>
+        <label for="limitAmt">Limit Amount (₹)</label>
+        <input type="number" required min="1" id="limitAmt" placeholder="e.g. 10000" style="margin-bottom: 16px;">
+        <button type="submit" id="limitBtn" class="btn btn-gold" style="width: 100%;">Set Budget Limit</button>
+      </form>
+
+      <!-- TRIGGER CHECK IN REAL-TIME -->
+      <button class="btn btn-ghost" onclick="triggerManualChecks()" style="margin-top:15px; width:100%">🔔 Check Budget Thresholds Now</button>
+    </div>
+
+    <!-- OVERALL STATUS CARD -->
+    <div class="card">
+      <div class="card-title">Monthly Budget Status</div>
+      <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 15px;">
+        <label style="margin: 0; white-space: nowrap;">Selected Month:</label>
+        <input type="month" id="budgetMonth" onchange="loadBudgetStatus()" style="max-width: 180px;">
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+        <div style="background: rgba(212, 168, 67, 0.08); padding: 12px; border-radius: 12px; text-align: center;">
+          <div style="font-size: 11px; color: var(--muted); text-transform: uppercase;">Total Budgeted</div>
+          <div id="totalBudgeted" style="font-size: 20px; font-weight: 800; color: var(--gold);">₹0</div>
+        </div>
+        <div style="background: rgba(20, 200, 191, 0.08); padding: 12px; border-radius: 12px; text-align: center;">
+          <div style="font-size: 11px; color: var(--muted); text-transform: uppercase;">Total Spent</div>
+          <div id="totalSpent" style="font-size: 20px; font-weight: 800; color: var(--teal);">₹0</div>
+        </div>
+      </div>
+
+      <div id="budgetStatusContainer" style="display: flex; flex-direction: column; gap: 12px;">
+        <!-- Filled dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; align-items: start; max-width: 950px;">
+    <!-- ALERTS FEED CARD -->
+    <div class="card">
+      <div class="card-title">Recent Alerts & Notifications</div>
+      <div id="alertsFeed" style="display: flex; flex-direction: column; gap: 8px; max-height: 300px; overflow-y: auto;">
+        <!-- Filled dynamically -->
+      </div>
+    </div>
+
+    <!-- TREND ANALYSIS CARD -->
+    <div class="card">
+      <div class="card-title">Over-spending Recommendations</div>
+      <div id="budgetAdvice" style="font-size: 13px; line-height: 1.6; color: var(--text);">
+        Loading recommendations...
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Set default month to current
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('budgetMonth').value = new Date().toISOString().slice(0, 7);
+    loadBudgetStatus();
+    loadAlertsFeed();
+  });
+
+  const limitForm = document.getElementById("limitForm");
+  if (limitForm) {
+    limitForm.addEventListener("submit", async function (e) {
+      e.preventDefault();
+      const category = document.getElementById("limitCategory").value;
+      const limit_amount = parseFloat(document.getElementById("limitAmt").value);
+      
+      setLoading("limitBtn", true);
+      try {
+        const data = await apiFetch("/budget/limits", { category, limit_amount });
+        if (data.status === "success") {
+          document.getElementById("limitAmt").value = "";
+          document.getElementById("limitCategory").value = "";
+          loadBudgetStatus();
+          loadAlertsFeed();
+        } else {
+          alert("Error: " + data.error);
+        }
+      } catch (err) {
+        alert("Failed to reach server.");
+      }
+      setLoading("limitBtn", false);
+    });
+  }
+
+  async function loadBudgetStatus() {
+    const month = document.getElementById("budgetMonth").value;
+    try {
+      const res = await fetch(`/budget/status?month=${month}`);
+      const data = await res.json();
+      
+      document.getElementById("totalBudgeted").textContent = "₹" + fmtNum(data.total_budgeted);
+      document.getElementById("totalSpent").textContent = "₹" + fmtNum(data.total_spent);
+      
+      const container = document.getElementById("budgetStatusContainer");
+      container.innerHTML = "";
+      
+      if (data.categories.length === 0) {
+        container.innerHTML = `<div style="text-align:center; padding: 20px; color: var(--muted); font-style: italic;">No budgets or expenses for this month.</div>`;
+        document.getElementById("budgetAdvice").innerHTML = "Add some categories or expenses to get recommendations.";
+        return;
+      }
+      
+      let warnings = [];
+      
+      data.categories.forEach(item => {
+        const pct = item.percentage;
+        const overBudget = pct > 100;
+        const barColor = overBudget ? 'var(--red)' : pct >= 90 ? 'var(--red)' : pct >= 80 ? 'var(--gold)' : 'var(--green)';
+        const pctText = item.limit_amount > 0 ? `${pct}% used` : "No limit set";
+        
+        if (pct >= 80) {
+          warnings.push(`<strong>${item.category}</strong>: Spent ₹${fmtNum(item.spent)} / ₹${fmtNum(item.limit_amount)} (${pct}%)`);
+        }
+        
+        container.innerHTML += `
+          <div style="background: rgba(255, 255, 255, 0.02); padding: 10px 14px; border: 1px solid var(--border); border-radius: 10px;">
+            <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px; font-weight:600;">
+              <span>${item.category}</span>
+              <span style="color: ${barColor}">${pctText}</span>
+            </div>
+            <div style="background: rgba(255, 255, 255, 0.06); border-radius: 99px; height: 8px; overflow: hidden; margin-bottom: 4px;">
+              <div style="width: ${Math.min(pct, 100)}%; height: 100%; background: ${barColor}; border-radius: 99px; transition: width 0.4s;"></div>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--muted);">
+              <span>Spent: ₹${fmtNum(item.spent)}</span>
+              <span>Limit: ₹${fmtNum(item.limit_amount)}</span>
+            </div>
+          </div>
+        `;
+      });
+      
+      // Update advice card
+      const adviceDiv = document.getElementById("budgetAdvice");
+      if (warnings.length > 0) {
+        adviceDiv.innerHTML = `
+          <div style="padding: 10px 12px; background: rgba(224, 82, 82, 0.08); border: 1px solid rgba(224, 82, 82, 0.2); border-radius: 8px; font-size: 12px; color: var(--red); margin-bottom:12px;">
+            ⚠️ <strong>High Spending Alerts:</strong><br/>
+            ${warnings.join("<br/>")}
+          </div>
+          💡 <strong>Suggestions:</strong><br/>
+          - You are approaching or have crossed category thresholds. Consider freezing non-essential transactions in high-spending categories.<br/>
+          - Review any recurring payments to ensure they are intended and active.<br/>
+          - Optimize tax regime choices and direct any extra savings to ELSS/mutual funds immediately to lock in wealth.
+        `;
+      } else {
+        adviceDiv.innerHTML = `
+          <div style="padding: 10px 12px; background: rgba(46, 204, 138, 0.08); border: 1px solid rgba(46, 204, 138, 0.2); border-radius: 8px; font-size: 12px; color: var(--green); margin-bottom:12px;">
+            👍 <strong>Budget Healthy:</strong> All categories are below critical thresholds!
+          </div>
+          💡 <strong>Suggestions:</strong><br/>
+          - Maintain your current spending plan.<br/>
+          - Consider allocating leftover funds to emergency savings or debt reduction.<br/>
+          - You can configure category limits for other departments to enforce comprehensive planning.
+        `;
+      }
+      
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  async function loadAlertsFeed() {
+    try {
+      const res = await fetch("/budget/alerts");
+      const data = await res.json();
+      
+      const feed = document.getElementById("alertsFeed");
+      feed.innerHTML = "";
+      
+      if (data.length === 0) {
+        feed.innerHTML = `<div style="text-align: center; padding: 20px; color: var(--muted); font-style: italic;">No alerts triggered yet</div>`;
+        return;
+      }
+      
+      data.forEach(item => {
+        const timeStr = new Date(item.triggered_at).toLocaleTimeString("en-IN", { hour: '2-digit', minute: '2-digit' }) + ", " + new Date(item.triggered_at).toLocaleDateString("en-IN", { day: 'numeric', month: 'short' });
+        feed.innerHTML += `
+          <div style="display: flex; gap: 10px; align-items: start; padding: 8px 12px; background: rgba(255, 255, 255, 0.02); border-bottom: 1px solid var(--border);">
+            <div style="font-size: 16px;">🔔</div>
+            <div style="flex: 1; font-size: 12px;">
+              <div>Category <strong>${item.category}</strong> crossed <strong>${item.threshold}%</strong> limit.</div>
+              <div style="color: var(--muted); font-size: 10px; margin-top: 2px;">${timeStr} &nbsp;·&nbsp; Month: ${item.year_month}</div>
+            </div>
+          </div>
+        `;
+      });
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  async function triggerManualChecks() {
+    try {
+      const res = await fetch("/calculate");
+      const data = await res.json();
+      alert("Real-time spending verification completed! Any crossed thresholds have been logged.");
+      loadBudgetStatus();
+      loadAlertsFeed();
+    } catch (err) {
+      alert("Failed to calculate.");
+    }
+  }
+</script>
+{% endblock %}

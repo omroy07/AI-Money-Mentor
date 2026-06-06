@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+
+{% block title %}Net Worth Tracker{% endblock %}
+
+{% block content %}
+<div id="networth" class="page active">
+  <div class="page-title">💎 Net <span>Worth Tracker</span></div>
+
+  <div class="stats-row" style="margin-bottom: 20px;">
+    <div class="stat-card">
+      <div class="stat-label">Total Assets</div>
+      <div class="stat-val" id="nwAssets">₹0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Total Liabilities</div>
+      <div class="stat-val" id="nwLiabilities" style="color: var(--red);">₹0</div>
+    </div>
+    <div class="stat-card"
+      style="grid-column: span 2; background: rgba(212, 168, 67, 0.1); border-color: var(--gold);">
+      <div class="stat-label" style="color: var(--gold);">Current Net Worth</div>
+      <div class="stat-val" id="nwTotal" style="font-size: 32px;">₹0</div>
+    </div>
+  </div>
+
+  <div class="dash-grid">
+    <!-- ASSETS -->
+    <div class="card">
+      <div class="card-title">Assets (What you own)</div>
+      <div class="chat-input-row" style="margin-bottom: 15px;">
+        <input type="text" id="assetName" placeholder="Asset name (e.g. HDFC Savings)">
+        <input type="number" required min="0" id="assetAmt" placeholder="Amount (₹)">
+        <button class="btn btn-gold" onclick="addNWItem('asset')">Add</button>
+      </div>
+      <table style="width: 100%; border-collapse: collapse; font-size: 13px; color: var(--text);">
+        <thead style="color: var(--muted); text-align: left; border-bottom: 1px solid var(--border);">
+          <tr>
+            <th style="padding: 8px;">Asset</th>
+            <th style="padding: 8px; text-align: right;">Value</th>
+            <th style="padding: 8px; text-align: center;">Action</th>
+          </tr>
+        </thead>
+        <tbody id="assetList"></tbody>
+      </table>
+    </div>
+
+    <!-- LIABILITIES -->
+    <div class="card">
+      <div class="card-title">Liabilities (What you owe)</div>
+      <div class="chat-input-row" style="margin-bottom: 15px;">
+        <input type="text" id="liabName" placeholder="Liability name (e.g. Home Loan)">
+        <input type="number" required min="0" id="liabAmt" placeholder="Amount (₹)">
+        <button class="btn btn-gold" onclick="addNWItem('liability')">Add</button>
+      </div>
+      <table style="width: 100%; border-collapse: collapse; font-size: 13px; color: var(--text);">
+        <thead style="color: var(--muted); text-align: left; border-bottom: 1px solid var(--border);">
+          <tr>
+            <th style="padding: 8px;">Liability</th>
+            <th style="padding: 8px; text-align: right;">Amount</th>
+            <th style="padding: 8px; text-align: center;">Action</th>
+          </tr>
+        </thead>
+        <tbody id="liabList"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  async function loadNetWorth() {
+    try {
+      const data = await apiFetch('/net-worth', {});
+
+      document.getElementById('nwAssets').textContent = '₹' + fmtNum(data.total_assets);
+      document.getElementById('nwLiabilities').textContent = '₹' + fmtNum(data.total_liabilities);
+      document.getElementById('nwTotal').textContent = '₹' + fmtNum(data.net_worth);
+
+      const assetList = document.getElementById('assetList');
+      assetList.innerHTML = '';
+      if (data.assets.length === 0) {
+        assetList.innerHTML = '<tr><td colspan="3" style="text-align: center; padding: 20px; color: var(--muted); font-style: italic;">No assets added yet</td></tr>';
+      } else {
+        data.assets.forEach((item, idx) => {
+          assetList.innerHTML += `
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 8px;">${item.name}</td>
+              <td style="padding: 8px; text-align: right;">₹${fmtNum(item.amount)}</td>
+              <td style="padding: 8px; text-align: center;"><button class="btn btn-ghost" style="padding: 4px 8px; font-size: 10px;" onclick="deleteNWItem('asset', ${idx})">✖</button></td>
+            </tr>
+          `;
+        });
+      }
+
+      const liabList = document.getElementById('liabList');
+      liabList.innerHTML = '';
+      if (data.liabilities.length === 0) {
+        liabList.innerHTML = '<tr><td colspan="3" style="text-align: center; padding: 20px; color: var(--muted); font-style: italic;">No liabilities added yet</td></tr>';
+      } else {
+        data.liabilities.forEach((item, idx) => {
+          liabList.innerHTML += `
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 8px;">${item.name}</td>
+              <td style="padding: 8px; text-align: right;">₹${fmtNum(item.amount)}</td>
+              <td style="padding: 8px; text-align: center;"><button class="btn btn-ghost" style="padding: 4px 8px; font-size: 10px;" onclick="deleteNWItem('liability', ${idx})">✖</button></td>
+            </tr>
+          `;
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async function addNWItem(type) {
+    const nameEl = document.getElementById(type === 'asset' ? 'assetName' : 'liabName');
+    const amtEl  = document.getElementById(type === 'asset' ? 'assetAmt'  : 'liabAmt');
+    const name   = nameEl.value.trim();
+    const amount = parseFloat(amtEl.value);
+    if (!name || !amount || amount <= 0) { alert('Enter a valid name and amount.'); return; }
+    try {
+      const url = type === 'asset' ? '/add-asset' : '/add-liability';
+      await apiFetch(url, { name, amount });
+      nameEl.value = '';
+      amtEl.value  = '';
+      loadNetWorth();
+    } catch (e) { alert('Could not save. Is Flask running?'); }
+  }
+
+  async function deleteNWItem(type, idx) {
+    try {
+      await apiFetch('/delete-item', { type, id: idx });
+      loadNetWorth();
+    } catch (e) { alert('Could not delete. Is Flask running?'); }
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    loadNetWorth();
+  });
+</script>
+{% endblock %}

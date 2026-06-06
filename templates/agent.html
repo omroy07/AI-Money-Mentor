@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}Multi Agent{% endblock %}
+
+{% block content %}
+<div id="agent" class="page center-page active">
+  <div class="page-title">🧠 Multi <span>Agent</span></div>
+  <div class="card" style="max-width:600px">
+    <div class="card-title">AI Multi-Agent Financial Analysis</div>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px">
+      <div class="agent-tag">
+        <div class="dot"></div> Financial Planning Agent
+      </div>
+      <div class="agent-tag">
+        <div class="dot"></div> Tax Optimization Agent
+      </div>
+      <div class="agent-tag">
+        <div class="dot"></div> Investment Advisor Agent
+      </div>
+      <div class="agent-tag">
+        <div class="dot"></div> Insurance Advisor Agent
+      </div>
+    </div>
+    <label>Your Financial Query</label>
+    <textarea id="agentQuery" rows="4" placeholder="e.g. Should I invest in NPS or ELSS? I earn ₹12L/year…"
+      style="resize:vertical;margin-top:8px"></textarea>
+    <button class="btn btn-gold" style="margin-top:16px;width:100%" onclick="runAgent()" id="agentBtn">
+      Run Multi-Agent Analysis
+    </button>
+    <div id="agentResult" class="result-box"></div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  async function runAgent() {
+    const query = document.getElementById('agentQuery').value.trim();
+    if (!query) { showResult('agentResult', '⚠ Enter a query.'); return; }
+
+    setLoading('agentBtn', true);
+    try {
+      const data = await apiFetch('/agent', { query });
+      if (data.error) {
+        showResult('agentResult', `⚠ ${data.error}`);
+      } else {
+        const resp = data.response || JSON.stringify(data);
+        showResult('agentResult', `<div style="white-space:pre-wrap;font-size:13px;line-height:1.7">${resp}</div>`);
+      }
+    } catch (e) {
+      showResult('agentResult', '⚠ Could not reach server.');
+    }
+    setLoading('agentBtn', false);
+  }
+</script>
+{% endblock %}

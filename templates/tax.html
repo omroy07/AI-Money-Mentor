@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+
+{% block title %}Tax Planner{% endblock %}
+
+{% block content %}
+<div id="tax" class="page active">
+  <div class="page-title">💸 Tax <span>Planner</span></div>
+  <div style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 20px; align-items: start; max-width: 950px;">
+    <div class="card">
+      <div class="card-title">Income Tax Calculator (New Regime)</div>
+      <label>Gross Annual Income (₹)</label>
+      <input type="number" required min="0" id="taxIncome" placeholder="e.g. 1200000">
+      <div style="display:flex;gap:10px;margin-top:16px;">
+        <button class="btn btn-gold" style="flex:1" onclick="calcTax()" id="taxBtn">Calculate Tax</button>
+        <button class="btn btn-ghost" style="flex:1" onclick="resetTax()" id="taxResetBtn">Reset</button>
+      </div>
+      <div id="taxResult" class="result-box"></div>
+    </div>
+    <div class="card" id="taxComparisonCard" style="display:none; min-height: 280px;">
+      <div class="card-title">Regime Comparison (Old vs. New)</div>
+      <div id="taxComparisonResult"></div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  async function calcTax() {
+    const income = document.getElementById('taxIncome').value;
+    if (!income) { showResult('taxResult', '⚠ Enter your annual income.'); return; }
+
+    setLoading('taxBtn', true);
+    try {
+      const data = await apiFetch('/tax', { income: parseFloat(income) });
+
+      if (data.error) {
+        showResult('taxResult', `⚠ ${data.error}`);
+      } else {
+        const taxRes = data.tax;
+        document.getElementById('taxComparisonCard').style.display = 'block';
+
+        let tableHtml = `
+          <table style="width:100%; border-collapse:collapse; font-size:13px; text-align:left; color:var(--text);">
+            <thead>
+              <tr style="border-bottom:1px solid var(--border); color:var(--muted); font-size:11px; text-transform:uppercase;">
+                <th style="padding:10px 0;">Particulars</th>
+                <th style="padding:10px 0;">Old Regime</th>
+                <th style="padding:10px 0; color:var(--gold);">New Regime</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom:1px solid var(--border);">
+                <td style="padding:10px 0;">Gross Income</td>
+                <td style="padding:10px 0;">₹${fmtNum(taxRes.gross_income)}</td>
+                <td style="padding:10px 0; color:var(--gold);">₹${fmtNum(taxRes.gross_income)}</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border);">
+                <td style="padding:10px 0;">Std Deduction</td>
+                <td style="padding:10px 0;">-₹${fmtNum(taxRes.old_regime.standard_deduction)}</td>
+                <td style="padding:10px 0; color:var(--gold);">-₹${fmtNum(taxRes.new_regime.standard_deduction)}</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border);">
+                <td style="padding:10px 0;">Taxable Income</td>
+                <td style="padding:10px 0;">₹${fmtNum(taxRes.old_regime.taxable_income)}</td>
+                <td style="padding:10px 0; color:var(--gold);">₹${fmtNum(taxRes.new_regime.taxable_income)}</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border);">
+                <td style="padding:10px 0;">Base Tax</td>
+                <td style="padding:10px 0;">₹${fmtNum(taxRes.old_regime.base_tax)}</td>
+                <td style="padding:10px 0; color:var(--gold);">₹${fmtNum(taxRes.new_regime.base_tax)}</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border);">
+                <td style="padding:10px 0;">Cess (4%)</td>
+                <td style="padding:10px 0;">₹${fmtNum(taxRes.old_regime.cess)}</td>
+                <td style="padding:10px 0; color:var(--gold);">₹${fmtNum(taxRes.new_regime.cess)}</td>
+              </tr>
+              <tr style="font-weight:700; font-size:15px; border-bottom:2px solid var(--border);">
+                <td style="padding:12px 0;">Total Tax</td>
+                <td style="padding:12px 0;">₹${fmtNum(taxRes.old_regime.total_tax)}</td>
+                <td style="padding:12px 0; color:#2ecc8a;">₹${fmtNum(taxRes.new_regime.total_tax)}</td>
+              </tr>
+            </tbody>
+          </table>
+          
+          <div style="margin-top:16px; padding:12px 14px; background:rgba(46,204,138,0.08); border:1px solid rgba(46,204,138,0.2); border-radius:8px; color:#2ecc8a; font-size:13px; line-height:1.5;">
+            <strong>Recommendation:</strong> Select the <strong>${taxRes.recommended}</strong>.<br/>
+            You will save <strong>₹${fmtNum(taxRes.savings)}</strong> annually with this regime.
+          </div>
+        `;
+        document.getElementById('taxComparisonResult').innerHTML = tableHtml;
+
+        showResult('taxResult', `
+          <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em">Tax Payable (${taxRes.recommended})</div>
+          <div class="result-big" style="color:#2ecc8a;">₹${fmtNum(taxRes.recommended === "New Regime" ? taxRes.new_regime.total_tax : taxRes.old_regime.total_tax)}</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:4px">Annual Savings: ₹${fmtNum(taxRes.savings)}</div>
+        `);
+      }
+    } catch (e) {
+      showResult('taxResult', '⚠ Could not reach server.');
+    }
+    setLoading('taxBtn', false);
+  }
+
+  function resetTax() {
+    document.getElementById('taxIncome').value = '';
+    const res = document.getElementById('taxResult');
+    res.innerHTML = '';
+    res.classList.remove('visible');
+    const compCard = document.getElementById('taxComparisonCard');
+    if (compCard) compCard.style.display = 'none';
+  }
+</script>
+{% endblock %}

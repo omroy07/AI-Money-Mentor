@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+
+{% block title %}Money Score{% endblock %}
+
+{% block content %}
+<div id="score" class="page active">
+  <div class="page-title">Money <span>Score</span></div>
+  <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 20px; align-items: start; max-width: 900px;">
+    <div class="card">
+      <div class="card-title">Enter your financial details</div>
+      <div class="form-grid">
+        <div><label>Monthly Income (₹)</label><input type="number" required min="0" id="s_income" placeholder="e.g. 80000"></div>
+        <div><label>Monthly Expenses (₹)</label><input type="number" required min="0" id="s_expenses" placeholder="e.g. 40000"></div>
+        <div><label>Monthly Savings (₹)</label><input type="number" required min="0" id="s_savings" placeholder="e.g. 20000"></div>
+        <div><label>Investments (₹)</label><input type="number" required min="0" id="s_invest" placeholder="e.g. 500000"></div>
+        <div><label>Total Debt (₹)</label><input type="number" required min="0" id="s_debt" placeholder="e.g. 100000"></div>
+        <div><label>Emergency Fund (₹)</label><input type="number" required min="0" id="s_emergency" placeholder="e.g. 240000"></div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:16px;">
+        <button class="btn btn-gold" style="flex:1" onclick="calcScore()" id="scoreBtn">Calculate Money Score</button>
+        <button class="btn btn-ghost" style="flex:1" onclick="resetScore()" id="scoreResetBtn">Reset</button>
+      </div>
+      <div id="scoreResult" class="result-box"></div>
+    </div>
+    <div class="card" style="min-height: 380px;">
+      <div class="card-title">Financial Health Breakdown</div>
+      <div style="position: relative; height: 320px; display: flex; justify-content: center; align-items: center;">
+        <canvas id="scoreChart"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  let scoreChartInstance = null;
+
+  async function calcScore() {
+    const income = document.getElementById('s_income').value;
+    const expenses = document.getElementById('s_expenses').value;
+    const savings = document.getElementById('s_savings').value;
+    const invest = document.getElementById('s_invest').value;
+    const debt = document.getElementById('s_debt').value;
+    const emergency = document.getElementById('s_emergency').value;
+
+    if (!income || !expenses || !savings || !invest || !debt || !emergency) {
+      showResult('scoreResult', '⚠ Please fill in all fields.');
+      return;
+    }
+
+    setLoading('scoreBtn', true);
+    try {
+      const data = await apiFetch('/money-score', {
+        income: parseFloat(income),
+        expenses: parseFloat(expenses),
+        savings: parseFloat(savings),
+        investments: parseFloat(invest),
+        debt: parseFloat(debt),
+        emergency: parseFloat(emergency)
+      });
+
+      if (data.error) {
+        showResult('scoreResult', `⚠ ${data.error}`);
+      } else {
+        const color = data.score >= 80 ? '#2ecc8a' : data.score >= 60 ? '#d4a843' : '#e05252';
+        const circumference = 2 * Math.PI * 54;
+        const offset = circumference - (data.score / 100) * circumference;
+        showResult('scoreResult', `
+          <div style="text-align:center;margin-bottom:10px">
+            <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:12px">Your Money Score</div>
+            <div class="score-container">
+              <svg class="score-circle-svg">
+                <circle class="score-circle-bg" cx="65" cy="65" r="54" />
+                <circle class="score-circle-bar" cx="65" cy="65" r="54" 
+                        stroke="${color}" 
+                        stroke-dasharray="${circumference}" 
+                        stroke-dashoffset="${offset}" />
+              </svg>
+              <div class="score-text-overlay">
+                <div style="font-family:'Outfit',sans-serif;font-size:42px;font-weight:800;color:${color}">${data.score}</div>
+                <div style="font-size:11px;font-weight:600;color:var(--text);margin-top:-2px">${data.status}</div>
+              </div>
+            </div>
+          </div>
+        `);
+
+        // Compute sub-scores locally for visual rendering
+        const savingsRateVal = parseFloat(savings) / parseFloat(income);
+        const savingsScore = savingsRateVal >= 0.3 ? 30 : savingsRateVal >= 0.2 ? 20 : 10;
+
+        const investRateVal = parseFloat(invest) / parseFloat(income);
+        const investScore = investRateVal >= 0.2 ? 25 : investRateVal >= 0.1 ? 15 : 5;
+
+        const debtRatioVal = parseFloat(debt) / parseFloat(income);
+        const debtScore = debtRatioVal <= 0.2 ? 25 : debtRatioVal <= 0.4 ? 15 : 5;
+
+        const monthsCoverVal = parseFloat(emergency) / parseFloat(expenses);
+        const emergencyScore = monthsCoverVal >= 6 ? 20 : monthsCoverVal >= 3 ? 10 : 5;
+
+        // Draw Horizontal Bar Chart
+        if (scoreChartInstance) scoreChartInstance.destroy();
+        const scoreCtx = document.getElementById('scoreChart').getContext('2d');
+        scoreChartInstance = new Chart(scoreCtx, {
+          type: 'bar',
+          data: {
+            labels: ['Savings Rate', 'Investment Rate', 'Debt Ratio', 'Emergency Fund'],
+            datasets: [{
+              label: 'Your Score',
+              data: [savingsScore, investScore, debtScore, emergencyScore],
+              backgroundColor: ['#d4a843', '#14c8bf', '#5a6a82', '#2ecc8a'],
+              borderRadius: 6,
+              barThickness: 16
+            }]
+          },
+          options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false }
+            },
+            scales: {
+              x: {
+                grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                ticks: { color: '#5a6a82' },
+                max: 30
+              },
+              y: {
+                grid: { display: false },
+                ticks: { color: '#eef0f5' }
+              }
+            }
+          }
+        });
+      }
+    } catch (e) {
+      showResult('scoreResult', '⚠ Could not reach server.');
+    }
+    setLoading('scoreBtn', false);
+  }
+
+  function resetScore() {
+    document.getElementById('s_income').value = '';
+    document.getElementById('s_expenses').value = '';
+    document.getElementById('s_savings').value = '';
+    document.getElementById('s_invest').value = '';
+    document.getElementById('s_debt').value = '';
+    document.getElementById('s_emergency').value = '';
+    const res = document.getElementById('scoreResult');
+    res.innerHTML = '';
+    res.classList.remove('visible');
+    if (scoreChartInstance) {
+      scoreChartInstance.destroy();
+      scoreChartInstance = null;
+    }
+  }
+</script>
+{% endblock %}

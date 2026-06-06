@@ -19,14 +19,24 @@ def calculate_expense(expenses):
 
 
 def insights(client, expenses):
+    totals = calculate_expense(expenses)
+
+    if client is None:
+        return {
+            "insights": """
+                <div class="insight-card">
+                    <h3>Insights Offline</h3>
+                    <p>AI Money Mentor is offline because GROQ_API_KEY is not configured.</p>
+                </div>
+            """,
+            "summary": totals,
+        }
 
     if not expenses:
         return {
             "insights": "Add some expenses to generate AI insights.",
             "summary": {},
         }
-
-    totals = calculate_expense(expenses)
 
     # User Prompt for AI
     prompt = f"""

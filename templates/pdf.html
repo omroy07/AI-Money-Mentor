@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block title %}PDF Parser{% endblock %}
+
+{% block content %}
+<div id="pdf" class="page center-page active">
+  <div class="page-title">📄 PDF <span>Parser</span></div>
+  <div class="card" style="max-width:480px">
+    <div class="card-title">Upload Financial Document</div>
+    <label>Select PDF (Form 16, Salary Slip, etc.)</label>
+    <input type="file" id="pdfFile" accept=".pdf" style="margin-top:8px">
+    <button class="btn btn-gold" style="margin-top:16px;width:100%" onclick="uploadPDF()" id="pdfBtn">
+      Parse Document
+    </button>
+    <div id="pdfResult" class="result-box"></div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  async function uploadPDF() {
+    const file = document.getElementById('pdfFile').files[0];
+    if (!file) { showResult('pdfResult', '⚠ Please select a PDF file.'); return; }
+
+    const form = new FormData();
+    form.append('file', file);
+
+    setLoading('pdfBtn', true);
+    try {
+      const data = await apiFetch('/upload', form, true);
+      if (data.error) {
+        showResult('pdfResult', `⚠ ${data.error}`);
+      } else {
+        if (data.data && typeof data.data === 'object') {
+          const docData = data.data;
+          const docType = docData.document_type || "Unknown Document";
+          const emp = docData.employer_organization || "N/A";
+          const gross = docData.gross_income ? "₹" + fmtNum(docData.gross_income) : "N/A";
+          const tds = docData.tax_deducted_tds ? "₹" + fmtNum(docData.tax_deducted_tds) : "N/A";
+          const score = docData.confidence_score ? (docData.confidence_score * 100).toFixed(0) + "%" : "N/A";
+          const summary = docData.summary_findings || "No summary available.";
+
+          let deductionsHtml = "";
+          if (docData.allowances_deductions && Object.keys(docData.allowances_deductions).length > 0) {
+            deductionsHtml = Object.entries(docData.allowances_deductions)
+              .map(([k, v]) => `<div style="display:flex; justify-content:space-between"><span>${k}:</span> <strong>₹${fmtNum(v)}</strong></div>`)
+              .join("");
+          } else {
+            deductionsHtml = "None detected";
+          }
+
+          let html = `
+            <div style="font-size:13px; font-weight:700; color:var(--gold); border-bottom: 1px solid var(--border); padding-bottom: 6px; margin-bottom: 10px;">
+              Parsed: ${docType} (Confidence: ${score})
+            </div>
+            <div style="display:flex; flex-direction:column; gap:8px; font-size:12px;">
+              <div style="display:flex; justify-content:space-between;"><span>Issuer / Employer:</span> <strong>${emp}</strong></div>
+              <div style="display:flex; justify-content:space-between;"><span>Gross Income:</span> <strong>${gross}</strong></div>
+              <div style="display:flex; justify-content:space-between;"><span>TDS (Tax Deducted):</span> <strong>${tds}</strong></div>
+              <div style="margin-top: 6px; border-top: 1px solid var(--border); padding-top: 6px;">
+                <span style="font-size:10px; color:var(--muted); text-transform:uppercase;">Deductions & Allowances:</span>
+                <div style="margin-top:4px; display:flex; flex-direction:column; gap:4px;">
+                  ${deductionsHtml}
+                </div>
+              </div>
+              <div style="margin-top:6px; font-size:11px; color:var(--teal); font-style:italic; background:rgba(20,200,191,0.05); padding:8px; border-radius:6px; line-height:1.4;">
+                💡 ${summary}
+              </div>
+            </div>
+          `;
+          showResult('pdfResult', html);
+        } else {
+          const content = data.data || data.text || JSON.stringify(data);
+          showResult('pdfResult', `<pre style="white-space:pre-wrap;font-family:'JetBrains Mono',monospace;font-size:12px">${content}</pre>`);
+        }
+      }
+    } catch (e) {
+      showResult('pdfResult', '⚠ Could not reach server.');
+    }
+    setLoading('pdfBtn', false);
+  }
+</script>
+{% endblock %}
