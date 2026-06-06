@@ -5,11 +5,20 @@
 {% block content %}
 <div id="tax" class="page active">
   <div class="page-title">💸 Tax <span>Planner</span></div>
-  <div style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 20px; align-items: start; max-width: 950px;">
-    <div class="card">
-      <div class="card-title">Income Tax Calculator (New Regime)</div>
+  <div style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 20px; align-items: start; max-width: 950px;"    <div class="card">
+      <div class="card-title">Income Tax Calculator (Old vs New Regime)</div>
       <label>Gross Annual Income (₹)</label>
-      <input type="number" required min="0" id="taxIncome" placeholder="e.g. 1200000">
+      <input type="number" required min="0" id="taxIncome" placeholder="e.g. 1200000" style="margin-bottom:12px;">
+
+      <label>Section 80C Deductions (₹)</label>
+      <input type="number" min="0" max="150000" id="tax80c" placeholder="e.g. 150000 (PPF, ELSS, EPF)" style="margin-bottom:12px;">
+
+      <label>Section 80D Deductions (₹)</label>
+      <input type="number" min="0" max="25000" id="tax80d" placeholder="e.g. 25000 (Health Insurance)" style="margin-bottom:12px;">
+
+      <label>HRA Deductions (₹)</label>
+      <input type="number" min="0" id="taxHra" placeholder="e.g. 50000" style="margin-bottom:12px;">
+
       <div style="display:flex;gap:10px;margin-top:16px;">
         <button class="btn btn-gold" style="flex:1" onclick="calcTax()" id="taxBtn">Calculate Tax</button>
         <button class="btn btn-ghost" style="flex:1" onclick="resetTax()" id="taxResetBtn">Reset</button>
@@ -30,9 +39,18 @@
     const income = document.getElementById('taxIncome').value;
     if (!income) { showResult('taxResult', '⚠ Enter your annual income.'); return; }
 
+    const deduction_80c = document.getElementById('tax80c').value || 0;
+    const deduction_80d = document.getElementById('tax80d').value || 0;
+    const deduction_hra = document.getElementById('taxHra').value || 0;
+
     setLoading('taxBtn', true);
     try {
-      const data = await apiFetch('/tax', { income: parseFloat(income) });
+      const data = await apiFetch('/tax', { 
+        income: parseFloat(income),
+        deduction_80c: parseFloat(deduction_80c),
+        deduction_80d: parseFloat(deduction_80d),
+        deduction_hra: parseFloat(deduction_hra)
+      });
 
       if (data.error) {
         showResult('taxResult', `⚠ ${data.error}`);
@@ -88,7 +106,27 @@
             You will save <strong>₹${fmtNum(taxRes.savings)}</strong> annually with this regime.
           </div>
         `;
-        document.getElementById('taxComparisonResult').innerHTML = tableHtml;
+
+        // Format AI tax-saving advice
+        let aiAdviceHtml = "";
+        if (taxRes.ai_recommendations) {
+          let formattedAdvice = taxRes.ai_recommendations
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\n/g, '<br/>');
+          
+          aiAdviceHtml = `
+            <div style="margin-top: 18px; padding: 16px; background: rgba(212, 168, 67, 0.05); border: 1px solid rgba(212, 168, 67, 0.15); border-radius: 12px; text-align: left;">
+              <div style="font-family:'Syne',sans-serif; font-size: 14px; font-weight: 700; color: var(--gold2); margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+                <span>💡 AI Tax-Saving Tips</span>
+              </div>
+              <div style="font-size: 13px; line-height: 1.6; color: var(--text);">
+                ${formattedAdvice}
+              </div>
+            </div>
+          `;
+        }
+
+        document.getElementById('taxComparisonResult').innerHTML = tableHtml + aiAdviceHtml;
 
         showResult('taxResult', `
           <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em">Tax Payable (${taxRes.recommended})</div>
@@ -104,6 +142,9 @@
 
   function resetTax() {
     document.getElementById('taxIncome').value = '';
+    document.getElementById('tax80c').value = '';
+    document.getElementById('tax80d').value = '';
+    document.getElementById('taxHra').value = '';
     const res = document.getElementById('taxResult');
     res.innerHTML = '';
     res.classList.remove('visible');

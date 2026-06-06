@@ -63,7 +63,8 @@ class TestCalculateSip:
         result = calculate_sip(monthly=1000, rate=12, years=5, inflation_rate=6.0)
         # Without inflation nominal value is > inflation_adjusted_value
         assert result["nominal_value"] > result["inflation_adjusted_value"]
-        # Expected discount by 6% per year for 5 years
-        expected_discount = result["nominal_value"] / (1.06 ** 5)
+        # Expected discount by 6% per year compounded monthly for 5 years (60 months)
+        m = 0.06 / 12
+        expected_discount = result["nominal_value"] / ((1 + m) ** 60)
         assert abs(result["inflation_adjusted_value"] - expected_discount) < 1.0
 
