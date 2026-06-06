@@ -1,33 +1,55 @@
+from groq import Groq
 import os
-from groq import Groq, GroqError  # Imported GroqError for explicit API exception catching
 
+
+BUDGET_LIMITS = {
+    "Food": 5000.0,
+    "Shopping": 10000.0,
+    "Entertainment": 3000.0,
+    "Utilities": 6000.0,
+    "Other": 4000.0
+}
 
 def calculate_expense(expenses):
     if not expenses:
-        return {"Total": 0, "Average": 0, "By Category": {}}
+        return {"Total": 0, "Average": 0, "By Category": {}, "Budget Limits": BUDGET_LIMITS, "Status": {}}
 
-    total = sum([e["amount"] for e in expenses])
-    average = total / len(expenses)
+    total = sum([e["amount"]  for e in expenses])
+    average = total / len(expenses) 
     by_category = {}
 
     for e in expenses:
-        by_category[e["category"]] = (
-            by_category.get(e["category"], 0) + e["amount"]
-        )
-
-    return {"Total": total, "Average": average, "By Category": by_category}
-
-
+        by_category[e["category"]] = (by_category.get(e["category"],0) + e["amount"])
+    
+    status = {}
+    for cat, spent in by_category.items():
+        limit = BUDGET_LIMITS.get(cat, 5000.0) # Default limit if custom category
+        status[cat] = {
+            "spent": spent,
+            "limit": limit,
+            "exceeded": spent > limit,
+            "percentage": round((spent / limit) * 100, 2) if limit > 0 else 100.0
+        }
+        
+    return {
+        "Total": total,
+        "Average": average,
+        "By Category": by_category,
+        "Budget Limits": BUDGET_LIMITS,
+        "Status": status
+    }
+    
 def insights(client, expenses):
 
     if not expenses:
         return {
             "insights": "Add some expenses to generate AI insights.",
-            "summary": {},
+            "summary": {}
         }
 
-    totals = calculate_expense(expenses)
 
+    totals = calculate_expense(expenses)
+    
     # User Prompt for AI
     prompt = f"""
         You are AI-Money Mentor. You will analyze the expense data of the user and 
@@ -64,37 +86,14 @@ def insights(client, expenses):
         Breakdown: {totals['By Category']}
     """
 
-    # Wrapped the API call inside a try-except block to gracefully handle network/service failures
-    try:
-        response = client.chat.completions.create(
-            model="llama-3.1-8b-instant",
-            messages=[
-                {
-                    "role": "system",
-                    "content": "You are AI-Money Mentor who helps to analyze the expense given by the user and provide the personalized insights",
-                },
-                {"role": "user", "content": prompt},
-            ],
-        )
-        insights_text = response.choices[0].message.content
+    response = client.chat.completions.create(
+        model="llama-3.1-8b-instant",
+        messages= [
+            {'role':'user', 'content':prompt},
+            {'role':'system', 'content': "You are AI-Money Mentor who helps to analyze the expense given by the user and provide the personalized insights"}
+        ]
+    )
 
-    except GroqError as e:
-        # Handles API-specific issues (Rate limits, Invalid API Key, Server Down)
-        print(f"Groq API Error encountered: {e}")
-        insights_text = """
-            <div class="insight-card">
-                <h3>Insights Temporarily Unavailable</h3>
-                <p>We encountered an issue communicating with the AI mentor. Please check back shortly.</p>
-            </div>
-        """
-    except Exception as e:
-        # Fallback catch for unexpected connection drops or generic Python code failures
-        print(f"Unexpected error while generating insights: {e}")
-        insights_text = """
-            <div class="insight-card">
-                <h3>System Error</h3>
-                <p>An unexpected error occurred while analyzing your details. Please try again later.</p>
-            </div>
-        """
+    insights_text = response.choices[0].message.content
 
     return {"insights": insights_text, "summary": totals}

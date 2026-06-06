@@ -19,7 +19,18 @@ class TestCalculateExpense:
 
     def test_empty_list_returns_zeros(self):
         result = calculate_expense([])
-        assert result == {"Total": 0, "Average": 0, "By Category": {}}
+        assert result["Total"] == 0
+        assert result["Average"] == 0
+        assert result["By Category"] == {}
+
+    def test_budget_limits_warning(self):
+        expenses = [
+            {"category": "Food", "amount": 6000.0, "date": "2025-01-01"},
+        ]
+        result = calculate_expense(expenses)
+        assert "Budget Limits" in result
+        assert result["Status"]["Food"]["exceeded"] is True
+        assert result["Status"]["Food"]["limit"] == 5000.0
 
     def test_single_expense(self):
         expenses = [{"category": "Food", "amount": 500.0, "date": "2025-01-01"}]
