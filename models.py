@@ -100,8 +100,12 @@ class Asset(db.Model):
     name = db.Column(db.String(120), nullable=False)
     amount = db.Column(db.Float, nullable=False)
 
-    def to_dict(self, index):
-        return {"id": index, "name": self.name, "amount": self.amount}
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "amount": self.amount
+        }
 
 
 class Liability(db.Model):
@@ -110,8 +114,12 @@ class Liability(db.Model):
     name = db.Column(db.String(120), nullable=False)
     amount = db.Column(db.Float, nullable=False)
 
-    def to_dict(self, index):
-        return {"id": index, "name": self.name, "amount": self.amount}
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "amount": self.amount
+        }
 
 
 class BudgetLimit(db.Model):
