@@ -367,16 +367,18 @@ def add_liability():
 def delete_item():
     try:
         data = request.json
-        item_type = data["type"] # 'asset' or 'liability'
-        item_id = int(data["id"]) # positional index from the frontend
+        item_type = data["type"]  # 'asset' or 'liability'
+        item_db_id = int(data["id"])  # stable database id from the frontend
 
-        if item_type == 'asset':
-            rows = Asset.query.order_by(Asset.id).all()
-            db.session.delete(rows[item_id])
+        if item_type == "asset":
+            item = Asset.query.get(item_db_id)
         else:
-            rows = Liability.query.order_by(Liability.id).all()
-            db.session.delete(rows[item_id])
+            item = Liability.query.get(item_db_id)
 
+        if not item:
+            return jsonify({"error": f"Item not found (type={item_type}, id={item_db_id})"}), 404
+
+        db.session.delete(item)
         db.session.commit()
         return jsonify({"status": "success"})
     except Exception as e:
