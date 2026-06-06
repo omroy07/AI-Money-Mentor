@@ -73,25 +73,7 @@
       z-index: -1;
     }
 
-    .goal-box {
-      background: white;
-      padding: 10px;
-      margin-top: 10px;
-      border-radius: 10px;
-    }
 
-    .bar {
-      width: 100%;
-      height: 10px;
-      background: #ddd;
-      border-radius: 5px;
-    }
-
-    .fill {
-      height: 10px;
-      background: green;
-      border-radius: 5px;
-    }
 
     /* ── SIDEBAR ──────────────────────────────────── */
     .sidebar {
@@ -247,54 +229,6 @@
       flex-direction: column;
     }
 
-    .card::before {
-      content: '';
-      position: absolute;
-      inset: -1px;
-      background: linear-gradient(90deg, rgba(20, 200, 191, 0.06), rgba(212, 168, 67, 0.06));
-      z-index: 0;
-      filter: blur(16px);
-      opacity: 0;
-      transition: opacity 0.25s ease;
-      pointer-events: none;
-    }
-
-    .card:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 30px 80px rgba(6, 8, 12, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.02);
-    }
-
-    .card:hover::before {
-      opacity: 1;
-    }
-
-    /* make card content appear above decorative pseudo element */
-    .card>* {
-      position: relative;
-      z-index: 1;
-    }
-
-    .card::before {
-      content: '';
-      position: absolute;
-      inset: -1px;
-      background: linear-gradient(90deg, rgba(20, 200, 191, 0.06), rgba(212, 168, 67, 0.06));
-      z-index: 0;
-      filter: blur(16px);
-      opacity: 0;
-      transition: opacity 0.25s ease;
-      pointer-events: none;
-    }
-
-    .card:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 30px 80px rgba(6, 8, 12, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.02);
-    }
-
-    .card:hover::before {
-      opacity: 1;
-    }
-
     /* make card content appear above decorative pseudo element */
     .card>* {
       position: relative;
@@ -429,94 +363,6 @@
       display: flex;
       gap: 10px;
       align-items: center;
-    }
-
-    .chat-input-row input {
-      flex: 1;
-    }
-
-    .chat-input-row .btn {
-      flex-shrink: 0;
-      min-width: 50px;
-      padding: 12px 16px;
-    }
-
-    .chat-welcome {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 280px;
-      text-align: center;
-      color: var(--text);
-      padding: 24px;
-    }
-
-    .chat-welcome.hidden {
-      display: none;
-    }
-
-    .chat-welcome-icon {
-      font-size: 52px;
-      margin-bottom: 16px;
-      animation: float 3s ease-in-out infinite;
-    }
-
-    .chat-welcome h3 {
-      font-family: 'Syne', sans-serif;
-      font-size: 16px;
-      font-weight: 700;
-      margin-bottom: 8px;
-      color: var(--gold2);
-      letter-spacing: 0.01em;
-    }
-
-    .chat-welcome p {
-      font-size: 13px;
-      color: var(--muted);
-      line-height: 1.7;
-      margin-bottom: 22px;
-      max-width: 240px;
-    }
-
-    .chat-features {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      width: 100%;
-      max-width: 260px;
-    }
-
-    .chat-feature-item {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      border-radius: 14px;
-      padding: 12px;
-      font-size: 12px;
-      color: var(--muted);
-      cursor: pointer;
-      transition: all 0.18s ease;
-      text-align: center;
-      font-weight: 500;
-    }
-
-    .chat-feature-item:hover {
-      background: rgba(255, 255, 255, 0.08);
-      color: var(--text);
-      border-color: rgba(255, 255, 255, 0.12);
-      transform: translateY(-2px);
-    }
-
-    @keyframes float {
-
-      0%,
-      100% {
-        transform: translateY(0px);
-      }
-
-      50% {
-        transform: translateY(-8px);
-      }
     }
 
     .chat-input-row input {
@@ -1450,20 +1296,6 @@
 
     .chart-wrap {
       width: 100%;
-      max-width: 320px;
-      height: 220px;
-      margin: 0 auto;
-      position: relative;
-      overflow: hidden;
-    }
-
-    #portfolioChart {
-      width: 100% !important;
-      height: 220px !important;
-    }
-
-    .chart-wrap {
-      width: 100%;
       height: 280px;
       max-height: 280px;
       overflow: hidden;
@@ -1977,24 +1809,12 @@
       </div>
     </div>
 
-    <canvas id="expenseChart"></canvas>
-
-  </div>
-
   </div><!-- /main -->
-
-  <!-- Loading charts -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <!-- Scroll to Top Button -->
   <button id="scrollTopBtn" onclick="document.querySelector('.main').scrollTo({top: 0, behavior: 'smooth'})"
     style="display:none; position:fixed; bottom:30px; right:30px; z-index:100; border-radius:50%; width:44px; height:44px; font-size:20px; align-items:center; justify-content:center;"
     class="btn btn-gold">↑</button>
-
-  </div><!-- /main -->
-
-  <!-- Loading charts -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <script>
     // Scroll to Top visibility toggle
@@ -2222,26 +2042,40 @@
     // Stores conversation history as {role, content} pairs for context
     const chatHistory = [];
 
-    async function chatSend() {
-      const inp = document.getElementById('chatInput');
-      const msg = inp.value.trim();
-      if (!msg) return;
-      inp.value = '';
-      appendMsg('chatMessages', 'user', msg);
-      setLoading('chatBtn', true);
-      try {
-        const data = await apiFetch('/chat', { message: msg, history: chatHistory });
-        const reply = data.reply || data.error;
-        // Save both turns to history so context is passed on next message
-        chatHistory.push({ role: 'user', content: msg });
-        chatHistory.push({ role: 'assistant', content: reply });
-        appendMsg('chatMessages', 'bot', reply);
-      } catch (e) {
-        appendMsg('chatMessages', 'bot', '⚠ Could not reach server.');
-      }
-      setLoading('chatBtn', false);
-    }
+   async function chatSend() {
+  const inp = document.getElementById('chatInput');
+  const msg = inp.value.trim();
 
+  if (!msg) return;
+
+  inp.value = '';
+
+  appendMsg('chatMessages', 'user', msg);
+
+  setLoading('chatBtn', true);
+
+  try {
+    const data = await apiFetch('/chat', {
+      message: msg,
+      history: chatHistory
+    });
+
+    const reply = data.reply || data.error;
+
+    chatHistory.push({ role: 'user', content: msg });
+    chatHistory.push({ role: 'assistant', content: reply });
+
+    const formattedReply = reply
+      .replace(/\n/g, '<br>');
+
+    appendMsg('chatMessages', 'bot', formattedReply);
+
+  } catch (e) {
+    appendMsg('chatMessages', 'bot', '⚠ Could not reach server.');
+  }
+
+  setLoading('chatBtn', false);
+}
     function chatQuick(text) {
       document.getElementById('chatInput').value = text;
       chatSend();
@@ -2267,6 +2101,89 @@
       box.appendChild(welcome);
     }
 
+    function getPlanInChat() {
+
+  const planData = window.lastMoneyScoreData;
+
+  if (!planData) {
+    alert("Please calculate your Money Score first.");
+    return;
+  }
+
+  showPage('chat');
+
+  const prompt = `
+Money Score: ${planData.score} (${planData.status})
+
+Financial Profile:
+Income: ₹${planData.income}
+Expenses: ₹${planData.expenses}
+Savings: ₹${planData.savings}
+Investments: ₹${planData.investments}
+Debt: ₹${planData.debt}
+Emergency Fund: ₹${planData.emergency}
+
+Score Drivers:
+- Savings Rate: ${planData.savingsRate}%
+- Investment Rate: ${planData.investmentRate}%
+- Debt Burden: ${planData.debtBurden}%
+- Emergency Fund Coverage: ${planData.emergencyMonths} months
+
+Create a personalized 30-day action plan to improve my Money Score.
+
+Format the response EXACTLY as follows:
+
+# Financial Summary
+- Money Score
+- Status
+- Key Strengths
+- Key Weaknesses
+
+# Top Score Drivers
+- Driver 1
+- Driver 2
+- Driver 3
+
+# 30-Day Action Plan
+
+## Week 1
+- Action 1
+- Action 2
+- Action 3
+
+## Week 2
+- Action 1
+- Action 2
+- Action 3
+
+## Week 3
+- Action 1
+- Action 2
+- Action 3
+
+## Week 4
+- Action 1
+- Action 2
+- Action 3
+
+# Expected Impact
+- Savings Rate Improvement
+- Investment Improvement
+- Emergency Fund Improvement
+- Debt Reduction Improvement
+
+Rules:
+- Use short bullet points.
+- Do not repeat the input values.
+- Focus only on actionable recommendations.
+- Keep the response under 300 words.
+- Use markdown headings and bullet lists.
+`.trim();
+
+  document.getElementById('chatInput').value = prompt;
+
+  chatSend();
+}
     /* ══════════════════════════════════════════════
        MONEY SCORE → POST /money-score
     ══════════════════════════════════════════════ */
@@ -2293,30 +2210,117 @@
           debt: parseFloat(debt),
           emergency: parseFloat(emergency)
         });
-
+        
         if (data.error) {
           showResult('scoreResult', `⚠ ${data.error}`);
         } else {
           const color = data.score >= 80 ? '#2ecc8a' : data.score >= 60 ? '#d4a843' : '#e05252';
           const circumference = 2 * Math.PI * 54;
           const offset = circumference - (data.score / 100) * circumference;
-          showResult('scoreResult', `
-            <div style="text-align:center;margin-bottom:10px">
-              <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:12px">Your Money Score</div>
-              <div class="score-container">
-                <svg class="score-circle-svg">
-                  <circle class="score-circle-bg" cx="65" cy="65" r="54" />
-                  <circle class="score-circle-bar" cx="65" cy="65" r="54" 
-                          stroke="${color}" 
-                          stroke-dasharray="${circumference}" 
-                          stroke-dashoffset="${offset}" />
-                </svg>
-                <div class="score-text-overlay">
-                  <div style="font-family:'Outfit',sans-serif;font-size:42px;font-weight:800;color:${color}">${data.score}</div>
-                  <div style="font-size:11px;font-weight:600;color:var(--text);margin-top:-2px">${data.status}</div>
-                </div>
-              </div>
-            </div>
+          const savingsRatePct = ((parseFloat(savings) / parseFloat(income)) * 100).toFixed(1);
+const investmentRatePct = ((parseFloat(invest) / parseFloat(income)) * 100).toFixed(1);
+const debtBurdenPct = ((parseFloat(debt) / parseFloat(income)) * 100).toFixed(1);
+const emergencyMonths = (parseFloat(emergency) / parseFloat(expenses)).toFixed(1);
+
+let drivers = [];
+
+drivers.push(
+  savingsRatePct >= 20
+    ? `✅ Savings rate is ${savingsRatePct}% (target ≥ 20%)`
+    : `⚠ Savings rate is ${savingsRatePct}% (target ≥ 20%)`
+);
+
+drivers.push(
+  investmentRatePct >= 10
+    ? `✅ Investment rate is ${investmentRatePct}% (target ≥ 10%)`
+    : `⚠ Investment rate is ${investmentRatePct}% (target ≥ 10%)`
+);
+
+if (debtBurdenPct > 40) {
+  drivers.push(`⚠ Debt burden is high at ${debtBurdenPct}%`);
+}
+
+if (emergencyMonths < 3) {
+  drivers.push(`⚠ Emergency fund covers only ${emergencyMonths} months`);
+}
+
+window.lastMoneyScoreData = {
+  score: data.score,
+  status: data.status,
+  income,
+  expenses,
+  savings,
+  investments: invest,
+  debt,
+  emergency,
+  savingsRate: savingsRatePct,
+  investmentRate: investmentRatePct,
+  debtBurden: debtBurdenPct,
+  emergencyMonths
+};
+
+         showResult('scoreResult', `
+<div style="text-align:center;margin-bottom:10px">
+  <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:12px">
+    Your Money Score
+  </div>
+
+  <div class="score-container">
+    <svg class="score-circle-svg">
+      <circle class="score-circle-bg" cx="65" cy="65" r="54" />
+      <circle class="score-circle-bar"
+              cx="65"
+              cy="65"
+              r="54"
+              stroke="${color}"
+              stroke-dasharray="${circumference}"
+              stroke-dashoffset="${offset}" />
+    </svg>
+
+    <div class="score-text-overlay">
+      <div style="font-family:'Outfit',sans-serif;font-size:42px;font-weight:800;color:${color}">
+        ${data.score}
+      </div>
+
+      <div style="font-size:11px;font-weight:600;color:var(--text);margin-top:-2px">
+        ${data.status}
+      </div>
+    </div>
+  </div>
+</div>
+
+<div style="
+margin-top:16px;
+padding:12px;
+border-radius:12px;
+background:rgba(255,255,255,0.04);
+border:1px solid rgba(255,255,255,0.06);
+text-align:left;
+">
+  <div style="
+  font-size:12px;
+  font-weight:700;
+  color:var(--gold2);
+  margin-bottom:8px;
+  ">
+    Score Drivers
+  </div>
+
+  ${drivers.slice(0,2).map(driver => `
+      <div style="font-size:12px;margin-bottom:6px;">
+        ${driver}
+      </div>
+  `).join('')}
+</div>
+
+<button
+  class="btn btn-gold"
+  style="width:100%;margin-top:14px;"
+  onclick="getPlanInChat()"
+>
+  🤖 Get a Plan in Chat
+</button>
+
           `);
 
           // Compute sub-scores locally for visual rendering
@@ -2762,9 +2766,6 @@
     /* ══════════════════════════════════════════════
               EXPENSE TRACKER
     ══════════════════════════════════════════════ */
-    /* ══════════════════════════════════════════════
-              EXPENSE TRACKER
-    ══════════════════════════════════════════════ */
 
     const _expenseForm = document.getElementById("expenseForm");
     if (_expenseForm) {
@@ -3032,19 +3033,6 @@
                 </tr>
               `;
 
-                            });
-                          }
-                             } catch(error){
-            console.log(error);
-        }
-}
-
-loadExpenses();
-
-let goals = [];
-                          
-
-
           });
         }
       } catch (e) {
@@ -3217,10 +3205,6 @@ Add Savings
 });
 }
 
-          });
-        }
-
-
     /* ══════════════════════════════════════════════
        THEME TOGGLE (global scope)
     ══════════════════════════════════════════════ */
@@ -3247,79 +3231,8 @@ Add Savings
     })();
 
 
-                   </script>
-
- <script>
-
-async function chatSend() {
-
-    const input = document.getElementById("chatInput");
-    const messages = document.getElementById("chatMessages");
-    const welcome = document.getElementById("chatPageWelcome");
-
-    const text = input.value.trim();
-
-    if (!text) return;
-
-    welcome?.classList.add("hidden");
-
-    messages.innerHTML += `
-        <div class="msg user">
-            <div class="sender">YOU</div>
-            ${text}
-        </div>
-    `;
-
-    input.value = "";
-
-    try {
-
-        const res = await fetch("http://127.0.0.1:5000/chat", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                message: text
-            })
-        });
-
-        const data = await res.json();
-
-        messages.innerHTML += `
-            <div class="msg bot">
-                <div class="sender">AI</div>
-                ${data.reply}
-            </div>
-        `;
-
-    } catch (err) {
-
-        messages.innerHTML += `
-            <div class="msg bot">
-                <div class="sender">AI</div>
-                Backend not connected. /chat endpoint missing.
-            </div>
-        `;
-
-        console.log(err);
-    }
-
-    messages.scrollTop = messages.scrollHeight;
-}
-
-function chatQuick(text){
-
-    document.getElementById(
-        "chatInput"
-    ).value = text;
-
-    chatSend();
-}
 
 </script>
-
-  </script>
 
 </body>
 
