@@ -30,11 +30,11 @@ By participating in this project you agree to abide by our [Code of Conduct](COD
 
 ### Prerequisites
 
-| Tool | Version |
-|------|---------|
-| Python | ≥ 3.10 |
-| pip | latest |
-| Git | ≥ 2.30 |
+| Tool   | Version |
+| ------ | ------- |
+| Python | ≥ 3.10  |
+| pip    | latest  |
+| Git    | ≥ 2.30  |
 
 ### Fork & Clone
 
@@ -126,14 +126,14 @@ git checkout -b <type>/<short-description>
 
 ### Branch naming examples
 
-| Type | Branch Name |
-|------|-------------|
-| Bug fix | `fix/navbar-mobile-overflow` |
-| New feature | `feat/export-report-pdf` |
-| Documentation | `docs/improve-setup-guide` |
-| CI / Workflow | `ci/add-dependency-audit` |
-| Refactor | `refactor/extract-chart-component` |
-| Accessibility | `accessibility/add-aria-labels` |
+| Type          | Branch Name                        |
+| ------------- | ---------------------------------- |
+| Bug fix       | `fix/navbar-mobile-overflow`       |
+| New feature   | `feat/export-report-pdf`           |
+| Documentation | `docs/improve-setup-guide`         |
+| CI / Workflow | `ci/add-dependency-audit`          |
+| Refactor      | `refactor/extract-chart-component` |
+| Accessibility | `accessibility/add-aria-labels`    |
 
 ---
 
@@ -167,44 +167,78 @@ pytest tests/ --cov=utils --cov-report=term-missing
 
 ## Commit Message Convention
 
-This project follows [Conventional Commits](https://www.conventionalcommits.org/).
+This project follows [Conventional Commits](https://www.conventionalcommits.org/). Commit linting is enforced via `pre-commit` hooks.
+
+### Setup pre-commit hooks (one-time)
+
+```bash
+# Install pre-commit
+pip install -r dev-requirements.txt
+
+# Install the git hooks
+pre-commit install --hook-type commit-msg
+```
+
+After setup, any commit that doesn't follow the convention will be rejected.
+
+### Format
 
 ```
 <type>: <short imperative description>
 
 [Optional body: explain *why*, not *what*]
 
-Closes #<issue-number>
+[Optional footer: Closes #<issue-number>]
 ```
+
+**Note:** Body and footer are optional. For simple changes, just the first line is enough.
 
 ### Allowed types
 
-| Type | Use for |
-|------|---------|
-| `feat` | New feature or capability |
-| `fix` | Bug fix |
-| `docs` | Documentation only |
+| Type       | Use for                                     |
+| ---------- | ------------------------------------------- |
+| `feat`     | New feature or capability                   |
+| `fix`      | Bug fix                                     |
+| `docs`     | Documentation only                          |
 | `refactor` | Code restructuring without behaviour change |
-| `test` | Adding or updating tests |
-| `ci` | CI workflow changes |
-| `style` | Formatting / whitespace (no logic change) |
-| `perf` | Performance improvements |
-| `chore` | Dependency updates, housekeeping |
+| `test`     | Adding or updating tests                    |
+| `ci`       | CI workflow changes                         |
+| `style`    | Formatting / whitespace (no logic change)   |
+| `perf`     | Performance improvements                    |
+| `chore`    | Dependency updates, housekeeping            |
 
-### ✅ Good examples
+### ✅ Good examples (all valid)
+
+One-liner (most common):
+
 ```
 fix: prevent index corruption in delete-item endpoint
 feat: add /health liveness probe for deployment environments
 docs: add local setup instructions to CONTRIBUTING.md
 test: add parametrized edge-case tests for money_score
+chore: update groq dependency to 1.5.0
 ```
 
-### ❌ Avoid
+With body (for context):
+
+```
+fix: prevent index corruption in delete-item endpoint
+
+The delete operation was using array index instead of item ID.
+This caused the wrong item to be removed when items were sorted.
+
+Closes #45
+```
+
+### ❌ Invalid (will be rejected)
+
 ```
 fixed stuff
 update code
 changes made
 final commit
+WIP
+Updated the thing
 ```
 
 ---
@@ -235,6 +269,7 @@ final commit
 ## Issue Reporting
 
 Before opening an issue, please:
+
 1. Search existing [open and closed issues](https://github.com/omroy07/AI-Money-Mentor/issues) to avoid duplicates.
 2. Use the appropriate **issue template** (bug report / feature request / documentation).
 3. Provide as much context as possible — stack traces, reproduction steps, OS, Python version.
@@ -244,22 +279,25 @@ Before opening an issue, please:
 ## Coding Standards
 
 ### Python
+
 - PEP 8 style (enforced by `flake8` in CI — max line length: 127)
 - Type hints encouraged but not mandatory
 - Docstrings on all public functions (`"""Short summary.\n\nLonger detail."""`)
 - No bare `except:` — always catch specific exception types
 
 ### JavaScript / HTML
+
 - Vanilla JS (no jQuery or frameworks in the frontend)
 - Use `const` / `let`; avoid `var`
 - Keep functions small and single-purpose
 - Use semantic HTML5 elements (`<main>`, `<nav>`, `<section>`, etc.)
 
 ### Security
+
 - **Never** hardcode credentials, API keys, or tokens in source code
 - Always use environment variables (see `.env.example`)
 - Sanitize all user inputs before processing
 
 ---
 
-*Questions? Open a [Discussion](https://github.com/omroy07/AI-Money-Mentor/discussions) or drop a comment on the relevant issue.* 🙌
+_Questions? Open a [Discussion](https://github.com/omroy07/AI-Money-Mentor/discussions) or drop a comment on the relevant issue._ 🙌

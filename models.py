@@ -100,8 +100,12 @@ class Asset(db.Model):
     name = db.Column(db.String(120), nullable=False)
     amount = db.Column(db.Float, nullable=False)
 
-    def to_dict(self, index):
-        return {"id": index, "name": self.name, "amount": self.amount}
+    def to_dict(self):
+        # Returns the real database primary key so /delete-item can look up the
+        # row by stable PK rather than by positional list index. Using a
+        # positional index was the root cause of the negative-index silent
+        # deletion and out-of-range IndexError bugs (issue #125).
+        return {"id": self.id, "name": self.name, "amount": self.amount}
 
 
 class Liability(db.Model):
@@ -110,8 +114,9 @@ class Liability(db.Model):
     name = db.Column(db.String(120), nullable=False)
     amount = db.Column(db.Float, nullable=False)
 
-    def to_dict(self, index):
-        return {"id": index, "name": self.name, "amount": self.amount}
+    def to_dict(self):
+        # Same fix as Asset.to_dict -- returns the real PK, not a list index.
+        return {"id": self.id, "name": self.name, "amount": self.amount}
 
 
 class BudgetLimit(db.Model):

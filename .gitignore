@@ -21,3 +21,6 @@ htmlcov/
 # Local database (runtime artifact)
 *.db
 instance/
+
+# Node.js tooling (orphaned)
+node_modules/

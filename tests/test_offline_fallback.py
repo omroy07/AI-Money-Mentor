@@ -62,3 +62,12 @@ def test_insights_endpoint_fallback(offline_client):
     assert "insights" in data
     assert "offline" in data["insights"].lower()
     assert "summary" in data
+
+
+def test_api_status_offline(offline_client):
+    """Verify GET /api/status returns ai_online=False with a helpful message when offline."""
+    res = offline_client.get("/api/status")
+    assert res.status_code == 200
+    data = json.loads(res.data)
+    assert data["ai_online"] is False
+    assert "GROQ_API_KEY" in data["message"]

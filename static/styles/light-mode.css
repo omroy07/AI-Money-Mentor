@@ -1,0 +1,385 @@
+/* =====================================================
+   LIGHT MODE — Complete theme override
+   Applied when <body> has class "light-theme"
+   ===================================================== */
+
+body.light-theme {
+  --bg:     #f0f4f8;
+  --bg2:    #ffffff;
+  --bg3:    #e4eaf2;
+  --gold:   #b8892e;
+  --gold2:  #c9a240;
+  --teal:   #0fa89f;
+  --red:    #d44040;
+  --green:  #24a870;
+  --text:   #1a2235;
+  --muted:  #6b7a92;
+  --border: rgba(0, 0, 0, 0.09);
+  --glow:   rgba(184, 137, 46, 0.12);
+}
+
+/* ── Background gradient overlay ── */
+body.light-theme::before {
+  background:
+    radial-gradient(circle at 16% 16%, rgba(20, 200, 191, 0.06), transparent 18%),
+    radial-gradient(circle at 88% 12%, rgba(212, 168, 67, 0.06), transparent 14%),
+    radial-gradient(circle at 50% 96%, rgba(0, 0, 0, 0.02), transparent 20%);
+}
+
+/* ── Sidebar ── */
+body.light-theme .sidebar {
+  background: linear-gradient(180deg, #ffffff, #f5f8fc);
+  border-right: 1px solid var(--border);
+  box-shadow: 2px 0 20px rgba(0, 0, 0, 0.06);
+}
+
+body.light-theme .logo {
+  color: var(--gold);
+  border-bottom-color: var(--border);
+}
+
+body.light-theme .nav-item {
+  color: var(--muted);
+}
+
+body.light-theme .nav-item:hover {
+  background: rgba(0, 0, 0, 0.04);
+  color: var(--text);
+}
+
+body.light-theme .nav-item.active {
+  background: rgba(184, 137, 46, 0.10);
+  color: var(--gold);
+}
+
+/* ── Mobile header ── */
+body.light-theme .mobile-header {
+  background: #ffffff;
+  border-bottom-color: var(--border);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+body.light-theme .menu-toggle-btn {
+  color: var(--text);
+}
+
+body.light-theme .mobile-logo {
+  color: var(--gold);
+}
+
+/* ── Cards ── */
+body.light-theme .card {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.07);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.07), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  color: var(--text);
+}
+
+body.light-theme .card::before {
+  background: linear-gradient(90deg, rgba(20, 200, 191, 0.04), rgba(212, 168, 67, 0.04));
+}
+
+body.light-theme .card:hover {
+  box-shadow: 0 8px 36px rgba(0, 0, 0, 0.10);
+}
+
+body.light-theme .card-title {
+  color: var(--muted);
+}
+
+/* ── Stat cards ── */
+body.light-theme .stat-card {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.07);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+/* ── Inputs, selects, textareas ── */
+body.light-theme input[type="text"],
+body.light-theme input[type="number"],
+body.light-theme input[type="date"],
+body.light-theme input[type="file"],
+body.light-theme textarea,
+body.light-theme select {
+  background: #f8fafc;
+  border: 1px solid #d1d9e6;
+  color: #1a2235;
+}
+
+body.light-theme input:focus,
+body.light-theme textarea:focus,
+body.light-theme select:focus {
+  border-color: var(--gold);
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(184, 137, 46, 0.10);
+}
+
+body.light-theme input::placeholder,
+body.light-theme textarea::placeholder {
+  color: #9aacbf;
+}
+
+body.light-theme label {
+  color: var(--muted);
+}
+
+/* ── Buttons ── */
+body.light-theme .btn-ghost {
+  background: rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  color: var(--text);
+}
+
+body.light-theme .btn-ghost:hover {
+  background: rgba(0, 0, 0, 0.07);
+  border-color: rgba(0, 0, 0, 0.18);
+  color: var(--text);
+}
+
+/* ── Chat messages ── */
+body.light-theme .chat-messages {
+  background: #f5f8fc;
+  border: 1px solid var(--border);
+}
+
+body.light-theme .msg.user {
+  background: rgba(184, 137, 46, 0.10);
+  border: 1px solid rgba(184, 137, 46, 0.25);
+  color: #1a2235;
+}
+
+body.light-theme .msg.bot {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  color: var(--text);
+}
+
+body.light-theme .msg .sender {
+  color: var(--muted);
+}
+
+/* ── Chat feature items ── */
+body.light-theme .chat-feature-item {
+  background: rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  color: var(--muted);
+}
+
+body.light-theme .chat-feature-item:hover {
+  background: rgba(0, 0, 0, 0.07);
+  color: var(--text);
+  border-color: rgba(0, 0, 0, 0.14);
+}
+
+/* ── Chat welcome text ── */
+body.light-theme .chat-welcome {
+  color: var(--text);
+}
+
+body.light-theme .chat-welcome h3 {
+  color: var(--gold2);
+}
+
+body.light-theme .chat-welcome p {
+  color: var(--muted);
+}
+
+/* ── Result box ── */
+body.light-theme .result-box {
+  background: #f5f8fc;
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+/* ── Agent tags ── */
+body.light-theme .agent-tag {
+  background: rgba(0, 0, 0, 0.03);
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+/* ── Badges ── */
+body.light-theme .badge-green {
+  background: rgba(36, 168, 112, 0.12);
+  color: var(--green);
+}
+
+body.light-theme .badge-red {
+  background: rgba(212, 64, 64, 0.10);
+  color: var(--red);
+}
+
+body.light-theme .badge-gold {
+  background: rgba(184, 137, 46, 0.12);
+  color: var(--gold);
+}
+
+/* ── Tax rows ── */
+body.light-theme .tax-row {
+  border-bottom-color: var(--border);
+  color: var(--text);
+}
+
+/* ── Alloc track ── */
+body.light-theme .alloc-track {
+  background: #e4eaf2;
+}
+
+/* ── Page titles ── */
+body.light-theme .page-title {
+  color: var(--text);
+  border-bottom-color: var(--border);
+}
+
+body.light-theme .page-title span {
+  color: var(--gold2);
+}
+
+/* ── Dashboard header ── */
+body.light-theme .dashboard-header h2 {
+  color: var(--text);
+}
+
+body.light-theme .dashboard-header p {
+  color: var(--muted);
+}
+
+/* ── Section/table borders ── */
+body.light-theme #expenseTable th,
+body.light-theme #expenseTable td {
+  border-bottom-color: var(--border);
+  color: var(--text);
+}
+
+/* ── Glass containers (Expense page) ── */
+body.light-theme .glass-container {
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+}
+
+body.light-theme .glass-title {
+  color: var(--gold);
+}
+
+body.light-theme .insight-text {
+  color: var(--text);
+}
+
+body.light-theme .insight-card {
+  background: rgba(0, 0, 0, 0.03);
+  border-left: 4px solid var(--gold);
+}
+
+body.light-theme .insight-card h3 {
+  color: var(--gold2);
+}
+
+body.light-theme .insight-card p {
+  color: var(--text);
+}
+
+/* ── Goal tracker ── */
+body.light-theme #goalTracker {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+body.light-theme #goalTracker input {
+  background: #f8fafc;
+  border: 1px solid #d1d9e6;
+  color: var(--text);
+}
+
+body.light-theme #goalTracker input::placeholder {
+  color: #9aacbf;
+}
+
+body.light-theme .goal-card {
+  background: rgba(0, 0, 0, 0.025);
+  border: 1px solid var(--border);
+}
+
+body.light-theme .goal-amount {
+  color: var(--teal);
+}
+
+body.light-theme .goal-progress {
+  background: #d8e3ed;
+}
+
+body.light-theme .goal-percent {
+  background: rgba(15, 168, 159, 0.12);
+  color: var(--teal);
+}
+
+body.light-theme .goal-save-row input {
+  background: #f8fafc;
+  border: 1px solid #d1d9e6;
+  color: var(--text);
+}
+
+body.light-theme .goal-input {
+  background: #f8fafc;
+  border: 1px solid #d1d9e6;
+  color: var(--text);
+}
+
+body.light-theme .goal-input::placeholder {
+  color: #9aacbf;
+}
+
+/* ── Expense form ── */
+body.light-theme #expenseForm select,
+body.light-theme #expenseForm input[type="date"],
+body.light-theme #expenseForm input[type="number"],
+body.light-theme #expenseForm input[type="text"] {
+  background: #f8fafc;
+  color: var(--text);
+  border: 1px solid #d1d9e6;
+}
+
+body.light-theme #expenseForm select option {
+  background: #ffffff;
+  color: var(--text);
+}
+
+/* ── Expense/stat card summary ── */
+body.light-theme #totalCard,
+body.light-theme #avgCard {
+  color: var(--text);
+}
+
+body.light-theme #totalCard p,
+body.light-theme #avgCard p {
+  color: var(--gold);
+}
+
+/* ── Net worth special card ── */
+body.light-theme .stat-card[style*="rgba(212, 168, 67, 0.1)"] {
+  background: rgba(184, 137, 46, 0.07) !important;
+  border-color: var(--gold) !important;
+}
+
+/* ── Scrollbar ── */
+body.light-theme ::-webkit-scrollbar-thumb {
+  background: #c8d3e0;
+}
+
+/* ── Scroll-to-top button ── */
+body.light-theme #scrollTopBtn {
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+}
+
+/* ── Chart.js axis/tick colours (overridden via JS, but as fallback) ── */
+body.light-theme canvas {
+  filter: none;
+}
+
+/* ── Theme toggle button itself ── */
+body.light-theme #themeToggle {
+  background: rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  color: var(--text);
+}

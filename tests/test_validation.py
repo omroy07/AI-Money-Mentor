@@ -105,6 +105,8 @@ class TestEndpointValidation(unittest.TestCase):
         self.app = app.test_client()
         self.app.testing = True
         
+        from app import db
+        db.session = MagicMock()
         from models import Expense, Asset, Liability, BudgetLimit, BudgetAlert
         Expense.query = MagicMock()
         Asset.query = MagicMock()

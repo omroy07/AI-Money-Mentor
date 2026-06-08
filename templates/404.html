@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}404 — Page Not Found | AI Money Mentor{% endblock %}
+
+{% block content %}
+<div class="error-page">
+    <div class="error-card">
+        <div class="error-code">404</div>
+        <div class="error-icon">🔍</div>
+        <h1 class="error-title">Page Not Found</h1>
+        <p class="error-message">
+            The page you're looking for doesn't exist or has been moved.
+        </p>
+        <div class="error-actions">
+            <a href="{{ url_for('home') }}" class="btn-primary">
+                🏠 Back to Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+.error-page {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 70vh;
+    padding: 2rem;
+}
+
+.error-card {
+    background: var(--card-bg, #1e1e2e);
+    border: 1px solid var(--border, rgba(255,255,255,0.08));
+    border-radius: 1.5rem;
+    padding: 3rem 4rem;
+    text-align: center;
+    max-width: 480px;
+    width: 100%;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+}
+
+.error-code {
+    font-size: 6rem;
+    font-weight: 800;
+    line-height: 1;
+    background: linear-gradient(135deg, #6c63ff, #48cfad);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.5rem;
+}
+
+.error-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.error-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary, #f8f8f8);
+    margin: 0 0 0.75rem;
+}
+
+.error-message {
+    color: var(--text-secondary, #a0a0b0);
+    font-size: 1rem;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+.btn-primary {
+    display: inline-block;
+    padding: 0.75rem 2rem;
+    background: linear-gradient(135deg, #6c63ff, #48cfad);
+    color: #fff;
+    border-radius: 0.75rem;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: opacity 0.2s, transform 0.2s;
+}
+
+.btn-primary:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+}
+</style>
+{% endblock %}

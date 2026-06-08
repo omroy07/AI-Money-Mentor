@@ -12,11 +12,49 @@ document.querySelectorAll('.nav-item').forEach(el => {
     });
 });
 
+function applyChartTheme(isLight) {
+    const mutedColor = isLight ? '#6b7a92' : '#5a6a82';
+    const textColor  = isLight ? '#1a2235' : '#eef0f5';
+    const gridColor  = isLight ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.04)';
+
+    Chart.defaults.color = mutedColor;
+    Chart.defaults.borderColor = gridColor;
+
+    [portfolioChart, budgetPieChart, budgetBarChart].forEach(chart => {
+        if (!chart) return;
+        try {
+            if (chart.options.scales) {
+                Object.values(chart.options.scales).forEach(scale => {
+                    if (scale.ticks) scale.ticks.color = mutedColor;
+                    if (scale.grid)  scale.grid.color  = gridColor;
+                });
+            }
+            if (chart.options.plugins?.legend?.labels) {
+                chart.options.plugins.legend.labels.color = textColor;
+            }
+            chart.update();
+        } catch(e) {}
+    });
+}
+
 function toggleTheme() {
     document.body.classList.toggle('light-theme');
+    const isLight = document.body.classList.contains('light-theme');
     const btn = document.getElementById('themeToggle');
-    btn.innerHTML = document.body.classList.contains('light-theme') ? '🌙 Dark Mode' : '☀️ Light Mode';
+    btn.innerHTML = isLight ? '🌙 Dark Mode' : '☀️ Light Mode';
+    localStorage.setItem('theme', isLight ? 'light' : 'dark');
+    applyChartTheme(isLight);
 }
+
+// Restore saved theme on page load
+(function () {
+    if (localStorage.getItem('theme') === 'light') {
+        document.body.classList.add('light-theme');
+        const btn = document.getElementById('themeToggle');
+        if (btn) btn.innerHTML = '🌙 Dark Mode';
+        window.addEventListener('load', () => applyChartTheme(true));
+    }
+})();
 
 function fmtNum(n) { return new Intl.NumberFormat('en-IN').format(Math.round(n)); }
 

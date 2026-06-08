@@ -76,3 +76,48 @@ def test_realtime_threshold_alerts(client):
     # Order by triggered_at desc, so index 0 is threshold 90
     assert len(alerts) == 2
     assert alerts[0]["threshold"] == 90
+
+
+def test_delete_budget_limit(client):
+    """DELETE /budget/limits/<id> removes the limit and returns its category."""
+    # Create a limit first
+    client.post("/budget/limits", json={"category": "Shopping", "limit_amount": 2000.0})
+    limits = json.loads(client.get("/budget/limits").data)
+    assert len(limits) == 1
+    limit_id = limits[0]["id"]
+
+    # Delete it
+    res = client.delete(f"/budget/limits/{limit_id}")
+    assert res.status_code == 200
+    data = json.loads(res.data)
+    assert data["status"] == "success"
+    assert data["deleted_category"] == "Shopping"
+
+    # Confirm it's gone
+    limits = json.loads(client.get("/budget/limits").data)
+    assert len(limits) == 0
+
+
+def test_delete_budget_limit_cascades_alerts(client):
+    """Deleting a limit also removes any BudgetAlert rows for that category."""
+    # Set limit and add 85% spend → fires the 80% alert only (85% < 90%)
+    client.post("/budget/limits", json={"category": "Food", "limit_amount": 100.0})
+    client.post("/add_expense", json={"category": "Food", "amount": 85.0, "date": "2026-06-01"})
+    alerts_before = json.loads(client.get("/budget/alerts").data)
+    assert len(alerts_before) == 1
+
+    limits = json.loads(client.get("/budget/limits").data)
+    limit_id = limits[0]["id"]
+
+    # Delete the limit — its alert should be cleaned up too
+    client.delete(f"/budget/limits/{limit_id}")
+    alerts_after = json.loads(client.get("/budget/alerts").data)
+    assert len(alerts_after) == 0
+
+
+def test_delete_budget_limit_not_found(client):
+    """DELETE /budget/limits/<id> returns 404 for a non-existent ID."""
+    res = client.delete("/budget/limits/9999")
+    assert res.status_code == 404
+    data = json.loads(res.data)
+    assert "not found" in data["error"].lower()

@@ -28,11 +28,118 @@
       </div>
     </div>
   </div>
+
+  <!-- Price Alerts Row -->
+  <div style="margin-top: 20px; display: grid; grid-template-columns: 1fr 1.2fr; gap: 20px; align-items: start; max-width: 900px;">
+    <div class="card">
+      <div class="card-title">Set Stock Price Alert</div>
+      <label>Stock Symbol</label>
+      <input type="text" id="alertSym" placeholder="e.g. TCS, AAPL" style="margin-bottom: 12px; text-transform: uppercase;">
+      
+      <label>Target Price (₹)</label>
+      <input type="number" step="any" id="alertPrice" placeholder="e.g. 3500" style="margin-bottom: 12px;">
+      
+      <label>Trigger Condition</label>
+      <select id="alertCond" style="background: var(--card-bg); color: var(--text); border: 1px solid var(--border); padding: 8px; border-radius: 6px; width: 100%; margin-bottom: 16px;">
+        <option value="above">Goes Above (≥)</option>
+        <option value="below">Goes Below (≤)</option>
+      </select>
+
+      <button class="btn btn-gold" style="width: 100%" onclick="setAlert()" id="alertBtn">Set Price Alert</button>
+      <div id="alertSetResult" class="result-box" style="margin-top: 10px;"></div>
+    </div>
+
+    <div class="card" style="min-height: 250px;">
+      <div class="card-title">Active & Triggered Alerts</div>
+      <div id="alertsList" style="display: flex; flex-direction: column; gap: 10px; max-height: 280px; overflow-y: auto;">
+        <p style="color: var(--muted); font-size: 13px;">No price alerts set yet.</p>
+      </div>
+    </div>
+  </div>
 </div>
 {% endblock %}
 
 {% block scripts %}
 <script>
+  // Load price alerts on load
+  document.addEventListener('DOMContentLoaded', () => {
+    loadAlerts();
+  });
+
+  async function loadAlerts() {
+    try {
+      const res = await fetch('/api/alerts');
+      const alerts = await res.json();
+      const listDiv = document.getElementById('alertsList');
+      if (alerts.length === 0) {
+        listDiv.innerHTML = `<p style="color: var(--muted); font-size: 13px;">No price alerts set yet.</p>`;
+        return;
+      }
+      
+      listDiv.innerHTML = alerts.map(a => {
+        const badgeColor = a.is_triggered ? 'rgba(46,204,138,0.15)' : 'rgba(212,168,67,0.15)';
+        const badgeText = a.is_triggered ? 'Triggered 🔔' : 'Active ⏳';
+        const badgeTextColor = a.is_triggered ? '#2ecc8a' : 'var(--gold)';
+        return `
+          <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 12px; background:rgba(255,255,255,0.02); border:1px solid var(--border); border-radius:8px;">
+            <div>
+              <strong style="color:var(--text);">${a.symbol}</strong>
+              <span style="font-size:12px; color:var(--muted); margin-left:8px;">${a.condition} ₹${fmtNum(a.target_price)}</span>
+              <span style="display:inline-block; font-size:10px; font-weight:700; padding:2px 6px; border-radius:4px; margin-left:8px; background:${badgeColor}; color:${badgeTextColor};">${badgeText}</span>
+            </div>
+            <button class="btn btn-ghost" style="padding:4px 8px; font-size:12px; height:auto; min-height:auto; color:#ff5e5e;" onclick="deleteAlert(${a.id})">Delete</button>
+          </div>
+        `;
+      }).join('');
+    } catch (e) {
+      console.error("Failed to load alerts:", e);
+    }
+  }
+
+  async function setAlert() {
+    const symbol = document.getElementById('alertSym').value.trim().toUpperCase();
+    const price = document.getElementById('alertPrice').value;
+    const condition = document.getElementById('alertCond').value;
+    
+    if (!symbol || !price) {
+      showResult('alertSetResult', '⚠ Fill in all fields.');
+      return;
+    }
+    
+    setLoading('alertBtn', true);
+    try {
+      const res = await fetch('/api/alerts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          symbol: symbol,
+          target_price: parseFloat(price),
+          condition: condition
+        })
+      });
+      const data = await res.json();
+      if (data.error) {
+        showResult('alertSetResult', `⚠ ${data.error}`);
+      } else {
+        showResult('alertSetResult', `✅ Alert set for ${symbol}!`);
+        document.getElementById('alertSym').value = '';
+        document.getElementById('alertPrice').value = '';
+        loadAlerts();
+      }
+    } catch (e) {
+      showResult('alertSetResult', '⚠ Could not reach server.');
+    }
+    setLoading('alertBtn', false);
+  }
+
+  async function deleteAlert(id) {
+    try {
+      await fetch(`/api/alerts/${id}`, { method: 'DELETE' });
+      loadAlerts();
+    } catch (e) {
+      console.error("Failed to delete alert:", e);
+    }
+  }
   let stockChartInstance = null;
 
   async function checkStock() {
