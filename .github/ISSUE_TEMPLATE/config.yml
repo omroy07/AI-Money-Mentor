@@ -1,0 +1,10 @@
+blank_issues_enabled: false
+
+contact_links:
+  - name: Discussions
+    url: https://github.com/omroy07/AI-Money-Mentor/discussions
+    about: Ask questions and discuss ideas.
+
+  - name: Security Vulnerability Reporting
+    url: https://github.com/omroy07/AI-Money-Mentor/security
+    about: Report security vulnerabilities privately.
