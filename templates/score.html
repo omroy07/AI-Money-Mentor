@@ -21,6 +21,10 @@
         <button class="btn btn-ghost" style="flex:1" onclick="resetScore()" id="scoreResetBtn">Reset</button>
       </div>
       <div id="scoreResult" class="result-box"></div>
+      <div id="export-section" style="display:none; gap:10px; margin-top:14px;">
+        <button class="btn btn-ghost" style="flex:1" onclick="exportReport('csv')" id="exportCsvBtn">⬇️ Download CSV</button>
+        <button class="btn btn-ghost" style="flex:1" onclick="exportReport('pdf')" id="exportPdfBtn">📄 Download PDF</button>
+      </div>
     </div>
     <div class="card" style="min-height: 380px;">
       <div class="card-title">Financial Health Breakdown</div>
@@ -108,6 +112,14 @@
           </div>
         `);
 
+        updateReportData({
+          income, expenses, savings,
+          investments: invest,
+          debt, emergency,
+          money_score: `${data.score} (${data.status})`
+        });
+        showExportSection();
+
         // Compute sub-scores locally for visual rendering
         const savingsRateVal = income>0? parseFloat(savings) / parseFloat(income):0;
         const savingsScore = savingsRateVal >= 0.3 ? 30 : savingsRateVal >= 0.2 ? 20 : 10;
@@ -182,6 +194,8 @@
       scoreChartInstance.destroy();
       scoreChartInstance = null;
     }
+    const exportSection = document.getElementById('export-section');
+    if (exportSection) exportSection.style.display = 'none';
   }
 </script>
 {% endblock %}

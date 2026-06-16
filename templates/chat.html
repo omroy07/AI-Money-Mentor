@@ -19,45 +19,107 @@
         </div>
       </div>
     </div>
-    <div class="chat-input-row">
-      <input type="text" id="chatInput" placeholder="Ask anything financial…"
+     <div class="chat-input-row">
+       <input type="text" id="chatInput" placeholder="Ask anything financial…"
         onkeypress="if(event.key==='Enter') chatSend()">
-      <button class="btn btn-gold" onclick="chatSend()" id="chatBtn">Send</button>
-      <button class="btn btn-ghost" onclick="clearChat()" id="clearBtn" title="Clear conversation">Clear</button>
-    </div>
+       <button class="btn btn-gold" onclick="chatSend()" id="chatBtn">Send</button>
+       <button class="btn btn-ghost" onclick="clearChat()" id="clearBtn" title="Clear conversation">Clear</button>
+     </div>
   </div>
 </div>
 {% endblock %}
 
 {% block scripts %}
 <script>
-  const chatHistory = [];
+  // ─── Constants ────────────────────────────────────────────────────────────
+  var STORAGE_KEY = 'aiMentorChatHistory';
+  var chatHistory = [];
 
+  // ─── localStorage helpers ─────────────────────────────────────────────────
+  function saveHistory() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(chatHistory));
+    } catch (e) {
+      console.warn('Could not save chat history to localStorage:', e);
+    }
+  }
+
+  function loadHistory() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch (e) {
+      console.warn('Could not load chat history from localStorage:', e);
+      return [];
+    }
+  }
+
+  // ─── Welcome screen HTML (single source of truth) ─────────────────────────
+  function getWelcomeHTML() {
+    return [
+      '<div class="chat-welcome-icon">🎯</div>',
+      '<h3>Financial Guidance at Your Fingertips</h3>',
+      '<p>Ask questions about investments, tax planning, portfolio strategy,',
+        'SIPs, risk assessment, or any financial topic.</p>',
+      '<div class="chat-features">',
+        '<div class="chat-feature-item"',
+          'onclick="chatQuick(\'How should I diversify my portfolio?\')">📊 Portfolio</div>',
+        '<div class="chat-feature-item"',
+          'onclick="chatQuick(\'Best tax saving strategies for 2024-25\')">💸 Tax Strategy</div>',
+        '<div class="chat-feature-item"',
+          'onclick="chatQuick(\'Should I invest in mutual funds or stocks?\')">📈 Investments</div>',
+        '<div class="chat-feature-item"',
+          'onclick="chatQuick(\'How much emergency fund do I need?\')">🛡️ Emergency Fund</div>',
+      '</div>'
+    ].join('');
+  }
+
+  // ─── Render a single bubble (used by both live send and history replay) ───
   function appendMsg(boxId, role, text) {
-    const box = document.getElementById(boxId);
-    const welcome = document.getElementById('chatPageWelcome');
+    var box = document.getElementById(boxId);
+    var welcome = document.getElementById('chatPageWelcome');
     if (welcome && !welcome.classList.contains('hidden')) {
       welcome.classList.add('hidden');
     }
-    const d = document.createElement('div');
-    d.className = `msg ${role}`;
-    d.innerHTML = `<div class="sender">${role === 'user' ? 'You' : 'AI Advisor'}</div>${text}`;
+    var d = document.createElement('div');
+    d.className = 'msg ' + role;
+    d.innerHTML = '<div class="sender">' + (role === 'user' ? 'You' : 'AI Advisor') + '</div>' + text;
     box.appendChild(d);
     box.scrollTop = box.scrollHeight;
   }
 
+  // ─── Initialization: replay persisted history on page load ────────────────
+  function initChat() {
+    var saved = loadHistory();
+    if (!saved || saved.length === 0) return;
+
+    // Rebuild the in-memory state array
+    for (var i = 0; i < saved.length; i++) {
+      chatHistory.push(saved[i]);
+    }
+
+    // Re-render every bubble so the user sees their previous conversation
+    for (var j = 0; j < saved.length; j++) {
+      var entry = saved[j];
+      var uiRole = entry.role === 'user' ? 'user' : 'bot';
+      appendMsg('chatMessages', uiRole, entry.content);
+    }
+  }
+
+  // ─── Send a message ───────────────────────────────────────────────────────
   async function chatSend() {
-    const inp = document.getElementById('chatInput');
-    const msg = inp.value.trim();
+    var inp = document.getElementById('chatInput');
+    var msg = inp.value.trim();
     if (!msg) return;
     inp.value = '';
     appendMsg('chatMessages', 'user', msg);
     setLoading('chatBtn', true);
     try {
-      const data = await apiFetch('/chat', { message: msg, history: chatHistory });
-      const reply = data.reply || data.error || 'No response';
+      var data = await apiFetch('/chat', { message: msg, history: chatHistory });
+      var reply = data.reply || data.error || 'No response';
       chatHistory.push({ role: 'user', content: msg });
       chatHistory.push({ role: 'assistant', content: reply });
+      saveHistory(); // ← persist after every successful exchange
       appendMsg('chatMessages', 'bot', reply);
     } catch (e) {
       appendMsg('chatMessages', 'bot', '⚠ Could not reach server.');
@@ -70,24 +132,23 @@
     chatSend();
   }
 
+  // ─── Clear chat ───────────────────────────────────────────────────────────
   function clearChat() {
+    // Wipe state
     chatHistory.length = 0;
-    const box = document.getElementById('chatMessages');
+    localStorage.removeItem(STORAGE_KEY);
+
+    // Rebuild the welcome screen
+    var box = document.getElementById('chatMessages');
     box.innerHTML = '';
-    const welcome = document.createElement('div');
+    var welcome = document.createElement('div');
     welcome.id = 'chatPageWelcome';
     welcome.className = 'chat-welcome';
-    welcome.innerHTML = `
-      <div class="chat-welcome-icon">🎯</div>
-      <h3>Financial Guidance at Your Fingertips</h3>
-      <p>Ask questions about investments, tax planning, portfolio strategy, SIPs, risk assessment, or any financial topic.</p>
-      <div class="chat-features">
-        <div class="chat-feature-item" onclick="chatQuick('How should I diversify my portfolio?')">📊 Portfolio</div>
-        <div class="chat-feature-item" onclick="chatQuick('Best tax saving strategies for 2024-25')">💸 Tax Strategy</div>
-        <div class="chat-feature-item" onclick="chatQuick('Should I invest in mutual funds or stocks?')">📈 Investments</div>
-        <div class="chat-feature-item" onclick="chatQuick('How much emergency fund do I need?')">🛡️ Emergency Fund</div>
-      </div>`;
+    welcome.innerHTML = getWelcomeHTML();
     box.appendChild(welcome);
   }
+
+  // ─── Bootstrap ────────────────────────────────────────────────────────────
+  document.addEventListener('DOMContentLoaded', initChat);
 </script>
 {% endblock %}

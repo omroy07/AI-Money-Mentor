@@ -1,8 +1,11 @@
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, make_response
 import yfinance as yf
 import os
 import sys
+import csv
+import io
 from groq import Groq
+from fpdf import FPDF
 from dotenv import load_dotenv
 
 # Load environment variables from .env file (if present)
@@ -476,8 +479,8 @@ def tax_simulate():
         )
 
         # Deterministic explanation always available
-        best_regime_a = result["best_regime"]["scenario_a"]
-        best_regime_b = result["best_regime"]["scenario_b"]
+        best_regime_a = result["comparison"]["best_regime"]["scenario_a"]
+        best_regime_b = result["comparison"]["best_regime"]["scenario_b"]
         switch_savings_new = float(result["comparison"]["switch"]["new_regime"]["savings"])
         switch_savings_old = float(result["comparison"]["switch"]["old_regime"]["savings"])
 
@@ -491,8 +494,7 @@ def tax_simulate():
 
         # Build deterministic lever explanation from sensitivity rankings for the best regime of scenario B
         scenario_b_best = best_regime_b
-        sens_for_scenario_b = result["sensitivity"]["scenario_b"]["new_regime"] if scenario_b_best == "New Regime" else result["sensitivity"]["scenario_b"]["old_regime"]
-        lever_ranking = result["sensitivity"]["scenario_b"]["new_regime"]["lever_ranking_for_best_regime"] if scenario_b_best == "New Regime" else result["sensitivity"]["scenario_b"]["old_regime"]["lever_ranking_for_best_regime"]
+        lever_ranking = result["sensitivity"]["scenario_b"]["lever_ranking_for_best_regime"]
 
         deterministic_explanation = (
             f"Regime outcome: Scenario A is better under {best_regime_a}, while Scenario B is better under {best_regime_b}. "
@@ -614,6 +616,72 @@ def money_score():
 
     except ValidationError as e:
         raise e
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+
+# ---------------- EXPORT FINANCIAL REPORT ----------------
+EXPORT_FIELDS = [
+    "income", "expenses", "savings", "investments",
+    "debt", "emergency", "tax", "money_score", "sip_projection",
+]
+
+EXPORT_FIELD_LABELS = {
+    "income": "Income",
+    "expenses": "Expenses",
+    "savings": "Savings",
+    "investments": "Investments",
+    "debt": "Debt",
+    "emergency": "Emergency Fund",
+    "tax": "Tax Estimate",
+    "money_score": "Money Score",
+    "sip_projection": "SIP Projection",
+}
+
+
+def _pdf_safe(value):
+    """Strip characters (e.g. ₹, emoji) that core PDF fonts can't encode."""
+    return str(value).replace("₹", "Rs. ").encode("latin-1", "ignore").decode("latin-1")
+
+
+@app.route("/export/csv", methods=["POST"])
+def export_csv():
+    try:
+        data = request.json or {}
+        output = io.StringIO()
+        writer = csv.DictWriter(output, fieldnames=EXPORT_FIELDS, extrasaction="ignore")
+        writer.writeheader()
+        writer.writerow({field: data.get(field, "N/A") for field in EXPORT_FIELDS})
+
+        response = make_response(output.getvalue())
+        response.headers["Content-Disposition"] = "attachment; filename=financial_report.csv"
+        response.headers["Content-Type"] = "text/csv"
+        return response
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+
+@app.route("/export/pdf", methods=["POST"])
+def export_pdf():
+    try:
+        data = request.json or {}
+
+        pdf = FPDF()
+        pdf.add_page()
+        pdf.set_font("Helvetica", "B", 16)
+        pdf.cell(0, 10, "AI Money Mentor - Financial Report", new_x="LMARGIN", new_y="NEXT", align="C")
+        pdf.ln(5)
+
+        pdf.set_font("Helvetica", size=12)
+        for key in EXPORT_FIELDS:
+            value = _pdf_safe(data.get(key, "N/A"))
+            pdf.cell(0, 10, f"{EXPORT_FIELD_LABELS[key]}: {value}", new_x="LMARGIN", new_y="NEXT")
+
+        pdf_bytes = bytes(pdf.output())
+        response = make_response(pdf_bytes)
+        response.headers["Content-Disposition"] = "attachment; filename=financial_report.pdf"
+        response.headers["Content-Type"] = "application/pdf"
+        return response
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 

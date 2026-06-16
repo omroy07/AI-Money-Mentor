@@ -128,6 +128,55 @@
       const res = await fetch(url, opts);
       return res.json();
     }
+
+    // ---- Financial report export (merges results across pages via localStorage) ----
+    const FINANCIAL_REPORT_KEY = 'financialReportData';
+
+    function updateReportData(partial) {
+      let data = {};
+      try {
+        data = JSON.parse(localStorage.getItem(FINANCIAL_REPORT_KEY)) || {};
+      } catch (e) {}
+      Object.assign(data, partial);
+      localStorage.setItem(FINANCIAL_REPORT_KEY, JSON.stringify(data));
+      return data;
+    }
+
+    function getReportData() {
+      try {
+        return JSON.parse(localStorage.getItem(FINANCIAL_REPORT_KEY)) || {};
+      } catch (e) {
+        return {};
+      }
+    }
+
+    function showExportSection() {
+      const el = document.getElementById('export-section');
+      if (el) el.style.display = 'flex';
+    }
+
+    async function exportReport(format) {
+      try {
+        const response = await fetch(`/export/${format}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(getReportData())
+        });
+        if (!response.ok) throw new Error('Export failed');
+
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `financial_report.${format}`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+      } catch (e) {
+        alert('⚠ Could not export report. Please try again.');
+      }
+    }
   </script>
   {% block scripts %}{% endblock %}
 </body>

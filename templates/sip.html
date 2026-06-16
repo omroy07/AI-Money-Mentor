@@ -25,6 +25,10 @@
       </div>
 
       <div id="sipResult" class="result-box"></div>
+      <div id="export-section" style="display:none; gap:10px; margin-top:14px;">
+        <button class="btn btn-ghost" style="flex:1" onclick="exportReport('csv')" id="exportCsvBtn">⬇️ Download CSV</button>
+        <button class="btn btn-ghost" style="flex:1" onclick="exportReport('pdf')" id="exportPdfBtn">📄 Download PDF</button>
+      </div>
     </div>
 
     <div class="card" style="min-height: 380px;">
@@ -67,10 +71,15 @@
           <div style="font-size:11px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.06em">Estimated Future Value</div>
           <div class="result-big">₹${fmtNum(fv)}</div>
           <div style="font-size:12px;color:var(--muted);margin-top:6px">
-            Invested: ₹${fmtNum(monthly * years * 12)} &nbsp;·&nbsp; 
+            Invested: ₹${fmtNum(monthly * years * 12)} &nbsp;·&nbsp;
             Gains: ₹${fmtNum(fv - monthly * years * 12)}
           </div>
         `);
+
+        updateReportData({
+          sip_projection: `Rs. ${fmtNum(fv)} (Invested: Rs. ${fmtNum(monthly * years * 12)})`
+        });
+        showExportSection();
 
         // Compute compounding points
         const monthlyFloat = parseFloat(monthly);
@@ -158,6 +167,8 @@
       sipChartInstance.destroy();
       sipChartInstance = null;
     }
+    const exportSection = document.getElementById('export-section');
+    if (exportSection) exportSection.style.display = 'none';
   }
 </script>
 {% endblock %}

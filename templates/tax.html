@@ -53,6 +53,10 @@
       </div>
 
       <div id="taxResult" class="result-box" style="margin-top:16px;"></div>
+      <div id="export-section" style="display:none; gap:10px; margin-top:14px;">
+        <button class="btn btn-ghost" style="flex:1" onclick="exportReport('csv')" id="exportCsvBtn">⬇️ Download CSV</button>
+        <button class="btn btn-ghost" style="flex:1" onclick="exportReport('pdf')" id="exportPdfBtn">📄 Download PDF</button>
+      </div>
 
     <!-- Right: Outputs -->
     <div class="card" id="taxComparisonCard" style="display:none; min-height: 280px;">
@@ -218,6 +222,11 @@
         </div>
       `);
 
+      updateReportData({
+        tax: `Rs. ${fmtNum(payableB || 0)} (${recommendedB})`
+      });
+      showExportSection();
+
     } catch (e) {
       showResult('taxResult', '⚠ Could not reach server.');
     } finally {
@@ -256,6 +265,9 @@
     const bBox = document.getElementById('scenarioBResult');
     if (aBox) aBox.innerHTML = '';
     if (bBox) bBox.innerHTML = '';
+
+    const exportSection = document.getElementById('export-section');
+    if (exportSection) exportSection.style.display = 'none';
   }
 </script>
 {% endblock %}
