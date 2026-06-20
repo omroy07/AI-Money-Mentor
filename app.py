@@ -135,7 +135,7 @@ def send_weekly_email(user_email):
     """Send weekly report email to a user"""
     try:
         report_data = generate_weekly_report(user_email)
-        
+
         msg = Message(
             subject=f"📊 Weekly Financial Digest - {datetime.now().strftime('%B %d, %Y')}",
             recipients=[user_email],
@@ -152,16 +152,16 @@ def send_weekly_reports():
     """Send weekly reports to all users"""
     print("🔄 Running weekly email job...")
     users = get_user_email_settings()
-    
+
     if not users:
         print("📭 No users subscribed to weekly emails")
         return
-    
+
     success = 0
     for user_email in users:
         if send_weekly_email(user_email):
             success += 1
-    
+
     print(f"✅ Sent {success}/{len(users)} weekly reports")
 
 # ============================================
@@ -171,20 +171,20 @@ def process_recurring_expenses():
     """Process recurring expenses and add them to expense tracker"""
     print("🔄 Processing recurring expenses...")
     today = date.today()
-    
+
     try:
         from models import RecurringExpense, Expense
-        
+
         # Get all active recurring expenses due today
         due_expenses = RecurringExpense.query.filter(
             RecurringExpense.is_active == True,
             RecurringExpense.next_due_date <= today
         ).all()
-        
+
         if not due_expenses:
             print("📭 No recurring expenses due today")
             return
-        
+
         added_count = 0
         for recurring in due_expenses:
             # Check if already added today (avoid duplicates)
@@ -194,10 +194,10 @@ def process_recurring_expenses():
                 Expense.date == today,
                 Expense.category == recurring.category
             ).first()
-            
+
             if existing:
                 continue
-            
+
             # Create expense entry
             expense = Expense(
                 amount=recurring.amount,
@@ -206,7 +206,7 @@ def process_recurring_expenses():
                 date=today
             )
             db.session.add(expense)
-            
+
             # Update next due date based on frequency
             if recurring.frequency == 'daily':
                 next_date = today + timedelta(days=1)
@@ -220,14 +220,14 @@ def process_recurring_expenses():
                 next_date = today + timedelta(days=365)
             else:
                 next_date = today + timedelta(days=30)
-            
+
             recurring.next_due_date = next_date
             recurring.last_processed = today
             added_count += 1
-        
+
         db.session.commit()
         print(f"✅ Added {added_count} recurring expenses")
-        
+
     except Exception as e:
         db.session.rollback()
         print(f"❌ Error processing recurring expenses: {e}")
@@ -308,10 +308,10 @@ def register():
     password = data.get("password")
     if not username or not password or not email:
         return jsonify({"error": "Username, email, and password are required."}), 400
-    
+
     if User.query.filter_by(username=username).first():
         return jsonify({"error": "Username already exists."}), 400
-    
+
     if User.query.filter_by(email=email).first():
         return jsonify({"error": "Email already exists."}), 400
 
@@ -329,7 +329,7 @@ def login():
     password = data.get("password")
     if not username or not password or not email:
         return jsonify({"error": "Username, email, and password are required."}), 400
-    
+
     user = User.query.filter_by(username=username).first()
     if user and check_password_hash(user.password_hash, password):
         login_user(user)
@@ -388,21 +388,21 @@ def update_email():
     data = request.json
     email = data.get('email')
     enabled = data.get('enabled', True)
-    
+
     if not email:
         return jsonify({'error': 'Email is required'}), 400
-    
+
     conn = sqlite3.connect('database.db')
     c = conn.cursor()
-    
+
     c.execute('''
         INSERT OR REPLACE INTO user_settings (email, weekly_email_enabled)
         VALUES (?, ?)
     ''', (email, 1 if enabled else 0))
-    
+
     conn.commit()
     conn.close()
-    
+
     return jsonify({'success': True, 'message': 'Settings updated successfully'})
 
 @app.route('/api/unsubscribe', methods=['POST'])
@@ -410,16 +410,16 @@ def unsubscribe():
     """Unsubscribe from weekly emails"""
     data = request.json
     email = data.get('email')
-    
+
     if not email:
         return jsonify({'error': 'Email is required'}), 400
-    
+
     conn = sqlite3.connect('database.db')
     c = conn.cursor()
     c.execute('UPDATE user_settings SET weekly_email_enabled = 0 WHERE email = ?', (email,))
     conn.commit()
     conn.close()
-    
+
     return jsonify({'success': True, 'message': 'Unsubscribed successfully'})
 
 # ---------------- TEST EMAIL ROUTES ----------------
@@ -450,14 +450,14 @@ def detect_recurring_expenses():
         expenses = Expense.query.filter(
             Expense.date >= cutoff_date
         ).order_by(Expense.date.desc()).all()
-        
+
         if not expenses:
             return jsonify({
                 'success': True,
                 'detected': [],
                 'message': 'No expenses found in last 60 days'
             })
-        
+
         # Group by merchant and category
         patterns = {}
         for exp in expenses:
@@ -471,14 +471,14 @@ def detect_recurring_expenses():
                 }
             patterns[key]['amounts'].append(exp.amount)
             patterns[key]['dates'].append(exp.date)
-        
+
         # Analyze patterns
         detected = []
         for key, data in patterns.items():
             if len(data['amounts']) >= 2:
                 avg_amount = sum(data['amounts']) / len(data['amounts'])
                 variation = max([abs(a - avg_amount) / avg_amount for a in data['amounts']])
-                
+
                 if variation <= 0.10:
                     sorted_dates = sorted(data['dates'])
                     if len(sorted_dates) >= 2:
@@ -486,9 +486,9 @@ def detect_recurring_expenses():
                         for i in range(1, len(sorted_dates)):
                             diff = (sorted_dates[i] - sorted_dates[i-1]).days
                             day_diffs.append(diff)
-                        
+
                         avg_diff = sum(day_diffs) / len(day_diffs)
-                        
+
                         frequency = None
                         if 28 <= avg_diff <= 31:
                             frequency = 'monthly'
@@ -498,7 +498,7 @@ def detect_recurring_expenses():
                             frequency = 'quarterly'
                         elif 355 <= avg_diff <= 370:
                             frequency = 'yearly'
-                        
+
                         if frequency:
                             detected.append({
                                 'merchant': data['merchant'],
@@ -508,13 +508,13 @@ def detect_recurring_expenses():
                                 'next_due': (sorted_dates[-1] + timedelta(days=round(avg_diff))).isoformat(),
                                 'confidence': 'high' if len(data['amounts']) >= 3 else 'medium'
                             })
-        
+
         return jsonify({
             'success': True,
             'detected': detected,
             'count': len(detected)
         })
-        
+
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
@@ -523,12 +523,12 @@ def add_recurring_expense():
     """Add a recurring expense manually or from detection"""
     try:
         data = request.json
-        
+
         required = ['amount', 'category', 'frequency', 'start_date', 'next_due_date']
         for field in required:
             if field not in data:
                 return jsonify({'success': False, 'error': f'Missing field: {field}'}), 400
-        
+
         recurring = RecurringExpense(
             amount=float(data['amount']),
             category=data['category'],
@@ -540,16 +540,16 @@ def add_recurring_expense():
             auto_add=data.get('auto_add', True),
             is_active=True
         )
-        
+
         db.session.add(recurring)
         db.session.commit()
-        
+
         return jsonify({
             'success': True,
             'message': 'Recurring expense added successfully',
             'id': recurring.id
         })
-        
+
     except Exception as e:
         db.session.rollback()
         return jsonify({'success': False, 'error': str(e)}), 500
@@ -573,10 +573,10 @@ def delete_recurring_expense(id):
         recurring = RecurringExpense.query.get(id)
         if not recurring:
             return jsonify({'success': False, 'error': 'Not found'}), 404
-        
+
         db.session.delete(recurring)
         db.session.commit()
-        
+
         return jsonify({'success': True, 'message': 'Deleted successfully'})
     except Exception as e:
         db.session.rollback()
@@ -589,10 +589,10 @@ def toggle_recurring_expense(id):
         recurring = RecurringExpense.query.get(id)
         if not recurring:
             return jsonify({'success': False, 'error': 'Not found'}), 404
-        
+
         recurring.is_active = not recurring.is_active
         db.session.commit()
-        
+
         return jsonify({
             'success': True,
             'is_active': recurring.is_active,
@@ -648,7 +648,7 @@ def dashboard_data():
             "goal_count": goal_count,
             "portfolio_allocation": allocation_percentages,
         })
-    
+
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 
@@ -784,7 +784,7 @@ def chat():
             # Fetch user's financial data
             expenses = Expense.query.filter_by(user_id=current_user.id).all()
             assets = Asset.query.filter_by(user_id=current_user.id).all()
-            
+
             user_context = {
                 'income': 80000,  # TODO: Fetch from user profile
                 'expenses': sum(e.amount for e in expenses) if expenses else 0,
@@ -807,7 +807,7 @@ CRITICAL RULES - YOU MUST FOLLOW:
 Be friendly, supportive, and encouraging."""
 
         messages = [{"role": "system", "content": system_prompt}]
-        
+
         if history:
             messages += history[-10:]
         messages.append({"role": "user", "content": msg})
@@ -820,10 +820,10 @@ Be friendly, supportive, and encouraging."""
         )
 
         reply = res.choices[0].message.content
-        
+
         # Process through safety engine
         safety_result = safety_engine.process_response(reply, user_context)
-        
+
         return jsonify({
             "reply": safety_result['safe_response'],
             "safety": {
@@ -930,7 +930,7 @@ def create_alert():
 
         if condition not in ("above", "below"):
             return jsonify({"error": "Invalid condition value"}), 400
-            
+
         alert = PriceAlert(symbol=symbol, target_price=target_price, condition=condition, user_id=current_user.id)
         db.session.add(alert)
         db.session.commit()
@@ -994,7 +994,7 @@ def tax():
         deduction_80c = validate_float(data.get("deduction_80c", 0.0), "deduction_80c", min_val=0.0)
         deduction_80d = validate_float(data.get("deduction_80d", 0.0), "deduction_80d", min_val=0.0)
         deduction_hra = validate_float(data.get("deduction_hra", 0.0), "deduction_hra", min_val=0.0)
-        
+
         hra_inputs = data.get("hra_inputs")
         if hra_inputs is not None:
             if not isinstance(hra_inputs, dict):
@@ -1007,16 +1007,16 @@ def tax():
             }
 
         tax_details = calculate_tax(income, deduction_80c=deduction_80c, deduction_80d=deduction_80d, deduction_hra=deduction_hra, hra_inputs=hra_inputs)
-        
+
         recommendations = "You are already in the zero-tax bracket! No additional tax-saving investments are required."
-        
+
         recommended_regime = tax_details.get("recommended", "New Regime")
         regime_key = "new_regime" if recommended_regime == "New Regime" else "old_regime"
         total_tax = tax_details.get(regime_key, {}).get("total_tax", 0.0)
-        
+
         if total_tax > 0.0 and client:
             prompt = f"A user in India has a gross annual income of ₹{income:,} and has a total tax liability of ₹{total_tax:,} under the recommended {recommended_regime}.\n\nGenerate a customized list of tax-saving investment recommendations for them. Suggest specific options under Section 80C (up to 1.5L, e.g. ELSS, PPF), Section 80CCD(1B) (up to 50k in NPS), and Section 80D (Health Insurance). Be brief and format the response as a bulleted list with clear estimated tax savings."
-            
+
             try:
                 ai_res = client.chat.completions.create(
                     model="llama-3.1-8b-instant",
@@ -1031,7 +1031,7 @@ def tax():
                 recommendations = "AI Tax recommendations are currently unavailable. Consider investing in ELSS or NPS to reduce your tax."
         elif total_tax > 0.0:
             recommendations = "AI Tax recommendations are currently offline (no GROQ_API_KEY configured). Consider investing in ELSS or NPS to reduce your tax."
-                
+
         tax_details["ai_recommendations"] = recommendations
         return jsonify({"tax": tax_details})
 
@@ -1060,7 +1060,7 @@ def tax_simulate():
         scenario_a_d80c = validate_float(scenario_a.get("deduction_80c", 0.0), "scenario_a.deduction_80c", min_val=0.0)
         scenario_a_d80d = validate_float(scenario_a.get("deduction_80d", 0.0), "scenario_a.deduction_80d", min_val=0.0)
         scenario_a_hra = validate_float(scenario_a.get("deduction_hra", 0.0), "scenario_a.deduction_hra", min_val=0.0)
-        
+
         scenario_b_d80c = validate_float(scenario_b.get("deduction_80c", 0.0), "scenario_b.deduction_80c", min_val=0.0)
         scenario_b_d80d = validate_float(scenario_b.get("deduction_80d", 0.0), "scenario_b.deduction_80d", min_val=0.0)
         scenario_b_hra = validate_float(scenario_b.get("deduction_hra", 0.0), "scenario_b.deduction_hra", min_val=0.0)
@@ -1168,7 +1168,7 @@ def money_score():
         data = request.json or {}
         if not isinstance(data, dict):
             raise ValidationError("Request body must be a JSON object")
-        
+
         income = validate_float(data.get("income"), "income", min_val=0.0)
         expenses = validate_float(data.get("expenses"), "expenses", min_val=0.0)
         savings = validate_float(data.get("savings"), "savings", min_val=0.0)
@@ -1316,10 +1316,10 @@ def add_expense():
 
         db.session.add(expense)
         db.session.commit()
-        
+
         ym = expense.date[:7] if len(expense.date) >= 7 else None
         run_threshold_checks(expense.user_id, expense.category, ym)
-        
+
         return jsonify({"status": "success"})
 
     except ValidationError as e:
@@ -1338,19 +1338,19 @@ def expense_detail(expense_id):
         if request.method == "DELETE":
             category = expense.category
             ym = expense.date[:7] if len(expense.date) >= 7 else None
-            
+
             db.session.delete(expense)
             db.session.commit()
-            
+
             if ym:
                 run_threshold_checks(expense.user_id, category, ym)
-                
+
             return jsonify({"status": "success"})
         else:  # PUT
             data = request.json or {}
             if not isinstance(data, dict):
                 raise ValidationError("Request body must be a JSON object")
-            
+
             if "category" in data:
                 new_cat = validate_string(data["category"], "category")
                 if new_cat != expense.category:
@@ -1362,13 +1362,13 @@ def expense_detail(expense_id):
                 expense.amount = validate_float(data["amount"], "amount", min_val=0.01)
             if "date" in data:
                 expense.date = validate_string(data["date"], "date")
-                
+
             db.session.commit()
-            
+
             ym = expense.date[:7] if len(expense.date) >= 7 else None
             if ym:
                 run_threshold_checks(expense.user_id, expense.category, ym)
-                
+
             return jsonify({"status": "success", "expense": expense.to_dict()})
     except ValidationError as e:
         raise e
@@ -1427,7 +1427,7 @@ def add_asset():
         date = data.get("date")
         if date:
             date = validate_string(date, "date")
-        
+
         asset = Asset(name=name, amount=amount, user_id=current_user.id)
         if date:
             asset.date = date
@@ -1451,7 +1451,7 @@ def add_liability():
         date = data.get("date")
         if date:
             date = validate_string(date, "date")
-        
+
         liability = Liability(name=name, amount=amount, user_id=current_user.id)
         if date:
             liability.date = date
@@ -1498,29 +1498,29 @@ def parse_expense_text():
     try:
         data = request.json
         text = data.get('text', '').strip()
-        
+
         if not text:
             return jsonify({'success': False, 'error': 'No text provided'}), 400
-        
+
         prompt = f"""
         You are a financial data extractor. Extract the following details from this spoken text:
         "{text}"
-        
+
         Return ONLY valid JSON in this exact format:
         {{
             "amount": number or null,
             "category": string or null,
             "merchant": string or null
         }}
-        
+
         Categories must be one of: Food, Rent, Travel, Shopping, Utilities, Entertainment, Healthcare, Other.
-        
+
         Examples:
         - "Uber ride to airport 450 rupees" → {{"amount": 450, "category": "Travel", "merchant": "Uber"}}
         - "Bought groceries for 1200 at Big Basket" → {{"amount": 1200, "category": "Food", "merchant": "Big Basket"}}
         - "Paid electricity bill 800 rupees" → {{"amount": 800, "category": "Utilities", "merchant": null}}
         """
-        
+
         response = client.chat.completions.create(
             model="llama-3.1-8b-instant",
             messages=[
@@ -1530,9 +1530,9 @@ def parse_expense_text():
             temperature=0.1,
             max_tokens=100
         )
-        
+
         result_text = response.choices[0].message.content.strip()
-        
+
         import json
         try:
             start = result_text.find('{')
@@ -1540,26 +1540,26 @@ def parse_expense_text():
             if start != -1 and end > start:
                 json_str = result_text[start:end]
                 parsed = json.loads(json_str)
-                
+
                 result = {
                     'success': True,
                     'amount': parsed.get('amount'),
                     'category': parsed.get('category'),
                     'merchant': parsed.get('merchant')
                 }
-                
+
                 valid_categories = ['Food', 'Rent', 'Travel', 'Shopping', 'Utilities', 'Entertainment', 'Healthcare', 'Other']
                 if result['category'] and result['category'] not in valid_categories:
                     result['category'] = 'Other'
-                
+
                 return jsonify(result)
             else:
                 raise ValueError("No JSON found in response")
-                
+
         except Exception as e:
             print(f"JSON parse error: {e}")
             return jsonify({'success': False, 'error': 'Failed to parse AI response'}), 500
-        
+
     except Exception as e:
         print(f"Voice parse error: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
@@ -1661,20 +1661,20 @@ def run_threshold_checks(user_id, category, year_month=None):
     if not year_month:
         import datetime
         year_month = datetime.datetime.now().strftime("%Y-%m")
-        
+
     limit = BudgetLimit.query.filter_by(user_id=user_id, category=category).first()
     if not limit or limit.limit_amount <= 0:
         return []
-        
+
     expenses = Expense.query.filter(
         Expense.user_id == user_id,
         Expense.category == category,
         Expense.date.like(f"{year_month}%")
     ).all()
-    
+
     total_spent = sum(e.amount for e in expenses)
     pct = total_spent / limit.limit_amount
-    
+
     triggered = []
     for threshold in [100, 90, 80]:
         target = threshold / 100.0
@@ -1710,7 +1710,7 @@ def budget_limits():
                 raise ValidationError("Request body must be a JSON object")
             category = validate_string(data.get("category"), "category")
             limit_amount = validate_float(data.get("limit_amount"), "limit_amount", min_val=0.0)
-            
+
             limit = BudgetLimit.query.filter_by(user_id=current_user.id, category=category).first()
             if limit:
                 limit.limit_amount = limit_amount
@@ -1732,19 +1732,19 @@ def budget_limits():
 def budget_status():
     import datetime
     year_month = request.args.get("month", datetime.datetime.now().strftime("%Y-%m"))
-    
+
     limits = BudgetLimit.query.filter_by(user_id=current_user.id).all()
     limits_dict = {l.category: l.limit_amount for l in limits}
-    
+
     expenses = Expense.query.filter(Expense.user_id == current_user.id, Expense.date.like(f"{year_month}%")).all()
-    
+
     spent_by_category = {}
     for e in expenses:
         spent_by_category[e.category] = spent_by_category.get(e.category, 0.0) + e.amount
-        
+
     status_list = []
     all_categories = set(limits_dict.keys()) | set(spent_by_category.keys())
-    
+
     for cat in sorted(all_categories):
         lim = limits_dict.get(cat, 0.0)
         spent = spent_by_category.get(cat, 0.0)
@@ -1755,13 +1755,70 @@ def budget_status():
             "spent": spent,
             "percentage": round(pct, 2)
         })
-        
+
     return jsonify({
         "month": year_month,
         "categories": status_list,
         "total_budgeted": sum(limits_dict.values()),
         "total_spent": sum(spent_by_category.values())
     })
+
+@app.route("/budget/rollover", methods=["POST"])
+@login_required
+def budget_rollover():
+    import datetime
+    try:
+        data = request.json or {}
+        category = data.get("category", "").strip()
+        month = data.get("month", "")
+        action = data.get("action", "")  # "rollover" or "goal"
+        goal_id = data.get("goal_id")
+
+        if not category or not month or action not in ("rollover", "goal"):
+            return jsonify({"error": "Invalid parameters"}), 400
+
+        # Calculate surplus
+        limit = BudgetLimit.query.filter_by(user_id=current_user.id, category=category).first()
+        if not limit:
+            return jsonify({"error": "No budget limit found for this category"}), 404
+
+        expenses = Expense.query.filter(
+            Expense.user_id == current_user.id,
+            Expense.date.like(f"{month}%"),
+            Expense.category == category
+        ).all()
+        actual_spent = sum(e.amount for e in expenses)
+        surplus = limit.limit_amount - actual_spent
+
+        if surplus <= 0:
+            return jsonify({"error": "No surplus available for this category"}), 400
+
+        if action == "rollover":
+            # Add surplus to the existing budget limit for next month's use
+            limit.limit_amount = limit.limit_amount + surplus
+            db.session.commit()
+            return jsonify({
+                "status": "success",
+                "message": f"Rs. {surplus:.2f} rolled over into {category} budget.",
+                "new_limit": limit.limit_amount
+            })
+
+        elif action == "goal":
+            if not goal_id:
+                return jsonify({"error": "goal_id is required"}), 400
+            goal = FinancialGoal.query.filter_by(id=goal_id, user_id=current_user.id).first()
+            if not goal:
+                return jsonify({"error": "Goal not found"}), 404
+            goal.current_amount = goal.current_amount + surplus
+            db.session.commit()
+            return jsonify({
+                "status": "success",
+                "message": f"Rs. {surplus:.2f} added to goal '{goal.name}'.",
+                "new_amount": goal.current_amount
+            })
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
 
 @app.route("/budget/alerts", methods=["GET"])
 @login_required
@@ -2078,28 +2135,28 @@ def portfolio_page():
 def list_portfolio():
     try:
         holdings = Portfolio.query.filter_by(user_id=current_user.id).all()
-        
+
         today_dt = datetime.now()
         cutoff_dt = today_dt - timedelta(days=365)
-        
+
         holdings_list = []
         total_invested = 0.0
         total_current = 0.0
         total_dividends_received = 0.0
         total_annual_dividends_value = 0.0
         timeline = []
-        
+
         for h in holdings:
             price_data = get_stock_price(h.symbol)
             current_price = price_data.get("price", h.buy_price)
-            
+
             divs = get_stock_dividends(h.symbol)
-            
+
             divs_received = 0.0
             for d in divs:
                 if d["date"] >= h.buy_date:
                     divs_received += d["amount"] * h.quantity
-            
+
             annual_div_per_share = 0.0
             for d in divs:
                 try:
@@ -2108,13 +2165,13 @@ def list_portfolio():
                         annual_div_per_share += d["amount"]
                 except ValueError:
                     continue
-            
+
             invested_val = h.quantity * h.buy_price
             current_val = h.quantity * current_price
             pnl = current_val - invested_val
             pnl_percent = (pnl / invested_val * 100) if invested_val > 0 else 0.0
             yoc = (annual_div_per_share / h.buy_price * 100) if h.buy_price > 0 else 0.0
-            
+
             holdings_list.append({
                 "id": h.id,
                 "symbol": h.symbol,
@@ -2130,12 +2187,12 @@ def list_portfolio():
                 "annual_dividend_per_share": round(annual_div_per_share, 2),
                 "yoc": round(yoc, 2)
             })
-            
+
             total_invested += invested_val
             total_current += current_val
             total_dividends_received += divs_received
             total_annual_dividends_value += annual_div_per_share * h.quantity
-            
+
             for d in divs:
                 try:
                     div_date = datetime.strptime(d["date"], "%Y-%m-%d")
@@ -2150,13 +2207,13 @@ def list_portfolio():
                             })
                 except ValueError:
                     continue
-        
+
         total_pnl = total_current - total_invested
         total_pnl_percent = (total_pnl / total_invested * 100) if total_invested > 0 else 0.0
         portfolio_yoc = (total_annual_dividends_value / total_invested * 100) if total_invested > 0 else 0.0
-        
+
         timeline.sort(key=lambda x: x["date"])
-        
+
         summary = {
             "total_invested": round(total_invested, 2),
             "total_current": round(total_current, 2),
@@ -2165,7 +2222,7 @@ def list_portfolio():
             "total_dividends_received": round(total_dividends_received, 2),
             "portfolio_yoc": round(portfolio_yoc, 2)
         }
-        
+
         return jsonify({
             "success": True,
             "holdings": holdings_list,
