@@ -88,7 +88,7 @@
       e.preventDefault();
       const category = document.getElementById("limitCategory").value;
       const limit_amount = parseFloat(document.getElementById("limitAmt").value);
-      
+
       setLoading("limitBtn", true);
       try {
         const data = await apiFetch("/budget/limits", { category, limit_amount });
@@ -112,31 +112,31 @@
     try {
       const res = await fetch(`/budget/status?month=${month}`);
       const data = await res.json();
-      
+
       document.getElementById("totalBudgeted").textContent = "₹" + fmtNum(data.total_budgeted);
       document.getElementById("totalSpent").textContent = "₹" + fmtNum(data.total_spent);
-      
+
       const container = document.getElementById("budgetStatusContainer");
       container.innerHTML = "";
-      
+
       if (data.categories.length === 0) {
         container.innerHTML = `<div style="text-align:center; padding: 20px; color: var(--muted); font-style: italic;">No budgets or expenses for this month.</div>`;
         document.getElementById("budgetAdvice").innerHTML = "Add some categories or expenses to get recommendations.";
         return;
       }
-      
+
       let warnings = [];
-      
+
       data.categories.forEach(item => {
         const pct = item.percentage;
         const overBudget = pct > 100;
         const barColor = overBudget ? 'var(--red)' : pct >= 90 ? 'var(--red)' : pct >= 80 ? 'var(--gold)' : 'var(--green)';
         const pctText = item.limit_amount > 0 ? `${pct}% used` : "No limit set";
-        
+
         if (pct >= 80) {
           warnings.push(`<strong>${item.category}</strong>: Spent ₹${fmtNum(item.spent)} / ₹${fmtNum(item.limit_amount)} (${pct}%)`);
         }
-        
+
         container.innerHTML += `
           <div style="background: rgba(255, 255, 255, 0.02); padding: 10px 14px; border: 1px solid var(--border); border-radius: 10px;">
             <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px; font-weight:600;">
@@ -147,13 +147,20 @@
               <div style="width: ${Math.min(pct, 100)}%; height: 100%; background: ${barColor}; border-radius: 99px; transition: width 0.4s;"></div>
             </div>
             <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--muted);">
-              <span>Spent: ₹${fmtNum(item.spent)}</span>
-              <span>Limit: ₹${fmtNum(item.limit_amount)}</span>
+              <span>Spent: &#8377;${fmtNum(item.spent)}</span>
+              <span>Limit: &#8377;${fmtNum(item.limit_amount)}</span>
             </div>
+            ${item.limit_amount > 0 && item.spent < item.limit_amount ? `
+            <div style="margin-top:8px;">
+              <button class="btn btn-ghost" style="font-size:11px;padding:4px 10px;width:100%"
+                onclick="openRolloverModal('${item.category}', ${item.limit_amount - item.spent})">
+                &#128256; Surplus &#8377;${fmtNum(item.limit_amount - item.spent)} &mdash; Rollover / Save
+              </button>
+            </div>` : ''}
           </div>
         `;
       });
-      
+
       // Update advice card
       const adviceDiv = document.getElementById("budgetAdvice");
       if (warnings.length > 0) {
@@ -178,25 +185,83 @@
           - You can configure category limits for other departments to enforce comprehensive planning.
         `;
       }
-      
+
     } catch (err) {
       console.error(err);
     }
   }
 
+  let _rolloverCategory = '';
+  let _rolloverSurplus = 0;
+
+  async function openRolloverModal(category, surplus) {
+    _rolloverCategory = category;
+    _rolloverSurplus = surplus;
+    document.getElementById('rolloverCategoryName').textContent = category;
+    document.getElementById('rolloverAmount').textContent = 'Rs. ' + fmtNum(surplus);
+
+    const goalSel = document.getElementById('rolloverGoalSelect');
+    goalSel.innerHTML = '<option value="">Loading...</option>';
+    try {
+      const res = await fetch('/api/goals');
+      const data = await res.json();
+      if (data.goals && data.goals.length > 0) {
+        goalSel.innerHTML = data.goals.map(g =>
+          `<option value="${g.id}">${g.name} (Rs. ${fmtNum(g.current_amount)} / Rs. ${fmtNum(g.target_amount)})</option>`
+        ).join('');
+      } else {
+        goalSel.innerHTML = '<option value="">No goals found</option>';
+      }
+    } catch(e) {
+      goalSel.innerHTML = '<option value="">Could not load goals</option>';
+    }
+
+    document.getElementById('rolloverModal').style.display = 'flex';
+  }
+
+  function closeRolloverModal() {
+    document.getElementById('rolloverModal').style.display = 'none';
+  }
+
+  async function submitRollover(action) {
+    const month = document.getElementById('budgetMonth').value;
+    const payload = { category: _rolloverCategory, month, action };
+    if (action === 'goal') {
+      const goalId = parseInt(document.getElementById('rolloverGoalSelect').value);
+      if (!goalId) { alert('Please select a goal.'); return; }
+      payload.goal_id = goalId;
+    }
+    try {
+      const res = await fetch('/budget/rollover', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (data.status === 'success') {
+        closeRolloverModal();
+        alert(data.message);
+        loadBudgetStatus();
+      } else {
+        alert('Error: ' + data.error);
+      }
+    } catch(e) {
+      alert('Could not reach server.');
+    }
+  }
   async function loadAlertsFeed() {
     try {
       const res = await fetch("/budget/alerts");
       const data = await res.json();
-      
+
       const feed = document.getElementById("alertsFeed");
       feed.innerHTML = "";
-      
+
       if (data.length === 0) {
         feed.innerHTML = `<div style="text-align: center; padding: 20px; color: var(--muted); font-style: italic;">No alerts triggered yet</div>`;
         return;
       }
-      
+
       data.forEach(item => {
         const timeStr = new Date(item.triggered_at).toLocaleTimeString("en-IN", { hour: '2-digit', minute: '2-digit' }) + ", " + new Date(item.triggered_at).toLocaleDateString("en-IN", { day: 'numeric', month: 'short' });
         feed.innerHTML += `
@@ -226,4 +291,24 @@
     }
   }
 </script>
+<div id="rolloverModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:1000; align-items:center; justify-content:center;">
+  <div class="card" style="max-width:420px; width:90%; padding:24px;">
+    <div class="card-title">&#128256; Budget Surplus Rollover</div>
+    <p style="font-size:13px; color:var(--muted); margin-bottom:16px;">
+      Category: <strong id="rolloverCategoryName"></strong><br>
+      Surplus: <strong id="rolloverAmount" style="color:var(--green)"></strong>
+    </p>
+    <div style="margin-bottom:14px;">
+      <label style="font-size:12px; color:var(--muted);">If redirecting to a Goal:</label>
+      <select id="rolloverGoalSelect" style="width:100%; margin-top:6px;">
+        <option value="">Select a goal</option>
+      </select>
+    </div>
+    <div style="display:flex; gap:10px; margin-top:8px;">
+      <button class="btn btn-gold" style="flex:1" onclick="submitRollover('rollover')">&#128257; Roll Into Next Budget</button>
+      <button class="btn btn-ghost" style="flex:1" onclick="submitRollover('goal')">&#127919; Add to Goal</button>
+    </div>
+    <button class="btn btn-ghost" style="width:100%; margin-top:10px;" onclick="closeRolloverModal()">Cancel</button>
+  </div>
+</div>
 {% endblock %}
