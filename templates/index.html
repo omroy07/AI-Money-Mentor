@@ -1227,7 +1227,7 @@
     .page-title {
       font-size: 18px;
     }
-    
+
 
 
     /* ===== GOAL TRACKER STYLING FIX ===== */
@@ -1724,6 +1724,9 @@
           <button class="btn btn-gold" style="margin-top:16px;width:100%" onclick="calcScore()" id="scoreBtn">Calculate
             Money Score</button>
           <div id="scoreResult" class="result-box"></div>
+          <div id="score-export-section" style="display:none; margin-top:14px;">
+            <button class="btn btn-ghost" style="width:100%" onclick="exportReport('pdf')" id="exportPdfBtn">&#128196; Download PDF Report</button>
+          </div>
         </div>
         <div class="card" style="min-height: 380px;">
           <div class="card-title">Financial Health Breakdown</div>
@@ -1800,7 +1803,7 @@
     <div id="tax" class="page">
       <div class="page-title">💸 Tax <span>Planner</span></div>
       <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: start; justify-content: center; max-width: 950px; width: 100%;">
-        
+
         <div class="card" style="flex: 1; min-width: 320px; max-width: 450px;">
           <div class="card-title">Income Tax Calculator (New Regime)</div>
           <label>Gross Annual Income (₹)</label>
@@ -1873,7 +1876,7 @@
       <option value="Shopping">Shopping</option>
       <option value="Other">Other</option>
     </select>
-    
+
     <!-- Amount with Microphone Button -->
     <div style="display: flex; gap: 8px; flex: 1; min-width: 150px;">
       <input type="number" required min="0" id="amount" placeholder="Amount (₹)" style="flex: 1;">
@@ -1881,7 +1884,7 @@
         🎤
       </button>
     </div>
-    
+
     <input type="text" id="merchant" placeholder="Merchant (optional)">
     <input type="date" id="date" required>
     <button type="submit">Add Expense</button>
@@ -2146,34 +2149,34 @@
     const box = document.getElementById(boxId);
     const dashWelcome = document.getElementById('chatWelcome');
     const chatWelcome = document.getElementById('chatPageWelcome');
-    
+
     if (dashWelcome && !dashWelcome.classList.contains('hidden')) {
         dashWelcome.classList.add('hidden');
     }
     if (chatWelcome && !chatWelcome.classList.contains('hidden')) {
         chatWelcome.classList.add('hidden');
     }
-    
+
     const d = document.createElement('div');
     d.className = `msg ${role}`;
-    
+
     let content = text;
     if (role === 'bot') {
         content = formatMarkdown(text);
     }
-    
+
     d.innerHTML = `<div class="sender">${role === 'user' ? 'You' : 'AI Advisor'}</div>${content}`;
-    
+
     // Add safety indicator for bot messages
     if (role === 'bot' && safety) {
         const indicator = document.createElement('div');
         const passed = safety.passed;
         const confidence = safety.confidence_level || 'high';
-        
+
         let className = 'safety-indicator';
         let icon = '✅';
         let text = 'All safety checks passed';
-        
+
         if (!passed) {
             className += ' failed';
             icon = '⚠️';
@@ -2187,12 +2190,12 @@
             icon = '🔴';
             text = 'Low confidence - Verify details';
         }
-        
+
         indicator.className = className;
         indicator.innerHTML = `${icon} ${text}`;
         d.appendChild(indicator);
     }
-    
+
     box.appendChild(d);
     box.scrollTop = box.scrollHeight;
 }
@@ -2243,7 +2246,7 @@ async function chatSend() {
     // Stores conversation history as {role, content} pairs for context
     const chatHistory = [];
 
-    
+
     function chatQuick(text) {
       document.getElementById('chatInput').value = text;
       chatSend();
@@ -2308,9 +2311,9 @@ async function chatSend() {
               <div class="score-container">
                 <svg class="score-circle-svg">
                   <circle class="score-circle-bg" cx="65" cy="65" r="54" />
-                  <circle class="score-circle-bar" cx="65" cy="65" r="54" 
-                          stroke="${color}" 
-                          stroke-dasharray="${circumference}" 
+                  <circle class="score-circle-bar" cx="65" cy="65" r="54"
+                          stroke="${color}"
+                          stroke-dasharray="${circumference}"
                           stroke-dashoffset="${offset}" />
                 </svg>
                 <div class="score-text-overlay">
@@ -2369,11 +2372,67 @@ async function chatSend() {
               }
             }
           });
+
+          updateReportData({
+            income, expenses, savings,
+            investments: invest,
+            debt, emergency,
+            money_score: `${data.score} (${data.status})`
+          });
+          showExportSection();
         }
       } catch (e) {
-        showResult('scoreResult', '⚠ Could not reach server.');
+        showResult('scoreResult', '⚠  Could not reach server.');
       }
       setLoading('scoreBtn', false);
+    }
+
+    let reportData = {};
+
+    function updateReportData(fields) {
+      reportData = Object.assign(reportData, fields);
+    }
+
+    function showExportSection() {
+      const sec = document.getElementById('score-export-section');
+      if (sec) sec.style.display = 'block';
+    }
+
+    function captureCharts() {
+      const ids = ['scoreChart', 'expenseChart', 'portfolioChart', 'sipChart', 'stockChart'];
+      const images = {};
+      for (const id of ids) {
+        const canvas = document.getElementById(id);
+        if (canvas && canvas.width > 0 && canvas.height > 0) {
+          try { images[id] = canvas.toDataURL('image/png'); } catch(e) {}
+        }
+      }
+      return images;
+    }
+
+    async function exportReport(format) {
+      if (format !== 'pdf') return;
+      const btn = document.getElementById('exportPdfBtn');
+      if (btn) { btn.disabled = true; btn.textContent = 'Generating...'; }
+      try {
+        const payload = Object.assign({}, reportData, { chart_images: captureCharts() });
+        const res = await fetch('/export/pdf', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (!res.ok) throw new Error('Server error');
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'financial_report.pdf';
+        a.click();
+        URL.revokeObjectURL(url);
+      } catch(e) {
+        alert('Could not generate PDF. Please try again.');
+      }
+      if (btn) { btn.disabled = false; btn.textContent = '\uD83D\uDCC4 Download PDF Report'; }
     }
 
     /* ══════════════════════════════════════════════
@@ -2405,7 +2464,7 @@ async function chatSend() {
             <div style="font-size:11px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.06em">Estimated Future Value</div>
             <div class="result-big">₹${fmtNum(fv)}</div>
             <div style="font-size:12px;color:var(--muted);margin-top:6px">
-              Invested: ₹${fmtNum(monthly * years * 12)} &nbsp;·&nbsp; 
+              Invested: ₹${fmtNum(monthly * years * 12)} &nbsp;·&nbsp;
               Gains: ₹${fmtNum(fv - monthly * years * 12)}
             </div>
           `);
@@ -2632,7 +2691,7 @@ async function chatSend() {
                 </tr>
               </tbody>
             </table>
-            
+
             <div style="margin-top:16px; padding:12px 14px; background:rgba(46,204,138,0.08); border:1px solid rgba(46,204,138,0.2); border-radius:8px; color:#2ecc8a; font-size:13px; line-height:1.5;">
               <strong>Recommendation:</strong> Select the <strong>${taxRes.recommended}</strong>.<br/>
               You will save <strong>₹${fmtNum(taxRes.savings)}</strong> annually with this regime.
@@ -3046,7 +3105,7 @@ async function chatSend() {
 loadExpenses();
 
 let goals = [];
-                          
+
 
 
           });
@@ -3342,47 +3401,47 @@ function initVoiceRecognition() {
         alert("❌ Speech recognition is not supported in your browser. Please use Chrome, Edge, or Safari.");
         return null;
     }
-    
+
     const recognition = new SpeechRecognition();
     recognition.lang = 'en-IN';
     recognition.continuous = false;
     recognition.interimResults = true;
     recognition.maxAlternatives = 1;
-    
+
     return recognition;
 }
 
 function startVoiceInput() {
     const voiceBtn = document.getElementById('voiceBtn');
-    
+
     if (isListening) {
         stopVoiceInput();
         return;
     }
-    
+
     recognition = initVoiceRecognition();
     if (!recognition) return;
-    
+
     isListening = true;
     voiceBtn.innerHTML = '⏹️';
     voiceBtn.style.background = 'linear-gradient(135deg, #e05252, #c0392b)';
     voiceBtn.title = 'Stop listening';
-    
+
     const amountInput = document.getElementById('amount');
     amountInput.placeholder = '🎤 Listening...';
     amountInput.style.borderColor = '#d4a843';
-    
+
     recognition.onresult = function(event) {
         const transcript = event.results[0][0].transcript;
         console.log('🎤 Transcript:', transcript);
         amountInput.placeholder = `🗣️ "${transcript}"`;
-        
+
         if (event.results[0].isFinal) {
             parseVoiceText(transcript);
             stopVoiceInput();
         }
     };
-    
+
     recognition.onerror = function(event) {
         console.error('🎤 Error:', event.error);
         let errorMsg = '🎤 Error: ';
@@ -3402,13 +3461,13 @@ function startVoiceInput() {
         amountInput.placeholder = errorMsg;
         stopVoiceInput();
     };
-    
+
     recognition.onend = function() {
         if (isListening) {
             stopVoiceInput();
         }
     };
-    
+
     try {
         recognition.start();
     } catch (e) {
@@ -3423,13 +3482,13 @@ function stopVoiceInput() {
             recognition.stop();
         } catch (e) {}
     }
-    
+
     isListening = false;
     const voiceBtn = document.getElementById('voiceBtn');
     voiceBtn.innerHTML = '🎤';
     voiceBtn.style.background = '';
     voiceBtn.title = 'Speak expense';
-    
+
     const amountInput = document.getElementById('amount');
     if (amountInput.placeholder === '🎤 Listening...' || amountInput.placeholder.includes('🗣️')) {
         amountInput.placeholder = 'Amount (₹)';
@@ -3446,9 +3505,9 @@ async function parseVoiceText(text) {
             },
             body: JSON.stringify({ text: text })
         });
-        
+
         const data = await response.json();
-        
+
         if (data.success) {
             if (data.amount) {
                 document.getElementById('amount').value = data.amount;
@@ -3459,17 +3518,17 @@ async function parseVoiceText(text) {
             if (data.merchant) {
                 document.getElementById('merchant').value = data.merchant;
             }
-            
+
             highlightField('amount');
             if (data.category) highlightField('category');
             if (data.merchant) highlightField('merchant');
-            
+
             const amountInput = document.getElementById('amount');
             amountInput.placeholder = '✅ Voice input processed!';
             setTimeout(() => {
                 amountInput.placeholder = 'Amount (₹)';
             }, 2000);
-            
+
         } else {
             document.getElementById('merchant').value = text;
             alert(`🎤 Could not parse: "${text}". Please fill manually.`);
@@ -3485,11 +3544,11 @@ function highlightField(fieldId) {
     const field = document.getElementById(fieldId);
     const originalBg = field.style.background;
     const originalBorder = field.style.borderColor;
-    
+
     field.style.background = 'rgba(46, 204, 138, 0.15)';
     field.style.borderColor = '#2ecc8a';
     field.style.transition = 'all 0.5s ease';
-    
+
     setTimeout(() => {
         field.style.background = originalBg || '';
         field.style.borderColor = originalBorder || '';
