@@ -7,6 +7,7 @@ Flask-SQLAlchemy, so data survives server restarts.
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from flask_login import UserMixin
+import json
 
 
 db = SQLAlchemy()
@@ -1387,4 +1388,80 @@ class SipSchedule(db.Model):
 
         }
 
+
+
+class Tutorial(db.Model):
+    __tablename__ = "tutorials"
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(150), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "title": self.title,
+            "content": self.content,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+        }
+
+class Quiz(db.Model):
+    __tablename__ = "quizzes"
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(150), nullable=False)
+    tutorial_id = db.Column(db.Integer, db.ForeignKey('tutorials.id'), nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    tutorial = db.relationship('Tutorial', backref='quizzes')
+    questions = db.relationship('Question', backref='quiz', cascade='all, delete-orphan')
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "title": self.title,
+            "tutorial_id": self.tutorial_id,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "questions": [q.id for q in self.questions],
+        }
+
+class Question(db.Model):
+    __tablename__ = "questions"
+    id = db.Column(db.Integer, primary_key=True)
+    quiz_id = db.Column(db.Integer, db.ForeignKey('quizzes.id'), nullable=False)
+    prompt = db.Column(db.Text, nullable=False)
+    options = db.Column(db.JSON, nullable=False)  # list of option strings
+    correct_option = db.Column(db.Integer, nullable=False)  # index of correct option
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "quiz_id": self.quiz_id,
+            "prompt": self.prompt,
+            "options": self.options,
+            "correct_option": self.correct_option,
+        }
+
+class UserQuizAttempt(db.Model):
+    __tablename__ = "user_quiz_attempts"
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    quiz_id = db.Column(db.Integer, db.ForeignKey('quizzes.id'), nullable=False)
+    score = db.Column(db.Integer, nullable=False)
+    attempts = db.Column(db.Integer, default=1)
+    completed_at = db.Column(db.DateTime, default=datetime.utcnow)
+    answers = db.Column(db.JSON, nullable=True)  # list of selected option indexes
+
+    user = db.relationship('User', backref='quiz_attempts')
+    quiz = db.relationship('Quiz', backref='attempts')
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "quiz_id": self.quiz_id,
+            "score": self.score,
+            "attempts": self.attempts,
+            "completed_at": self.completed_at.isoformat() if self.completed_at else None,
+            "answers": self.answers,
+        }
 
