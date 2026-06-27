@@ -1,0 +1,303 @@
+{% extends 'base.html' %}
+
+{% block title %}Document Parser{% endblock %}
+
+{% block content %}
+<div id="document_parser" class="page active">
+  <div class="page-title">📄 AI Document <span>Parser</span></div>
+
+  <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 20px; max-width: 1200px;">
+    
+    <!-- Left Panel: Upload -->
+    <div>
+      <div class="card">
+        <div class="card-title">📤 Upload Document</div>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">
+          Supported: Images (PNG, JPG), PDFs, Receipts
+        </p>
+        
+        <form id="uploadForm" enctype="multipart/form-data">
+          <div style="border:2px dashed rgba(255,255,255,0.1);border-radius:14px;padding:30px;text-align:center;cursor:pointer;" 
+               ondrop="handleDrop(event)" ondragover="handleDragOver(event)" onclick="document.getElementById('fileInput').click()">
+            <div style="font-size:48px;margin-bottom:12px;">📁</div>
+            <div style="font-size:14px;color:var(--muted);">
+              Drop your document here or click to browse
+            </div>
+            <div style="font-size:12px;color:var(--muted);margin-top:4px;">
+              Supported: PDF, PNG, JPG, JPEG
+            </div>
+            <input type="file" id="fileInput" accept=".pdf,.png,.jpg,.jpeg" style="display:none;" onchange="handleFileSelect(event)">
+          </div>
+          
+          <div style="margin-top:12px;display:flex;gap:10px;">
+            <button type="submit" class="btn btn-gold" style="flex:1;" id="parseBtn">🔍 Parse Document</button>
+            <button type="button" class="btn btn-ghost" onclick="clearUpload()">Clear</button>
+          </div>
+        </form>
+        
+        <div id="uploadStatus" style="margin-top:12px;"></div>
+      </div>
+
+      <!-- Extracted Data Preview -->
+      <div class="card" id="dataPreview" style="display:none;">
+        <div class="card-title">📊 Extracted Data</div>
+        <div id="extractedData"></div>
+      </div>
+    </div>
+
+    <!-- Right Panel: Results -->
+    <div>
+      <div class="card">
+        <div class="card-title">📝 Parsed Text</div>
+        <div id="parsedText" style="background:rgba(255,255,255,0.02);border-radius:12px;padding:16px;max-height:300px;overflow-y:auto;font-size:13px;line-height:1.8;white-space:pre-wrap;">
+          <div class="text-muted" style="text-align:center;padding:40px 0;">
+            Upload a document to see parsed text
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">💳 Extracted Transactions</div>
+        <div id="transactionsList">
+          <div class="text-muted" style="text-align:center;padding:20px;">
+            No transactions extracted yet
+          </div>
+        </div>
+        <button class="btn btn-gold" style="width:100%;margin-top:12px;" onclick="exportExpenses()" id="exportBtn" style="display:none;">
+          📤 Export to Expense Tracker
+        </button>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🏷️ Document Info</div>
+        <div id="docInfo">
+          <div class="text-muted" style="text-align:center;padding:20px;">
+            Document type, confidence, and metadata will appear here
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<style>
+  #fileInput {
+    display: none;
+  }
+  .drag-over {
+    border-color: #d4a843 !important;
+    background: rgba(212,168,67,0.05);
+  }
+  .transaction-item {
+    display:flex;
+    justify-content:space-between;
+    padding:8px 0;
+    border-bottom:1px solid rgba(255,255,255,0.04);
+  }
+  .transaction-item:last-child {
+    border-bottom:none;
+  }
+  .tag-category {
+    display:inline-block;
+    padding:2px 10px;
+    border-radius:12px;
+    font-size:10px;
+    background:rgba(212,168,67,0.15);
+    color:#d4a843;
+  }
+  .doc-badge {
+    display:inline-block;
+    padding:4px 12px;
+    border-radius:20px;
+    font-size:11px;
+    background:rgba(46,204,138,0.15);
+    color:#2ecc8a;
+  }
+</style>
+
+<script>
+  let parsedData = null;
+  let extractedTransactions = [];
+
+  function handleDragOver(e) {
+    e.preventDefault();
+    e.currentTarget.classList.add('drag-over');
+  }
+
+  function handleDrop(e) {
+    e.preventDefault();
+    e.currentTarget.classList.remove('drag-over');
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+      document.getElementById('fileInput').files = files;
+      document.getElementById('uploadStatus').innerHTML = `<div style="color:var(--teal);">📎 ${files[0].name}</div>`;
+    }
+  }
+
+  function handleFileSelect(e) {
+    const file = e.target.files[0];
+    if (file) {
+      document.getElementById('uploadStatus').innerHTML = `<div style="color:var(--teal);">📎 ${file.name}</div>`;
+    }
+  }
+
+  function clearUpload() {
+    document.getElementById('fileInput').value = '';
+    document.getElementById('uploadStatus').innerHTML = '';
+    document.getElementById('parsedText').innerHTML = '<div class="text-muted" style="text-align:center;padding:40px 0;">Upload a document to see parsed text</div>';
+    document.getElementById('dataPreview').style.display = 'none';
+    document.getElementById('transactionsList').innerHTML = '<div class="text-muted" style="text-align:center;padding:20px;">No transactions extracted yet</div>';
+    document.getElementById('docInfo').innerHTML = '<div class="text-muted" style="text-align:center;padding:20px;">Document type, confidence, and metadata will appear here</div>';
+    extractedTransactions = [];
+    parsedData = null;
+  }
+
+  document.getElementById('uploadForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const fileInput = document.getElementById('fileInput');
+    const file = fileInput.files[0];
+    
+    if (!file) {
+      document.getElementById('uploadStatus').innerHTML = '<div style="color:var(--red);">⚠ Please select a file</div>';
+      return;
+    }
+    
+    const formData = new FormData();
+    formData.append('document', file);
+    
+    document.getElementById('parseBtn').disabled = true;
+    document.getElementById('parseBtn').innerHTML = '<span class="spinner"></span> Parsing...';
+    document.getElementById('uploadStatus').innerHTML = '<div style="color:var(--muted);">⏳ Processing document...</div>';
+    
+    try {
+      const response = await fetch('/api/parser/parse', {
+        method: 'POST',
+        body: formData
+      });
+      
+      const data = await response.json();
+      parsedData = data;
+      
+      if (data.success) {
+        document.getElementById('uploadStatus').innerHTML = '<div style="color:var(--green);">✅ Document parsed successfully!</div>';
+        renderResults(data);
+      } else {
+        document.getElementById('uploadStatus').innerHTML = `<div style="color:var(--red);">❌ ${data.error}</div>`;
+      }
+    } catch (error) {
+      document.getElementById('uploadStatus').innerHTML = `<div style="color:var(--red);">❌ ${error.message}</div>`;
+    }
+    
+    document.getElementById('parseBtn').disabled = false;
+    document.getElementById('parseBtn').innerHTML = '🔍 Parse Document';
+  });
+
+  function renderResults(data) {
+    const extracted = data.extracted_data || {};
+    const rawText = data.raw_text || data.text_preview || '';
+    
+    // Parsed Text
+    document.getElementById('parsedText').innerHTML = rawText.substring(0, 2000) + (rawText.length > 2000 ? '...' : '');
+    
+    // Document Info
+    const docType = extracted.document_type || 'General';
+    const confidence = extracted.confidence || 'N/A';
+    const dates = extracted.dates || [];
+    const merchants = extracted.merchants || [];
+    
+    document.getElementById('docInfo').innerHTML = `
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <div>
+          <div style="font-size:11px;color:var(--muted);">Document Type</div>
+          <div><span class="doc-badge">${docType.replace('_', ' ').toUpperCase()}</span></div>
+        </div>
+        <div>
+          <div style="font-size:11px;color:var(--muted);">Confidence</div>
+          <div style="font-weight:700;">${typeof confidence === 'number' ? (confidence * 100).toFixed(0) + '%' : confidence}</div>
+        </div>
+        ${dates.length > 0 ? `
+        <div>
+          <div style="font-size:11px;color:var(--muted);">Detected Dates</div>
+          <div style="font-size:12px;">${dates.slice(0,3).join(', ')}</div>
+        </div>
+        ` : ''}
+        ${merchants.length > 0 ? `
+        <div>
+          <div style="font-size:11px;color:var(--muted);">Detected Merchants</div>
+          <div style="font-size:12px;">${merchants.slice(0,3).join(', ')}</div>
+        </div>
+        ` : ''}
+      </div>
+    `;
+    
+    // Transactions
+    const transactions = extracted.transactions || [];
+    extractedTransactions = transactions;
+    
+    if (transactions.length > 0) {
+      let html = '<div style="max-height:300px;overflow-y:auto;">';
+      transactions.forEach(tx => {
+        const amount = tx.amount || 0;
+        const category = tx.category || 'Other';
+        const merchant = tx.merchant || '-';
+        const date = tx.date || '-';
+        const type = tx.type || 'debit';
+        const sign = type === 'credit' ? '+' : '-';
+        const color = type === 'credit' ? '#2ecc8a' : '#e05252';
+        
+        html += `
+          <div class="transaction-item">
+            <div>
+              <div style="font-weight:600;">${tx.description || 'Transaction'}</div>
+              <div style="font-size:11px;color:var(--muted);">
+                ${merchant} · ${date}
+              </div>
+              <div>
+                <span class="tag-category">${category}</span>
+              </div>
+            </div>
+            <div style="font-weight:700;color:${color};">
+              ${sign}₹${amount.toFixed(2)}
+            </div>
+          </div>
+        `;
+      });
+      html += '</div>';
+      document.getElementById('transactionsList').innerHTML = html;
+      document.getElementById('exportBtn').style.display = 'block';
+    } else {
+      document.getElementById('transactionsList').innerHTML = '<div class="text-muted" style="text-align:center;padding:20px;">No transactions extracted</div>';
+      document.getElementById('exportBtn').style.display = 'none';
+    }
+    
+    document.getElementById('dataPreview').style.display = 'block';
+  }
+
+  async function exportExpenses() {
+    if (!parsedData || extractedTransactions.length === 0) {
+      alert('No transactions to export');
+      return;
+    }
+    
+    try {
+      const response = await fetch('/api/parser/export', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ data: parsedData })
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        alert(`✅ Exported ${result.count} transactions to expense tracker!`);
+      } else {
+        alert('Error: ' + result.error);
+      }
+    } catch (error) {
+      alert('Error: ' + error.message);
+    }
+  }
+</script>
+{% endblock %}

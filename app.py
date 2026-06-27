@@ -638,6 +638,99 @@ def networth():
 def budget():
     return render_template("budget.html", active_page="budget")
 
+
+# ---------------- DOCUMENT PARSER ----------------
+from utils.document_parser import DocumentParser
+
+document_parser = DocumentParser()
+
+@app.route('/document-parser')
+@login_required
+def document_parser_page():
+    """Document Parser Page"""
+    return render_template('document_parser.html', active_page='document_parser')
+
+@app.route('/api/parser/parse', methods=['POST'])
+@login_required
+def parse_document():
+    """Parse uploaded document"""
+    try:
+        if 'document' not in request.files:
+            return jsonify({'success': False, 'error': 'No file provided'}), 400
+        
+        file = request.files['document']
+        if file.filename == '':
+            return jsonify({'success': False, 'error': 'No file selected'}), 400
+        
+        # Save file temporarily
+        import tempfile
+        import os
+        
+        with tempfile.NamedTemporaryFile(delete=False, suffix=os.path.splitext(file.filename)[1]) as tmp:
+            file.save(tmp.name)
+            tmp_path = tmp.name
+        
+        file_ext = os.path.splitext(file.filename)[1].lower()
+        
+        # Parse based on file type
+        if file_ext in ['.png', '.jpg', '.jpeg']:
+            result = document_parser.extract_from_image(tmp_path)
+        elif file_ext == '.pdf':
+            result = document_parser.extract_from_pdf(tmp_path)
+        else:
+            result = {'success': False, 'error': f'Unsupported file type: {file_ext}'}
+        
+        # Clean up
+        try:
+            os.unlink(tmp_path)
+        except:
+            pass
+        
+        return jsonify(result)
+        
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/parser/export', methods=['POST'])
+@login_required
+def export_parsed_expenses():
+    """Export parsed transactions to expense tracker"""
+    try:
+        data = request.json
+        parsed_data = data.get('data', {})
+        
+        expenses = document_parser.export_to_expense(parsed_data)
+        
+        if not expenses:
+            return jsonify({'success': False, 'error': 'No transactions to export'}), 400
+        
+        # Save to expense tracker
+        from models import Expense
+        count = 0
+        for exp in expenses:
+            expense = Expense(
+                user_id=current_user.id,
+                category=exp['category'],
+                amount=exp['amount'],
+                date=exp['date'],
+                merchant=exp['merchant'],
+                description=exp.get('description', 'Imported')
+            )
+            db.session.add(expense)
+            count += 1
+        
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'count': count,
+            'message': f'Successfully exported {count} transactions'
+        })
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'error': str(e)}), 500
+        
 # ---------------- RETIREMENT ----------------
 @app.route('/retirement')
 def retirement():
@@ -955,6 +1048,11 @@ def couple_dashboard():
 
 # ---------------- NOTIFICATION SYSTEM ----------------
 @app.route('/notifications')
+
+@login_required
+def notifications_page():
+    return render_template('notifications.html', active_page='notifications')
+
 @login_required
 def notifications_page():
     return render_template('notifications.html', active_page='notifications')
@@ -1031,10 +1129,88 @@ def notification_preferences():
 def predictive_alerts_page():
     return render_template('predictive_alerts.html', active_page='predictive_alerts')
 
+
+@app.route('/api/notifications/list', methods=['GET'])
+@login_required
+
+def list_notifications():
+    try:
+        limit = request.args.get('limit', 20, type=int)
+        offset = request.args.get('offset', 0, type=int)
+        filter_type = request.args.get('filter', 'all')
+        result = notification_system.get_notifications(current_user.id, limit=limit, offset=offset, only_unread=(filter_type == 'unread'))
+        if filter_type in ['high', 'medium', 'low']:
+            result['notifications'] = [n for n in result['notifications'] if n.get('severity') == filter_type]
+            result['total'] = len(result['notifications'])
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/notifications/mark-read', methods=['POST'])
+@login_required
+def mark_notifications_read():
+    try:
+        data = request.json
+        notification_id = data.get('notification_id')
+        all_notifications = data.get('all', False)
+        if all_notifications:
+            result = notification_system.mark_read(current_user.id)
+        else:
+            result = notification_system.mark_read(current_user.id, notification_id)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/notifications/dismiss', methods=['POST'])
+@login_required
+def dismiss_notification():
+    try:
+        data = request.json
+        notification_id = data.get('notification_id')
+        if not notification_id:
+            return jsonify({'error': 'Notification ID required'}), 400
+        result = notification_system.dismiss_notification(current_user.id, notification_id)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/notifications/unread-count', methods=['GET'])
+@login_required
+def get_unread_count():
+    try:
+        result = notification_system.get_unread_count(current_user.id)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/notifications/preferences', methods=['GET', 'POST'])
+@login_required
+def notification_preferences():
+    try:
+        if request.method == 'GET':
+            result = notification_system.get_preferences(current_user.id)
+            return jsonify(result)
+        else:
+            data = request.json
+            result = notification_system.setup_preferences(current_user.id, data)
+            return jsonify(result)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+# ---------------- PREDICTIVE FINANCIAL MODELS ----------------
+@app.route('/predictive-alerts')
+@login_required
+def predictive_alerts_page():
+    return render_template('predictive_alerts.html', active_page='predictive_alerts')
+
 @app.route('/api/predict/train', methods=['POST'])
 @login_required
 def train_predictor():
     try:
+
+def train_predictor():
+    try:
+
         expenses = Expense.query.filter_by(user_id=current_user.id).all()
         transactions = [{'date': e.date, 'amount': e.amount, 'category': e.category} for e in expenses]
         if len(transactions) < 30:
@@ -1113,6 +1289,61 @@ def predictor_status():
         'model_dir': predictor.model_dir
 
     })   
+
+
+
+# ---------------- AUTO REBALANCER ----------------
+from utils.auto_rebalancer import AutoRebalancer
+
+@app.route('/rebalancer')
+@login_required
+def rebalancer_page():
+    """Portfolio Rebalancer Page"""
+    return render_template('rebalancer.html', active_page='rebalancer')
+
+@app.route('/api/rebalance/analyze', methods=['POST'])
+@login_required
+def analyze_rebalance():
+    """Analyze portfolio and generate rebalancing recommendations"""
+    try:
+        data = request.json
+        holdings = data.get('holdings', [])
+        target = data.get('target', {})
+        
+        if not holdings:
+            return jsonify({'error': 'No holdings provided'}), 400
+        
+        # Create rebalancer
+        rebalancer = AutoRebalancer(holdings, target)
+        
+        # Get current allocation
+        current_allocation = rebalancer.get_current_allocation()
+        
+        # Check if rebalance needed
+        rebalance = rebalancer.generate_rebalance_trades()
+        
+        # Get market signals
+        market_signals = {}
+        for h in holdings:
+            signal = rebalancer.get_market_signal(h['symbol'])
+            market_signals[h['symbol']] = signal
+        
+        # Get tax harvesting opportunities
+        tax_harvesting = rebalancer.get_tax_harvesting_opportunities()
+        
+        return jsonify({
+            'success': True,
+            'current_allocation': current_allocation,
+            'rebalance': rebalance,
+            'market_signals': market_signals,
+            'tax_harvesting': tax_harvesting
+        })
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+        
+    # ---------------- FIRE PLANNER ----------------
+from utils.fire_planner import FIREPlanner
 
 
 # ---------------- AUTO REBALANCER ----------------
@@ -1201,6 +1432,9 @@ def fire_quick():
         return jsonify({'error': str(e)}), 500
 
 
+
+
+        return jsonify({'error': str(e)}), 500
 
 
         return jsonify({'error': str(e)}), 500 
@@ -1405,6 +1639,237 @@ def transfer():
         return jsonify(result)
     except ValueError as e:
         return jsonify({'error': str(e)}), 400
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/ledger/deposit', methods=['POST'])
+@login_required
+def deposit():
+    try:
+        data = request.json
+        account_id = data.get('account_id')
+        amount = data.get('amount')
+        description = data.get('description', '')
+        if not account_id or not amount:
+            return jsonify({'error': 'Account ID and amount are required'}), 400
+        result = LedgerSystem.deposit(int(account_id), float(amount), description)
+        return jsonify(result)
+    except ValueError as e:
+        return jsonify({'error': str(e)}), 400
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ---------------- SETTINGS ----------------
+@app.route('/settings')
+def settings():
+    """User settings page"""
+    return render_template('settings.html')
+
+
+@app.route('/api/ledger/withdraw', methods=['POST'])
+@login_required
+def withdraw():
+    try:
+        data = request.json
+        account_id = data.get('account_id')
+        amount = data.get('amount')
+        description = data.get('description', '')
+        if not account_id or not amount:
+            return jsonify({'error': 'Account ID and amount are required'}), 400
+        result = LedgerSystem.withdraw(int(account_id), float(amount), description)
+        return jsonify(result)
+    except ValueError as e:
+        return jsonify({'error': str(e)}), 400
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/ledger/transactions/<int:account_id>', methods=['GET'])
+@login_required
+def get_transactions(account_id):
+    try:
+        limit = request.args.get('limit', 50, type=int)
+        history = LedgerSystem.get_transaction_history(account_id, limit)
+        return jsonify({'success': True, 'transactions': history, 'count': len(history)})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 400
+
+@app.route('/api/ledger/balance/<int:account_id>', methods=['GET'])
+@login_required
+def get_balance(account_id):
+    try:
+        balance = LedgerSystem.get_balance(account_id)
+        return jsonify({'success': True, 'account_id': account_id, 'balance': balance})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 400
+
+@app.route('/api/ledger/reconcile/<int:account_id>', methods=['POST'])
+@login_required
+def reconcile(account_id):
+    try:
+        result = LedgerSystem.reconcile_account(account_id)
+        return jsonify({'success': True, 'reconciliation': result})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 400
+
+@app.route('/api/ledger/summary', methods=['GET'])
+@login_required
+def get_ledger_summary():
+    try:
+        summary = LedgerSystem.get_account_summary(current_user.id)
+        return jsonify({'success': True, 'summary': summary})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 400
+
+# ---------------- PORTFOLIO TRACKER ----------------
+@app.route("/portfolio-page")
+@login_required
+def portfolio_page():
+    return render_template("portfolio.html", active_page="portfolio")
+
+@app.route("/portfolio/list", methods=["GET"])
+@login_required
+def list_portfolio():
+    try:
+        holdings = Portfolio.query.filter_by(user_id=current_user.id).all()
+        today_dt = datetime.now()
+        cutoff_dt = today_dt - timedelta(days=365)
+        holdings_list = []
+        total_invested = 0.0
+        total_current = 0.0
+        total_dividends_received = 0.0
+        total_annual_dividends_value = 0.0
+        timeline = []
+        for h in holdings:
+            price_data = get_stock_price(h.symbol)
+            current_price = price_data.get("price", h.buy_price)
+            divs = get_stock_dividends(h.symbol)
+            divs_received = 0.0
+            for d in divs:
+                if d["date"] >= h.buy_date:
+                    divs_received += d["amount"] * h.quantity
+            annual_div_per_share = 0.0
+            for d in divs:
+                try:
+                    div_date = datetime.strptime(d["date"], "%Y-%m-%d")
+                    if cutoff_dt <= div_date <= today_dt:
+                        annual_div_per_share += d["amount"]
+                except ValueError:
+                    continue
+            invested_val = h.quantity * h.buy_price
+            current_val = h.quantity * current_price
+            pnl = current_val - invested_val
+            pnl_percent = (pnl / invested_val * 100) if invested_val > 0 else 0.0
+            yoc = (annual_div_per_share / h.buy_price * 100) if h.buy_price > 0 else 0.0
+            holdings_list.append({
+                "id": h.id,
+                "symbol": h.symbol,
+                "name": h.name,
+                "quantity": h.quantity,
+                "buy_price": h.buy_price,
+                "current_price": current_price,
+                "invested_value": round(invested_val, 2),
+                "current_value": round(current_val, 2),
+                "pnl": round(pnl, 2),
+                "pnl_percent": round(pnl_percent, 2),
+                "dividends_received": round(divs_received, 2),
+                "annual_dividend_per_share": round(annual_div_per_share, 2),
+                "yoc": round(yoc, 2)
+            })
+            total_invested += invested_val
+            total_current += current_val
+            total_dividends_received += divs_received
+            total_annual_dividends_value += annual_div_per_share * h.quantity
+            for d in divs:
+                try:
+                    div_date = datetime.strptime(d["date"], "%Y-%m-%d")
+                    if cutoff_dt <= div_date <= today_dt:
+                        projected_date = div_date + timedelta(days=365)
+                        if projected_date > today_dt:
+                            timeline.append({
+                                "date": projected_date.strftime("%Y-%m-%d"),
+                                "symbol": h.symbol,
+                                "amount_per_share": d["amount"],
+                                "amount": d["amount"] * h.quantity
+                            })
+                except ValueError:
+                    continue
+        total_pnl = total_current - total_invested
+        total_pnl_percent = (total_pnl / total_invested * 100) if total_invested > 0 else 0.0
+        portfolio_yoc = (total_annual_dividends_value / total_invested * 100) if total_invested > 0 else 0.0
+        timeline.sort(key=lambda x: x["date"])
+        summary = {
+            "total_invested": round(total_invested, 2),
+            "total_current": round(total_current, 2),
+            "total_pnl": round(total_pnl, 2),
+            "total_pnl_percent": round(total_pnl_percent, 2),
+            "total_dividends_received": round(total_dividends_received, 2),
+            "portfolio_yoc": round(portfolio_yoc, 2)
+        }
+        return jsonify({
+            "success": True,
+            "holdings": holdings_list,
+            "summary": summary,
+            "timeline": timeline
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+@app.route("/portfolio/add", methods=["POST"])
+@login_required
+def add_portfolio_holding():
+    try:
+        data = request.json or {}
+        if not isinstance(data, dict):
+            raise ValidationError("Request body must be a JSON object")
+        symbol = validate_string(data.get("symbol"), "symbol").strip().upper()
+        if not symbol or not re.match(r"^[A-Z0-9.\-_]+$", symbol):
+            raise ValidationError("Invalid symbol format")
+        quantity = validate_float(data.get("quantity"), "quantity", min_val=0.0001)
+        buy_price = validate_float(data.get("buy_price"), "buy_price", min_val=0.01)
+        buy_date = validate_string(data.get("buy_date"), "buy_date")
+        try:
+            datetime.strptime(buy_date, "%Y-%m-%d")
+        except ValueError:
+            raise ValidationError("buy_date must be in YYYY-MM-DD format")
+        notes = data.get("notes", "")
+        if notes:
+            notes = validate_string(notes, "notes")
+        stock = yf.Ticker(symbol)
+        name = symbol
+        try:
+            info = stock.info
+            if info:
+                name = info.get("longName") or info.get("shortName") or symbol
+        except Exception:
+            if "." not in symbol:
+                symbol_ns = symbol + ".NS"
+                try:
+                    stock_ns = yf.Ticker(symbol_ns)
+                    info = stock_ns.info
+                    if info:
+                        name = info.get("longName") or info.get("shortName") or symbol_ns
+                        symbol = symbol_ns
+                except Exception:
+                    pass
+        price_data = get_stock_price(symbol)
+        if "error" in price_data:
+            raise ValidationError(price_data["error"])
+        holding = Portfolio(
+            user_id=current_user.id,
+            symbol=symbol,
+            name=name,
+            quantity=quantity,
+            buy_price=buy_price,
+            buy_date=buy_date,
+            notes=notes
+        )
+        db.session.add(holding)
+        db.session.commit()
+        return jsonify({"success": True, "message": f"Successfully added {symbol} to portfolio"})
+    except ValidationError as e:
+        return jsonify({"error": str(e)}), 400
+
 
 
 @app.route('/api/ledger/accounts', methods=['GET'])
@@ -1447,8 +1912,65 @@ def transfer():
         return jsonify(result)
     except ValueError as e:
         return jsonify({'error': str(e)}), 400
+
+
+@app.route('/api/ledger/accounts', methods=['GET'])
+@login_required
+def get_accounts():
+    try:
+        accounts = LedgerSystem.get_user_accounts(current_user.id)
+        summary = LedgerSystem.get_account_summary(current_user.id)
+        return jsonify({'success': True, 'accounts': [a.to_dict() for a in accounts], 'summary': summary})
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': str(e)}), 400
+
+@app.route('/api/ledger/account', methods=['POST'])
+@login_required
+def create_account():
+    try:
+        data = request.json
+        account_type = data.get('account_type')
+        account_name = data.get('account_name')
+        initial_balance = data.get('initial_balance', 0.0)
+        if not account_type or not account_name:
+            return jsonify({'error': 'Account type and name are required'}), 400
+        account = LedgerSystem.create_account(current_user.id, account_type, account_name, initial_balance)
+        return jsonify({'success': True, 'account': account.to_dict()})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 400
+
+@app.route('/api/ledger/transfer', methods=['POST'])
+@login_required
+def transfer():
+    try:
+        data = request.json
+        from_account_id = data.get('from_account_id')
+        to_account_id = data.get('to_account_id')
+        amount = data.get('amount')
+        description = data.get('description', '')
+        if not all([from_account_id, to_account_id, amount]):
+            return jsonify({'error': 'Missing required fields'}), 400
+        result = LedgerSystem.transfer(from_account_id, to_account_id, float(amount), description)
+        return jsonify(result)
+    except ValueError as e:
+        return jsonify({'error': str(e)}), 400
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+
+@app.route("/portfolio/delete/<int:item_id>", methods=["DELETE"])
+@login_required
+def delete_portfolio_holding(item_id):
+    try:
+        holding = db.session.get(Portfolio, item_id)
+        if not holding or holding.user_id != current_user.id:
+            return jsonify({"error": "Holding not found or unauthorized"}), 404
+        db.session.delete(holding)
+        db.session.commit()
+        return jsonify({"success": True, "message": "Successfully deleted holding"})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
 
 
 # ---------------- SETTINGS ----------------
@@ -1925,6 +2447,7 @@ def delete_portfolio_holding(item_id):
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 
+
 @app.route("/portfolio/delete/<int:item_id>", methods=["DELETE"])
 @login_required
 def delete_portfolio_holding(item_id):
@@ -1937,6 +2460,7 @@ def delete_portfolio_holding(item_id):
         return jsonify({"success": True, "message": "Successfully deleted holding"})
     except Exception as e:
         return jsonify({"error": str(e)}), 400
+
 
 
 # ---------------- SETTINGS ----------------
@@ -2412,12 +2936,14 @@ def health_check():
     return jsonify({"status": "ok", "service": "AI Money Mentor"}), 200
 
 
+
 # ---------------- AI STATUS ----------------
 @app.route("/api/status", methods=["GET"])
 def ai_status():
     if client is not None:
         return jsonify({"ai_online": True, "message": "AI Money Mentor is online and ready."})
     return jsonify({"ai_online": False, "message": "AI features are unavailable — GROQ_API_KEY is not configured."})
+
 
 @app.route("/api/achievements", methods=["GET"])
 @login_required
@@ -2476,6 +3002,103 @@ def dashboard_data():
         budget_alert_count = len([b for b in BudgetAlert.query.filter_by(user_id=current_user.id).all()])
         goal_count = len([g for g in FinancialGoal.query.filter_by(user_id=current_user.id).all()])
         portfolio_items = Portfolio.query.filter_by(user_id=current_user.id).all()
+
+
+        allocation = {}
+
+        for item in portfolio_items:
+            value = item.quantity * item.buy_price
+
+            allocation[item.investment_type] = (
+                allocation.get(item.investment_type, 0) + value
+            )
+
+        total = sum(allocation.values())
+
+        allocation_percentages = {
+            k: round(v * 100 / total, 2)
+            for k, v in allocation.items()
+        } if total > 0 else {}
+
+        return jsonify({
+            "net_worth": net_worth,
+            "monthly_expenses": monthly_expenses,
+            "budget_alert_count": budget_alert_count,
+            "goal_count": goal_count,
+            "portfolio_allocation": allocation_percentages,
+        })
+    
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+@app.route("/dashboard/recent-activity")
+@login_required
+def recent_activity():
+    activities = []
+
+    # Latest expenses
+    expenses = (
+        Expense.query
+        .filter_by(user_id=current_user.id)
+        .order_by(Expense.id.desc())
+        .limit(5)
+        .all()
+    )
+
+    for e in expenses:
+        activities.append({
+            "type": "expense",
+            "message": f"Added expense: {e.category} ₹{e.amount}",
+            "date": e.date
+        })
+
+    # Latest assets
+    assets = (
+        Asset.query
+        .filter_by(user_id=current_user.id)
+        .order_by(Asset.id.desc())
+        .limit(5)
+        .all()
+    )
+
+    for a in assets:
+        activities.append({
+            "type": "asset",
+            "message": f"Added asset: {a.name} ₹{a.amount}",
+            "date": a.date
+        })
+
+    # Latest goals
+    goals = (
+        FinancialGoal.query
+        .filter_by(user_id=current_user.id)
+        .order_by(FinancialGoal.created_at.desc())
+        .limit(5)
+        .all()
+    )
+
+    for g in goals:
+        activities.append({
+            "type": "goal",
+            "message": f"Created goal: {g.name}",
+            "date": g.created_at.isoformat()
+        })
+
+    activities = sorted(
+        activities,
+        key=lambda x: x["date"],
+        reverse=True
+    )
+
+    return jsonify(activities[:10])
+
+
+# ---------------- AI STATUS ----------------
+@app.route("/api/status", methods=["GET"])
+def ai_status():
+    if client is not None:
+        return jsonify({"ai_online": True, "message": "AI Money Mentor is online and ready."})
+    return jsonify({"ai_online": False, "message": "AI features are unavailable — GROQ_API_KEY is not configured."})
 
 
 # ---------------- ERROR HANDLERS ----------------
@@ -2948,9 +3571,13 @@ def tax():
                 f"  ],\n"
                 f"  \"recommendations\": [\"string\"]\n"
                 f"}}\n"
+
+            )            try:
+
             )
 
             try:
+
                 ai_res = client.chat.completions.create(
                     model="llama-3.1-8b-instant",
                     messages=[
@@ -3412,11 +4039,29 @@ def expense_insights():
         }), 500
 
 
+
+
 # ---------------- NET WORTH TRACKER ----------------
-
-
-@app.route("/recurring-expense", methods=["POST"])
+@app.route("/net-worth", methods=["GET", "POST"])
 @login_required
+def get_net_worth():
+    assets = Asset.query.filter_by(user_id=current_user.id).order_by(Asset.id).all()
+    liabilities = Liability.query.filter_by(user_id=current_user.id).order_by(Liability.id).all()
+    assets_data = [a.to_dict() for a in assets]
+    liabilities_data = [l.to_dict() for l in liabilities]
+    total_assets = sum(item['amount'] for item in assets_data)
+    total_liabilities = sum(item['amount'] for item in liabilities_data)
+    return jsonify({
+        "assets": assets_data,
+        "liabilities": liabilities_data,
+        "total_assets": total_assets,
+        "total_liabilities": total_liabilities,
+        "net_worth": total_assets - total_liabilities
+    })
+
+@app.route("/add-asset", methods=["POST"])
+@login_required
+
 def create_recurring_expense():
     """
     Create a recurring expense template.
@@ -3521,6 +4166,7 @@ def get_net_worth():
 
 @app.route("/add-asset", methods=["POST"])
 @login_required
+
 def add_asset():
     try:
         data = request.json or {}
@@ -3655,10 +4301,16 @@ def parse_expense_text():
             max_tokens=100
         )
 
+
+        result_text = response.choices[0].message.content.strip()
+
+
         result_text = response.choices[0].message.content.strip()
 
         
+
         result_text = response.choices[0].message.content.strip()
+
 
         import json
         try:
@@ -3911,6 +4563,7 @@ def budget_status():
     
     total_budgeted_inr = 0.0
     total_spent_inr = sum(spent_by_category_inr.values())
+
 
     for cat in sorted(all_categories):
         lim_orig, lim_curr = limits_map.get(cat, (0.0, 'INR'))
@@ -4504,11 +5157,6 @@ def tax_optimize():
 # ---------------- LEDGER SYSTEM ----------------
 from utils.ledger import LedgerSystem
 
-@app.route('/ledger')
-@login_required
-def ledger_page():
-    """Ledger System Page"""
-    return render_template('ledger.html', active_page='ledger')
 
 
 
