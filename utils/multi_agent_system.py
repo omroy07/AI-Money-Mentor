@@ -419,59 +419,76 @@ class ChiefPlanner:
             }
     
     def process_query(self, query: str, chat_history: List = None) -> Dict:
-        """
-        Main entry point: Process query through multi-agent system
+        """Main entry point: Process query through multi-agent system.
+
+        Returns a structured collaborative plan (timeline) in addition to the
+        synthesized narrative response.
         """
         try:
-            # Step 1: Analyze query
             analysis = self.analyze_query(query)
-            
-            # Step 2: Break down into subtasks
             subtasks = self.break_down_query(query)
-            
-            # Step 3: Execute subtasks
-            results = []
-            for subtask in subtasks:
+
+            results: List[Dict] = []
+            timeline: List[Dict] = []
+
+            for idx, subtask in enumerate(subtasks, start=1):
                 agent_name = subtask['domain']
                 agent = self.agents.get(agent_name, GENERAL_AGENT)
-                
-                # Get cross-agent context
+
                 context = self.get_cross_agent_context(agent)
-                
-                # Process with agent
-                result = agent.process_query(query, self.client, context, subtask.get('sub_task', ''))
+                result = agent.process_query(
+                    query=query,
+                    client=self.client,
+                    context=context,
+                    sub_task=subtask.get('sub_task', '')
+                )
                 results.append(result)
-                
-                # Store context
+
+                # Store context for the next agent chain
                 self.cross_agent_context[agent.name] = result.get('response', '')[:200]
-            
-            # Step 4: Synthesize results
+
+                timeline.append({
+                    "step": idx,
+                    "agent": result.get("agent"),
+                    "specialization": result.get("specialization"),
+                    "goal": subtask.get("domain"),
+                    "details": result.get("response", ""),
+                    "context_used": context
+                })
+
             synthesized = self.synthesize_response(results)
-            
-            # Step 5: Store in history
+
+            plan_title = "Collaborative Financial Planning Plan"
+            plan = {
+                "plan_title": plan_title,
+                "timeline": timeline,
+                "master_recommendation": synthesized.get("response", ""),
+                "agents_consulted": [r.get("agent", "") for r in results],
+                "confidence": synthesized.get("confidence", 0.7),
+                "disclaimer": self.get_disclaimer()
+            }
+
             self.conversation_history.append({
                 'query': query,
                 'agents_consulted': [r.get('agent', '') for r in results],
                 'response': synthesized.get('response', ''),
                 'timestamp': time.time()
             })
-            
-            # Keep only last 10
             if len(self.conversation_history) > 10:
                 self.conversation_history.pop(0)
-            
+
             return {
                 'success': True,
                 'query': query,
-                'response': synthesized.get('response', ''),
+                'response': synthesized.get('response', ''),  # backward compatible
                 'summary': synthesized.get('summary', ''),
                 'confidence': synthesized.get('confidence', 0.7),
                 'agents_consulted': synthesized.get('agents_consulted', []),
                 'agent_results': results,
                 'analysis': analysis,
-                'disclaimer': self.get_disclaimer()
+                'plan': plan
             }
-            
+
         except Exception as e:
             return {
                 'success': False,

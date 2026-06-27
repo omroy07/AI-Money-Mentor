@@ -172,6 +172,25 @@ def score_agent(query):
 
 # ---------------- 🧠 MAIN ----------------
 def run_multi_agent(client, query):
+    """Entry point used by /agent route.
+
+    For complex multi-step goals (e.g. buy a house in X years), we return
+    a structured collaborative plan with a timeline.
+
+    For single-domain queries we keep the existing behavior.
+    """
+    query_l = (query or "").lower()
+
+    # Heuristic: multi-step goal planning
+    wants_house = any(k in query_l for k in ["buy a house", "buy house", "house", "home", "flat", "apartment"])
+    has_time_horizon = any(ch in query_l for ch in ["years", "year", "in ", "after"])
+    multi_step = wants_house and has_time_horizon
+
+    if multi_step:
+        from .multi_agent_system import ChiefPlanner
+        planner = ChiefPlanner(client)
+        return planner.process_query(query)
+
     task = route_query(query)
 
     print("ROUTED TO:", task)   # ✅ DEBUG

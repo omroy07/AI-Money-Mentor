@@ -44,9 +44,40 @@
       if (data.error) {
         showResult('agentResult', `⚠ ${data.error}`);
       } else {
-        const resp = data.response || JSON.stringify(data);
-        showResult('agentResult', `<div style="white-space:pre-wrap;font-size:13px;line-height:1.7">${resp}</div>`);
+        // If server returned a structured collaborative plan, render it.
+        if (data.plan && data.plan.timeline) {
+          const plan = data.plan;
+          let html = '';
+          html += `<div class="result-section"><h4 class="result-title">🗺️ ${plan.plan_title || 'Plan'}</h4>`;
+          html += `<div class="result-subtitle">Confidence: ${plan.confidence ?? data.confidence ?? '—'}</div></div>`;
+          html += `<div class="plan-master">`;
+          html += `<div class="plan-card"><h5>✨ Master Recommendation</h5><div class="plan-text" style="white-space:pre-wrap">${(plan.master_recommendation || '')}</div></div>`;
+          html += `</div>`;
+
+          html += `<div class="timeline">`;
+          for (const item of plan.timeline) {
+            html += `
+              <div class="timeline-step"> 
+                <div class="step-badge">Step ${item.step}</div>
+                <div class="step-content">
+                  <div class="step-header"><strong>${item.agent || 'Agent'}</strong> <span class="step-special">${item.specialization || ''}</span></div>
+                  <div class="step-body"><div class="plan-text" style="white-space:pre-wrap">${(item.details || '')}</div></div>
+                </div>
+              </div>`;
+          }
+          html += `</div>`;
+
+          if (plan.disclaimer) {
+            html += `<div class="disclaimer"><strong>⚠️ Disclaimer:</strong> <div style="white-space:pre-wrap">${plan.disclaimer}</div></div>`;
+          }
+
+          showResult('agentResult', html);
+        } else {
+          const resp = data.response || JSON.stringify(data);
+          showResult('agentResult', `<div style="white-space:pre-wrap;font-size:13px;line-height:1.7">${resp}</div>`);
+        }
       }
+
     } catch (e) {
       showResult('agentResult', '⚠ Could not reach server.');
     }
