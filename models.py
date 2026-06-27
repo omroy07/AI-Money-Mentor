@@ -28,6 +28,9 @@ class RecurringExpense(db.Model):
     is_active = db.Column(db.Boolean, default=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     last_processed = db.Column(db.Date, nullable=True)
+    is_subscription = db.Column(db.Boolean, default=False)  # New field to flag subscription
+    last_price = db.Column(db.Float, nullable=True)      # Store last known price for alerts
+    status = db.Column(db.String(20), default='active') # active, canceled, paused
     
     def to_dict(self):
         return {
@@ -173,6 +176,22 @@ class PriceAlertEvent(db.Model):
 
 
 class Expense(db.Model):
+
+# New model for shared subscriptions between couple users
+class CoupleSubscription(db.Model):
+    __tablename__ = 'couple_subscriptions'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)  # Owner
+    partner_user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)  # Partner
+    title = db.Column(db.String(100), nullable=False)
+    amount = db.Column(db.Float, nullable=False)
+    frequency = db.Column(db.String(20), nullable=False)  # monthly, yearly, etc.
+    next_due_date = db.Column(db.Date, nullable=False)
+    status = db.Column(db.String(20), default='active')  # active, canceled
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    # Relationships
+    user = db.relationship('User', foreign_keys=[user_id])
+    partner = db.relationship('User', foreign_keys=[partner_user_id])
     __tablename__ = "expenses"
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     user = db.relationship("User", backref="expenses")
@@ -1275,7 +1294,6 @@ class NotificationPreference(db.Model):
         }
 
 
-        }     
 
 
 
