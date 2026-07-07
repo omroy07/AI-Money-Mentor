@@ -8,7 +8,7 @@ from typing import Dict, List, Optional, Tuple
 from decimal import Decimal
 import json
 
-from models import db, InvestmentGoal, GoalAllocation, GoalContribution, GoalRecommendation
+from models import db, InvestmentGoal, GoalAllocation, InvestmentGoalContribution, GoalRecommendation
 
 
 class GoalInvestmentPlanner:
@@ -191,7 +191,7 @@ class GoalInvestmentPlanner:
         if not goal:
             return {'success': False, 'error': 'Goal not found'}
         
-        contribution = GoalContribution(
+        contribution = InvestmentGoalContribution(
             goal_id=goal_id,
             amount=Decimal(str(amount)),
             source=source,

@@ -1,3 +1,6 @@
+from datetime import datetime
+from typing import Dict
+
 def calculate_money_score(income, expenses, savings, investments, debt, emergency_fund):
     """Backwards-compatible numeric Money Score (0-100)."""
 

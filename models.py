@@ -7,6 +7,7 @@ Flask-SQLAlchemy, so data survives server restarts.
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from flask_login import UserMixin
+import json
 
 
 db = SQLAlchemy()
@@ -1006,7 +1007,7 @@ class InvestmentGoal(db.Model):
     
     user = db.relationship("User", backref="investment_goals")
     allocations = db.relationship("GoalAllocation", backref="goal", lazy=True, cascade='all, delete-orphan')
-    contributions = db.relationship("GoalContribution", backref="goal", lazy=True, cascade='all, delete-orphan')
+    contributions = db.relationship("InvestmentGoalContribution", backref="investment_goal", lazy=True, cascade='all, delete-orphan')
     
     def to_dict(self):
         progress = (float(self.current_amount) / float(self.target_amount) * 100) if float(self.target_amount) > 0 else 0
@@ -1078,6 +1079,28 @@ class GoalRecommendation(db.Model):
             'suggestion': self.suggestion,
             'is_applied': self.is_applied,
             'created_at': self.created_at.isoformat() if self.created_at else None
+        }
+
+
+class InvestmentGoalContribution(db.Model):
+    """Contributions to Investment Goals (goal_investment_planner)"""
+    __tablename__ = 'investment_goal_contributions'
+
+    id = db.Column(db.Integer, primary_key=True)
+    goal_id = db.Column(db.Integer, db.ForeignKey('investment_goals.id'), nullable=False)
+    amount = db.Column(db.Numeric(15, 2), nullable=False)
+    source = db.Column(db.String(100), default='manual')
+    note = db.Column(db.String(200))
+    contributed_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'goal_id': self.goal_id,
+            'amount': float(self.amount),
+            'source': self.source,
+            'note': self.note,
+            'contributed_at': self.contributed_at.isoformat() if self.contributed_at else None
         }
 
 
@@ -1326,6 +1349,75 @@ class InsurancePolicy(db.Model):
             "created_at": self.created_at.isoformat() if self.created_at else None
         }
 
+class Tutorial(db.Model):
+    __tablename__ = 'tutorials'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.String(250), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    category = db.Column(db.String(50), nullable=False)
+    points_reward = db.Column(db.Integer, default=15)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'title': self.title,
+            'description': self.description,
+            'content': self.content,
+            'category': self.category,
+            'points_reward': self.points_reward,
+            'created_at': self.created_at.isoformat() if self.created_at else None
+        }
+
+class Quiz(db.Model):
+    __tablename__ = 'quizzes'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.String(250), nullable=False)
+    points_reward = db.Column(db.Integer, default=20)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'title': self.title,
+            'description': self.description,
+            'points_reward': self.points_reward,
+            'created_at': self.created_at.isoformat() if self.created_at else None
+        }
+
+class Question(db.Model):
+    __tablename__ = 'questions'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    quiz_id = db.Column(db.Integer, db.ForeignKey('quizzes.id'), nullable=False)
+    quiz = db.relationship('Quiz', backref=db.backref('questions', lazy=True, cascade="all, delete-orphan"))
+    question_text = db.Column(db.Text, nullable=False)
+    option_a = db.Column(db.String(200), nullable=False)
+    option_b = db.Column(db.String(200), nullable=False)
+    option_c = db.Column(db.String(200), nullable=False)
+    option_d = db.Column(db.String(200), nullable=False)
+    correct_option = db.Column(db.String(1), nullable=False)  # 'A', 'B', 'C', or 'D'
+    explanation = db.Column(db.Text, nullable=True)
+
+    def to_dict(self, include_correct=False):
+        d = {
+            'id': self.id,
+            'quiz_id': self.quiz_id,
+            'question_text': self.question_text,
+            'option_a': self.option_a,
+            'option_b': self.option_b,
+            'option_c': self.option_c,
+            'option_d': self.option_d
+        }
+        if include_correct:
+            d['correct_option'] = self.correct_option
+            d['explanation'] = self.explanation
+        return d
+
 class UserQuizAttempt(db.Model):
     __tablename__ = 'user_quiz_attempts'
     
@@ -1337,6 +1429,56 @@ class UserQuizAttempt(db.Model):
     score = db.Column(db.Integer, nullable=False)  # number of correct answers
     total_questions = db.Column(db.Integer, nullable=False)
     completed_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'user_id': self.user_id,
+            'quiz_id': self.quiz_id,
+            'score': self.score,
+            'total_questions': self.total_questions,
+            'completed_at': self.completed_at.isoformat() if self.completed_at else None
+        }
+
+class UserTutorialProgress(db.Model):
+    __tablename__ = 'user_tutorial_progress'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    user = db.relationship('User', backref=db.backref('tutorial_progress', lazy=True))
+    tutorial_id = db.Column(db.Integer, db.ForeignKey('tutorials.id'), nullable=False)
+    tutorial = db.relationship('Tutorial')
+    completed = db.Column(db.Boolean, default=True)
+    completed_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'user_id': self.user_id,
+            'tutorial_id': self.tutorial_id,
+            'completed': self.completed,
+            'completed_at': self.completed_at.isoformat() if self.completed_at else None
+        }
+
+class UserChallenge(db.Model):
+    __tablename__ = 'user_challenges'
+    __table_args__ = (db.UniqueConstraint('user_id', 'challenge_key', name='_user_challenge_uc'),)
+    
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    user = db.relationship('User', backref=db.backref('challenges', lazy=True))
+    challenge_key = db.Column(db.String(50), nullable=False)
+    completed = db.Column(db.Boolean, default=True)
+    completed_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'user_id': self.user_id,
+            'challenge_key': self.challenge_key,
+            'completed': self.completed,
+            'completed_at': self.completed_at.isoformat() if self.completed_at else None
+        }
 
 class InsuranceRecommendation(db.Model):
     __tablename__ = "insurance_recommendations"

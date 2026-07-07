@@ -10,6 +10,7 @@ from decimal import Decimal
 from sqlalchemy import and_, func
 
 from models import db, Couple, SharedGoal, GoalContribution, SplitExpense, CoupleBudget, CoupleTaxPlan, CoupleAlert, User, Expense, Asset, Liability
+from flask_login import current_user
 
 
 class CoupleFinanceManager:

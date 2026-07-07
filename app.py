@@ -1,3 +1,10 @@
+import sys
+# Ensure UTF-8 output on Windows to avoid UnicodeEncodeError with emoji characters
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+if hasattr(sys.stderr, 'reconfigure'):
+    sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+
 import re
 from flask import Flask, request, jsonify, render_template, make_response
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -9,6 +16,7 @@ import yfinance as yf
 import os
 import sys
 import csv
+import io
 import logging
 from functools import wraps
 from groq import Groq
@@ -30,12 +38,23 @@ from flask_mail import Mail, Message
 from flask_socketio import SocketIO, emit, join_room, leave_room
 
 
-from models import db, Expense, Asset, Liability, BudgetLimit, BudgetAlert, PriceAlert, PriceAlertEvent, FinancialGoal, RecurringExpense, Portfolio, Account, Transaction, LedgerEntry, FxRateCache, FinancialGoalMilestone, RecurringIncome, IncomeOccurrence, MilestoneNotification, SipSchedule, InsurancePolicy, InsuranceRecommendation
+from models import db, Expense, Asset, Liability, BudgetLimit, BudgetAlert, PriceAlert, PriceAlertEvent, FinancialGoal, RecurringExpense, Portfolio, Account, Transaction, LedgerEntry, FxRateCache, FinancialGoalMilestone, RecurringIncome, IncomeOccurrence, MilestoneNotification, SipSchedule, InsurancePolicy, InsuranceRecommendation, CoupleSubscription, User, Tutorial, Quiz, Question, UserQuizAttempt, UserTutorialProgress, UserChallenge, CryptoHolding
 
 
 from utils.portfolio_optimizer import PortfolioOptimizer
 from utils.insurance_planner import calculate_hlv, recommend_health_cover
-
+from utils.safety_engine import SafetyEngine
+from utils.notification_system import NotificationSystem
+from utils.voice_assistant import MultiLanguageVoiceAssistant
+from utils.couple_finance import CoupleFinanceManager
+from utils.financial_predictor import FinancialPredictor
+from utils.bank_integration import BankIntegration
+from utils.mfa_system import MFASystem
+from utils.money_score import calculate_money_score_breakdown
+from utils.financial_ratio_analyzer import FinancialRatioAnalyzer
+from utils.dashboard_widgets import DashboardWidgetManager
+from utils.gamification import seed_educational_content, check_and_update_challenges, get_expense_streak
+from utils.crypto_tracker import get_crypto_price_multi, get_crypto_price, get_mock_defi_portfolio
 from flask_socketio import SocketIO, emit, join_room, leave_room
 
 # Load environment variables from .env file (if present)
@@ -48,7 +67,7 @@ load_dotenv()
 app = Flask(__name__)
 
 # ---------------- INIT SOCKETIO ----------------
-socketio = SocketIO(app, cors_allowed_origins="*")
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading')
 
 # ---------------- RATE LIMITING ----------------
 from flask_limiter import Limiter
@@ -121,7 +140,7 @@ from models import (
     Portfolio, Account, Transaction, LedgerEntry,
     BankConnection, BankTransaction, FraudAlert, Notification,
     NotificationPreference, InvestmentGoal, GoalAllocation,
-    GoalContribution, GoalRecommendation, Couple
+    GoalContribution, GoalRecommendation, InvestmentGoalContribution, Couple
 )
 
 # ---------------- IMPORT UTILS ----------------
@@ -355,17 +374,17 @@ def process_recurring_expenses():
         added_count = 0
         for recurring in due_expenses:
             existing = Expense.query.filter(
-                Expense.merchant == recurring.merchant,
+                Expense.merchant_name == recurring.merchant,
                 Expense.amount == recurring.amount,
                 Expense.date == today,
                 Expense.category == recurring.category
             ).first()
             if existing:
                 continue
-            expense = Expense(
+            expense = Expense(  # type: ignore
                 amount=recurring.amount,
                 category=recurring.category,
-                merchant=recurring.merchant or 'Recurring',
+                merchant_name=recurring.merchant or 'Recurring',
                 date=today
             )
             db.session.add(expense)
@@ -480,13 +499,17 @@ if os.getenv("FLASK_ENV", "development") != "production":
 def auto_login():
     # Only in development: Auto-login a default user if not logged in
     from flask_login import current_user
-    if not current_user.is_authenticated and request.endpoint != 'static':
-        user = User.query.first()
-        if not user:
-            user = User(username="admin", email="admin@example.com", password_hash="pbkdf2:sha256:260000$test")
-            db.session.add(user)
-            db.session.commit()
-        login_user(user)
+    from werkzeug.security import generate_password_hash
+    import os
+    
+    if os.getenv("FLASK_ENV", "development") != "production":
+        if not current_user.is_authenticated and request.endpoint != 'static':
+            user = User.query.first()
+            if not user:
+                user = User(username="admin", email="admin@example.com", password_hash=generate_password_hash("admin"))
+                db.session.add(user)
+                db.session.commit()
+            login_user(user)
 
 # ============================================
 # SCHEDULER - Runs weekly email and recurring expenses
@@ -1116,9 +1139,10 @@ def mfa_webauthn_verify():
     """Verify WebAuthn registration"""
     try:
         data = request.json
-
-def get_couple_goals():
-
+        mfa = MFASystem(current_user)
+        if mfa.verify_webauthn(data):
+            return jsonify({'success': True})
+        return jsonify({'success': False, 'error': 'Verification failed'}), 400
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -1770,50 +1794,6 @@ couple_manager = CoupleFinanceManager(client)
 
 
 
-@app.route('/api/couple/status', methods=['GET'])
-@login_required
-def couple_status():
-    try:
-        result = couple_manager.get_couple_status(current_user.id)
-        return jsonify(result)
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-@app.route('/api/couple/invite', methods=['POST'])
-@login_required
-def couple_invite():
-    try:
-        data = request.json
-        email = data.get('email')
-        if not email:
-            return jsonify({'error': 'Email is required'}), 400
-        result = couple_manager.create_invitation(current_user.id, email)
-        return jsonify(result)
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-@app.route('/api/couple/accept', methods=['POST'])
-@login_required
-def couple_accept():
-    try:
-        data = request.json
-        token = data.get('token')
-        if not token:
-            return jsonify({'error': 'Token is required'}), 400
-        result = couple_manager.accept_invitation(current_user.id, token)
-        return jsonify(result)
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-@app.route('/api/couple/unlink', methods=['POST'])
-@login_required
-def couple_unlink():
-    try:
-        result = couple_manager.unlink_couple(current_user.id)
-        return jsonify(result)
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
 @app.route('/api/couple/goals', methods=['GET'])
 @login_required
 def get_goals():
@@ -1828,50 +1808,6 @@ def get_goals():
         return jsonify({'success': True, 'goals': goals})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-@app.route('/api/couple/goals', methods=['POST'])
-@login_required
-def create_goal():
-    try:
-        data = request.json
-        status = couple_manager.get_couple_status(current_user.id)
-        if not status.get('has_couple'):
-            return jsonify({'error': 'No couple found'}), 400
-        result = couple_manager.create_shared_goal(status['couple_id'], data)
-        return jsonify(result)
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-@app.route('/api/couple/goals/contribute', methods=['POST'])
-@login_required
-def contribute_goal():
-    try:
-        data = request.json
-        goal_id = data.get('goal_id')
-        amount = data.get('amount')
-        note = data.get('note', '')
-        if not goal_id or not amount:
-            return jsonify({'error': 'Goal ID and amount required'}), 400
-        result = couple_manager.add_goal_contribution(current_user.id, goal_id, amount, note)
-        return jsonify(result)
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-@app.route('/api/couple/expenses', methods=['GET'])
-@login_required
-def get_split_expenses():
-    try:
-        status = couple_manager.get_couple_status(current_user.id)
-        if not status.get('has_couple'):
-            return jsonify({'error': 'No couple found'}), 400
-        settled = request.args.get('settled')
-        if settled is not None:
-            settled = settled.lower() == 'true'
-        expenses = couple_manager.get_split_expenses(status['couple_id'], settled)
-        summary = couple_manager.get_expense_summary(status['couple_id'])
-        return jsonify({'success': True, 'expenses': expenses, 'summary': summary})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -1953,10 +1889,6 @@ def couple_dashboard():
 
 # ---------------- NOTIFICATION SYSTEM ----------------
 @app.route('/notifications')
-
-@login_required
-def notifications_page():
-    return render_template('notifications.html', active_page='notifications')
 
 @login_required
 def notifications_page():
@@ -2658,303 +2590,6 @@ def add_portfolio_holding():
 
         return jsonify({'error': str(e)}), 500
 
-@app.route('/api/bank/sync-status', methods=['GET'])
-@login_required
-def get_sync_status():
-    try:
-        result = bank_integration.get_sync_status(current_user.id)
-        return jsonify(result)
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-
-# ---------------- PORTFOLIO OPTIMIZER ----------------
-
-
-# ---------------- LEDGER SYSTEM ----------------
-@app.route('/ledger')
-@login_required
-def ledger_page():
-    return render_template('ledger.html', active_page='ledger')
-
-
-@app.route('/api/ledger/accounts', methods=['GET'])
-@login_required
-def get_accounts():
-    try:
-        accounts = LedgerSystem.get_user_accounts(current_user.id)
-        summary = LedgerSystem.get_account_summary(current_user.id)
-        return jsonify({'success': True, 'accounts': [a.to_dict() for a in accounts], 'summary': summary})
-    except Exception as e:
-        return jsonify({'error': str(e)}), 400
-
-@app.route('/api/ledger/account', methods=['POST'])
-@login_required
-def create_account():
-    try:
-        data = request.json
-        account_type = data.get('account_type')
-        account_name = data.get('account_name')
-        initial_balance = data.get('initial_balance', 0.0)
-        if not account_type or not account_name:
-            return jsonify({'error': 'Account type and name are required'}), 400
-        account = LedgerSystem.create_account(current_user.id, account_type, account_name, initial_balance)
-        return jsonify({'success': True, 'account': account.to_dict()})
-    except Exception as e:
-        return jsonify({'error': str(e)}), 400
-
-@app.route('/api/ledger/transfer', methods=['POST'])
-@login_required
-def transfer():
-    try:
-        data = request.json
-        from_account_id = data.get('from_account_id')
-        to_account_id = data.get('to_account_id')
-        amount = data.get('amount')
-        description = data.get('description', '')
-        if not all([from_account_id, to_account_id, amount]):
-            return jsonify({'error': 'Missing required fields'}), 400
-        result = LedgerSystem.transfer(from_account_id, to_account_id, float(amount), description)
-        return jsonify(result)
-    except ValueError as e:
-        return jsonify({'error': str(e)}), 400
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-@app.route('/api/ledger/deposit', methods=['POST'])
-@login_required
-def deposit():
-    try:
-        data = request.json
-        account_id = data.get('account_id')
-        amount = data.get('amount')
-        description = data.get('description', '')
-        if not account_id or not amount:
-            return jsonify({'error': 'Account ID and amount are required'}), 400
-        result = LedgerSystem.deposit(int(account_id), float(amount), description)
-        return jsonify(result)
-    except ValueError as e:
-        return jsonify({'error': str(e)}), 400
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-
-# ---------------- SETTINGS ----------------
-@app.route('/settings')
-def settings():
-    """User settings page"""
-    return render_template('settings.html')
-
-
-@app.route('/api/ledger/withdraw', methods=['POST'])
-@login_required
-def withdraw():
-    try:
-        data = request.json
-        account_id = data.get('account_id')
-        amount = data.get('amount')
-        description = data.get('description', '')
-        if not account_id or not amount:
-            return jsonify({'error': 'Account ID and amount are required'}), 400
-        result = LedgerSystem.withdraw(int(account_id), float(amount), description)
-        return jsonify(result)
-    except ValueError as e:
-        return jsonify({'error': str(e)}), 400
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-@app.route('/api/ledger/transactions/<int:account_id>', methods=['GET'])
-@login_required
-def get_transactions(account_id):
-    try:
-        limit = request.args.get('limit', 50, type=int)
-        history = LedgerSystem.get_transaction_history(account_id, limit)
-        return jsonify({'success': True, 'transactions': history, 'count': len(history)})
-    except Exception as e:
-        return jsonify({'error': str(e)}), 400
-
-@app.route('/api/ledger/balance/<int:account_id>', methods=['GET'])
-@login_required
-def get_balance(account_id):
-    try:
-        balance = LedgerSystem.get_balance(account_id)
-        return jsonify({'success': True, 'account_id': account_id, 'balance': balance})
-    except Exception as e:
-        return jsonify({'error': str(e)}), 400
-
-@app.route('/api/ledger/reconcile/<int:account_id>', methods=['POST'])
-@login_required
-def reconcile(account_id):
-    try:
-        result = LedgerSystem.reconcile_account(account_id)
-        return jsonify({'success': True, 'reconciliation': result})
-    except Exception as e:
-        return jsonify({'error': str(e)}), 400
-
-@app.route('/api/ledger/summary', methods=['GET'])
-@login_required
-def get_ledger_summary():
-    try:
-        summary = LedgerSystem.get_account_summary(current_user.id)
-        return jsonify({'success': True, 'summary': summary})
-    except Exception as e:
-        return jsonify({'error': str(e)}), 400
-
-# ---------------- PORTFOLIO TRACKER ----------------
-@app.route("/portfolio-page")
-@login_required
-def portfolio_page():
-    return render_template("portfolio.html", active_page="portfolio")
-
-@app.route("/portfolio/list", methods=["GET"])
-@login_required
-def list_portfolio():
-    try:
-        holdings = Portfolio.query.filter_by(user_id=current_user.id).all()
-        today_dt = datetime.now()
-        cutoff_dt = today_dt - timedelta(days=365)
-        holdings_list = []
-        total_invested = 0.0
-        total_current = 0.0
-        total_dividends_received = 0.0
-        total_annual_dividends_value = 0.0
-        timeline = []
-        for h in holdings:
-            price_data = get_stock_price(h.symbol)
-            current_price = price_data.get("price", h.buy_price)
-            divs = get_stock_dividends(h.symbol)
-            divs_received = 0.0
-            for d in divs:
-                if d["date"] >= h.buy_date:
-                    divs_received += d["amount"] * h.quantity
-            annual_div_per_share = 0.0
-            for d in divs:
-                try:
-                    div_date = datetime.strptime(d["date"], "%Y-%m-%d")
-                    if cutoff_dt <= div_date <= today_dt:
-                        annual_div_per_share += d["amount"]
-                except ValueError:
-                    continue
-            invested_val = h.quantity * h.buy_price
-            current_val = h.quantity * current_price
-            pnl = current_val - invested_val
-            pnl_percent = (pnl / invested_val * 100) if invested_val > 0 else 0.0
-            yoc = (annual_div_per_share / h.buy_price * 100) if h.buy_price > 0 else 0.0
-            holdings_list.append({
-                "id": h.id,
-                "symbol": h.symbol,
-                "name": h.name,
-                "quantity": h.quantity,
-                "buy_price": h.buy_price,
-                "current_price": current_price,
-                "invested_value": round(invested_val, 2),
-                "current_value": round(current_val, 2),
-                "pnl": round(pnl, 2),
-                "pnl_percent": round(pnl_percent, 2),
-                "dividends_received": round(divs_received, 2),
-                "annual_dividend_per_share": round(annual_div_per_share, 2),
-                "yoc": round(yoc, 2)
-            })
-            total_invested += invested_val
-            total_current += current_val
-            total_dividends_received += divs_received
-            total_annual_dividends_value += annual_div_per_share * h.quantity
-            for d in divs:
-                try:
-                    div_date = datetime.strptime(d["date"], "%Y-%m-%d")
-                    if cutoff_dt <= div_date <= today_dt:
-                        projected_date = div_date + timedelta(days=365)
-                        if projected_date > today_dt:
-                            timeline.append({
-                                "date": projected_date.strftime("%Y-%m-%d"),
-                                "symbol": h.symbol,
-                                "amount_per_share": d["amount"],
-                                "amount": d["amount"] * h.quantity
-                            })
-                except ValueError:
-                    continue
-        total_pnl = total_current - total_invested
-        total_pnl_percent = (total_pnl / total_invested * 100) if total_invested > 0 else 0.0
-        portfolio_yoc = (total_annual_dividends_value / total_invested * 100) if total_invested > 0 else 0.0
-        timeline.sort(key=lambda x: x["date"])
-        summary = {
-            "total_invested": round(total_invested, 2),
-            "total_current": round(total_current, 2),
-            "total_pnl": round(total_pnl, 2),
-            "total_pnl_percent": round(total_pnl_percent, 2),
-            "total_dividends_received": round(total_dividends_received, 2),
-            "portfolio_yoc": round(portfolio_yoc, 2)
-        }
-        return jsonify({
-            "success": True,
-            "holdings": holdings_list,
-            "summary": summary,
-            "timeline": timeline
-        })
-    except Exception as e:
-        return jsonify({"error": str(e)}), 400
-
-@app.route("/portfolio/add", methods=["POST"])
-@login_required
-def add_portfolio_holding():
-    try:
-        data = request.json or {}
-        if not isinstance(data, dict):
-            raise ValidationError("Request body must be a JSON object")
-        symbol = validate_string(data.get("symbol"), "symbol").strip().upper()
-        if not symbol or not re.match(r"^[A-Z0-9.\-_]+$", symbol):
-            raise ValidationError("Invalid symbol format")
-        quantity = validate_float(data.get("quantity"), "quantity", min_val=0.0001)
-        buy_price = validate_float(data.get("buy_price"), "buy_price", min_val=0.01)
-        buy_date = validate_string(data.get("buy_date"), "buy_date")
-        try:
-            datetime.strptime(buy_date, "%Y-%m-%d")
-        except ValueError:
-            raise ValidationError("buy_date must be in YYYY-MM-DD format")
-        notes = data.get("notes", "")
-        if notes:
-            notes = validate_string(notes, "notes")
-        stock = yf.Ticker(symbol)
-        name = symbol
-        try:
-            info = stock.info
-            if info:
-                name = info.get("longName") or info.get("shortName") or symbol
-        except Exception:
-            if "." not in symbol:
-                symbol_ns = symbol + ".NS"
-                try:
-                    stock_ns = yf.Ticker(symbol_ns)
-                    info = stock_ns.info
-                    if info:
-                        name = info.get("longName") or info.get("shortName") or symbol_ns
-                        symbol = symbol_ns
-                except Exception:
-                    pass
-        price_data = get_stock_price(symbol)
-        if "error" in price_data:
-            raise ValidationError(price_data["error"])
-        holding = Portfolio(
-            user_id=current_user.id,
-            symbol=symbol,
-            name=name,
-            quantity=quantity,
-            buy_price=buy_price,
-            buy_date=buy_date,
-            notes=notes
-        )
-        db.session.add(holding)
-        db.session.commit()
-        return jsonify({"success": True, "message": f"Successfully added {symbol} to portfolio"})
-    except ValidationError as e:
-        return jsonify({"error": str(e)}), 400
-
-
-
-
-
-
-
 @app.route("/portfolio/delete/<int:item_id>", methods=["DELETE"])
 @login_required
 def delete_portfolio_holding(item_id):
@@ -2970,409 +2605,6 @@ def delete_portfolio_holding(item_id):
 
 
 # ---------------- SETTINGS ----------------
-@app.route('/settings')
-def settings():
-    """User settings page"""
-    return render_template('settings.html')
-
-
-@app.route('/api/ledger/deposit', methods=['POST'])
-@login_required
-def deposit():
-    try:
-        data = request.json
-        account_id = data.get('account_id')
-        amount = data.get('amount')
-        description = data.get('description', '')
-        if not account_id or not amount:
-            return jsonify({'error': 'Account ID and amount are required'}), 400
-        result = LedgerSystem.deposit(int(account_id), float(amount), description)
-        return jsonify(result)
-    except ValueError as e:
-        return jsonify({'error': str(e)}), 400
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-@app.route('/api/ledger/withdraw', methods=['POST'])
-@login_required
-def withdraw():
-    try:
-        data = request.json
-        account_id = data.get('account_id')
-        amount = data.get('amount')
-        description = data.get('description', '')
-        if not account_id or not amount:
-            return jsonify({'error': 'Account ID and amount are required'}), 400
-        result = LedgerSystem.withdraw(int(account_id), float(amount), description)
-        return jsonify(result)
-    except ValueError as e:
-        return jsonify({'error': str(e)}), 400
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-@app.route('/api/ledger/transactions/<int:account_id>', methods=['GET'])
-@login_required
-def get_transactions(account_id):
-    try:
-        limit = request.args.get('limit', 50, type=int)
-        history = LedgerSystem.get_transaction_history(account_id, limit)
-        return jsonify({'success': True, 'transactions': history, 'count': len(history)})
-    except Exception as e:
-        return jsonify({'error': str(e)}), 400
-
-@app.route('/api/ledger/balance/<int:account_id>', methods=['GET'])
-@login_required
-def get_balance(account_id):
-    try:
-        balance = LedgerSystem.get_balance(account_id)
-        return jsonify({'success': True, 'account_id': account_id, 'balance': balance})
-    except Exception as e:
-        return jsonify({'error': str(e)}), 400
-
-@app.route('/api/ledger/reconcile/<int:account_id>', methods=['POST'])
-@login_required
-def reconcile(account_id):
-    try:
-        result = LedgerSystem.reconcile_account(account_id)
-        return jsonify({'success': True, 'reconciliation': result})
-    except Exception as e:
-        return jsonify({'error': str(e)}), 400
-
-@app.route('/api/ledger/summary', methods=['GET'])
-@login_required
-def get_ledger_summary():
-    try:
-        summary = LedgerSystem.get_account_summary(current_user.id)
-        return jsonify({'success': True, 'summary': summary})
-    except Exception as e:
-        return jsonify({'error': str(e)}), 400
-
-# ---------------- PORTFOLIO TRACKER ----------------
-@app.route("/portfolio-page")
-@login_required
-def portfolio_page():
-    return render_template("portfolio.html", active_page="portfolio")
-
-@app.route("/portfolio/list", methods=["GET"])
-@login_required
-def list_portfolio():
-    try:
-        holdings = Portfolio.query.filter_by(user_id=current_user.id).all()
-        today_dt = datetime.now()
-        cutoff_dt = today_dt - timedelta(days=365)
-        holdings_list = []
-        total_invested = 0.0
-        total_current = 0.0
-        total_dividends_received = 0.0
-        total_annual_dividends_value = 0.0
-        timeline = []
-        for h in holdings:
-            price_data = get_stock_price(h.symbol)
-            current_price = price_data.get("price", h.buy_price)
-            divs = get_stock_dividends(h.symbol)
-            divs_received = 0.0
-            for d in divs:
-                if d["date"] >= h.buy_date:
-                    divs_received += d["amount"] * h.quantity
-            annual_div_per_share = 0.0
-            for d in divs:
-                try:
-                    div_date = datetime.strptime(d["date"], "%Y-%m-%d")
-                    if cutoff_dt <= div_date <= today_dt:
-                        annual_div_per_share += d["amount"]
-                except ValueError:
-                    continue
-            invested_val = h.quantity * h.buy_price
-            current_val = h.quantity * current_price
-            pnl = current_val - invested_val
-            pnl_percent = (pnl / invested_val * 100) if invested_val > 0 else 0.0
-            yoc = (annual_div_per_share / h.buy_price * 100) if h.buy_price > 0 else 0.0
-            holdings_list.append({
-                "id": h.id,
-                "symbol": h.symbol,
-                "name": h.name,
-                "quantity": h.quantity,
-                "buy_price": h.buy_price,
-                "current_price": current_price,
-                "invested_value": round(invested_val, 2),
-                "current_value": round(current_val, 2),
-                "pnl": round(pnl, 2),
-                "pnl_percent": round(pnl_percent, 2),
-                "dividends_received": round(divs_received, 2),
-                "annual_dividend_per_share": round(annual_div_per_share, 2),
-                "yoc": round(yoc, 2)
-            })
-            total_invested += invested_val
-            total_current += current_val
-            total_dividends_received += divs_received
-            total_annual_dividends_value += annual_div_per_share * h.quantity
-            for d in divs:
-                try:
-                    div_date = datetime.strptime(d["date"], "%Y-%m-%d")
-                    if cutoff_dt <= div_date <= today_dt:
-                        projected_date = div_date + timedelta(days=365)
-                        if projected_date > today_dt:
-                            timeline.append({
-                                "date": projected_date.strftime("%Y-%m-%d"),
-                                "symbol": h.symbol,
-                                "amount_per_share": d["amount"],
-                                "amount": d["amount"] * h.quantity
-                            })
-                except ValueError:
-                    continue
-        total_pnl = total_current - total_invested
-        total_pnl_percent = (total_pnl / total_invested * 100) if total_invested > 0 else 0.0
-        portfolio_yoc = (total_annual_dividends_value / total_invested * 100) if total_invested > 0 else 0.0
-        timeline.sort(key=lambda x: x["date"])
-        summary = {
-            "total_invested": round(total_invested, 2),
-            "total_current": round(total_current, 2),
-            "total_pnl": round(total_pnl, 2),
-            "total_pnl_percent": round(total_pnl_percent, 2),
-            "total_dividends_received": round(total_dividends_received, 2),
-            "portfolio_yoc": round(portfolio_yoc, 2)
-        }
-        return jsonify({
-            "success": True,
-            "holdings": holdings_list,
-            "summary": summary,
-            "timeline": timeline
-        })
-    except Exception as e:
-        return jsonify({"error": str(e)}), 400
-
-@app.route("/portfolio/add", methods=["POST"])
-@login_required
-def add_portfolio_holding():
-    try:
-        data = request.json or {}
-        if not isinstance(data, dict):
-            raise ValidationError("Request body must be a JSON object")
-        symbol = validate_string(data.get("symbol"), "symbol").strip().upper()
-        if not symbol or not re.match(r"^[A-Z0-9.\-_]+$", symbol):
-            raise ValidationError("Invalid symbol format")
-        quantity = validate_float(data.get("quantity"), "quantity", min_val=0.0001)
-        buy_price = validate_float(data.get("buy_price"), "buy_price", min_val=0.01)
-        buy_date = validate_string(data.get("buy_date"), "buy_date")
-        try:
-            datetime.strptime(buy_date, "%Y-%m-%d")
-        except ValueError:
-            raise ValidationError("buy_date must be in YYYY-MM-DD format")
-        notes = data.get("notes", "")
-        if notes:
-            notes = validate_string(notes, "notes")
-        stock = yf.Ticker(symbol)
-        name = symbol
-        try:
-            info = stock.info
-            if info:
-                name = info.get("longName") or info.get("shortName") or symbol
-        except Exception:
-            if "." not in symbol:
-                symbol_ns = symbol + ".NS"
-                try:
-                    stock_ns = yf.Ticker(symbol_ns)
-                    info = stock_ns.info
-                    if info:
-                        name = info.get("longName") or info.get("shortName") or symbol_ns
-                        symbol = symbol_ns
-                except Exception:
-                    pass
-        price_data = get_stock_price(symbol)
-        if "error" in price_data:
-            raise ValidationError(price_data["error"])
-        holding = Portfolio(
-            user_id=current_user.id,
-            symbol=symbol,
-            name=name,
-            quantity=quantity,
-            buy_price=buy_price,
-            buy_date=buy_date,
-            notes=notes
-        )
-        db.session.add(holding)
-        db.session.commit()
-        return jsonify({"success": True, "message": f"Successfully added {symbol} to portfolio"})
-    except ValidationError as e:
-        return jsonify({"error": str(e)}), 400
-
-    except Exception as e:
-        return jsonify({"error": str(e)}), 400
-
-
-
-# ---------------- SETTINGS ----------------
-@app.route('/settings')
-def settings():
-    """User settings page"""
-    return render_template('settings.html')
-
-
-@app.route('/api/ledger/deposit', methods=['POST'])
-@login_required
-def deposit():
-    try:
-        data = request.json
-        account_id = data.get('account_id')
-        amount = data.get('amount')
-        description = data.get('description', '')
-        if not account_id or not amount:
-            return jsonify({'error': 'Account ID and amount are required'}), 400
-        result = LedgerSystem.deposit(int(account_id), float(amount), description)
-        return jsonify(result)
-    except ValueError as e:
-        return jsonify({'error': str(e)}), 400
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-@app.route('/api/ledger/withdraw', methods=['POST'])
-@login_required
-def withdraw():
-    try:
-        data = request.json
-        account_id = data.get('account_id')
-        amount = data.get('amount')
-        description = data.get('description', '')
-        if not account_id or not amount:
-            return jsonify({'error': 'Account ID and amount are required'}), 400
-        result = LedgerSystem.withdraw(int(account_id), float(amount), description)
-        return jsonify(result)
-    except ValueError as e:
-        return jsonify({'error': str(e)}), 400
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-@app.route('/api/ledger/transactions/<int:account_id>', methods=['GET'])
-@login_required
-def get_transactions(account_id):
-    try:
-        limit = request.args.get('limit', 50, type=int)
-        history = LedgerSystem.get_transaction_history(account_id, limit)
-        return jsonify({'success': True, 'transactions': history, 'count': len(history)})
-    except Exception as e:
-        return jsonify({'error': str(e)}), 400
-
-@app.route('/api/ledger/balance/<int:account_id>', methods=['GET'])
-@login_required
-def get_balance(account_id):
-    try:
-        balance = LedgerSystem.get_balance(account_id)
-        return jsonify({'success': True, 'account_id': account_id, 'balance': balance})
-    except Exception as e:
-        return jsonify({'error': str(e)}), 400
-
-@app.route('/api/ledger/reconcile/<int:account_id>', methods=['POST'])
-@login_required
-def reconcile(account_id):
-    try:
-        result = LedgerSystem.reconcile_account(account_id)
-        return jsonify({'success': True, 'reconciliation': result})
-    except Exception as e:
-        return jsonify({'error': str(e)}), 400
-
-@app.route('/api/ledger/summary', methods=['GET'])
-@login_required
-def get_ledger_summary():
-    try:
-        summary = LedgerSystem.get_account_summary(current_user.id)
-        return jsonify({'success': True, 'summary': summary})
-    except Exception as e:
-        return jsonify({'error': str(e)}), 400
-
-# ---------------- PORTFOLIO TRACKER ----------------
-@app.route("/portfolio-page")
-@login_required
-def portfolio_page():
-    return render_template("portfolio.html", active_page="portfolio")
-
-@app.route("/portfolio/list", methods=["GET"])
-@login_required
-def list_portfolio():
-    try:
-        holdings = Portfolio.query.filter_by(user_id=current_user.id).all()
-        today_dt = datetime.now()
-        cutoff_dt = today_dt - timedelta(days=365)
-        holdings_list = []
-        total_invested = 0.0
-        total_current = 0.0
-        total_dividends_received = 0.0
-        total_annual_dividends_value = 0.0
-        timeline = []
-        for h in holdings:
-            price_data = get_stock_price(h.symbol)
-            current_price = price_data.get("price", h.buy_price)
-            divs = get_stock_dividends(h.symbol)
-            divs_received = 0.0
-            for d in divs:
-                if d["date"] >= h.buy_date:
-                    divs_received += d["amount"] * h.quantity
-            annual_div_per_share = 0.0
-            for d in divs:
-                try:
-                    div_date = datetime.strptime(d["date"], "%Y-%m-%d")
-                    if cutoff_dt <= div_date <= today_dt:
-                        annual_div_per_share += d["amount"]
-                except ValueError:
-                    continue
-            invested_val = h.quantity * h.buy_price
-            current_val = h.quantity * current_price
-            pnl = current_val - invested_val
-            pnl_percent = (pnl / invested_val * 100) if invested_val > 0 else 0.0
-            yoc = (annual_div_per_share / h.buy_price * 100) if h.buy_price > 0 else 0.0
-            holdings_list.append({
-                "id": h.id,
-                "symbol": h.symbol,
-                "name": h.name,
-                "quantity": h.quantity,
-                "buy_price": h.buy_price,
-                "current_price": current_price,
-                "invested_value": round(invested_val, 2),
-                "current_value": round(current_val, 2),
-                "pnl": round(pnl, 2),
-                "pnl_percent": round(pnl_percent, 2),
-                "dividends_received": round(divs_received, 2),
-                "annual_dividend_per_share": round(annual_div_per_share, 2),
-                "yoc": round(yoc, 2)
-            })
-            total_invested += invested_val
-            total_current += current_val
-            total_dividends_received += divs_received
-            total_annual_dividends_value += annual_div_per_share * h.quantity
-            for d in divs:
-                try:
-                    div_date = datetime.strptime(d["date"], "%Y-%m-%d")
-                    if cutoff_dt <= div_date <= today_dt:
-                        projected_date = div_date + timedelta(days=365)
-                        if projected_date > today_dt:
-                            timeline.append({
-                                "date": projected_date.strftime("%Y-%m-%d"),
-                                "symbol": h.symbol,
-                                "amount_per_share": d["amount"],
-                                "amount": d["amount"] * h.quantity
-                            })
-                except ValueError:
-                    continue
-        total_pnl = total_current - total_invested
-        total_pnl_percent = (total_pnl / total_invested * 100) if total_invested > 0 else 0.0
-        portfolio_yoc = (total_annual_dividends_value / total_invested * 100) if total_invested > 0 else 0.0
-        timeline.sort(key=lambda x: x["date"])
-        summary = {
-            "total_invested": round(total_invested, 2),
-            "total_current": round(total_current, 2),
-            "total_pnl": round(total_pnl, 2),
-            "total_pnl_percent": round(total_pnl_percent, 2),
-            "total_dividends_received": round(total_dividends_received, 2),
-            "portfolio_yoc": round(portfolio_yoc, 2)
-        }
-        return jsonify({
-            "success": True,
-            "holdings": holdings_list,
-            "summary": summary,
-            "timeline": timeline
-        })
-    except Exception as e:
-        return jsonify({"error": str(e)}), 400
-
 @app.route('/api/update-email', methods=['POST'])
 def update_email():
     data = request.json
@@ -3840,6 +3072,312 @@ def get_cashflow_forecast():
 def health_check():
     return jsonify({"status": "ok", "service": "AI Money Mentor"}), 200
 
+
+
+# ---------------- CRYPTO & DEFI ROUTES ----------------
+@app.route("/crypto-page", methods=["GET"])
+@login_required
+def crypto_page():
+    """Render the Crypto & DeFi Dashboard."""
+    return render_template("crypto.html", active_page="crypto")
+
+@app.route("/api/crypto/list", methods=["GET"])
+@login_required
+def crypto_list():
+    """List all crypto holdings for the current user and calculate PnL."""
+    holdings = CryptoHolding.query.filter_by(user_id=current_user.id).all()
+    symbols = list({h.symbol for h in holdings})
+    prices = get_crypto_price_multi(symbols)
+    
+    result = []
+    total_invested = 0.0
+    total_current = 0.0
+    
+    for h in holdings:
+        d = h.to_dict()
+        current_price = prices.get(h.symbol.upper(), {}).get(h.currency.upper(), 0.0)
+        if current_price == 0.0 and h.currency.upper() == 'USD':
+            current_price = prices.get(h.symbol.upper(), {}).get('USD', 0.0)
+            
+        current_value = h.quantity * current_price
+        invested_value = h.quantity * h.buy_price
+        pnl = current_value - invested_value
+        pnl_percent = (pnl / invested_value * 100) if invested_value > 0 else 0.0
+        
+        d["current_price"] = current_price
+        d["current_value"] = current_value
+        d["invested_value"] = invested_value
+        d["pnl"] = pnl
+        d["pnl_percent"] = round(pnl_percent, 2)
+        
+        result.append(d)
+        total_invested += invested_value
+        total_current += current_value
+        
+    return jsonify({
+        "success": True,
+        "holdings": result,
+        "summary": {
+            "total_invested_usd": total_invested,
+            "total_current_usd": total_current,
+            "total_pnl_usd": total_current - total_invested
+        }
+    }), 200
+
+@app.route("/api/crypto/add", methods=["POST"])
+@login_required
+def crypto_add():
+    """Add a new crypto holding."""
+    data = request.get_json(force=True)
+    symbol = data.get("symbol", "").upper()
+    name = data.get("name", "")
+    quantity = float(data.get("quantity", 0))
+    buy_price = float(data.get("buy_price", 0))
+    buy_date = data.get("buy_date", "")
+    currency = data.get("currency", "USD")
+    notes = data.get("notes", "")
+    
+    holding = CryptoHolding(
+        user_id=current_user.id,
+        symbol=symbol,
+        name=name,
+        quantity=quantity,
+        buy_price=buy_price,
+        buy_date=buy_date,
+        currency=currency,
+        notes=notes
+    )
+    db.session.add(holding)
+    db.session.commit()
+    
+    return jsonify({"success": True}), 200
+
+@app.route("/api/crypto/delete/<int:holding_id>", methods=["DELETE"])
+@login_required
+def crypto_delete(holding_id):
+    """Delete a crypto holding."""
+    holding = CryptoHolding.query.get_or_404(holding_id)
+    if holding.user_id != current_user.id:
+        return jsonify({"success": False}), 403
+    db.session.delete(holding)
+    db.session.commit()
+    return jsonify({"success": True}), 200
+
+@app.route("/api/crypto/wallet", methods=["POST"])
+@login_required
+def crypto_wallet():
+    """Connect wallet and return mock DeFi portfolio."""
+    data = request.get_json(force=True)
+    wallet_address = data.get("wallet_address", "")
+    if not wallet_address:
+        return jsonify({"success": False, "message": "Wallet address required"}), 400
+        
+    portfolio = get_mock_defi_portfolio(wallet_address)
+    return jsonify({"success": True, "portfolio": portfolio}), 200
+
+# ---------------- LEARN & EARN ROUTES ----------------
+@app.route("/learn", methods=["GET"])
+@login_required
+def learn_page():
+    """Render the gamified Learn & Earn page."""
+    seed_educational_content()
+    return render_template("learn.html", active_page="learn")
+
+
+@app.route("/api/tutorials", methods=["GET"])
+@login_required
+def get_tutorials():
+    """Return all tutorials with the current user's completion status."""
+    tutorials = Tutorial.query.all()
+    completed_ids = {
+        p.tutorial_id
+        for p in UserTutorialProgress.query.filter_by(user_id=current_user.id).all()
+    }
+    result = []
+    for t in tutorials:
+        d = t.to_dict()
+        d["completed"] = t.id in completed_ids
+        result.append(d)
+    return jsonify({"tutorials": result}), 200
+
+
+@app.route("/api/tutorials/<int:tutorial_id>/complete", methods=["POST"])
+@login_required
+def complete_tutorial(tutorial_id):
+    """Mark a tutorial as completed and award points once."""
+    tutorial = Tutorial.query.get_or_404(tutorial_id)
+    user = db.session.get(User, current_user.id)
+
+    already_done = UserTutorialProgress.query.filter_by(
+        user_id=current_user.id, tutorial_id=tutorial_id
+    ).first()
+
+    points_awarded = 0
+    if not already_done:
+        progress = UserTutorialProgress(
+            user_id=current_user.id, tutorial_id=tutorial_id, completed=True
+        )
+        db.session.add(progress)
+        points_awarded = tutorial.points_reward
+        user.points = (user.points or 0) + points_awarded
+        db.session.commit()
+
+    return jsonify({
+        "success": True,
+        "points_awarded": points_awarded,
+        "total_points": user.points or 0
+    }), 200
+
+
+@app.route("/api/quizzes", methods=["GET"])
+@login_required
+def get_quizzes():
+    """Return all quizzes with per-user high-score and question count."""
+    quizzes = Quiz.query.all()
+    result = []
+    for q in quizzes:
+        best = (
+            UserQuizAttempt.query
+            .filter_by(user_id=current_user.id, quiz_id=q.id)
+            .order_by(UserQuizAttempt.score.desc())
+            .first()
+        )
+        total_questions = Question.query.filter_by(quiz_id=q.id).count()
+        d = q.to_dict()
+        d["total_questions"] = total_questions
+        if best:
+            d["high_score"] = round((best.score / best.total_questions) * 100) if best.total_questions else 0
+        else:
+            d["high_score"] = None
+        result.append(d)
+    return jsonify({"quizzes": result}), 200
+
+
+@app.route("/api/quizzes/<int:quiz_id>/questions", methods=["GET"])
+@login_required
+def get_quiz_questions(quiz_id):
+    """Return questions for a quiz (without correct answers)."""
+    Quiz.query.get_or_404(quiz_id)
+    questions = Question.query.filter_by(quiz_id=quiz_id).all()
+    return jsonify({"questions": [q.to_dict() for q in questions]}), 200
+
+
+@app.route("/api/quizzes/<int:quiz_id>/submit", methods=["POST"])
+@login_required
+def submit_quiz(quiz_id):
+    """Score a quiz submission and award points."""
+    quiz = Quiz.query.get_or_404(quiz_id)
+    user = db.session.get(User, current_user.id)
+    data = request.get_json(force=True) or {}
+    answers = data.get("answers", {})  # {question_id: selected_option}
+
+    questions = Question.query.filter_by(quiz_id=quiz_id).all()
+    if not questions:
+        return jsonify({"success": False, "message": "No questions found"}), 400
+
+    score = 0
+    details = []
+    for q in questions:
+        user_answer = answers.get(str(q.id))
+        is_correct = user_answer == q.correct_option
+        if is_correct:
+            score += 1
+        details.append({
+            "question_text": q.question_text,
+            "options": {"A": q.option_a, "B": q.option_b, "C": q.option_c, "D": q.option_d},
+            "user_answer": user_answer,
+            "correct_option": q.correct_option,
+            "is_correct": is_correct,
+            "explanation": q.explanation or ""
+        })
+
+    total_questions = len(questions)
+
+    # Award points: full reward only on first perfect score; partial on attempts
+    pct = (score / total_questions) if total_questions else 0
+    points_awarded = round(quiz.points_reward * pct)
+    # Bonus 5 pts just for attempting (first attempt)
+    first_attempt = not UserQuizAttempt.query.filter_by(
+        user_id=current_user.id, quiz_id=quiz_id
+    ).first()
+    if first_attempt:
+        points_awarded += 5
+
+    attempt = UserQuizAttempt(
+        user_id=current_user.id,
+        quiz_id=quiz_id,
+        score=score,
+        total_questions=total_questions
+    )
+    db.session.add(attempt)
+    user.points = (user.points or 0) + points_awarded
+    db.session.commit()
+
+    return jsonify({
+        "success": True,
+        "score": score,
+        "total_questions": total_questions,
+        "points_awarded": points_awarded,
+        "total_points": user.points,
+        "details": details
+    }), 200
+
+
+@app.route("/api/challenges", methods=["GET"])
+@login_required
+def get_challenges():
+    """Return gamified challenges with current user progress."""
+    user = db.session.get(User, current_user.id)
+    newly_completed = check_and_update_challenges(current_user.id)
+
+    # Re-fetch user points after potential awards
+    db.session.refresh(user)
+
+    expense_streak, _ = get_expense_streak(current_user.id)
+    portfolio_count = Portfolio.query.filter_by(user_id=current_user.id).count()
+    goals = FinancialGoal.query.filter_by(user_id=current_user.id).all()
+    max_goal = max((g.target_amount for g in goals), default=0)
+
+    completed_keys = {
+        uc.challenge_key
+        for uc in UserChallenge.query.filter_by(user_id=current_user.id).all()
+    }
+
+    challenges = [
+        {
+            "key": "expense_streak_7",
+            "title": "Consistent Tracker",
+            "description": "Log expenses for 7 consecutive days.",
+            "points_reward": 50,
+            "progress": min(expense_streak, 7),
+            "target": 7,
+            "completed": "expense_streak_7" in completed_keys
+        },
+        {
+            "key": "portfolio_builder_2",
+            "title": "Portfolio Builder",
+            "description": "Add 2 or more investments to your portfolio.",
+            "points_reward": 30,
+            "progress": min(portfolio_count, 2),
+            "target": 2,
+            "completed": "portfolio_builder_2" in completed_keys
+        },
+        {
+            "key": "goal_getter",
+            "title": "Goal Setter",
+            "description": "Create a financial goal of ₹10,000 or more.",
+            "points_reward": 20,
+            "progress": min(max_goal, 10000),
+            "target": 10000,
+            "completed": "goal_getter" in completed_keys
+        }
+    ]
+
+    return jsonify({
+        "challenges": challenges,
+        "newly_completed": newly_completed,
+        "total_points": user.points or 0
+    }), 200
 
 
 @app.route("/api/achievements", methods=["GET"])
@@ -5332,23 +4870,6 @@ def disable_recurring_expense(recurring_id):
         return jsonify({"error": str(e)}), 400
 
 
-@app.route("/net-worth", methods=["GET", "POST"])
-@login_required
-def get_net_worth():
-    assets = Asset.query.filter_by(user_id=current_user.id).order_by(Asset.id).all()
-    liabilities = Liability.query.filter_by(user_id=current_user.id).order_by(Liability.id).all()
-    assets_data = [a.to_dict() for a in assets]
-    liabilities_data = [l.to_dict() for l in liabilities]
-    total_assets = sum(convert_to_base(item['amount'], item.get('currency', 'INR')) for item in assets_data)
-    total_liabilities = sum(convert_to_base(item['amount'], item.get('currency', 'INR')) for item in liabilities_data)
-    return jsonify({
-        "assets": assets_data,
-        "liabilities": liabilities_data,
-        "total_assets": total_assets,
-        "total_liabilities": total_liabilities,
-        "net_worth": total_assets - total_liabilities
-    })
-
 @app.route("/add-asset", methods=["POST"])
 @login_required
 
@@ -5448,95 +4969,6 @@ def parse_expense_text():
 
 
 # ---------------- VOICE EXPENSE PARSER ----------------
-@app.route('/api/parse-expense-text', methods=['POST'])
-def parse_expense_text():
-    """Parse spoken text to extract amount, category, and merchant"""
-    try:
-        data = request.json
-        text = data.get('text', '').strip()
-        
-        if not text:
-            return jsonify({'success': False, 'error': 'No text provided'}), 400
-        
-
-        prompt = f"""
-        You are a financial data extractor. Extract the following details from this spoken text:
-        "{text}"
-        
-        Return ONLY valid JSON in this exact format:
-        {{
-            "amount": number or null,
-            "category": string or null,
-            "merchant": string or null
-        }}
-        
-        Categories must be one of: Food, Rent, Travel, Shopping, Utilities, Entertainment, Healthcare, Other.
-        
-        Examples:
-        - "Uber ride to airport 450 rupees" → {{"amount": 450, "category": "Travel", "merchant": "Uber"}}
-        - "Bought groceries for 1200 at Big Basket" → {{"amount": 1200, "category": "Food", "merchant": "Big Basket"}}
-        - "Paid electricity bill 800 rupees" → {{"amount": 800, "category": "Utilities", "merchant": null}}
-        """
-
-
-        response = client.chat.completions.create(
-            model="llama-3.1-8b-instant",
-            messages=[
-                {"role": "system", "content": "You are a financial data extractor. Return only valid JSON."},
-                {"role": "user", "content": prompt}
-            ],
-            temperature=0.1,
-            max_tokens=100
-        )
-
-
-        result_text = response.choices[0].message.content.strip()
-
-
-
-        result_text = response.choices[0].message.content.strip()
-
-        
-
-        result_text = response.choices[0].message.content.strip()
-
-
-        import json
-        try:
-            start = result_text.find('{')
-            end = result_text.rfind('}') + 1
-            if start != -1 and end > start:
-                json_str = result_text[start:end]
-                parsed = json.loads(json_str)
-
-                result = {
-                    'success': True,
-                    'amount': parsed.get('amount'),
-                    'category': parsed.get('category'),
-                    'merchant': parsed.get('merchant')
-                }
-
-                valid_categories = ['Food', 'Rent', 'Travel', 'Shopping', 'Utilities', 'Entertainment', 'Healthcare', 'Other']
-                if result['category'] and result['category'] not in valid_categories:
-                    result['category'] = 'Other'
-                return jsonify(result)
-            else:
-                raise ValueError("No JSON found in response")
-        except Exception as e:
-            print(f"JSON parse error: {e}")
-            return jsonify({'success': False, 'error': 'Failed to parse AI response'}), 500
-                
-        except Exception as e:
-            print(f"JSON parse error: {e}")
-            return jsonify({'success': False, 'error': 'Failed to parse AI response'}), 500
-        
-
-    except Exception as e:
-        print(f"Voice parse error: {e}")
-        return jsonify({'success': False, 'error': str(e)}), 500
-
-
-# ---------------- RECURRING EXPENSES HELPER ----------------
 def _validate_frequency(freq: str):
     freq = (freq or "").strip().lower()
     if freq not in ("monthly", "weekly", "yearly"):
@@ -5551,78 +4983,6 @@ def _get_period_key(frequency: str, d):
         return f"{iso_year}-W{iso_week:02d}"
     return d.strftime("%Y")
 
-@app.route("/recurring-expense", methods=["POST"])
-@login_required
-def create_recurring_expense():
-    try:
-        data = request.json or {}
-        if not isinstance(data, dict):
-            raise ValidationError("Request body must be a JSON object")
-        category = validate_string(data.get("category"), "category")
-        amount = validate_float(data.get("amount"), "amount", min_val=0.01)
-        start_date = validate_string(data.get("start_date"), "start_date")
-        frequency = _validate_frequency(data.get("frequency"))
-        active = data.get("active", True)
-        if not isinstance(active, bool):
-            raise ValidationError("active must be a boolean")
-        end_date = data.get("end_date", None)
-        if end_date is not None:
-            end_date = validate_string(end_date, "end_date")
-        import datetime
-        try:
-            start_dt = datetime.datetime.strptime(start_date, "%Y-%m-%d").date()
-        except Exception:
-            raise ValidationError("start_date must be in YYYY-MM-DD format")
-        if end_date:
-            try:
-                end_dt = datetime.datetime.strptime(end_date, "%Y-%m-%d").date()
-            except Exception:
-                raise ValidationError("end_date must be in YYYY-MM-DD format")
-            if end_dt < start_dt:
-                raise ValidationError("end_date cannot be before start_date")
-        rexp = RecurringExpense(
-            user_id=current_user.id,
-            category=category,
-            amount=amount,
-            start_date=start_date,
-            frequency=frequency,
-            active=active,
-            end_date=end_date,
-        )
-        db.session.add(rexp)
-        db.session.commit()
-        return jsonify(rexp.to_dict()), 201
-    except ValidationError as e:
-        raise e
-    except Exception as e:
-        return jsonify({"error": str(e)}), 400
-
-@app.route("/recurring-expense", methods=["GET"])
-@login_required
-def list_recurring_expenses():
-    try:
-        items = RecurringExpense.query.filter_by(user_id=current_user.id).order_by(RecurringExpense.id.desc()).all()
-        return jsonify([i.to_dict() for i in items])
-    except Exception as e:
-        return jsonify({"error": str(e)}), 400
-
-@app.route("/recurring-expense/<int:recurring_id>", methods=["DELETE"])
-@login_required
-def disable_recurring_expense(recurring_id):
-    try:
-        item = RecurringExpense.query.filter_by(id=recurring_id, user_id=current_user.id).first()
-        if not item:
-            return jsonify({"error": "Recurring expense not found"}), 404
-        if item.user_id != current_user.id:
-            return jsonify({"error": "Unauthorized"}), 403
-        item.active = False
-        db.session.commit()
-        return jsonify({"status": "success", "id": recurring_id})
-    except Exception as e:
-        return jsonify({"error": str(e)}), 400
-
-
-# ---------------- BUDGET THRESHOLD CHECKS ----------------
 def run_threshold_checks(user_id, category, year_month=None):
     if not year_month:
         import datetime
@@ -5943,51 +5303,6 @@ def goal_detail(goal_id):
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 
-@app.route("/api/goals", methods=["GET"])
-@login_required
-def get_goals():
-    try:
-        goals = FinancialGoal.query.filter_by(user_id=current_user.id).order_by(FinancialGoal.created_at.desc()).all()
-        goals_list = [g.to_dict() for g in goals]
-        ai_recommendations = {}
-        if client and len(goals_list) > 0:
-            for goal in goals_list:
-                remaining = goal["target_amount"] - goal["current_amount"]
-                if remaining > 0:
-                    try:
-                        from datetime import datetime
-                        target_dt = datetime.strptime(goal["target_date"], "%Y-%m")
-                        now = datetime.now()
-                        months_remaining = (target_dt.year - now.year) * 12 + (target_dt.month - now.month)
-                        if months_remaining <= 0:
-                            months_remaining = 1
-                        monthly_needed = remaining / months_remaining
-                        prompt = (
-                            f"Goal: {goal['name']}\n"
-                            f"Target amount: ₹{goal['target_amount']:,}\n"
-                            f"Current saved: ₹{goal['current_amount']:,}\n"
-                            f"Remaining: ₹{remaining:,}\n"
-                            f"Months remaining: {months_remaining}\n"
-                            f"Required monthly savings: ₹{monthly_needed:,.2f}\n\n"
-                            f"Give 3-4 practical, actionable tips to reach this financial goal faster in India. Keep it concise."
-                        )
-                        res = client.chat.completions.create(
-                            model="llama-3.1-8b-instant",
-                            messages=[
-                                {"role": "system", "content": "You are a helpful Indian personal finance advisor."},
-                                {"role": "user", "content": prompt}
-                            ]
-                        )
-                        ai_recommendations[goal["id"]] = res.choices[0].message.content.strip()
-                    except Exception as ai_err:
-                        app.logger.error(f"Goal AI Recommendation Error: {str(ai_err)}")
-                        ai_recommendations[goal["id"]] = "AI recommendations unavailable."
-        return jsonify({"goals": goals_list, "ai_recommendations": ai_recommendations})
-    except Exception as e:
-        return jsonify({"error": str(e)}), 400
-
-
-# ---------------- PERSONAL FINANCE MILESTONES & SIP ----------------
 def check_sip_due_reminders():
     with app.app_context():
         import datetime
@@ -6342,51 +5657,6 @@ from utils.ledger import LedgerSystem
 
 
 # ---------------- DASHBOARD DATA ----------------
-@app.route("/dashboard-data")
-@login_required
-def dashboard_data():
-    try:
-        net_worth = sum(a.amount for a in Asset.query.filter_by(user_id=current_user.id).all()) - sum(l.amount for l in Liability.query.filter_by(user_id=current_user.id).all())
-        monthly_expenses = [e.to_dict() for e in Expense.query.filter_by(user_id=current_user.id).order_by(Expense.id.desc()).limit(10).all()]
-        budget_alert_count = len([b for b in BudgetAlert.query.filter_by(user_id=current_user.id).all()])
-        goal_count = len([g for g in FinancialGoal.query.filter_by(user_id=current_user.id).all()])
-        portfolio_items = Portfolio.query.filter_by(user_id=current_user.id).all()
-        allocation = {}
-        for item in portfolio_items:
-            value = item.quantity * item.buy_price
-            allocation[item.investment_type] = allocation.get(item.investment_type, 0) + value
-        total = sum(allocation.values())
-        allocation_percentages = {k: round(v * 100 / total, 2) for k, v in allocation.items()} if total > 0 else {}
-        return jsonify({
-            "net_worth": net_worth,
-            "monthly_expenses": monthly_expenses,
-            "budget_alert_count": budget_alert_count,
-            "goal_count": goal_count,
-            "portfolio_allocation": allocation_percentages,
-        })
-    except Exception as e:
-        return jsonify({"error": str(e)}), 400
-
-@app.route("/dashboard/recent-activity")
-@login_required
-def recent_activity():
-    activities = []
-    expenses = Expense.query.filter_by(user_id=current_user.id).order_by(Expense.id.desc()).limit(5).all()
-    for e in expenses:
-        activities.append({"type": "expense", "message": f"Added expense: {e.category} ₹{e.amount}", "date": e.date})
-    assets = Asset.query.filter_by(user_id=current_user.id).order_by(Asset.id.desc()).limit(5).all()
-    for a in assets:
-        activities.append({"type": "asset", "message": f"Added asset: {a.name} ₹{a.amount}", "date": a.date})
-    goals = FinancialGoal.query.filter_by(user_id=current_user.id).order_by(FinancialGoal.created_at.desc()).limit(5).all()
-    for g in goals:
-        activities.append({"type": "goal", "message": f"Created goal: {g.name}", "date": g.created_at.isoformat()})
-    activities = sorted(activities, key=lambda x: x["date"], reverse=True)
-    return jsonify(activities[:10])
-
-
-# ---------------- FINANCIAL RATIO ANALYZER ----------------
-from utils.financial_ratio_analyzer import FinancialRatioAnalyzer
-
 @app.route('/ratio-analyzer')
 @login_required
 def ratio_analyzer_page():
@@ -6417,130 +5687,6 @@ def analyze_ratios():
         
 
 # ---------------- API ALERTS ----------------
-@app.route("/api/alerts", methods=["GET"])
-@login_required
-def get_alerts():
-    try:
-        alerts = PriceAlert.query.filter_by(user_id=current_user.id).all()
-        return jsonify([a.to_dict() for a in alerts])
-    except Exception as e:
-        return jsonify({"error": str(e)}), 400
-
-@app.route("/api/alerts", methods=["POST"])
-@login_required
-def create_alert():
-    try:
-        data = request.json
-        if not data or "symbol" not in data or "target_price" not in data:
-            return jsonify({"error": "Missing required fields"}), 400
-        symbol = data["symbol"].strip().upper()
-        target_price = float(data["target_price"])
-        condition = data.get("condition", "above").strip().lower()
-        if condition not in ("above", "below"):
-            return jsonify({"error": "Invalid condition value"}), 400
-        alert = PriceAlert(symbol=symbol, target_price=target_price, condition=condition, user_id=current_user.id)
-        db.session.add(alert)
-        db.session.commit()
-        return jsonify(alert.to_dict()), 201
-    except Exception as e:
-        return jsonify({"error": str(e)}), 400
-
-@app.route("/api/alerts/history", methods=["GET"])
-@login_required
-def alerts_history():
-    try:
-        user_alert_ids = [a.id for a in PriceAlert.query.filter_by(user_id=current_user.id).all()]
-        limit = request.args.get("limit", default=10, type=int)
-        if limit < 1:
-            limit = 10
-        if limit > 100:
-            limit = 100
-        events = PriceAlertEvent.query.filter(PriceAlertEvent.alert_id.in_(user_alert_ids)).order_by(PriceAlertEvent.triggered_at.desc()).limit(limit).all()
-        return jsonify([e.to_dict() for e in events])
-
-    except Exception as e:
-
-        return jsonify({"error": str(e)}), 400
-
-
-
-# ---------------- DASHBOARD DATA ----------------
-@app.route("/dashboard-data")
-@login_required
-def dashboard_data():
-    try:
-        net_worth = sum(a.amount for a in Asset.query.filter_by(user_id=current_user.id).all()) - sum(l.amount for l in Liability.query.filter_by(user_id=current_user.id).all())
-        monthly_expenses = [e.to_dict() for e in Expense.query.filter_by(user_id=current_user.id).order_by(Expense.id.desc()).limit(10).all()]
-        budget_alert_count = len([b for b in BudgetAlert.query.filter_by(user_id=current_user.id).all()])
-        goal_count = len([g for g in FinancialGoal.query.filter_by(user_id=current_user.id).all()])
-        portfolio_items = Portfolio.query.filter_by(user_id=current_user.id).all()
-        allocation = {}
-        for item in portfolio_items:
-            value = item.quantity * item.buy_price
-            allocation[item.investment_type] = allocation.get(item.investment_type, 0) + value
-        total = sum(allocation.values())
-        allocation_percentages = {k: round(v * 100 / total, 2) for k, v in allocation.items()} if total > 0 else {}
-        return jsonify({
-            "net_worth": net_worth,
-            "monthly_expenses": monthly_expenses,
-            "budget_alert_count": budget_alert_count,
-            "goal_count": goal_count,
-            "portfolio_allocation": allocation_percentages,
-        })
-    except Exception as e:
-        return jsonify({"error": str(e)}), 400
-
-@app.route("/dashboard/recent-activity")
-@login_required
-def recent_activity():
-    activities = []
-    expenses = Expense.query.filter_by(user_id=current_user.id).order_by(Expense.id.desc()).limit(5).all()
-    for e in expenses:
-        activities.append({"type": "expense", "message": f"Added expense: {e.category} ₹{e.amount}", "date": e.date})
-    assets = Asset.query.filter_by(user_id=current_user.id).order_by(Asset.id.desc()).limit(5).all()
-    for a in assets:
-        activities.append({"type": "asset", "message": f"Added asset: {a.name} ₹{a.amount}", "date": a.date})
-    goals = FinancialGoal.query.filter_by(user_id=current_user.id).order_by(FinancialGoal.created_at.desc()).limit(5).all()
-    for g in goals:
-        activities.append({"type": "goal", "message": f"Created goal: {g.name}", "date": g.created_at.isoformat()})
-    activities = sorted(activities, key=lambda x: x["date"], reverse=True)
-    return jsonify(activities[:10])
-
-# ---------------- FINANCIAL RATIO ANALYZER ----------------
-from utils.financial_ratio_analyzer import FinancialRatioAnalyzer
-
-@app.route('/ratio-analyzer')
-@login_required
-def ratio_analyzer_page():
-    """Financial Ratio Analysis Dashboard"""
-    return render_template('ratio_analyzer.html', active_page='ratio_analyzer')
-
-@app.route('/api/ratios/analyze', methods=['POST'])
-@login_required
-def analyze_ratios():
-    """Analyze financial ratios"""
-    try:
-        data = request.json
-        financial_data = data.get('financial_data', {})
-        industry = data.get('industry', 'general')
-        
-        # Create analyzer
-        analyzer = FinancialRatioAnalyzer(financial_data)
-        
-        # Generate report
-        report = analyzer.generate_report(industry)
-        
-        return jsonify({
-            'success': True,
-            'data': report
-        })
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-
-        # ---------------- DASHBOARD WIDGETS ----------------
-from utils.dashboard_widgets import DashboardWidgetManager
-
 @app.route('/dashboard-new')
 @login_required
 def dashboard_new():
@@ -6646,307 +5792,7 @@ def get_widget_data(widget_id):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 # ---------------- API ALERTS ----------------
-@app.route("/api/alerts", methods=["GET"])
-@login_required
-def get_alerts():
-    try:
-        alerts = PriceAlert.query.filter_by(user_id=current_user.id).all()
-        return jsonify([a.to_dict() for a in alerts])
-    except Exception as e:
-        return jsonify({"error": str(e)}), 400
 
-@app.route("/api/alerts", methods=["POST"])
-@login_required
-def create_alert():
-    try:
-        data = request.json
-        if not data or "symbol" not in data or "target_price" not in data:
-            return jsonify({"error": "Missing required fields"}), 400
-        symbol = data["symbol"].strip().upper()
-        target_price = float(data["target_price"])
-        condition = data.get("condition", "above").strip().lower()
-        if condition not in ("above", "below"):
-            return jsonify({"error": "Invalid condition value"}), 400
-        alert = PriceAlert(symbol=symbol, target_price=target_price, condition=condition, user_id=current_user.id)
-        db.session.add(alert)
-        db.session.commit()
-        return jsonify(alert.to_dict()), 201
-
-    except Exception as e:
-
-        return jsonify({"error": str(e)}), 400
-        
-
-# ---------------- PORTFOLIO TRACKER ----------------
-@app.route("/portfolio-page")
-@login_required
-def portfolio_page():
-    return render_template("portfolio.html", active_page="portfolio")
-
-
-
-@app.route("/api/alerts/reset", methods=["POST"])
-@login_required
-def alerts_reset():
-    try:
-
-        PriceAlert.query.filter_by(user_id=current_user.id).update({"is_triggered": False, "last_triggered_at": None, "last_check_error": None})
-        user_alert_ids = [a.id for a in PriceAlert.query.filter_by(user_id=current_user.id).all()]
-        if user_alert_ids:
-            PriceAlertEvent.query.filter(PriceAlertEvent.alert_id.in_(user_alert_ids)).delete(synchronize_session=False)
-        db.session.commit()
-        return jsonify({"status": "success"})
-    
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-@app.route("/api/alerts/history", methods=["GET"])
-@login_required
-def alerts_history():
-    try:
-
-        user_alert_ids = [a.id for a in PriceAlert.query.filter_by(user_id=current_user.id).all()]
-        limit = request.args.get("limit", default=10, type=int)
-        if limit < 1:
-            limit = 10
-        if limit > 100:
-            limit = 100
-        events = PriceAlertEvent.query.filter(PriceAlertEvent.alert_id.in_(user_alert_ids)).order_by(PriceAlertEvent.triggered_at.desc()).limit(limit).all()
-        return jsonify([e.to_dict() for e in events])
-
-
-        holdings = Portfolio.query.filter_by(user_id=current_user.id).all()
-        
-        today_dt = datetime.now()
-        cutoff_dt = today_dt - timedelta(days=365)
-        
-        holdings_list = []
-        total_invested = 0.0
-        total_current = 0.0
-        total_dividends_received = 0.0
-        total_annual_dividends_value = 0.0
-        timeline = []
-        
-        for h in holdings:
-            price_data = get_stock_price(h.symbol)
-            current_price = price_data.get("price", h.buy_price)
-            
-            divs = get_stock_dividends(h.symbol)
-            
-            divs_received = 0.0
-            for d in divs:
-                if d["date"] >= h.buy_date:
-                    divs_received += d["amount"] * h.quantity
-            
-            annual_div_per_share = 0.0
-            for d in divs:
-                try:
-                    div_date = datetime.strptime(d["date"], "%Y-%m-%d")
-                    if cutoff_dt <= div_date <= today_dt:
-                        annual_div_per_share += d["amount"]
-                except ValueError:
-                    continue
-            
-            invested_val = h.quantity * h.buy_price
-            current_val = h.quantity * current_price
-            pnl = current_val - invested_val
-            pnl_percent = (pnl / invested_val * 100) if invested_val > 0 else 0.0
-            yoc = (annual_div_per_share / h.buy_price * 100) if h.buy_price > 0 else 0.0
-            
-            holdings_list.append({
-                "id": h.id,
-                "symbol": h.symbol,
-                "name": h.name,
-                "quantity": h.quantity,
-                "buy_price": h.buy_price,
-                "currency": h.currency,
-                "current_price": current_price,
-                "invested_value": round(invested_val, 2),
-                "current_value": round(current_val, 2),
-                "pnl": round(pnl, 2),
-                "pnl_percent": round(pnl_percent, 2),
-                "dividends_received": round(divs_received, 2),
-                "annual_dividend_per_share": round(annual_div_per_share, 2),
-                "yoc": round(yoc, 2)
-            })
-            
-            total_invested += convert_to_base(invested_val, h.currency)
-            total_current += convert_to_base(current_val, h.currency)
-            total_dividends_received += convert_to_base(divs_received, h.currency)
-            total_annual_dividends_value += convert_to_base(annual_div_per_share * h.quantity, h.currency)
-            
-            for d in divs:
-                try:
-                    div_date = datetime.strptime(d["date"], "%Y-%m-%d")
-                    if cutoff_dt <= div_date <= today_dt:
-                        projected_date = div_date + timedelta(days=365)
-                        if projected_date > today_dt:
-                            timeline.append({
-                                "date": projected_date.strftime("%Y-%m-%d"),
-                                "symbol": h.symbol,
-                                "amount_per_share": d["amount"],
-                                "amount": convert_to_base(d["amount"] * h.quantity, h.currency),
-                                "currency": h.currency
-                            })
-                except ValueError:
-                    continue
-        
-        total_pnl = total_current - total_invested
-        total_pnl_percent = (total_pnl / total_invested * 100) if total_invested > 0 else 0.0
-        portfolio_yoc = (total_annual_dividends_value / total_invested * 100) if total_invested > 0 else 0.0
-        
-        timeline.sort(key=lambda x: x["date"])
-        
-        summary = {
-            "total_invested": round(total_invested, 2),
-            "total_current": round(total_current, 2),
-            "total_pnl": round(total_pnl, 2),
-            "total_pnl_percent": round(total_pnl_percent, 2),
-            "total_dividends_received": round(total_dividends_received, 2),
-            "portfolio_yoc": round(portfolio_yoc, 2)
-        }
-        
-        return jsonify({
-            "success": True,
-            "holdings": holdings_list,
-            "summary": summary,
-            "timeline": timeline
-        })
-
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({"error": str(e)}), 400
-
-
-@app.route("/api/alerts/<int:alert_id>", methods=["DELETE"])
-@login_required
-def delete_alert(alert_id):
-    try:
-
-        alert = PriceAlert.query.filter_by(id=alert_id, user_id=current_user.id).first()
-        if not alert:
-            return jsonify({"error": "Alert not found"}), 404
-        db.session.delete(alert)
-    
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-@app.route("/api/alerts/reset", methods=["POST"])
-@login_required
-def alerts_reset():
-    try:
-
-        PriceAlert.query.filter_by(user_id=current_user.id).update({"is_triggered": False, "last_triggered_at": None, "last_check_error": None})
-        user_alert_ids = [a.id for a in PriceAlert.query.filter_by(user_id=current_user.id).all()]
-        if user_alert_ids:
-            PriceAlertEvent.query.filter(PriceAlertEvent.alert_id.in_(user_alert_ids)).delete(synchronize_session=False)
-
-
-        data = request.json or {}
-        if not isinstance(data, dict):
-            raise ValidationError("Request body must be a JSON object")
-
-        symbol = validate_string(data.get("symbol"), "symbol").strip().upper()
-        if not symbol or not re.match(r"^[A-Z0-9.\-_]+$", symbol):
-            raise ValidationError("Invalid symbol format")
-
-        quantity = validate_float(data.get("quantity"), "quantity", min_val=0.0001)
-        buy_price = validate_float(data.get("buy_price"), "buy_price", min_val=0.01)
-        buy_date = validate_string(data.get("buy_date"), "buy_date")
-
-        try:
-            datetime.strptime(buy_date, "%Y-%m-%d")
-        except ValueError:
-            raise ValidationError("buy_date must be in YYYY-MM-DD format")
-
-        notes = data.get("notes", "")
-        if notes:
-            notes = validate_string(notes, "notes")
-
-        currency = validate_string(data.get("currency", "INR"), "currency").strip().upper()
-
-        stock = yf.Ticker(symbol)
-        name = symbol
-        try:
-            info = stock.info
-            if info:
-                name = info.get("longName") or info.get("shortName") or symbol
-        except Exception:
-            if "." not in symbol:
-                symbol_ns = symbol + ".NS"
-                try:
-                    stock_ns = yf.Ticker(symbol_ns)
-                    info = stock_ns.info
-                    if info:
-                        name = info.get("longName") or info.get("shortName") or symbol_ns
-                        symbol = symbol_ns
-                except Exception:
-                    pass
-
-        price_data = get_stock_price(symbol)
-        if "error" in price_data:
-            raise ValidationError(price_data["error"])
-
-        holding = Portfolio(
-            user_id=current_user.id,
-            symbol=symbol,
-            name=name,
-            quantity=quantity,
-            buy_price=buy_price,
-            buy_date=buy_date,
-            currency=currency,
-            notes=notes
-        )
-        db.session.add(holding)
-
-        db.session.commit()
-
-        return jsonify({"status": "success"})
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({"error": str(e)}), 400
-
-
-@app.route("/api/alerts/<int:alert_id>", methods=["DELETE"])
-@login_required
-def delete_alert(alert_id):
-    try:
-        alert = PriceAlert.query.filter_by(id=alert_id, user_id=current_user.id).first()
-        if not alert:
-            return jsonify({"error": "Alert not found"}), 404
-        db.session.delete(alert)
-        db.session.commit()
-
-        return jsonify({"status": "success", "message": "Alert deleted successfully"})
-    except Exception as e:
-        return jsonify({"error": str(e)}), 400
-
-
-# Tax Optimization Module
-@app.route("/tax-optimize", methods=["POST"])
-def tax_optimize():
-    data = request.get_json()
-    income = data.get("income", 0)
-    expenses = data.get("expenses", {})
-    investments = data.get("investments", {})
-    if not income or income <= 0:
-        return jsonify({"error": "Please provide a valid income."}), 400
-    result = tax_optimization_module(income, expenses, investments)
-    return jsonify(result)
-
-
-
-# ---------------- ADDITIONAL SCHEDULERS ----------------
-if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
-    scheduler = BackgroundScheduler()
-    scheduler.add_job(check_all_budgets_job, 'interval', days=1)
-    scheduler.add_job(check_all_recurring_expenses_job, 'interval', days=1)
-    scheduler.add_job(check_stock_alerts_job, 'interval', minutes=10)
-    scheduler.add_job(check_sip_due_reminders, 'interval', days=1)
-    scheduler.start()
-
-
-# ---------------- RUN ----------------
 if __name__ == "__main__":
     debug_mode = os.getenv("FLASK_DEBUG", "False").lower() in ("true", "1", "yes")
-    socketio.run(app, debug=debug_mode, host="0.0.0.0", port=5000)
+    socketio.run(app, debug=debug_mode, host="0.0.0.0", port=5000, allow_unsafe_werkzeug=True)

@@ -6,6 +6,7 @@ Extracts financial data from images, PDFs, and documents
 import os
 import re
 import json
+import logging
 import tempfile
 from datetime import datetime
 from typing import Dict, List, Optional, Tuple
@@ -22,6 +23,8 @@ from transformers import LayoutLMv3Processor, LayoutLMv3ForTokenClassification
 from langdetect import detect
 
 import numpy as np
+
+logger = logging.getLogger(__name__)
 
 
 class DocumentParser:
@@ -55,9 +58,9 @@ class DocumentParser:
         try:
             self.processor = LayoutLMv3Processor.from_pretrained("microsoft/layoutlmv3-base")
             self.model = LayoutLMv3ForTokenClassification.from_pretrained("microsoft/layoutlmv3-base")
-            print("✅ LayoutLMv3 models loaded successfully")
+            logger.info("[OK] LayoutLMv3 models loaded successfully")
         except Exception as e:
-            print(f"⚠️ Could not load LayoutLMv3 models: {e}")
+            logger.warning("[WARN] Could not load LayoutLMv3 models: %s", e)
             self.processor = None
             self.model = None
     
