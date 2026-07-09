@@ -44,7 +44,7 @@ langdetect==1.0.9
 
 # MFA Dependencies
 pyotp==2.9.0
-qrcode==7.4.2
+qrcode==8.2
 Pillow==12.2.0
 webauthn==2.1.0
 cryptography==48.0.1
