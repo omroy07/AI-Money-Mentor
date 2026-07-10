@@ -42,7 +42,10 @@ from models import (
     GroupExpense, GroupExpenseSplit, GroupSettlement,
     Watchlist, WatchlistItem, WatchlistAlert,
     RiskProfile, InsurancePolicy, InsuranceRecommendation,
+    CryptoHolding,
 )
+
+from utils.crypto_tracker import get_crypto_price_multi, get_crypto_price, get_mock_defi_portfolio
 
 
 
@@ -7583,6 +7586,97 @@ def tax_optimize():
     result = tax_optimization_module(income, expenses, investments)
     return jsonify(result)
 
+# ---------------- CRYPTO & DEFI ROUTES ----------------
+@app.route("/crypto-page")
+@login_required
+def crypto_page():
+    return render_template("crypto.html", active_page="crypto")
+
+@app.route("/api/crypto/list", methods=["POST"])
+@login_required
+def get_crypto_portfolio():
+    try:
+        holdings = CryptoHolding.query.filter_by(user_id=current_user.id).order_by(CryptoHolding.created_at.desc()).all()
+        
+        symbols = [h.symbol for h in holdings]
+        live_prices = get_crypto_price_multi(symbols)
+        
+        holdings_data = []
+        total_value = 0.0
+        total_invested = 0.0
+        
+        for h in holdings:
+            current_price = live_prices.get(h.symbol, {}).get('USD', h.buy_price)
+            data = h.to_dict(current_price=current_price)
+            holdings_data.append(data)
+            total_value += data['current_value']
+            total_invested += data['invested_value']
+            
+        pnl = total_value - total_invested
+        pnl_percent = (pnl / total_invested * 100) if total_invested > 0 else 0
+        
+        return jsonify({
+            "holdings": holdings_data,
+            "summary": {
+                "total_current_usd": round(total_value, 2),
+                "total_invested": round(total_invested, 2),
+                "pnl": round(pnl, 2),
+                "pnl_percent": round(pnl_percent, 2)
+            }
+        })
+    except Exception as e:
+        logger.error(f"Error fetching crypto portfolio: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/api/crypto/add", methods=["POST"])
+@login_required
+@require_json
+def add_crypto_holding():
+    try:
+        data = request.json
+        new_holding = CryptoHolding(
+            user_id=current_user.id,
+            symbol=data.get('symbol', '').upper(),
+            name=data.get('name', ''),
+            quantity=float(data.get('quantity', 0)),
+            buy_price=float(data.get('buy_price', 0)),
+            buy_date=data.get('buy_date', ''),
+            notes=data.get('notes', ''),
+            wallet_address=data.get('wallet_address', '')
+        )
+        db.session.add(new_holding)
+        db.session.commit()
+        return jsonify({"success": True, "message": "Holding added successfully"})
+    except Exception as e:
+        db.session.rollback()
+        logger.error(f"Error adding crypto holding: {e}")
+        return jsonify({"error": str(e)}), 400
+
+@app.route("/api/crypto/delete/<int:item_id>", methods=["POST"])
+@login_required
+def delete_crypto_holding(item_id):
+    try:
+        holding = CryptoHolding.query.filter_by(id=item_id, user_id=current_user.id).first()
+        if not holding:
+            return jsonify({"error": "Holding not found"}), 404
+            
+        db.session.delete(holding)
+        db.session.commit()
+        return jsonify({"success": True, "message": "Holding deleted successfully"})
+    except Exception as e:
+        db.session.rollback()
+        logger.error(f"Error deleting crypto holding: {e}")
+        return jsonify({"error": str(e)}), 400
+
+@app.route("/api/crypto/wallet", methods=["POST"])
+@login_required
+def get_defi_portfolio():
+    try:
+        wallet = request.json.get('wallet_address', '0x71C...976F')
+        data = get_mock_defi_portfolio(wallet)
+        return jsonify({"portfolio": data})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
 
 
 # ---------------- ADDITIONAL SCHEDULERS ----------------
