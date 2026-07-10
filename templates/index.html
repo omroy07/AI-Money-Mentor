@@ -1922,6 +1922,8 @@
 
   </div><!-- /main -->
 
+  <div class="chat-messages" id="chatMessages" style="height:420px"></div>
+
   <!-- Loading charts -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -3198,6 +3200,55 @@ async function chatSend() {
         voiceBtn.addEventListener('click', startVoiceInput);
       }
     });
+
+
+    // Save message to localStorage
+function saveChatMessage(role, text) {
+  let history = JSON.parse(localStorage.getItem("chatHistory") || "[]");
+  history.push({ role, text });
+  localStorage.setItem("chatHistory", JSON.stringify(history));
+}
+
+// Restore history on page load
+document.addEventListener("DOMContentLoaded", () => {
+  const history = JSON.parse(localStorage.getItem("chatHistory") || "[]");
+  history.forEach(msg => addMessage(msg.role, msg.text));
+});
+
+// Add message to UI
+function addMessage(role, text) {
+  const container = document.getElementById("chatMessages");
+  const div = document.createElement("div");
+  div.className = role === "user" ? "chat-user" : "chat-ai";
+  div.textContent = text;
+  container.appendChild(div);
+}
+
+// Chat send
+async function chatSend() {
+  const input = document.getElementById("chatInput").value.trim();
+  if (!input) return;
+
+  addMessage("user", input);
+  saveChatMessage("user", input);
+
+  try {
+    const data = await apiFetch("/chat", { message: input });
+    addMessage("ai", data.message);
+    saveChatMessage("ai", data.message);
+  } catch (err) {
+    addMessage("ai", "⚠️ Error: AI service unavailable.");
+  }
+
+  document.getElementById("chatInput").value = "";
+}
+
+// Clear chat
+function clearChat() {
+  document.getElementById("chatMessages").innerHTML = "";
+  localStorage.removeItem("chatHistory");
+}
+
   </script>
 
 </body>
