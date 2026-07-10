@@ -6946,6 +6946,31 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
     scheduler.start()
 
 
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+if not GROQ_API_KEY:
+    print("⚠️ Warning: GROQ_API_KEY not set. AI features will be disabled.")
+
+
+def call_ai_service(prompt):
+    if not GROQ_API_KEY:
+        return {"error": "AI service unavailable — check your API key."}
+
+    try:
+        # Replace with actual API call
+        response = groq_client.chat(prompt)
+        return {"result": response}
+    except Exception as e:
+        return {"error": "AI service unavailable — check your API key."}
+
+
+@app.route("/chat", methods=["POST"])
+def chat():
+    data = request.json
+    result = call_ai_service(data.get("message"))
+    if "error" in result:
+        return jsonify({"status": "error", "message": result["error"]}), 503
+    return jsonify({"status": "success", "message": result["result"]})
+
 # ---------------- RUN ----------------
 if __name__ == "__main__":
     debug_mode = os.getenv("FLASK_DEBUG", "False").lower() in ("true", "1", "yes")
