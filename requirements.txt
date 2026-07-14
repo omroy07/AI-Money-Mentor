@@ -37,6 +37,6 @@ eventlet==0.33.3
 pytesseract==0.3.10
 pdf2image==1.16.3
 Pillow==12.3.0
-transformers==4.36.0
+transformers==5.13.1
 torch==2.13.0
 langdetect==1.0.9
