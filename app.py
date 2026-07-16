@@ -6,6 +6,7 @@ from datetime import datetime, timedelta, date
 import sqlite3
 import atexit
 import yfinance as yf
+from utils.emergency_fund import calculate_emergency_fund
 import os
 import sys
 import csv
@@ -4564,6 +4565,38 @@ def goal_planner():
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 
+# ---------------- EMERGENCY FUND PLANNER ----------------
+@app.route("/emergency-fund", methods=["GET", "POST"])
+@login_required
+def emergency_fund():
+    if request.method == "GET":
+        return render_template(
+            "emergency_fund.html",
+            active_page="emergency_fund"
+        )
+
+    try:
+        data = request.json or {}
+
+        monthly_expenses = float(data.get("monthly_expenses", 0))
+        dependents = int(data.get("dependents", 0))
+        dual_income = bool(data.get("dual_income", False))
+        current_savings = float(data.get("current_savings", 0))
+        crisis_type = data.get("crisis_type", "normal")
+
+        result = calculate_emergency_fund(
+            monthly_expenses,
+            dependents,
+            dual_income,
+            current_savings,
+            crisis_type
+        )
+
+        return jsonify(result)
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+    
 # ---------------- STOCK ----------------
 @app.route("/portfolio", methods=["POST"])
 def portfolio():
