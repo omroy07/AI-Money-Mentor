@@ -19,7 +19,7 @@ pyttsx3==2.99
 gTTS==2.5.4
 
 # ML Dependencies
-scikit-learn==1.5.0
+scikit-learn==1.7.2
 pandas==2.2.0
 numpy==1.26.0
 joblib==1.5.3
