@@ -1,5 +1,5 @@
 # requirements-dev.txt
 # Development and testing dependencies (not needed in production).
 # Install with: pip install -r requirements.txt -r requirements-dev.txt
-pytest==9.0.3
+pytest==9.1.1
 pytest-cov==7.1.0
