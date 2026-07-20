@@ -6,7 +6,7 @@ groq==1.0.0
 pdfplumber==0.11.10
 python-dotenv==1.2.2
 flask-sqlalchemy==3.1.1
-apscheduler==3.11.2
+apscheduler==3.11.3
 fpdf2==2.8.7
 flask-login>=0.6.3
 werkzeug>=3.1.8
