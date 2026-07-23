@@ -79,7 +79,7 @@ class User(UserMixin, db.Model):
 class Portfolio(db.Model):
     __tablename__ = "portfolio"
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-    user = db.relationship("User", backref="portfolio")
+    user = db.relationship("User", backref=db.backref("portfolio", lazy=True, cascade="all, delete-orphan"))
     id = db.Column(db.Integer, primary_key=True)
     symbol = db.Column(db.String(20), nullable=False)
     name = db.Column(db.String(100), nullable=False)
@@ -119,7 +119,7 @@ class Portfolio(db.Model):
 class CryptoHolding(db.Model):
     __tablename__ = "crypto_holdings"
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-    user = db.relationship("User", backref="crypto_holdings")
+    user = db.relationship("User", backref=db.backref("crypto_holdings", lazy=True, cascade="all, delete-orphan"))
     id = db.Column(db.Integer, primary_key=True)
     symbol = db.Column(db.String(20), nullable=False)
     name = db.Column(db.String(100), nullable=False)
@@ -289,7 +289,7 @@ class CoupleSubscription(db.Model):
 class Asset(db.Model):
     __tablename__ = "assets"
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-    user = db.relationship("User", backref="assets")
+    user = db.relationship("User", backref=db.backref("assets", lazy=True, cascade="all, delete-orphan"))
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), nullable=False)
     amount = db.Column(db.Float, nullable=False)
@@ -307,7 +307,7 @@ class Asset(db.Model):
 class Liability(db.Model):
     __tablename__ = "liabilities"
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-    user = db.relationship("User", backref="liabilities")
+    user = db.relationship("User", backref=db.backref("liabilities", lazy=True, cascade="all, delete-orphan"))
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), nullable=False)
     amount = db.Column(db.Float, nullable=False)
