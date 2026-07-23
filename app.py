@@ -197,6 +197,11 @@ mail = Mail(app)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///money_mentor.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
+# ---------------- UPLOAD SIZE LIMIT ----------------
+# Reject request payloads larger than 16 MB to prevent memory exhaustion
+# and Denial of Service via oversized file uploads.
+app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024  # 16 MB
+
 # ---------------- SECRET KEY ----------------
 # SECRET_KEY signs session cookies. In production it MUST come from the
 # environment - a hardcoded fallback would let anyone with the public repo
