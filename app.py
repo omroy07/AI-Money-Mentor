@@ -392,11 +392,9 @@ def process_recurring_expenses():
         print(f"❌ Error processing recurring expenses: {e}")
 
 
-# ---------------- SCHEDULER ----------------
-scheduler = BackgroundScheduler()
-scheduler.add_job(send_weekly_reports, trigger=CronTrigger(day_of_week='mon', hour=9, minute=0), id='weekly_email_job', replace_existing=True)
-scheduler.add_job(process_recurring_expenses, trigger=CronTrigger(hour=9, minute=0), id='recurring_expense_job', replace_existing=True)
-# Add scheduler for subscription detection if separate frequency needed (currently bundled with recurring expense processing)
+# NOTE: Scheduler jobs (weekly reports, recurring expenses) are
+# consolidated into a single BackgroundScheduler instance at the bottom
+# of this file to prevent orphaned thread pools. See #588.
 
 def process_recurring_incomes():
     """Process recurring incomes and add them to income occurrences"""
@@ -488,34 +486,7 @@ def auto_login():
             db.session.commit()
         login_user(user)
 
-# ============================================
-# SCHEDULER - Runs weekly email and recurring expenses
-# ============================================
-scheduler = BackgroundScheduler()
-
-# Weekly email job - Every Monday at 9:00 AM
-scheduler.add_job(
-    func=send_weekly_reports,
-    trigger=CronTrigger(day_of_week='mon', hour=9, minute=0),
-    id='weekly_email_job',
-    replace_existing=True
-)
-
-# Recurring expenses job - Every day at 9:00 AM
-scheduler.add_job(
-    func=process_recurring_expenses,
-    trigger=CronTrigger(hour=9, minute=0),
-    id='recurring_expense_job',
-    replace_existing=True
-)
-
-# Recurring incomes job - Every day at 9:00 AM
-scheduler.add_job(
-    func=process_recurring_incomes,
-    trigger=CronTrigger(hour=9, minute=0),
-    id='recurring_income_job',
-    replace_existing=True
-)
+# NOTE: Scheduler jobs moved to consolidated scheduler at bottom of file. See #588.
 
 
 
@@ -6827,12 +6798,7 @@ def get_risk_advice():
 
 
 
-if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
-    scheduler = BackgroundScheduler()
-    scheduler.add_job(check_all_budgets_job, 'interval', days=1)
-    scheduler.add_job(check_all_recurring_expenses_job, 'interval', days=1)
-    scheduler.add_job(check_stock_alerts_job, 'interval', minutes=10)
-    scheduler.start()
+# NOTE: Scheduler jobs moved to consolidated scheduler at bottom of file. See #588.
 
 
 # ---------------- WEB SOCKET EVENTS ----------------
@@ -7464,14 +7430,28 @@ def tax_optimize():
 
 
 
-# ---------------- ADDITIONAL SCHEDULERS ----------------
+# ---------------- CONSOLIDATED SCHEDULER (#588) ----------------
+# All background jobs are registered on a SINGLE BackgroundScheduler
+# instance to prevent orphaned thread pools and duplicate job execution.
 if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
     scheduler = BackgroundScheduler()
-    scheduler.add_job(check_all_budgets_job, 'interval', days=1)
-    scheduler.add_job(check_all_recurring_expenses_job, 'interval', days=1)
-    scheduler.add_job(check_stock_alerts_job, 'interval', minutes=10)
-    scheduler.add_job(check_sip_due_reminders, 'interval', days=1)
+    # Weekly reports - Every Monday at 9:00 AM
+    scheduler.add_job(send_weekly_reports, trigger=CronTrigger(day_of_week='mon', hour=9, minute=0), id='weekly_email_job', replace_existing=True)
+    # Recurring expenses - Every day at 9:00 AM
+    scheduler.add_job(process_recurring_expenses, trigger=CronTrigger(hour=9, minute=0), id='recurring_expense_job', replace_existing=True)
+    # Recurring incomes - Every day at 9:00 AM
+    scheduler.add_job(process_recurring_incomes, trigger=CronTrigger(hour=9, minute=0), id='recurring_income_job', replace_existing=True)
+    # Budget checks - Daily
+    scheduler.add_job(check_all_budgets_job, 'interval', days=1, id='budget_check_job', replace_existing=True)
+    # Recurring expense alerts - Daily
+    scheduler.add_job(check_all_recurring_expenses_job, 'interval', days=1, id='recurring_expense_alert_job', replace_existing=True)
+    # Stock alerts - Every 10 minutes
+    scheduler.add_job(check_stock_alerts_job, 'interval', minutes=10, id='stock_alert_job', replace_existing=True)
+    # SIP due reminders - Daily
+    scheduler.add_job(check_sip_due_reminders, 'interval', days=1, id='sip_reminder_job', replace_existing=True)
     scheduler.start()
+    import atexit
+    atexit.register(lambda: scheduler.shutdown())
 
 
 # ---------------- RUN ----------------
