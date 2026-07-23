@@ -179,9 +179,10 @@ from utils.rag_system import RAGSystem
 from utils.fx import convert_to_base, get_rate
 from utils.loan_planner import data_input
 
-
-app = Flask(__name__)
-
+# Continue configuring the same app instance initialized above (line 64).
+# NOTE: A duplicate `app = Flask(__name__)` was previously here, which
+# silently detached SocketIO (line 67) and the rate Limiter (line 76)
+# from the active app context. Removed to fix #584.
 
 # ---------------- EMAIL CONFIG ----------------
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
