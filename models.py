@@ -161,7 +161,7 @@ class CryptoHolding(db.Model):
 class PriceAlert(db.Model):
     __tablename__ = "price_alerts"
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-    user = db.relationship("User", backref="price_alerts")
+    user = db.relationship("User", backref=db.backref("price_alerts", lazy=True, cascade="all, delete-orphan"))
     id = db.Column(db.Integer, primary_key=True)
     symbol = db.Column(db.String(20), nullable=False)
     target_price = db.Column(db.Float, nullable=False)
@@ -283,8 +283,8 @@ class CoupleSubscription(db.Model):
     status = db.Column(db.String(20), default="active")
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-    user = db.relationship("User", foreign_keys=[user_id])
-    partner = db.relationship("User", foreign_keys=[partner_user_id])
+    user = db.relationship("User", foreign_keys=[user_id], backref=db.backref("couple_subscriptions", lazy=True, cascade="all, delete-orphan"))
+    partner = db.relationship("User", foreign_keys=[partner_user_id], backref=db.backref("partner_subscriptions", lazy=True, cascade="all, delete-orphan"))
 
 class Asset(db.Model):
     __tablename__ = "assets"
@@ -322,7 +322,7 @@ class Liability(db.Model):
 class BudgetLimit(db.Model):
     __tablename__ = "budget_limits"
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-    user = db.relationship("User", backref="budget_limits")
+    user = db.relationship("User", backref=db.backref("budget_limits", lazy=True, cascade="all, delete-orphan"))
     id = db.Column(db.Integer, primary_key=True)
     category = db.Column(db.String(120), nullable=False)
     limit_amount = db.Column(db.Float, nullable=False)
@@ -341,7 +341,7 @@ class BudgetLimit(db.Model):
 class BudgetAlert(db.Model):
     __tablename__ = "budget_alerts"
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-    user = db.relationship("User", backref="budget_alerts")
+    user = db.relationship("User", backref=db.backref("budget_alerts", lazy=True, cascade="all, delete-orphan"))
     id = db.Column(db.Integer, primary_key=True)
     category = db.Column(db.String(120), nullable=False)
     year_month = db.Column(db.String(7), nullable=False)  # e.g., "2026-06"
@@ -374,7 +374,7 @@ class FinancialGoal(db.Model):
     ai_milestone_tactics = db.Column(db.Text, nullable=True)  # plain text, 3-5 bullet points
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-    user = db.relationship("User", backref="financial_goals")
+    user = db.relationship("User", backref=db.backref("financial_goals", lazy=True, cascade="all, delete-orphan"))
 
     def to_dict(self):
         progress_percent = (self.current_amount / self.target_amount * 100) if self.target_amount > 0 else 0
@@ -507,7 +507,7 @@ class RecurringIncome(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     last_processed = db.Column(db.Date, nullable=True)
 
-    user = db.relationship("User", backref="recurring_incomes")
+    user = db.relationship("User", backref=db.backref("recurring_incomes", lazy=True, cascade="all, delete-orphan"))
 
     def to_dict(self):
         return {
@@ -535,7 +535,7 @@ class IncomeOccurrence(db.Model):
     currency = db.Column(db.String(10), default='INR', nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-    user = db.relationship("User", backref="income_occurrences")
+    user = db.relationship("User", backref=db.backref("income_occurrences", lazy=True, cascade="all, delete-orphan"))
 
     def to_dict(self):
         return {
@@ -569,7 +569,7 @@ class Account(db.Model):
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
     # ✅ ADD THIS
-    user = db.relationship("User", backref="accounts")
+    user = db.relationship("User", backref=db.backref("accounts", lazy=True, cascade="all, delete-orphan"))
     
     def to_dict(self):
         return {
@@ -610,7 +610,7 @@ class Transaction(db.Model):
     completed_at = db.Column(db.DateTime, nullable=True)
     
     # ✅ ADD THIS
-    user = db.relationship("User", backref="transactions")
+    user = db.relationship("User", backref=db.backref("transactions", lazy=True, cascade="all, delete-orphan"))
     entries = db.relationship('LedgerEntry', backref='transaction', lazy=True, cascade='all, delete-orphan')
     
     def to_dict(self):
@@ -672,8 +672,8 @@ class Couple(db.Model):
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
     # Relationships
-    user1 = db.relationship("User", foreign_keys=[user1_id], backref="couple_user1")
-    user2 = db.relationship("User", foreign_keys=[user2_id], backref="couple_user2")
+    user1 = db.relationship("User", foreign_keys=[user1_id], backref=db.backref("couple_user1", lazy=True, cascade="all, delete-orphan"))
+    user2 = db.relationship("User", foreign_keys=[user2_id], backref=db.backref("couple_user2", lazy=True, cascade="all, delete-orphan"))
     
     def to_dict(self):
         return {
@@ -704,8 +704,8 @@ class SharedGoal(db.Model):
     completed_at = db.Column(db.DateTime, nullable=True)
     
     # Relationships
-    couple = db.relationship("Couple", backref="shared_goals")
-    contributions = db.relationship("GoalContribution", backref="goal", lazy=True, cascade='all, delete-orphan')
+    couple = db.relationship("Couple", backref=db.backref("shared_goals", lazy=True, cascade="all, delete-orphan"))
+    contributions = db.relationship("GoalContribution", backref=db.backref("goal", lazy=True, cascade="all, delete-orphan"), lazy=True, cascade='all, delete-orphan')
     
     def to_dict(self):
         return {
@@ -738,7 +738,7 @@ class GoalContribution(db.Model):
     contributed_at = db.Column(db.DateTime, default=datetime.utcnow)
     
     # Relationships
-    user = db.relationship("User", backref="goal_contributions")
+    user = db.relationship("User", backref=db.backref("goal_contributions", lazy=True, cascade="all, delete-orphan"))
     
     def to_dict(self):
         return {
@@ -770,8 +770,8 @@ class SplitExpense(db.Model):
     settled_at = db.Column(db.DateTime, nullable=True)
     
     # Relationships
-    couple = db.relationship("Couple", backref="split_expenses")
-    payer = db.relationship("User", backref="paid_expenses")
+    couple = db.relationship("Couple", backref=db.backref("split_expenses", lazy=True, cascade="all, delete-orphan"))
+    payer = db.relationship("User", backref=db.backref("paid_expenses", lazy=True, cascade="all, delete-orphan"))
     
     def to_dict(self):
         return {
@@ -804,7 +804,7 @@ class CoupleBudget(db.Model):
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
     # Relationships
-    couple = db.relationship("Couple", backref="budgets")
+    couple = db.relationship("Couple", backref=db.backref("budgets", lazy=True, cascade="all, delete-orphan"))
     
     def to_dict(self):
         return {
@@ -858,8 +858,8 @@ class CoupleAlert(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
     # Relationships
-    couple = db.relationship("Couple", backref="alerts")
-    user = db.relationship("User", backref="couple_alerts")
+    couple = db.relationship("Couple", backref=db.backref("alerts", lazy=True, cascade="all, delete-orphan"))
+    user = db.relationship("User", backref=db.backref("couple_alerts", lazy=True, cascade="all, delete-orphan"))
     
     def to_dict(self):
         return {
@@ -897,7 +897,7 @@ class BankConnection(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
-    user = db.relationship("User", backref="bank_connections")
+    user = db.relationship("User", backref=db.backref("bank_connections", lazy=True, cascade="all, delete-orphan"))
     
     def to_dict(self):
         return {
@@ -931,8 +931,8 @@ class BankTransaction(db.Model):
     is_flagged = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
-    user = db.relationship("User", backref="bank_transactions")
-    connection = db.relationship("BankConnection", backref="transactions")
+    user = db.relationship("User", backref=db.backref("bank_transactions", lazy=True, cascade="all, delete-orphan"))
+    connection = db.relationship("BankConnection", backref=db.backref("transactions", lazy=True, cascade="all, delete-orphan"))
     
     def to_dict(self):
         return {
@@ -965,8 +965,8 @@ class FraudAlert(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     resolved_at = db.Column(db.DateTime, nullable=True)
     
-    user = db.relationship("User", backref="fraud_alerts")
-    transaction = db.relationship("BankTransaction", backref="alerts")
+    user = db.relationship("User", backref=db.backref("fraud_alerts", lazy=True, cascade="all, delete-orphan"))
+    transaction = db.relationship("BankTransaction", backref=db.backref("alerts", lazy=True, cascade="all, delete-orphan"))
     
     def to_dict(self):
         return {
@@ -1004,9 +1004,9 @@ class InvestmentGoal(db.Model):
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     completed_at = db.Column(db.DateTime, nullable=True)
     
-    user = db.relationship("User", backref="investment_goals")
-    allocations = db.relationship("GoalAllocation", backref="goal", lazy=True, cascade='all, delete-orphan')
-    contributions = db.relationship("GoalContribution", backref="goal", lazy=True, cascade='all, delete-orphan')
+    user = db.relationship("User", backref=db.backref("investment_goals", lazy=True, cascade="all, delete-orphan"))
+    allocations = db.relationship("GoalAllocation", backref=db.backref("goal", lazy=True, cascade="all, delete-orphan"), lazy=True, cascade='all, delete-orphan')
+    contributions = db.relationship("GoalContribution", backref=db.backref("goal", lazy=True, cascade="all, delete-orphan"), lazy=True, cascade='all, delete-orphan')
     
     def to_dict(self):
         progress = (float(self.current_amount) / float(self.target_amount) * 100) if float(self.target_amount) > 0 else 0
@@ -1105,7 +1105,7 @@ class Notification(db.Model):
     read_at = db.Column(db.DateTime, nullable=True)
     dismissed_at = db.Column(db.DateTime, nullable=True)
     
-    user = db.relationship("User", backref="notifications")
+    user = db.relationship("User", backref=db.backref("notifications", lazy=True, cascade="all, delete-orphan"))
     
     def to_dict(self):
         return {
@@ -1139,7 +1139,7 @@ class NotificationPreference(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
-    user = db.relationship("User", backref="notification_preferences")
+    user = db.relationship("User", backref=db.backref("notification_preferences", lazy=True, cascade="all, delete-orphan"))
     
     def to_dict(self):
         return {
@@ -1172,7 +1172,7 @@ class MFASetting(db.Model):
     webauthn_sign_count = db.Column(db.Integer, default=0)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
-    user = db.relationship("User", backref="mfa_settings")
+    user = db.relationship("User", backref=db.backref("mfa_settings", lazy=True, cascade="all, delete-orphan"))
     
     def to_dict(self):
         return {
@@ -1198,7 +1198,7 @@ class TrustedDevice(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     is_active = db.Column(db.Boolean, default=True)
     
-    user = db.relationship("User", backref="trusted_devices")
+    user = db.relationship("User", backref=db.backref("trusted_devices", lazy=True, cascade="all, delete-orphan"))
     
     def to_dict(self):
         return {
@@ -1224,7 +1224,7 @@ class SecurityEvent(db.Model):
     user_agent = db.Column(db.String(255), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
-    user = db.relationship("User", backref="security_events")
+    user = db.relationship("User", backref=db.backref("security_events", lazy=True, cascade="all, delete-orphan"))
     
     def to_dict(self):
         return {
@@ -1250,7 +1250,7 @@ class MilestoneNotification(db.Model):
     ref_id = db.Column(db.Integer, nullable=True)
     milestone_value = db.Column(db.Float, nullable=True)
 
-    user = db.relationship("User", backref="milestone_notifications")
+    user = db.relationship("User", backref=db.backref("milestone_notifications", lazy=True, cascade="all, delete-orphan"))
 
     def to_dict(self):
         return {
@@ -1279,7 +1279,7 @@ class SipSchedule(db.Model):
     last_notified_at = db.Column(db.DateTime, nullable=True)
     total_invested = db.Column(db.Float, default=0.0)
 
-    user = db.relationship("User", backref="sip_schedules")
+    user = db.relationship("User", backref=db.backref("sip_schedules", lazy=True, cascade="all, delete-orphan"))
 
     def to_dict(self):
         return {
