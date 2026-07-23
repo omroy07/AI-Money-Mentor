@@ -662,6 +662,7 @@ def validate_password_strength(password):
 
 # ---------------- HOME ----------------
 @app.route("/register", methods=["POST"])
+@limiter.limit("5 per minute")
 def register():
     data = request.json or {}
     username = data.get("username")
