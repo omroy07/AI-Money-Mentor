@@ -10,7 +10,11 @@ Oops, CSS Got Away From Me… Send Halp! \| 2025
 
 Adam Argyle [next slide](/01-page-transitions/)
 
---- URL: https://cascadiajs-2025.netlify.app/01-page-transitions/ ---
+---
+
+```
+URL: https://cascadiajs-2025.netlify.app/01-page-transitions/ ---
+```
 
 Page Transitions
 
