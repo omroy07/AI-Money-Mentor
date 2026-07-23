@@ -1,59 +1,142 @@
-{% extends 'base.html' %}
-
-{% block title %}Portfolio Tracker & Dividend Yield Calculator{% endblock %}
-
-{% block content %}
+{% extends 'base.html' %} {% block title %}Portfolio Tracker & Dividend Yield
+Calculator{% endblock %} {% block content %}
 <div id="portfolio" class="page active">
-  <div class="page-title"><i class="fa-solid fa-briefcase"></i> Portfolio <span>Tracker & Dividend Yield</span></div>
+  <div class="page-title">
+    <i class="fa-solid fa-briefcase"></i> Portfolio
+    <span>Tracker & Dividend Yield</span>
+  </div>
 
   <!-- Metric Cards Row -->
-  <div class="stats-row" style="margin-bottom: 20px; display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px;">
+  <div
+    class="stats-row"
+    style="
+      margin-bottom: 20px;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 15px;
+    "
+  >
     <div class="stat-card">
       <div class="stat-label">Total Current Value</div>
-      <div class="stat-val" id="portTotalCurrent" style="color: var(--teal); font-size: 24px;">₹0</div>
+      <div
+        class="stat-val"
+        id="portTotalCurrent"
+        style="color: var(--teal); font-size: 24px"
+      >
+        ₹0
+      </div>
     </div>
     <div class="stat-card">
       <div class="stat-label">Total Invested</div>
-      <div class="stat-val" id="portTotalInvested" style="font-size: 24px;">₹0</div>
+      <div class="stat-val" id="portTotalInvested" style="font-size: 24px">
+        ₹0
+      </div>
     </div>
     <div class="stat-card">
       <div class="stat-label">Total P&L (%)</div>
-      <div class="stat-val" id="portTotalPnL" style="font-size: 24px;">₹0 (0%)</div>
+      <div class="stat-val" id="portTotalPnL" style="font-size: 24px">
+        ₹0 (0%)
+      </div>
     </div>
-    <div class="stat-card" style="background: rgba(20, 200, 191, 0.05); border-color: rgba(20, 200, 191, 0.3);">
-      <div class="stat-label" style="color: var(--teal);">Total Dividends Received</div>
-      <div class="stat-val" id="portTotalDividends" style="color: var(--teal); font-size: 24px;">₹0</div>
+    <div
+      class="stat-card"
+      style="
+        background: rgba(20, 200, 191, 0.05);
+        border-color: rgba(20, 200, 191, 0.3);
+      "
+    >
+      <div class="stat-label" style="color: var(--teal)">
+        Total Dividends Received
+      </div>
+      <div
+        class="stat-val"
+        id="portTotalDividends"
+        style="color: var(--teal); font-size: 24px"
+      >
+        ₹0
+      </div>
     </div>
-    <div class="stat-card" style="background: rgba(212, 168, 67, 0.05); border-color: rgba(212, 168, 67, 0.3);">
-      <div class="stat-label" style="color: var(--gold);">Portfolio Yield on Cost</div>
-      <div class="stat-val" id="portPortfolioYoC" style="color: var(--gold); font-size: 24px;">0.00%</div>
+    <div
+      class="stat-card"
+      style="
+        background: rgba(212, 168, 67, 0.05);
+        border-color: rgba(212, 168, 67, 0.3);
+      "
+    >
+      <div class="stat-label" style="color: var(--gold)">
+        Portfolio Yield on Cost
+      </div>
+      <div
+        class="stat-val"
+        id="portPortfolioYoC"
+        style="color: var(--gold); font-size: 24px"
+      >
+        0.00%
+      </div>
     </div>
   </div>
 
   <!-- Main Grid Layout -->
-  <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px; align-items: start; max-width: 1300px;">
-    
+  <div
+    style="
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 20px;
+      align-items: start;
+      max-width: 1300px;
+    "
+  >
     <!-- Left Column: Holdings Table -->
-    <div class="card" style="min-height: 400px; overflow-x: auto;">
+    <div class="card" style="min-height: 400px; overflow-x: auto">
       <div class="card-title">Stock Holdings</div>
-      <table style="width: 100%; border-collapse: collapse; font-size: 13px; color: var(--text); min-width: 800px;">
-        <thead style="color: var(--muted); text-align: left; border-bottom: 1px solid var(--border);">
+      <table
+        style="
+          width: 100%;
+          border-collapse: collapse;
+          font-size: 13px;
+          color: var(--text);
+          min-width: 800px;
+        "
+      >
+        <thead
+          style="
+            color: var(--muted);
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+          "
+        >
           <tr>
-            <th style="padding: 12px 8px;">Holding</th>
-            <th style="padding: 12px 8px; text-align: right;">Qty</th>
-            <th style="padding: 12px 8px; text-align: right;">Buy Price</th>
-            <th style="padding: 12px 8px; text-align: right;">Current Price</th>
-            <th style="padding: 12px 8px; text-align: right;">Invested Value</th>
-            <th style="padding: 12px 8px; text-align: right;">Current Value</th>
-            <th style="padding: 12px 8px; text-align: right;">P&L (Returns)</th>
-            <th style="padding: 12px 8px; text-align: right; color: var(--teal);">Dividends</th>
-            <th style="padding: 12px 8px; text-align: right; color: var(--gold);">YoC (%)</th>
-            <th style="padding: 12px 8px; text-align: center;">Action</th>
+            <th style="padding: 12px 8px">Holding</th>
+            <th style="padding: 12px 8px; text-align: right">Qty</th>
+            <th style="padding: 12px 8px; text-align: right">Buy Price</th>
+            <th style="padding: 12px 8px; text-align: right">Current Price</th>
+            <th style="padding: 12px 8px; text-align: right">Invested Value</th>
+            <th style="padding: 12px 8px; text-align: right">Current Value</th>
+            <th style="padding: 12px 8px; text-align: right">P&L (Returns)</th>
+            <th
+              style="padding: 12px 8px; text-align: right; color: var(--teal)"
+            >
+              Dividends
+            </th>
+            <th
+              style="padding: 12px 8px; text-align: right; color: var(--gold)"
+            >
+              YoC (%)
+            </th>
+            <th style="padding: 12px 8px; text-align: center">Action</th>
           </tr>
         </thead>
         <tbody id="holdingsTableBody">
           <tr>
-            <td colspan="10" style="text-align: center; padding: 40px; color: var(--muted); font-style: italic;">
+            <td
+              colspan="10"
+              style="
+                text-align: center;
+                padding: 40px;
+                color: var(--muted);
+                font-style: italic;
+              "
+            >
               Loading portfolio holdings...
             </td>
           </tr>
@@ -62,28 +145,90 @@
     </div>
 
     <!-- Right Column: Quick Add & Allocation Chart -->
-    <div style="display: flex; flex-direction: column; gap: 20px;">
-      
+    <div style="display: flex; flex-direction: column; gap: 20px">
       <!-- Quick Add Form -->
       <div class="card">
         <div class="card-title">Add Stock Holding</div>
-        <div style="display: flex; flex-direction: column; gap: 12px;">
+        <div style="display: flex; flex-direction: column; gap: 12px">
           <div>
-            <label style="font-size: 12px; color: var(--muted); display: block; margin-bottom: 4px;">Ticker Symbol</label>
-            <input type="text" id="addSymbol" placeholder="e.g. TCS, INFY, AAPL" style="text-transform: uppercase; width: 100%;">
+            <label
+              style="
+                font-size: 12px;
+                color: var(--muted);
+                display: block;
+                margin-bottom: 4px;
+              "
+              >Ticker Symbol</label
+            >
+            <input
+              type="text"
+              id="addSymbol"
+              placeholder="e.g. TCS, INFY, AAPL"
+              style="text-transform: uppercase; width: 100%"
+            />
           </div>
-          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;">
+          <div
+            style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px"
+          >
             <div>
-              <label style="font-size: 12px; color: var(--muted); display: block; margin-bottom: 4px;">Quantity</label>
-              <input type="number" step="any" min="0.0001" id="addQuantity" placeholder="e.g. 10" style="width: 100%;">
+              <label
+                style="
+                  font-size: 12px;
+                  color: var(--muted);
+                  display: block;
+                  margin-bottom: 4px;
+                "
+                >Quantity</label
+              >
+              <input
+                type="number"
+                step="any"
+                min="0.0001"
+                id="addQuantity"
+                placeholder="e.g. 10"
+                style="width: 100%"
+              />
             </div>
             <div>
-              <label style="font-size: 12px; color: var(--muted); display: block; margin-bottom: 4px;">Buy Price</label>
-              <input type="number" step="any" min="0.01" id="addBuyPrice" placeholder="e.g. 3500" style="width: 100%;">
+              <label
+                style="
+                  font-size: 12px;
+                  color: var(--muted);
+                  display: block;
+                  margin-bottom: 4px;
+                "
+                >Buy Price</label
+              >
+              <input
+                type="number"
+                step="any"
+                min="0.01"
+                id="addBuyPrice"
+                placeholder="e.g. 3500"
+                style="width: 100%"
+              />
             </div>
             <div>
-              <label style="font-size: 12px; color: var(--muted); display: block; margin-bottom: 4px;">Currency</label>
-              <select id="addCurrency" style="width: 100%; padding: 10px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text);">
+              <label
+                style="
+                  font-size: 12px;
+                  color: var(--muted);
+                  display: block;
+                  margin-bottom: 4px;
+                "
+                >Currency</label
+              >
+              <select
+                id="addCurrency"
+                style="
+                  width: 100%;
+                  padding: 10px;
+                  background: var(--bg);
+                  border: 1px solid var(--border);
+                  border-radius: 8px;
+                  color: var(--text);
+                "
+              >
                 <option value="INR" selected>INR (₹)</option>
                 <option value="USD">USD ($)</option>
                 <option value="EUR">EUR (€)</option>
@@ -97,54 +242,119 @@
             </div>
           </div>
           <div>
-            <label style="font-size: 12px; color: var(--muted); display: block; margin-bottom: 4px;">Purchase Date</label>
-            <input type="date" id="addBuyDate" style="padding: 10px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text); width: 100%;">
+            <label
+              style="
+                font-size: 12px;
+                color: var(--muted);
+                display: block;
+                margin-bottom: 4px;
+              "
+              >Purchase Date</label
+            >
+            <input
+              type="date"
+              id="addBuyDate"
+              style="
+                padding: 10px;
+                background: var(--bg);
+                border: 1px solid var(--border);
+                border-radius: 8px;
+                color: var(--text);
+                width: 100%;
+              "
+            />
           </div>
           <div>
-            <label style="font-size: 12px; color: var(--muted); display: block; margin-bottom: 4px;">Notes (Optional)</label>
-            <input type="text" id="addNotes" placeholder="e.g. Long-term investment" style="width: 100%;">
+            <label
+              style="
+                font-size: 12px;
+                color: var(--muted);
+                display: block;
+                margin-bottom: 4px;
+              "
+              >Notes (Optional)</label
+            >
+            <input
+              type="text"
+              id="addNotes"
+              placeholder="e.g. Long-term investment"
+              style="width: 100%"
+            />
           </div>
-          <button class="btn btn-gold" style="width: 100%; margin-top: 8px;" onclick="addHolding()" id="addHoldingBtn">Add Holding</button>
+          <button
+            class="btn btn-gold"
+            style="width: 100%; margin-top: 8px"
+            onclick="addHolding()"
+            id="addHoldingBtn"
+          >
+            Add Holding
+          </button>
         </div>
       </div>
 
       <!-- Allocation Chart -->
       <div class="card">
         <div class="card-title">Asset Allocation</div>
-        <div style="position: relative; height: 180px; width: 100%;">
+        <div style="position: relative; height: 180px; width: 100%">
           <canvas id="allocationChart"></canvas>
         </div>
       </div>
-
     </div>
   </div>
 
   <!-- Bottom Row: Dividend Timeline Chart -->
-  <div class="card" style="margin-top: 20px; max-width: 1300px;">
-    <div class="card-title"><i class="fa-solid fa-clock"></i> Estimated Upcoming Dividend Payouts (Next 12 Months)</div>
-    <div style="display: grid; grid-template-columns: 2fr 1.2fr; gap: 20px; align-items: start;">
-      <div style="position: relative; height: 320px;">
+  <div class="card" style="margin-top: 20px; max-width: 1300px">
+    <div class="card-title">
+      <i class="fa-solid fa-clock"></i> Estimated Upcoming Dividend Payouts
+      (Next 12 Months)
+    </div>
+    <div
+      style="
+        display: grid;
+        grid-template-columns: 2fr 1.2fr;
+        gap: 20px;
+        align-items: start;
+      "
+    >
+      <div style="position: relative; height: 320px">
         <canvas id="timelineChart"></canvas>
       </div>
       <div>
-        <div class="card-title" style="font-size: 14px; margin-bottom: 12px; color: var(--muted);">Projected Dividend Timeline Details</div>
-        <div id="timelineDetails" style="display: flex; flex-direction: column; gap: 10px; max-height: 280px; overflow-y: auto; padding-right: 5px;">
-          <p style="color: var(--muted); font-style: italic; font-size: 13px;">No upcoming dividends projected.</p>
+        <div
+          class="card-title"
+          style="font-size: 14px; margin-bottom: 12px; color: var(--muted)"
+        >
+          Projected Dividend Timeline Details
+        </div>
+        <div
+          id="timelineDetails"
+          style="
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 280px;
+            overflow-y: auto;
+            padding-right: 5px;
+          "
+        >
+          <p style="color: var(--muted); font-style: italic; font-size: 13px">
+            No upcoming dividends projected.
+          </p>
         </div>
       </div>
     </div>
   </div>
 </div>
-{% endblock %}
-
-{% block scripts %}
+{% endblock %} {% block scripts %}
 <script>
   let allocationChartInstance = null;
   let timelineChartInstance = null;
 
   document.addEventListener('DOMContentLoaded', () => {
     // Set default purchase date to today
-    document.getElementById('addBuyDate').value = new Date().toISOString().split('T')[0];
+    document.getElementById('addBuyDate').value = new Date()
+      .toISOString()
+      .split('T')[0];
     loadPortfolio();
   });
 
@@ -152,29 +362,32 @@
     try {
       const res = await fetch('/portfolio/list');
       const data = await res.json();
-      
+
       if (!data.success) {
-        console.error("Failed to load portfolio:", data.error);
+        console.error('Failed to load portfolio:', data.error);
         return;
       }
-      
+
       updateSummaryUI(data.summary);
       updateHoldingsTable(data.holdings);
       renderAllocationChart(data.holdings);
       renderTimelineChart(data.timeline);
       renderTimelineDetails(data.timeline);
-      
     } catch (e) {
-      console.error("Error loading portfolio:", e);
+      console.error('Error loading portfolio:', e);
     }
   }
 
   function updateSummaryUI(summary) {
-    document.getElementById('portTotalCurrent').textContent = '₹' + fmtNum(summary.total_current);
-    document.getElementById('portTotalInvested').textContent = '₹' + fmtNum(summary.total_invested);
-    document.getElementById('portTotalDividends').textContent = '₹' + fmtNum(summary.total_dividends_received);
-    document.getElementById('portPortfolioYoC').textContent = summary.portfolio_yoc.toFixed(2) + '%';
-    
+    document.getElementById('portTotalCurrent').textContent =
+      '₹' + fmtNum(summary.total_current);
+    document.getElementById('portTotalInvested').textContent =
+      '₹' + fmtNum(summary.total_invested);
+    document.getElementById('portTotalDividends').textContent =
+      '₹' + fmtNum(summary.total_dividends_received);
+    document.getElementById('portPortfolioYoC').textContent =
+      summary.portfolio_yoc.toFixed(2) + '%';
+
     const pnlEl = document.getElementById('portTotalPnL');
     const sign = summary.total_pnl >= 0 ? '+' : '';
     const colorClass = summary.total_pnl >= 0 ? 'positive' : 'negative';
@@ -185,7 +398,7 @@
   function updateHoldingsTable(holdings) {
     const tbody = document.getElementById('holdingsTableBody');
     tbody.innerHTML = '';
-    
+
     if (holdings.length === 0) {
       tbody.innerHTML = `
         <tr>
@@ -198,14 +411,21 @@
     }
 
     const symbolMap = {
-      'INR': '₹', 'USD': '$', 'EUR': '€', 'GBP': '£',
-      'JPY': '¥', 'CAD': '$', 'AUD': '$', 'AED': 'د.إ', 'SGD': '$'
+      INR: '₹',
+      USD: '$',
+      EUR: '€',
+      GBP: '£',
+      JPY: '¥',
+      CAD: '$',
+      AUD: '$',
+      AED: 'د.إ',
+      SGD: '$',
     };
-    
-    holdings.forEach(h => {
+
+    holdings.forEach((h) => {
       const pnlSign = h.pnl >= 0 ? '+' : '';
       const pnlColor = h.pnl >= 0 ? '#2ecc8a' : '#ff5e5e';
-      
+
       const curr = h.currency || 'INR';
       const sym = symbolMap[curr] || curr;
 
@@ -234,18 +454,23 @@
   }
 
   async function addHolding() {
-    const symbol = document.getElementById('addSymbol').value.trim().toUpperCase();
+    const symbol = document
+      .getElementById('addSymbol')
+      .value.trim()
+      .toUpperCase();
     const qty = parseFloat(document.getElementById('addQuantity').value);
     const buyPrice = parseFloat(document.getElementById('addBuyPrice').value);
     const buyDate = document.getElementById('addBuyDate').value;
     const currency = document.getElementById('addCurrency').value;
     const notes = document.getElementById('addNotes').value.trim();
-    
+
     if (!symbol || !qty || qty <= 0 || !buyPrice || buyPrice <= 0 || !buyDate) {
-      alert("Please enter valid symbol, quantity, buy price, and purchase date.");
+      alert(
+        'Please enter valid symbol, quantity, buy price, and purchase date.',
+      );
       return;
     }
-    
+
     setLoading('addHoldingBtn', true);
     try {
       const res = await fetch('/portfolio/add', {
@@ -257,11 +482,11 @@
           buy_price: buyPrice,
           buy_date: buyDate,
           currency: currency,
-          notes: notes
-        })
+          notes: notes,
+        }),
       });
       const data = await res.json();
-      
+
       if (data.success) {
         document.getElementById('addSymbol').value = '';
         document.getElementById('addQuantity').value = '';
@@ -269,26 +494,26 @@
         document.getElementById('addNotes').value = '';
         loadPortfolio();
       } else {
-        alert("Error: " + data.error);
+        alert('Error: ' + data.error);
       }
     } catch (e) {
       console.error(e);
-      alert("Failed to reach server.");
+      alert('Failed to reach server.');
     }
     setLoading('addHoldingBtn', false);
   }
 
   async function deleteHolding(id) {
-    if (!confirm("Are you sure you want to remove this holding?")) return;
-    
+    if (!confirm('Are you sure you want to remove this holding?')) return;
+
     try {
       const res = await fetch(`/portfolio/delete/${id}`, { method: 'DELETE' });
       const data = await res.json();
-      
+
       if (data.success) {
         loadPortfolio();
       } else {
-        alert("Error: " + data.error);
+        alert('Error: ' + data.error);
       }
     } catch (e) {
       console.error(e);
@@ -298,29 +523,40 @@
   function renderAllocationChart(holdings) {
     const canvas = document.getElementById('allocationChart');
     if (!canvas) return;
-    
+
     if (allocationChartInstance) {
       allocationChartInstance.destroy();
       allocationChartInstance = null;
     }
-    
+
     if (holdings.length === 0) return;
-    
-    const labels = holdings.map(h => h.symbol);
-    const values = holdings.map(h => h.current_value);
-    
+
+    const labels = holdings.map((h) => h.symbol);
+    const values = holdings.map((h) => h.current_value);
+
     // Aesthetic color palette
-    const colors = ['#d4a843', '#14c8bf', '#5a6a82', '#2ecc8a', '#ff5e5e', '#a872e0', '#ff8a5e', '#72b6e0'];
-    
+    const colors = [
+      '#d4a843',
+      '#14c8bf',
+      '#5a6a82',
+      '#2ecc8a',
+      '#ff5e5e',
+      '#a872e0',
+      '#ff8a5e',
+      '#72b6e0',
+    ];
+
     allocationChartInstance = new Chart(canvas.getContext('2d'), {
       type: 'doughnut',
       data: {
         labels: labels,
-        datasets: [{
-          data: values,
-          backgroundColor: colors.slice(0, labels.length),
-          borderWidth: 0
-        }]
+        datasets: [
+          {
+            data: values,
+            backgroundColor: colors.slice(0, labels.length),
+            borderWidth: 0,
+          },
+        ],
       },
       options: {
         responsive: true,
@@ -330,92 +566,100 @@
             position: 'right',
             labels: {
               color: '#5a6a82',
-              font: { size: 10 }
-            }
-          }
+              font: { size: 10 },
+            },
+          },
         },
-        cutout: '65%'
-      }
+        cutout: '65%',
+      },
     });
   }
 
   function renderTimelineChart(timeline) {
     const canvas = document.getElementById('timelineChart');
     if (!canvas) return;
-    
+
     if (timelineChartInstance) {
       timelineChartInstance.destroy();
       timelineChartInstance = null;
     }
-    
+
     if (timeline.length === 0) return;
-    
+
     // Group payouts by month to graph them nicely
     const monthlyPayouts = {};
-    
-    timeline.forEach(p => {
+
+    timeline.forEach((p) => {
       const monthStr = p.date.substring(0, 7); // YYYY-MM
       const dateObj = new Date(p.date);
-      const monthLabel = dateObj.toLocaleDateString('en-IN', { month: 'short', year: 'numeric' });
-      
+      const monthLabel = dateObj.toLocaleDateString('en-IN', {
+        month: 'short',
+        year: 'numeric',
+      });
+
       monthlyPayouts[monthLabel] = (monthlyPayouts[monthLabel] || 0) + p.amount;
     });
-    
+
     const labels = Object.keys(monthlyPayouts);
     const values = Object.values(monthlyPayouts);
-    
+
     timelineChartInstance = new Chart(canvas.getContext('2d'), {
       type: 'bar',
       data: {
         labels: labels,
-        datasets: [{
-          label: 'Estimated Dividends (₹)',
-          data: values,
-          backgroundColor: 'rgba(212, 168, 67, 0.75)',
-          hoverBackgroundColor: 'rgba(212, 168, 67, 0.95)',
-          borderRadius: 6,
-          borderWidth: 0
-        }]
+        datasets: [
+          {
+            label: 'Estimated Dividends (₹)',
+            data: values,
+            backgroundColor: 'rgba(212, 168, 67, 0.75)',
+            hoverBackgroundColor: 'rgba(212, 168, 67, 0.95)',
+            borderRadius: 6,
+            borderWidth: 0,
+          },
+        ],
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-          legend: { display: false }
+          legend: { display: false },
         },
         scales: {
           x: {
             grid: { display: false },
-            ticks: { color: '#5a6a82' }
+            ticks: { color: '#5a6a82' },
           },
           y: {
             grid: { color: 'rgba(255, 255, 255, 0.04)' },
             ticks: {
               color: '#5a6a82',
-              callback: function(value) { return '₹' + fmtNum(value); }
-            }
-          }
-        }
-      }
+              callback: function (value) {
+                return '₹' + fmtNum(value);
+              },
+            },
+          },
+        },
+      },
     });
   }
 
   function renderTimelineDetails(timeline) {
     const container = document.getElementById('timelineDetails');
     container.innerHTML = '';
-    
+
     if (timeline.length === 0) {
       container.innerHTML = `<p style="color: var(--muted); font-style: italic; font-size: 13px;">No upcoming dividends projected.</p>`;
       return;
     }
-    
-    container.innerHTML = timeline.map(p => {
-      const formattedDate = new Date(p.date).toLocaleDateString("en-IN", {
-        day: "numeric",
-        month: "short",
-        year: "numeric"
-      });
-      return `
+
+    container.innerHTML = timeline
+      .map((p) => {
+        const formattedDate = new Date(p.date).toLocaleDateString('en-IN', {
+          day: 'numeric',
+          month: 'short',
+          year: 'numeric',
+        });
+        return `
         <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 12px; background:rgba(255,255,255,0.02); border:1px solid var(--border); border-radius:8px;">
           <div>
             <strong style="color:var(--text);">${p.symbol}</strong>
@@ -427,7 +671,8 @@
           </div>
         </div>
       `;
-    }).join('');
+      })
+      .join('');
   }
 
   // Refresh every 30 seconds

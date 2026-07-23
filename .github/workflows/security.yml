@@ -1,11 +1,11 @@
-name: "Security Auditing & Vulnerability Scans"
+name: 'Security Auditing & Vulnerability Scans'
 on:
   push:
     branches: [main]
   pull_request:
     branches: [main]
   schedule:
-    - cron: "0 0 * * 1" # Run weekly on Mondays
+    - cron: '0 0 * * 1' # Run weekly on Mondays
 
 jobs:
   security:
@@ -18,7 +18,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
-          python-version: "3.11"
+          python-version: '3.11'
 
       - name: Install pip-audit
         run: python -m pip install pip-audit

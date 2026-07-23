@@ -1,19 +1,52 @@
-{% extends 'base.html' %}
-
-{% block title %}Financial Goals{% endblock %}
-
-{% block content %}
+{% extends 'base.html' %} {% block title %}Financial Goals{% endblock %} {%
+block content %}
 <div id="goals" class="page active">
-  <div class="page-title"><i class="fa-solid fa-bullseye"></i> Financial <span>Goals Tracker</span></div>
+  <div class="page-title">
+    <i class="fa-solid fa-bullseye"></i> Financial <span>Goals Tracker</span>
+  </div>
 
-  <div class="dash-grid" style="grid-template-columns: 1fr; margin-bottom: 20px;">
+  <div
+    class="dash-grid"
+    style="grid-template-columns: 1fr; margin-bottom: 20px"
+  >
     <div class="card">
       <div class="card-title">Add New Goal</div>
-      <div class="chat-input-row" style="gap: 10px; flex-wrap: wrap;">
-        <input type="text" id="goalName" placeholder="Goal name (e.g., Emergency Fund)" style="flex: 2; min-width: 150px;">
-        <input type="number" id="goalTarget" placeholder="Target amount" min="0" step="0.01" style="flex: 1; min-width: 100px;">
-        <input type="number" id="goalCurrent" placeholder="Current saved" min="0" step="0.01" style="flex: 1; min-width: 100px;" value="0">
-        <select id="goalCurrency" style="flex: 1; min-width: 80px; padding: 10px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text);">
+      <div class="chat-input-row" style="gap: 10px; flex-wrap: wrap">
+        <input
+          type="text"
+          id="goalName"
+          placeholder="Goal name (e.g., Emergency Fund)"
+          style="flex: 2; min-width: 150px"
+        />
+        <input
+          type="number"
+          id="goalTarget"
+          placeholder="Target amount"
+          min="0"
+          step="0.01"
+          style="flex: 1; min-width: 100px"
+        />
+        <input
+          type="number"
+          id="goalCurrent"
+          placeholder="Current saved"
+          min="0"
+          step="0.01"
+          style="flex: 1; min-width: 100px"
+          value="0"
+        />
+        <select
+          id="goalCurrency"
+          style="
+            flex: 1;
+            min-width: 80px;
+            padding: 10px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+          "
+        >
           <option value="INR" selected>INR (₹)</option>
           <option value="USD">USD ($)</option>
           <option value="EUR">EUR (€)</option>
@@ -24,7 +57,7 @@
           <option value="AED">AED (د.إ)</option>
           <option value="SGD">SGD ($)</option>
         </select>
-        <input type="month" id="goalDate" style="flex: 1; min-width: 120px;">
+        <input type="month" id="goalDate" style="flex: 1; min-width: 120px" />
         <button class="btn btn-gold" onclick="addGoal()">Add Goal</button>
       </div>
     </div>
@@ -32,9 +65,7 @@
 
   <div id="goalsList" class="dash-grid"></div>
 </div>
-{% endblock %}
-
-{% block scripts %}
+{% endblock %} {% block scripts %}
 <script>
   async function loadGoals() {
     try {
@@ -53,25 +84,42 @@
       }
 
       const symbolMap = {
-        'INR': '₹', 'USD': '$', 'EUR': '€', 'GBP': '£',
-        'JPY': '¥', 'CAD': '$', 'AUD': '$', 'AED': 'د.إ', 'SGD': '$'
+        INR: '₹',
+        USD: '$',
+        EUR: '€',
+        GBP: '£',
+        JPY: '¥',
+        CAD: '$',
+        AUD: '$',
+        AED: 'د.إ',
+        SGD: '$',
       };
 
-      goalsListEl.innerHTML = data.goals.map(goal => {
-        const remaining = goal.target_amount - goal.current_amount;
-        const targetDt = new Date(goal.target_date + '-01');
-        const now = new Date();
-        let monthsRemaining = (targetDt.getFullYear() - now.getFullYear()) * 12 + (targetDt.getMonth() - now.getMonth());
-        if (monthsRemaining <= 0) monthsRemaining = 1;
-        const monthlyNeeded = remaining / monthsRemaining;
+      goalsListEl.innerHTML = data.goals
+        .map((goal) => {
+          const remaining = goal.target_amount - goal.current_amount;
+          const targetDt = new Date(goal.target_date + '-01');
+          const now = new Date();
+          let monthsRemaining =
+            (targetDt.getFullYear() - now.getFullYear()) * 12 +
+            (targetDt.getMonth() - now.getMonth());
+          if (monthsRemaining <= 0) monthsRemaining = 1;
+          const monthlyNeeded = remaining / monthsRemaining;
 
-        const pct = goal.progress_percent > 100 ? 100 : goal.progress_percent;
-        const pctColor = pct >= 100 ? '#22c55e' : (pct >= 75 ? '#d4a843' : (pct >= 50 ? '#f59e0b' : '#ef4444'));
+          const pct = goal.progress_percent > 100 ? 100 : goal.progress_percent;
+          const pctColor =
+            pct >= 100
+              ? '#22c55e'
+              : pct >= 75
+                ? '#d4a843'
+                : pct >= 50
+                  ? '#f59e0b'
+                  : '#ef4444';
 
-        const curr = goal.currency || 'INR';
-        const sym = symbolMap[curr] || curr;
+          const curr = goal.currency || 'INR';
+          const sym = symbolMap[curr] || curr;
 
-        return `
+          return `
           <div class="card">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
               <div style="font-size: 20px; font-weight: 700; color: var(--text);">${esc(goal.name)}</div>
@@ -115,16 +163,20 @@
               </div>
             </div>
 
-            ${data.ai_recommendations[goal.id] ? `
+            ${
+              data.ai_recommendations[goal.id]
+                ? `
               <div style="padding: 10px; background: rgba(147, 112, 219, 0.1); border: 1px solid rgba(147, 112, 219, 0.2); border-radius: 8px; font-size: 13px;">
                 <div style="font-weight: 600; color: #9370db; margin-bottom: 5px;">🤖 AI Tips</div>
                 <div style="color: var(--text); white-space: pre-line;">${data.ai_recommendations[goal.id]}</div>
               </div>
-            ` : ''}
+            `
+                : ''
+            }
           </div>
         `;
-      }).join('');
-
+        })
+        .join('');
     } catch (error) {
       console.error('Error loading goals:', error);
     }
@@ -132,8 +184,12 @@
 
   async function addGoal() {
     const name = document.getElementById('goalName').value.trim();
-    const targetAmount = parseFloat(document.getElementById('goalTarget').value);
-    const currentAmount = parseFloat(document.getElementById('goalCurrent').value || 0);
+    const targetAmount = parseFloat(
+      document.getElementById('goalTarget').value,
+    );
+    const currentAmount = parseFloat(
+      document.getElementById('goalCurrent').value || 0,
+    );
     const currency = document.getElementById('goalCurrency').value;
     const targetDate = document.getElementById('goalDate').value;
 
@@ -143,7 +199,13 @@
     }
 
     try {
-      await apiFetch('/goals', { name, target_amount: targetAmount, current_amount: currentAmount, currency, target_date: targetDate });
+      await apiFetch('/goals', {
+        name,
+        target_amount: targetAmount,
+        current_amount: currentAmount,
+        currency,
+        target_date: targetDate,
+      });
       document.getElementById('goalName').value = '';
       document.getElementById('goalTarget').value = '';
       document.getElementById('goalCurrent').value = '0';
@@ -169,7 +231,7 @@
       const res = await fetch(`/goals/${goalId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ current_amount: amount })
+        body: JSON.stringify({ current_amount: amount }),
       });
       await res.json();
       loadGoals();

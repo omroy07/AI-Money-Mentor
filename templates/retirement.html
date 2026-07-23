@@ -1,232 +1,306 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Retirement Simulator - AI Money Mentor</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/retirement.css') }}">
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/retirement.css') }}"
+    />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
+
     <style>
-        body {
-            background: #070b12;
-            color: #eef0f5;
-            font-family: 'Instrument Sans', sans-serif;
-        }
-        .gradient-text {
-            background: linear-gradient(135deg, #d4a843 0%, #f0cc6e 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        .card {
-            background: rgba(15, 22, 38, 0.96);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 18px;
-            padding: 28px;
-            margin-bottom: 20px;
-        }
-        .btn-gold {
-            background: linear-gradient(135deg, #f3d687 0%, #d4a843 60%);
-            color: #0a0e18;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 999px;
-            font-weight: 700;
-            transition: all 0.2s;
-            width: 100%;
-        }
-        .btn-gold:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(212, 168, 67, 0.3);
-        }
-        .btn-outline-secondary {
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: #5a6a82;
-            background: transparent;
-            padding: 8px 16px;
-            border-radius: 999px;
-            text-decoration: none;
-        }
-        .btn-outline-secondary:hover {
-            background: rgba(255, 255, 255, 0.05);
-            color: #eef0f5;
-        }
-        .text-muted {
-            color: #5a6a82 !important;
-        }
-        .form-control {
-            background: rgba(17, 26, 46, 0.9);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 14px;
-            color: #eef0f5;
-            padding: 12px 16px;
-        }
-        .form-control:focus {
-            background: rgba(17, 26, 46, 0.95);
-            border-color: #d4a843;
-            box-shadow: 0 0 0 3px rgba(212, 168, 67, 0.1);
-            color: #eef0f5;
-        }
-        .form-label {
-            font-size: 12px;
-            color: #5a6a82;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            font-weight: 600;
-        }
-        .stat-val {
-            font-family: 'Syne', sans-serif;
-            font-size: 28px;
-            font-weight: 800;
-        }
-        .stat-label {
-            font-size: 11px;
-            color: #5a6a82;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
+      body {
+        background: #070b12;
+        color: #eef0f5;
+        font-family: 'Instrument Sans', sans-serif;
+      }
+      .gradient-text {
+        background: linear-gradient(135deg, #d4a843 0%, #f0cc6e 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .card {
+        background: rgba(15, 22, 38, 0.96);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 18px;
+        padding: 28px;
+        margin-bottom: 20px;
+      }
+      .btn-gold {
+        background: linear-gradient(135deg, #f3d687 0%, #d4a843 60%);
+        color: #0a0e18;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 999px;
+        font-weight: 700;
+        transition: all 0.2s;
+        width: 100%;
+      }
+      .btn-gold:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(212, 168, 67, 0.3);
+      }
+      .btn-outline-secondary {
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #5a6a82;
+        background: transparent;
+        padding: 8px 16px;
+        border-radius: 999px;
+        text-decoration: none;
+      }
+      .btn-outline-secondary:hover {
+        background: rgba(255, 255, 255, 0.05);
+        color: #eef0f5;
+      }
+      .text-muted {
+        color: #5a6a82 !important;
+      }
+      .form-control {
+        background: rgba(17, 26, 46, 0.9);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 14px;
+        color: #eef0f5;
+        padding: 12px 16px;
+      }
+      .form-control:focus {
+        background: rgba(17, 26, 46, 0.95);
+        border-color: #d4a843;
+        box-shadow: 0 0 0 3px rgba(212, 168, 67, 0.1);
+        color: #eef0f5;
+      }
+      .form-label {
+        font-size: 12px;
+        color: #5a6a82;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        font-weight: 600;
+      }
+      .stat-val {
+        font-family: 'Syne', sans-serif;
+        font-size: 28px;
+        font-weight: 800;
+      }
+      .stat-label {
+        font-size: 11px;
+        color: #5a6a82;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+      .stats-row {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+      }
+      .stat-card {
+        background: rgba(15, 22, 38, 0.96);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 18px;
+        padding: 20px;
+        text-align: center;
+      }
+      .retirement-row {
+        display: flex;
+        gap: 24px;
+        flex-wrap: wrap;
+      }
+      .retirement-input-panel {
+        flex: 1;
+        min-width: 280px;
+      }
+      .retirement-results-panel {
+        flex: 2;
+        min-width: 300px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+      .insight-text {
+        line-height: 1.8;
+        font-size: 14px;
+      }
+      .alert {
+        padding: 16px;
+        border-radius: 12px;
+        margin-bottom: 16px;
+      }
+      .alert-info {
+        background: rgba(20, 200, 191, 0.1);
+        border-left: 4px solid #14c8bf;
+      }
+      .alert-warning {
+        background: rgba(224, 82, 82, 0.1);
+        border-left: 4px solid #e05252;
+      }
+      .alert-success {
+        background: rgba(46, 204, 138, 0.1);
+        border-left: 4px solid #2ecc8a;
+      }
+      @media (max-width: 768px) {
+        .retirement-row {
+          flex-direction: column;
         }
         .stats-row {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
+          grid-template-columns: 1fr;
         }
-        .stat-card {
-            background: rgba(15, 22, 38, 0.96);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 18px;
-            padding: 20px;
-            text-align: center;
-        }
-        .retirement-row {
-            display: flex;
-            gap: 24px;
-            flex-wrap: wrap;
-        }
-        .retirement-input-panel {
-            flex: 1;
-            min-width: 280px;
-        }
-        .retirement-results-panel {
-            flex: 2;
-            min-width: 300px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-        .insight-text {
-            line-height: 1.8;
-            font-size: 14px;
-        }
-        .alert {
-            padding: 16px;
-            border-radius: 12px;
-            margin-bottom: 16px;
-        }
-        .alert-info {
-            background: rgba(20, 200, 191, 0.1);
-            border-left: 4px solid #14c8bf;
-        }
-        .alert-warning {
-            background: rgba(224, 82, 82, 0.1);
-            border-left: 4px solid #e05252;
-        }
-        .alert-success {
-            background: rgba(46, 204, 138, 0.1);
-            border-left: 4px solid #2ecc8a;
-        }
-        @media (max-width: 768px) {
-            .retirement-row {
-                flex-direction: column;
-            }
-            .stats-row {
-                grid-template-columns: 1fr;
-            }
-        }
+      }
     </style>
-</head>
-<body>
-
-<div class="container-fluid px-4 py-4">
-    <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
+  </head>
+  <body>
+    <div class="container-fluid px-4 py-4">
+      <!-- Header -->
+      <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h1 class="display-5 fw-bold gradient-text">📈 Retirement & Inflation Simulator</h1>
-            <p class="text-muted">See how inflation affects your retirement corpus over time</p>
+          <h1 class="display-5 fw-bold gradient-text">
+            📈 Retirement & Inflation Simulator
+          </h1>
+          <p class="text-muted">
+            See how inflation affects your retirement corpus over time
+          </p>
         </div>
         <a href="/" class="btn btn-outline-secondary">← Back to Dashboard</a>
-    </div>
+      </div>
 
-    <div class="retirement-row">
+      <div class="retirement-row">
         <!-- Input Panel -->
         <div class="retirement-input-panel">
-            <div class="card">
-                <h5 class="fw-bold mb-3">📝 Your Details</h5>
-                <form id="retirementForm">
-                    <div class="mb-3">
-                        <label class="form-label">Current Age</label>
-                        <input type="number" class="form-control" id="currentAge" value="25" min="18" max="80" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Retirement Age</label>
-                        <input type="number" class="form-control" id="retirementAge" value="60" min="30" max="100" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Current Savings (₹)</label>
-                        <input type="number" class="form-control" id="currentSavings" value="50000" min="0" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Monthly Investment (₹)</label>
-                        <input type="number" class="form-control" id="monthlyInvestment" value="5000" min="0" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Expected Return Rate (%)</label>
-                        <input type="number" class="form-control" id="returnRate" value="10" step="0.5" min="0" max="30" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Inflation Rate (%)</label>
-                        <input type="number" class="form-control" id="inflationRate" value="6" step="0.5" min="0" max="15" required>
-                    </div>
-                    <button type="submit" class="btn-gold">🚀 Calculate Retirement Corpus</button>
-                </form>
-            </div>
+          <div class="card">
+            <h5 class="fw-bold mb-3">📝 Your Details</h5>
+            <form id="retirementForm">
+              <div class="mb-3">
+                <label class="form-label">Current Age</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="currentAge"
+                  value="25"
+                  min="18"
+                  max="80"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Retirement Age</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="retirementAge"
+                  value="60"
+                  min="30"
+                  max="100"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Current Savings (₹)</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="currentSavings"
+                  value="50000"
+                  min="0"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Monthly Investment (₹)</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="monthlyInvestment"
+                  value="5000"
+                  min="0"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Expected Return Rate (%)</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="returnRate"
+                  value="10"
+                  step="0.5"
+                  min="0"
+                  max="30"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Inflation Rate (%)</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="inflationRate"
+                  value="6"
+                  step="0.5"
+                  min="0"
+                  max="15"
+                  required
+                />
+              </div>
+              <button type="submit" class="btn-gold">
+                🚀 Calculate Retirement Corpus
+              </button>
+            </form>
+          </div>
         </div>
 
         <!-- Results Panel -->
         <div class="retirement-results-panel">
-            <!-- Summary Cards -->
-            <div class="stats-row">
-                <div class="stat-card">
-                    <div class="stat-label">Nominal Corpus</div>
-                    <div class="stat-val" id="nominalCorpus">₹0</div>
-                    <div class="text-muted" style="font-size: 11px;">Without inflation</div>
-                </div>
-                <div class="stat-card" style="border-color: #d4a843;">
-                    <div class="stat-label" style="color: #d4a843;">Real Corpus (Today's Value)</div>
-                    <div class="stat-val" id="realCorpus" style="color: #d4a843;">₹0</div>
-                    <div class="text-muted" style="font-size: 11px;">After inflation adjustment</div>
-                </div>
+          <!-- Summary Cards -->
+          <div class="stats-row">
+            <div class="stat-card">
+              <div class="stat-label">Nominal Corpus</div>
+              <div class="stat-val" id="nominalCorpus">₹0</div>
+              <div class="text-muted" style="font-size: 11px">
+                Without inflation
+              </div>
             </div>
+            <div class="stat-card" style="border-color: #d4a843">
+              <div class="stat-label" style="color: #d4a843">
+                Real Corpus (Today's Value)
+              </div>
+              <div class="stat-val" id="realCorpus" style="color: #d4a843">
+                ₹0
+              </div>
+              <div class="text-muted" style="font-size: 11px">
+                After inflation adjustment
+              </div>
+            </div>
+          </div>
 
-            <!-- Graph -->
-            <div class="card">
-                <h5 class="fw-bold mb-3"><i class="fa-solid fa-arrow-trend-up"></i> Corpus Growth Over Time</h5>
-                <canvas id="growthChart" height="250"></canvas>
-            </div>
+          <!-- Graph -->
+          <div class="card">
+            <h5 class="fw-bold mb-3">
+              <i class="fa-solid fa-arrow-trend-up"></i> Corpus Growth Over Time
+            </h5>
+            <canvas id="growthChart" height="250"></canvas>
+          </div>
 
-            <!-- Insights -->
-            <div class="card">
-                <h5 class="fw-bold mb-3"><i class="fa-solid fa-lightbulb"></i> Key Insights</h5>
-                <div id="insights" class="insight-text">
-                    <div class="alert alert-info"><i class="fa-solid fa-location-pin"></i> Enter your details and click "Calculate" to see results.</div>
-                </div>
+          <!-- Insights -->
+          <div class="card">
+            <h5 class="fw-bold mb-3">
+              <i class="fa-solid fa-lightbulb"></i> Key Insights
+            </h5>
+            <div id="insights" class="insight-text">
+              <div class="alert alert-info">
+                <i class="fa-solid fa-location-pin"></i> Enter your details and
+                click "Calculate" to see results.
+              </div>
             </div>
+          </div>
         </div>
+      </div>
     </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="{{ url_for('static', filename='scripts/retirement.js') }}"></script>
-</body>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='scripts/retirement.js') }}"></script>
+  </body>
 </html>

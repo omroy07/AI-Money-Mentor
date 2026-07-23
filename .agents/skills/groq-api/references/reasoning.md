@@ -4,12 +4,12 @@ Control how models think through complex problems with explicit reasoning parame
 
 ## Supported Models
 
-| Model ID | Reasoning Effort Options | Reasoning Format |
-|----------|-------------------------|------------------|
-| `openai/gpt-oss-20b` | `low`, `medium`, `high` | `include_reasoning` only |
-| `openai/gpt-oss-120b` | `low`, `medium`, `high` | `include_reasoning` only |
-| `openai/gpt-oss-safeguard-20b` | `low`, `medium`, `high` | `include_reasoning` only |
-| `qwen/qwen3-32b` | `none`, `default` | `raw`, `parsed`, `hidden` |
+| Model ID                       | Reasoning Effort Options | Reasoning Format          |
+| ------------------------------ | ------------------------ | ------------------------- |
+| `openai/gpt-oss-20b`           | `low`, `medium`, `high`  | `include_reasoning` only  |
+| `openai/gpt-oss-120b`          | `low`, `medium`, `high`  | `include_reasoning` only  |
+| `openai/gpt-oss-safeguard-20b` | `low`, `medium`, `high`  | `include_reasoning` only  |
+| `qwen/qwen3-32b`               | `none`, `default`        | `raw`, `parsed`, `hidden` |
 
 ## Parameters
 
@@ -18,36 +18,38 @@ Control how models think through complex problems with explicit reasoning parame
 Controls how much effort the model puts into reasoning.
 
 **Qwen 3 32B:**
-| Value | Description |
-|-------|-------------|
-| `none` | Disable reasoning (no reasoning tokens) |
-| `default` | Enable reasoning |
+
+| Value     | Description                             |
+| --------- | --------------------------------------- |
+| `none`    | Disable reasoning (no reasoning tokens) |
+| `default` | Enable reasoning                        |
 
 **GPT-OSS models:**
-| Value | Description |
-|-------|-------------|
-| `low` | Small number of reasoning tokens |
+
+| Value    | Description                         |
+| -------- | ----------------------------------- |
+| `low`    | Small number of reasoning tokens    |
 | `medium` | Moderate number of reasoning tokens |
-| `high` | Large number of reasoning tokens |
+| `high`   | Large number of reasoning tokens    |
 
 ### reasoning_format (Qwen3 only)
 
 Controls how reasoning is presented in the response.
 
-| Value | Description |
-|-------|-------------|
-| `raw` | Reasoning in `<think>` tags in content |
+| Value    | Description                                     |
+| -------- | ----------------------------------------------- |
+| `raw`    | Reasoning in `<think>` tags in content          |
 | `parsed` | Reasoning in separate `message.reasoning` field |
-| `hidden` | Only final answer returned |
+| `hidden` | Only final answer returned                      |
 
 **Note:** `raw` is not supported with JSON mode or tool use. Use `parsed` or `hidden` instead.
 
 ### include_reasoning (GPT-OSS only)
 
-| Value | Description |
-|-------|-------------|
-| `true` | Include reasoning in `message.reasoning` field (default) |
-| `false` | Exclude reasoning from response |
+| Value   | Description                                              |
+| ------- | -------------------------------------------------------- |
+| `true`  | Include reasoning in `message.reasoning` field (default) |
+| `false` | Exclude reasoning from response                          |
 
 **Note:** Cannot be used together with `reasoning_format`.
 
@@ -206,12 +208,12 @@ for chunk in stream:
 
 ## Recommended Parameters
 
-| Parameter | Default | Recommended | Description |
-|-----------|---------|-------------|-------------|
-| `temperature` | 0.6 | 0.5-0.7 | Lower = more deterministic |
-| `max_completion_tokens` | 1024 | Increase for complex tasks | May need higher for detailed reasoning |
-| `top_p` | 0.95 | 0.95 | Diversity of token selection |
-| `seed` | - | Set for reproducibility | Important for benchmarking |
+| Parameter               | Default | Recommended                | Description                            |
+| ----------------------- | ------- | -------------------------- | -------------------------------------- |
+| `temperature`           | 0.6     | 0.5-0.7                    | Lower = more deterministic             |
+| `max_completion_tokens` | 1024    | Increase for complex tasks | May need higher for detailed reasoning |
+| `top_p`                 | 0.95    | 0.95                       | Diversity of token selection           |
+| `seed`                  | -       | Set for reproducibility    | Important for benchmarking             |
 
 ## Best Practices
 
@@ -236,31 +238,31 @@ for chunk in stream:
 ## TypeScript
 
 ```typescript
-import Groq from "groq-sdk";
+import Groq from 'groq-sdk';
 
 const client = new Groq();
 
 // GPT-OSS with reasoning effort
 const response = await client.chat.completions.create({
-    model: "openai/gpt-oss-20b",
-    messages: [{ role: "user", content: "How many r's in strawberry?" }],
-    reasoning_effort: "high",
-    temperature: 0.6,
-    max_completion_tokens: 1024
+  model: 'openai/gpt-oss-20b',
+  messages: [{ role: 'user', content: "How many r's in strawberry?" }],
+  reasoning_effort: 'high',
+  temperature: 0.6,
+  max_completion_tokens: 1024,
 });
 
 console.log(response.choices[0].message.content);
-console.log("Reasoning:", response.choices[0].message.reasoning);
+console.log('Reasoning:', response.choices[0].message.reasoning);
 
 // Qwen3 with parsed reasoning
 const qwenResponse = await client.chat.completions.create({
-    model: "qwen/qwen3-32b",
-    messages: [{ role: "user", content: "Explain gravity" }],
-    reasoning_format: "parsed"
+  model: 'qwen/qwen3-32b',
+  messages: [{ role: 'user', content: 'Explain gravity' }],
+  reasoning_format: 'parsed',
 });
 
 console.log(qwenResponse.choices[0].message.content);
-console.log("Reasoning:", qwenResponse.choices[0].message.reasoning);
+console.log('Reasoning:', qwenResponse.choices[0].message.reasoning);
 ```
 
 ## Use Cases

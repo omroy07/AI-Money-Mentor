@@ -1,192 +1,209 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Settings - AI Money Mentor</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #070b12;
-            color: #eef0f5;
-            margin: 0;
-            padding: 40px;
-        }
-        .container {
-            max-width: 700px;
-            margin: 0 auto;
-        }
-        h1 {
-            color: #d4a843;
-            margin-bottom: 30px;
-        }
-        .card {
-            background: rgba(15, 22, 38, 0.96);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 18px;
-            padding: 28px;
-            margin-bottom: 20px;
-        }
-        .card h2 {
-            font-size: 18px;
-            margin-bottom: 12px;
-        }
-        .card p {
-            color: #5a6a82;
-            margin-bottom: 20px;
-        }
-        .form-group {
-            margin-bottom: 16px;
-        }
-        .form-group label {
-            display: block;
-            font-size: 12px;
-            color: #5a6a82;
-            text-transform: uppercase;
-            margin-bottom: 6px;
-        }
-        .form-group input[type="email"] {
-            width: 100%;
-            padding: 12px 16px;
-            background: rgba(17, 26, 46, 0.9);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 14px;
-            color: #eef0f5;
-            font-size: 13px;
-            outline: none;
-        }
-        .form-group input[type="email"]:focus {
-            border-color: #d4a843;
-        }
-        .form-group input[type="checkbox"] {
-            accent-color: #d4a843;
-            transform: scale(1.2);
-            margin-right: 10px;
-        }
-        .btn-gold {
-            background: linear-gradient(135deg, #f3d687 0%, #d4a843 60%);
-            color: #0a0e18;
-            padding: 12px 30px;
-            border: none;
-            border-radius: 999px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .btn-gold:hover {
-            filter: brightness(1.06);
-            transform: translateY(-2px);
-        }
-        .success {
-            background: rgba(46, 204, 138, 0.15);
-            border: 1px solid #2ecc8a;
-            color: #2ecc8a;
-            padding: 12px;
-            border-radius: 8px;
-            margin-top: 15px;
-        }
-        .error {
-            background: rgba(224, 82, 82, 0.15);
-            border: 1px solid #e05252;
-            color: #e05252;
-            padding: 12px;
-            border-radius: 8px;
-            margin-top: 15px;
-        }
-        ul {
-            list-style: none;
-            padding: 0;
-        }
-        ul li {
-            padding: 8px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-        }
-        a {
-            color: #d4a843;
-            text-decoration: none;
-        }
-        .back-link {
-            display: inline-block;
-            margin-top: 20px;
-        }
+      body {
+        font-family: Arial, sans-serif;
+        background: #070b12;
+        color: #eef0f5;
+        margin: 0;
+        padding: 40px;
+      }
+      .container {
+        max-width: 700px;
+        margin: 0 auto;
+      }
+      h1 {
+        color: #d4a843;
+        margin-bottom: 30px;
+      }
+      .card {
+        background: rgba(15, 22, 38, 0.96);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 18px;
+        padding: 28px;
+        margin-bottom: 20px;
+      }
+      .card h2 {
+        font-size: 18px;
+        margin-bottom: 12px;
+      }
+      .card p {
+        color: #5a6a82;
+        margin-bottom: 20px;
+      }
+      .form-group {
+        margin-bottom: 16px;
+      }
+      .form-group label {
+        display: block;
+        font-size: 12px;
+        color: #5a6a82;
+        text-transform: uppercase;
+        margin-bottom: 6px;
+      }
+      .form-group input[type='email'] {
+        width: 100%;
+        padding: 12px 16px;
+        background: rgba(17, 26, 46, 0.9);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 14px;
+        color: #eef0f5;
+        font-size: 13px;
+        outline: none;
+      }
+      .form-group input[type='email']:focus {
+        border-color: #d4a843;
+      }
+      .form-group input[type='checkbox'] {
+        accent-color: #d4a843;
+        transform: scale(1.2);
+        margin-right: 10px;
+      }
+      .btn-gold {
+        background: linear-gradient(135deg, #f3d687 0%, #d4a843 60%);
+        color: #0a0e18;
+        padding: 12px 30px;
+        border: none;
+        border-radius: 999px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .btn-gold:hover {
+        filter: brightness(1.06);
+        transform: translateY(-2px);
+      }
+      .success {
+        background: rgba(46, 204, 138, 0.15);
+        border: 1px solid #2ecc8a;
+        color: #2ecc8a;
+        padding: 12px;
+        border-radius: 8px;
+        margin-top: 15px;
+      }
+      .error {
+        background: rgba(224, 82, 82, 0.15);
+        border: 1px solid #e05252;
+        color: #e05252;
+        padding: 12px;
+        border-radius: 8px;
+        margin-top: 15px;
+      }
+      ul {
+        list-style: none;
+        padding: 0;
+      }
+      ul li {
+        padding: 8px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      }
+      a {
+        color: #d4a843;
+        text-decoration: none;
+      }
+      .back-link {
+        display: inline-block;
+        margin-top: 20px;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
-        <h1><i class="fa-solid fa-gear"></i> Settings</h1>
-        
-        <div class="card">
-            <h2><i class="fa-solid fa-envelope"></i> Weekly Email Digest</h2>
-            <p>Get a weekly financial summary every Monday at 9:00 AM.</p>
-            
-            <form id="emailSettingsForm">
-                <div class="form-group">
-                    <label for="emailInput">Email Address</label>
-                    <input type="email" id="emailInput" placeholder="Enter your email" required>
-                </div>
-                
-                <div class="form-group">
-                    <label>
-                        <input type="checkbox" id="emailEnabled" checked>
-                        Enable Weekly Email Reports
-                    </label>
-                </div>
-                
-                <button type="submit" class="btn-gold">Save Settings</button>
-            </form>
-            
-            <div id="message"></div>
-        </div>
-        
-        <div class="card">
-            <h2><i class="fa-solid fa-file-lines"></i> What's Included in Your Weekly Report?</h2>
-            <ul>
-                <li><i class="fa-solid fa-calculator"></i> Total spending vs previous week</li>
-                <li><i class="fa-solid fa-gem"></i>Net worth change</li>
-                <li> <i class="fa-solid fa-wallet"></i>Budget health alerts</li>
-                <li><i class="fa-solid fa-ranking-star"></i>Top 3 spending categories</li>
-                <li><i class="fa-solid fa-lightbulb"></i> AI-powered financial insight</li>
-            </ul>
-        </div>
-        
-        <a href="/dashboard" class="back-link">← Back to Dashboard</a>
+      <h1><i class="fa-solid fa-gear"></i> Settings</h1>
+
+      <div class="card">
+        <h2><i class="fa-solid fa-envelope"></i> Weekly Email Digest</h2>
+        <p>Get a weekly financial summary every Monday at 9:00 AM.</p>
+
+        <form id="emailSettingsForm">
+          <div class="form-group">
+            <label for="emailInput">Email Address</label>
+            <input
+              type="email"
+              id="emailInput"
+              placeholder="Enter your email"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label>
+              <input type="checkbox" id="emailEnabled" checked />
+              Enable Weekly Email Reports
+            </label>
+          </div>
+
+          <button type="submit" class="btn-gold">Save Settings</button>
+        </form>
+
+        <div id="message"></div>
+      </div>
+
+      <div class="card">
+        <h2>
+          <i class="fa-solid fa-file-lines"></i> What's Included in Your Weekly
+          Report?
+        </h2>
+        <ul>
+          <li>
+            <i class="fa-solid fa-calculator"></i> Total spending vs previous
+            week
+          </li>
+          <li><i class="fa-solid fa-gem"></i>Net worth change</li>
+          <li><i class="fa-solid fa-wallet"></i>Budget health alerts</li>
+          <li>
+            <i class="fa-solid fa-ranking-star"></i>Top 3 spending categories
+          </li>
+          <li>
+            <i class="fa-solid fa-lightbulb"></i> AI-powered financial insight
+          </li>
+        </ul>
+      </div>
+
+      <a href="/dashboard" class="back-link">← Back to Dashboard</a>
     </div>
 
     <script>
-        document.getElementById('emailSettingsForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const email = document.getElementById('emailInput').value.trim();
-            const enabled = document.getElementById('emailEnabled').checked;
-            const messageDiv = document.getElementById('message');
-            
-            if (!email) {
-                messageDiv.className = 'error';
-                messageDiv.textContent = 'Please enter your email address.';
-                return;
+      document
+        .getElementById('emailSettingsForm')
+        .addEventListener('submit', async function (e) {
+          e.preventDefault();
+
+          const email = document.getElementById('emailInput').value.trim();
+          const enabled = document.getElementById('emailEnabled').checked;
+          const messageDiv = document.getElementById('message');
+
+          if (!email) {
+            messageDiv.className = 'error';
+            messageDiv.textContent = 'Please enter your email address.';
+            return;
+          }
+
+          try {
+            const response = await fetch('/api/update-email', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email, enabled }),
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+              messageDiv.className = 'success';
+              messageDiv.textContent = '✅ Settings updated successfully!';
+            } else {
+              messageDiv.className = 'error';
+              messageDiv.textContent = '❌ ' + data.error;
             }
-            
-            try {
-                const response = await fetch('/api/update-email', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, enabled })
-                });
-                
-                const data = await response.json();
-                
-                if (data.success) {
-                    messageDiv.className = 'success';
-                    messageDiv.textContent = '✅ Settings updated successfully!';
-                } else {
-                    messageDiv.className = 'error';
-                    messageDiv.textContent = '❌ ' + data.error;
-                }
-            } catch (error) {
-                messageDiv.className = 'error';
-                messageDiv.textContent = '❌ Could not connect to server.';
-            }
+          } catch (error) {
+            messageDiv.className = 'error';
+            messageDiv.textContent = '❌ Could not connect to server.';
+          }
         });
     </script>
-</body>
+  </body>
 </html>

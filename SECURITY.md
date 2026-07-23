@@ -14,11 +14,11 @@ The app authenticates with **session cookies** (Flask-Login). To reduce the
 risk of Cross-Site Request Forgery (CSRF) and cookie theft, the following
 cookie attributes are configured in `app.py`:
 
-| Setting | Value | Why |
-| --- | --- | --- |
-| `SESSION_COOKIE_SAMESITE` | `Lax` | Prevents the session cookie from being sent on cross-site POST requests — the primary CSRF vector for cookie auth. |
-| `SESSION_COOKIE_HTTPONLY` | `True` | Keeps the cookie inaccessible to JavaScript, mitigating theft via XSS. |
-| `SESSION_COOKIE_SECURE` | `True` in production | Restricts the cookie to HTTPS so it can't leak over plaintext. Enabled when `FLASK_ENV=production`. |
+| Setting                   | Value                | Why                                                                                                                |
+| ------------------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `SESSION_COOKIE_SAMESITE` | `Lax`                | Prevents the session cookie from being sent on cross-site POST requests — the primary CSRF vector for cookie auth. |
+| `SESSION_COOKIE_HTTPONLY` | `True`               | Keeps the cookie inaccessible to JavaScript, mitigating theft via XSS.                                             |
+| `SESSION_COOKIE_SECURE`   | `True` in production | Restricts the cookie to HTTPS so it can't leak over plaintext. Enabled when `FLASK_ENV=production`.                |
 
 ### Token-based CSRF (follow-up)
 

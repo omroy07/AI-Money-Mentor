@@ -136,22 +136,25 @@ pnpm add groq-sdk
 ### Basic Usage
 
 ```typescript
-import Groq from "groq-sdk";
+import Groq from 'groq-sdk';
 
 const client = new Groq({
-    apiKey: process.env.GROQ_API_KEY,  // default, can be omitted
+  apiKey: process.env.GROQ_API_KEY, // default, can be omitted
 });
 
 async function main() {
-    const response = await client.chat.completions.create({
-        model: "llama-3.3-70b-versatile",
-        messages: [
-            { role: "system", content: "You are a helpful assistant." },
-            { role: "user", content: "Explain the importance of fast language models" }
-        ]
-    });
+  const response = await client.chat.completions.create({
+    model: 'llama-3.3-70b-versatile',
+    messages: [
+      { role: 'system', content: 'You are a helpful assistant.' },
+      {
+        role: 'user',
+        content: 'Explain the importance of fast language models',
+      },
+    ],
+  });
 
-    console.log(response.choices[0]?.message?.content);
+  console.log(response.choices[0]?.message?.content);
 }
 
 main();
@@ -161,39 +164,39 @@ main();
 
 ```typescript
 const stream = await client.chat.completions.create({
-    model: "llama-3.3-70b-versatile",
-    messages: [{ role: "user", content: "Tell me a story" }],
-    stream: true
+  model: 'llama-3.3-70b-versatile',
+  messages: [{ role: 'user', content: 'Tell me a story' }],
+  stream: true,
 });
 
 for await (const chunk of stream) {
-    const content = chunk.choices[0]?.delta?.content;
-    if (content) {
-        process.stdout.write(content);
-    }
+  const content = chunk.choices[0]?.delta?.content;
+  if (content) {
+    process.stdout.write(content);
+  }
 }
 ```
 
 ### Error Handling
 
 ```typescript
-import Groq from "groq-sdk";
+import Groq from 'groq-sdk';
 
 const client = new Groq();
 
 try {
-    const response = await client.chat.completions.create({
-        model: "llama-3.3-70b-versatile",
-        messages: [{ role: "user", content: "Hello" }]
-    });
+  const response = await client.chat.completions.create({
+    model: 'llama-3.3-70b-versatile',
+    messages: [{ role: 'user', content: 'Hello' }],
+  });
 } catch (error) {
-    if (error instanceof Groq.RateLimitError) {
-        // Implement exponential backoff retry
-    } else if (error instanceof Groq.APIConnectionError) {
-        // Network connectivity issue
-    } else if (error instanceof Groq.APIError) {
-        console.log(`Status: ${error.status}`);
-    }
+  if (error instanceof Groq.RateLimitError) {
+    // Implement exponential backoff retry
+  } else if (error instanceof Groq.APIConnectionError) {
+    // Network connectivity issue
+  } else if (error instanceof Groq.APIError) {
+    console.log(`Status: ${error.status}`);
+  }
 }
 ```
 
@@ -261,6 +264,7 @@ Both SDKs return responses in the same format:
 ```
 
 **Key fields:**
+
 - `choices[0].message.content`: The model's response text
 - `choices[0].finish_reason`: Why generation stopped (`stop`, `length`, `tool_calls`)
 - `usage`: Token counts and timing information

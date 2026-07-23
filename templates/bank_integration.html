@@ -1,228 +1,359 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-<script>
-// HTML escape helper (issue #517)
-function esc(s){ const d=document.createElement('div'); d.textContent=String(s==null?'':s); return d.innerHTML; }
-</script>
+  <head>
+    <meta charset="UTF-8" />
+    <script>
+      // HTML escape helper (issue #517)
+      function esc(s) {
+        const d = document.createElement('div');
+        d.textContent = String(s == null ? '' : s);
+        return d.innerHTML;
+      }
+    </script>
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Bank Integration - AI Money Mentor</title>
     <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
-  />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
     <style>
-        body { background: #070b12; color: #eef0f5; font-family: 'Instrument Sans', sans-serif; }
-        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
-        .card { background: rgba(15,22,38,0.96); border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; padding: 24px; margin-bottom: 20px; }
-        .btn-gold { background: linear-gradient(135deg, #f3d687, #d4a843); color: #0a0e18; border: none; padding: 10px 24px; border-radius: 999px; font-weight: 700; }
-        .btn-gold:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(212,168,67,0.3); }
-        .btn-success { background: linear-gradient(135deg, #2ecc8a, #27ae60); color: white; border: none; }
-        .btn-danger { background: linear-gradient(135deg, #e05252, #c0392b); color: white; border: none; }
-        .text-gold { color: #d4a843; }
-        .text-muted { color: #5a6a82; }
-        .stat-card { background: rgba(255,255,255,0.03); border-radius: 14px; padding: 20px; text-align: center; border: 1px solid rgba(255,255,255,0.06); }
-        .stat-card .value { font-size: 24px; font-weight: 800; }
-        .stat-card .label { font-size: 12px; color: #5a6a82; text-transform: uppercase; }
-        .form-control { background: rgba(17,26,46,0.9); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; color: #eef0f5; }
-        .form-control:focus { background: rgba(17,26,46,0.95); border-color: #d4a843; color: #eef0f5; box-shadow: 0 0 0 3px rgba(212,168,67,0.1); }
-        .form-select { background: rgba(17,26,46,0.9); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; color: #eef0f5; }
-        .table-dark { background: transparent; }
-        .table-dark th { border-bottom: 1px solid rgba(255,255,255,0.06); color: #5a6a82; text-transform: uppercase; font-size: 11px; }
-        .table-dark td { border-bottom: 1px solid rgba(255,255,255,0.04); }
-        .badge-anomaly { padding: 4px 12px; border-radius: 20px; font-size: 11px; }
-        .badge-high { background: rgba(224,82,82,0.2); color: #e05252; }
-        .badge-medium { background: rgba(243,156,18,0.2); color: #f39c12; }
-        .badge-low { background: rgba(46,204,138,0.2); color: #2ecc8a; }
+      body {
+        background: #070b12;
+        color: #eef0f5;
+        font-family: 'Instrument Sans', sans-serif;
+      }
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .card {
+        background: rgba(15, 22, 38, 0.96);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 18px;
+        padding: 24px;
+        margin-bottom: 20px;
+      }
+      .btn-gold {
+        background: linear-gradient(135deg, #f3d687, #d4a843);
+        color: #0a0e18;
+        border: none;
+        padding: 10px 24px;
+        border-radius: 999px;
+        font-weight: 700;
+      }
+      .btn-gold:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(212, 168, 67, 0.3);
+      }
+      .btn-success {
+        background: linear-gradient(135deg, #2ecc8a, #27ae60);
+        color: white;
+        border: none;
+      }
+      .btn-danger {
+        background: linear-gradient(135deg, #e05252, #c0392b);
+        color: white;
+        border: none;
+      }
+      .text-gold {
+        color: #d4a843;
+      }
+      .text-muted {
+        color: #5a6a82;
+      }
+      .stat-card {
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 14px;
+        padding: 20px;
+        text-align: center;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+      }
+      .stat-card .value {
+        font-size: 24px;
+        font-weight: 800;
+      }
+      .stat-card .label {
+        font-size: 12px;
+        color: #5a6a82;
+        text-transform: uppercase;
+      }
+      .form-control {
+        background: rgba(17, 26, 46, 0.9);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 14px;
+        color: #eef0f5;
+      }
+      .form-control:focus {
+        background: rgba(17, 26, 46, 0.95);
+        border-color: #d4a843;
+        color: #eef0f5;
+        box-shadow: 0 0 0 3px rgba(212, 168, 67, 0.1);
+      }
+      .form-select {
+        background: rgba(17, 26, 46, 0.9);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 14px;
+        color: #eef0f5;
+      }
+      .table-dark {
+        background: transparent;
+      }
+      .table-dark th {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        color: #5a6a82;
+        text-transform: uppercase;
+        font-size: 11px;
+      }
+      .table-dark td {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      }
+      .badge-anomaly {
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 11px;
+      }
+      .badge-high {
+        background: rgba(224, 82, 82, 0.2);
+        color: #e05252;
+      }
+      .badge-medium {
+        background: rgba(243, 156, 18, 0.2);
+        color: #f39c12;
+      }
+      .badge-low {
+        background: rgba(46, 204, 138, 0.2);
+        color: #2ecc8a;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <div>
-                <h1 class="text-gold"><i class="fa-solid fa-building-columns"></i> Bank Integration</h1>
-                <p class="text-muted">Automated transaction sync & anomaly detection</p>
-            </div>
-            <a href="/" class="btn btn-gold">← Back to Dashboard</a>
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h1 class="text-gold">
+            <i class="fa-solid fa-building-columns"></i> Bank Integration
+          </h1>
+          <p class="text-muted">
+            Automated transaction sync & anomaly detection
+          </p>
+        </div>
+        <a href="/" class="btn btn-gold">← Back to Dashboard</a>
+      </div>
+
+      <!-- Stats -->
+      <div class="row mb-4" id="statsRow">
+        <div class="col-md-3">
+          <div class="stat-card">
+            <div class="label">Total Connections</div>
+            <div class="value" id="totalConnections">0</div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="stat-card">
+            <div class="label">Total Transactions</div>
+            <div class="value" id="totalTransactions">0</div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="stat-card">
+            <div class="label">Anomalies Detected</div>
+            <div class="value" id="totalAnomalies">0</div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="stat-card">
+            <div class="label">Last Sync</div>
+            <div class="value" style="font-size: 16px" id="lastSync">Never</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-5">
+          <!-- Connect Bank -->
+          <div class="card">
+            <h5><i class="fa-solid fa-link"></i> Connect Bank Account</h5>
+            <form id="connectForm">
+              <div class="mb-3">
+                <label class="form-label text-muted">Provider</label>
+                <select class="form-select" id="provider">
+                  <option value="upi">UPI</option>
+                  <option value="netbanking">Netbanking</option>
+                  <option value="card">Card</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label class="form-label text-muted">Account Name</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="accountName"
+                  placeholder="e.g., HDFC Savings"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label class="form-label text-muted"
+                  >Account Number (Last 4 digits)</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="accountNumber"
+                  placeholder="XXXX"
+                  maxlength="4"
+                  required
+                />
+              </div>
+              <button type="submit" class="btn btn-gold w-100">
+                🔗 Connect
+              </button>
+            </form>
+            <div id="connectResult" class="mt-3"></div>
+          </div>
+
+          <!-- Sync -->
+          <div class="card">
+            <h5><i class="fa-solid fa-rotate"></i>Sync Transactions</h5>
+            <button class="btn btn-gold w-100" onclick="syncTransactions()">
+              📥 Sync Now
+            </button>
+            <div id="syncResult" class="mt-3"></div>
+          </div>
         </div>
 
-        <!-- Stats -->
-        <div class="row mb-4" id="statsRow">
-            <div class="col-md-3">
-                <div class="stat-card">
-                    <div class="label">Total Connections</div>
-                    <div class="value" id="totalConnections">0</div>
-                </div>
+        <div class="col-md-7">
+          <!-- Connections -->
+          <div class="card">
+            <h5><i class="fa-solid fa-plug"></i> Connected Accounts</h5>
+            <div id="connectionsList">
+              <div class="text-center text-muted py-4">
+                No accounts connected
+              </div>
             </div>
-            <div class="col-md-3">
-                <div class="stat-card">
-                    <div class="label">Total Transactions</div>
-                    <div class="value" id="totalTransactions">0</div>
-                </div>
+          </div>
+
+          <!-- Anomalies -->
+          <div class="card">
+            <h5>
+              <i class="fa-solid fa-triangle-exclamation"></i> Anomalies &
+              Alerts
+            </h5>
+            <div id="anomaliesList">
+              <div class="text-center text-muted py-4">
+                No anomalies detected
+              </div>
             </div>
-            <div class="col-md-3">
-                <div class="stat-card">
-                    <div class="label">Anomalies Detected</div>
-                    <div class="value" id="totalAnomalies">0</div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="stat-card">
-                    <div class="label">Last Sync</div>
-                    <div class="value" style="font-size:16px;" id="lastSync">Never</div>
-                </div>
-            </div>
+          </div>
         </div>
-
-        <div class="row">
-            <div class="col-md-5">
-                <!-- Connect Bank -->
-                <div class="card">
-                    <h5><i class="fa-solid fa-link"></i> Connect Bank Account</h5>
-                    <form id="connectForm">
-                        <div class="mb-3">
-                            <label class="form-label text-muted">Provider</label>
-                            <select class="form-select" id="provider">
-                                <option value="upi">UPI</option>
-                                <option value="netbanking">Netbanking</option>
-                                <option value="card">Card</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label text-muted">Account Name</label>
-                            <input type="text" class="form-control" id="accountName" placeholder="e.g., HDFC Savings" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label text-muted">Account Number (Last 4 digits)</label>
-                            <input type="text" class="form-control" id="accountNumber" placeholder="XXXX" maxlength="4" required>
-                        </div>
-                        <button type="submit" class="btn btn-gold w-100">🔗 Connect</button>
-                    </form>
-                    <div id="connectResult" class="mt-3"></div>
-                </div>
-
-                <!-- Sync -->
-                <div class="card">
-                    <h5><i class="fa-solid fa-rotate"></i>Sync Transactions</h5>
-                    <button class="btn btn-gold w-100" onclick="syncTransactions()">📥 Sync Now</button>
-                    <div id="syncResult" class="mt-3"></div>
-                </div>
-            </div>
-
-            <div class="col-md-7">
-                <!-- Connections -->
-                <div class="card">
-                    <h5><i class="fa-solid fa-plug"></i> Connected Accounts</h5>
-                    <div id="connectionsList">
-                        <div class="text-center text-muted py-4">No accounts connected</div>
-                    </div>
-                </div>
-
-                <!-- Anomalies -->
-                <div class="card">
-                    <h5><i class="fa-solid fa-triangle-exclamation"></i> Anomalies & Alerts</h5>
-                    <div id="anomaliesList">
-                        <div class="text-center text-muted py-4">No anomalies detected</div>
-                    </div>
-                </div>
-            </div>
-        </div>
+      </div>
     </div>
 
     <script>
-        // Load connections on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            loadConnections();
-            loadAnomalies();
-        });
+      // Load connections on page load
+      document.addEventListener('DOMContentLoaded', function () {
+        loadConnections();
+        loadAnomalies();
+      });
 
-        // Connect Bank
-        document.getElementById('connectForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const data = {
-                provider: document.getElementById('provider').value,
-                account_name: document.getElementById('accountName').value,
-                account_number: document.getElementById('accountNumber').value
-            };
-            
-            try {
-                const response = await fetch('/api/bank/connect', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-                
-                const result = await response.json();
-                const resultDiv = document.getElementById('connectResult');
-                
-                if (result.success) {
-                    resultDiv.innerHTML = `<div class="alert alert-success">✅ ${esc(result.message)}</div>`;
-                    loadConnections();
-                    document.getElementById('connectForm').reset();
-                } else {
-                    resultDiv.innerHTML = `<div class="alert alert-danger">❌ ${esc(result.error)}</div>`;
-                }
-            } catch (error) {
-                document.getElementById('connectResult').innerHTML = `<div class="alert alert-danger">❌ ${esc(error.message)}</div>`;
+      // Connect Bank
+      document
+        .getElementById('connectForm')
+        .addEventListener('submit', async function (e) {
+          e.preventDefault();
+
+          const data = {
+            provider: document.getElementById('provider').value,
+            account_name: document.getElementById('accountName').value,
+            account_number: document.getElementById('accountNumber').value,
+          };
+
+          try {
+            const response = await fetch('/api/bank/connect', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(data),
+            });
+
+            const result = await response.json();
+            const resultDiv = document.getElementById('connectResult');
+
+            if (result.success) {
+              resultDiv.innerHTML = `<div class="alert alert-success">✅ ${esc(result.message)}</div>`;
+              loadConnections();
+              document.getElementById('connectForm').reset();
+            } else {
+              resultDiv.innerHTML = `<div class="alert alert-danger">❌ ${esc(result.error)}</div>`;
             }
+          } catch (error) {
+            document.getElementById('connectResult').innerHTML =
+              `<div class="alert alert-danger">❌ ${esc(error.message)}</div>`;
+          }
         });
 
-        // Sync Transactions
-        async function syncTransactions() {
-            const btn = document.querySelector('#syncResult').previousElementSibling;
-            btn.disabled = true;
-            btn.innerHTML = '⏳ Syncing...';
-            document.getElementById('syncResult').innerHTML = '<div class="text-muted">Syncing transactions...</div>';
-            
-            try {
-                const response = await fetch('/api/bank/sync', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' }
-                });
-                
-                const result = await response.json();
-                
-                if (result.success) {
-                    document.getElementById('syncResult').innerHTML = `
+      // Sync Transactions
+      async function syncTransactions() {
+        const btn =
+          document.querySelector('#syncResult').previousElementSibling;
+        btn.disabled = true;
+        btn.innerHTML = '⏳ Syncing...';
+        document.getElementById('syncResult').innerHTML =
+          '<div class="text-muted">Syncing transactions...</div>';
+
+        try {
+          const response = await fetch('/api/bank/sync', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+          });
+
+          const result = await response.json();
+
+          if (result.success) {
+            document.getElementById('syncResult').innerHTML = `
                         <div class="alert alert-success">
                             ✅ Synced ${result.total_synced} transactions<br>
                             ⚠️ Found ${result.total_anomalies} anomalies
                         </div>
                     `;
-                    loadConnections();
-                    loadAnomalies();
-                } else {
-                    document.getElementById('syncResult').innerHTML = `<div class="alert alert-danger">❌ ${esc(result.error)}</div>`;
-                }
-            } catch (error) {
-                document.getElementById('syncResult').innerHTML = `<div class="alert alert-danger">❌ ${esc(error.message)}</div>`;
-            }
-            
-            btn.disabled = false;
-            btn.innerHTML = '📥 Sync Now';
+            loadConnections();
+            loadAnomalies();
+          } else {
+            document.getElementById('syncResult').innerHTML =
+              `<div class="alert alert-danger">❌ ${esc(result.error)}</div>`;
+          }
+        } catch (error) {
+          document.getElementById('syncResult').innerHTML =
+            `<div class="alert alert-danger">❌ ${esc(error.message)}</div>`;
         }
 
-        // Load Connections
-        async function loadConnections() {
-            try {
-                const response = await fetch('/api/bank/connections');
-                const data = await response.json();
-                
-                const container = document.getElementById('connectionsList');
-                
-                if (data.success && data.connections.length > 0) {
-                    let html = '<table class="table table-dark"><thead><tr><th>Account</th><th>Provider</th><th>Status</th><th>Last Sync</th><th>Transactions</th><th>Anomalies</th></tr></thead><tbody>';
-                    let totalTx = 0;
-                    let totalAnomalies = 0;
-                    
-                    data.connections.forEach(conn => {
-                        totalTx += conn.transaction_count || 0;
-                        totalAnomalies += conn.anomaly_count || 0;
-                        html += `
+        btn.disabled = false;
+        btn.innerHTML = '📥 Sync Now';
+      }
+
+      // Load Connections
+      async function loadConnections() {
+        try {
+          const response = await fetch('/api/bank/connections');
+          const data = await response.json();
+
+          const container = document.getElementById('connectionsList');
+
+          if (data.success && data.connections.length > 0) {
+            let html =
+              '<table class="table table-dark"><thead><tr><th>Account</th><th>Provider</th><th>Status</th><th>Last Sync</th><th>Transactions</th><th>Anomalies</th></tr></thead><tbody>';
+            let totalTx = 0;
+            let totalAnomalies = 0;
+
+            data.connections.forEach((conn) => {
+              totalTx += conn.transaction_count || 0;
+              totalAnomalies += conn.anomaly_count || 0;
+              html += `
                             <tr>
                                 <td><strong>${conn.account_name}</strong><br><small class="text-muted">****${conn.account_number || ''}</small></td>
                                 <td><span class="badge bg-secondary">${conn.provider}</span></td>
@@ -232,39 +363,54 @@ function esc(s){ const d=document.createElement('div'); d.textContent=String(s==
                                 <td>${conn.anomaly_count || 0}</td>
                             </tr>
                         `;
-                    });
-                    html += '</tbody></table>';
-                    container.innerHTML = html;
-                    
-                    document.getElementById('totalConnections').textContent = data.connections.length;
-                    document.getElementById('totalTransactions').textContent = totalTx;
-                    document.getElementById('totalAnomalies').textContent = totalAnomalies;
-                    
-                    const lastSync = data.connections[0]?.last_sync;
-                    document.getElementById('lastSync').textContent = lastSync ? new Date(lastSync).toLocaleString() : 'Never';
-                } else {
-                    container.innerHTML = '<div class="text-center text-muted py-4">No accounts connected</div>';
-                }
-            } catch (error) {
-                console.error('Error loading connections:', error);
-            }
-        }
+            });
+            html += '</tbody></table>';
+            container.innerHTML = html;
 
-        // Load Anomalies
-        async function loadAnomalies() {
-            try {
-                const response = await fetch('/api/bank/anomalies');
-                const data = await response.json();
-                
-                const container = document.getElementById('anomaliesList');
-                
-                if (data.success && data.anomalies.length > 0) {
-                    let html = '<table class="table table-dark"><thead><tr><th>Type</th><th>Message</th><th>Severity</th><th>Status</th></tr></thead><tbody>';
-                    
-                    data.anomalies.forEach(alert => {
-                        const severityClass = alert.severity === 'high' ? 'badge-high' : alert.severity === 'medium' ? 'badge-medium' : 'badge-low';
-                        const statusText = alert.is_resolved ? '✅ Resolved' : (alert.is_read ? '📖 Read' : '🆕 New');
-                        html += `
+            document.getElementById('totalConnections').textContent =
+              data.connections.length;
+            document.getElementById('totalTransactions').textContent = totalTx;
+            document.getElementById('totalAnomalies').textContent =
+              totalAnomalies;
+
+            const lastSync = data.connections[0]?.last_sync;
+            document.getElementById('lastSync').textContent = lastSync
+              ? new Date(lastSync).toLocaleString()
+              : 'Never';
+          } else {
+            container.innerHTML =
+              '<div class="text-center text-muted py-4">No accounts connected</div>';
+          }
+        } catch (error) {
+          console.error('Error loading connections:', error);
+        }
+      }
+
+      // Load Anomalies
+      async function loadAnomalies() {
+        try {
+          const response = await fetch('/api/bank/anomalies');
+          const data = await response.json();
+
+          const container = document.getElementById('anomaliesList');
+
+          if (data.success && data.anomalies.length > 0) {
+            let html =
+              '<table class="table table-dark"><thead><tr><th>Type</th><th>Message</th><th>Severity</th><th>Status</th></tr></thead><tbody>';
+
+            data.anomalies.forEach((alert) => {
+              const severityClass =
+                alert.severity === 'high'
+                  ? 'badge-high'
+                  : alert.severity === 'medium'
+                    ? 'badge-medium'
+                    : 'badge-low';
+              const statusText = alert.is_resolved
+                ? '✅ Resolved'
+                : alert.is_read
+                  ? '📖 Read'
+                  : '🆕 New';
+              html += `
                             <tr>
                                 <td>${alert.alert_type}</td>
                                 <td>${alert.message}</td>
@@ -272,16 +418,17 @@ function esc(s){ const d=document.createElement('div'); d.textContent=String(s==
                                 <td>${statusText}</td>
                             </tr>
                         `;
-                    });
-                    html += '</tbody></table>';
-                    container.innerHTML = html;
-                } else {
-                    container.innerHTML = '<div class="text-center text-muted py-4">✅ No anomalies detected</div>';
-                }
-            } catch (error) {
-                console.error('Error loading anomalies:', error);
-            }
+            });
+            html += '</tbody></table>';
+            container.innerHTML = html;
+          } else {
+            container.innerHTML =
+              '<div class="text-center text-muted py-4">✅ No anomalies detected</div>';
+          }
+        } catch (error) {
+          console.error('Error loading anomalies:', error);
         }
+      }
     </script>
-</body>
+  </body>
 </html>

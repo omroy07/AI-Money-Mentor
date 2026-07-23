@@ -84,12 +84,12 @@ A **24/7 AI-powered personal CFO** for everyone — students, professionals, and
 
 <div align="center">
 
-| Layer | Technology |
-|:------|:-----------|
-| **Frontend** | ![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=flat-square&logo=html5&logoColor=white) ![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=flat-square&logo=css3&logoColor=white) ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&logo=javascript&logoColor=black) |
-| **Backend** | ![Python](https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white) ![Flask](https://img.shields.io/badge/Flask-000000?style=flat-square&logo=flask&logoColor=white) |
-| **AI Engine** | ![Groq](https://img.shields.io/badge/Groq-F55036?style=flat-square&logo=groq&logoColor=white) ![OpenAI](https://img.shields.io/badge/OpenAI-412991?style=flat-square&logo=openai&logoColor=white) |
-| **Database** | ![SQLite](https://img.shields.io/badge/SQLite-003B57?style=flat-square&logo=sqlite&logoColor=white) ![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=flat-square&logo=mysql&logoColor=white) |
+| Layer         | Technology                                                                                                                                                                                                                                                                                                     |
+| :------------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Frontend**  | ![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=flat-square&logo=html5&logoColor=white) ![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=flat-square&logo=css3&logoColor=white) ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&logo=javascript&logoColor=black) |
+| **Backend**   | ![Python](https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white) ![Flask](https://img.shields.io/badge/Flask-000000?style=flat-square&logo=flask&logoColor=white)                                                                                                           |
+| **AI Engine** | ![Groq](https://img.shields.io/badge/Groq-F55036?style=flat-square&logo=groq&logoColor=white) ![OpenAI](https://img.shields.io/badge/OpenAI-412991?style=flat-square&logo=openai&logoColor=white)                                                                                                              |
+| **Database**  | ![SQLite](https://img.shields.io/badge/SQLite-003B57?style=flat-square&logo=sqlite&logoColor=white) ![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=flat-square&logo=mysql&logoColor=white)                                                                                                           |
 
 </div>
 
@@ -125,12 +125,12 @@ python app.py
 
 ### Required environment variables
 
-| Variable | Required | Description |
-| --- | --- | --- |
-| `GROQ_API_KEY` | Yes | API key for the Groq LLM provider. |
-| `SECRET_KEY` | Yes in production | Signs Flask session cookies. The app **refuses to start in production** if this is unset; a known fallback is only used in local development. |
-| `FLASK_ENV` | No | `development` (default) or `production`. |
-| `FLASK_DEBUG` | No | Enable debug mode locally; **never** set in production. |
+| Variable       | Required          | Description                                                                                                                                   |
+| -------------- | ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `GROQ_API_KEY` | Yes               | API key for the Groq LLM provider.                                                                                                            |
+| `SECRET_KEY`   | Yes in production | Signs Flask session cookies. The app **refuses to start in production** if this is unset; a known fallback is only used in local development. |
+| `FLASK_ENV`    | No                | `development` (default) or `production`.                                                                                                      |
+| `FLASK_DEBUG`  | No                | Enable debug mode locally; **never** set in production.                                                                                       |
 
 Generate a strong `SECRET_KEY` with:
 
@@ -194,22 +194,22 @@ AI-Money-Mentor/
 
 ## 🗺️ Roadmap
 
-| Status | Feature |
-|:------:|:--------|
-| ✅ | AI Chat Assistant |
-| ✅ | Expense Tracker + Auto-Categorization |
-| ✅ | Smart Budget Planner |
-| ✅ | Investment Suggestions |
-| ✅ | Financial Reports (Weekly/Monthly) |
-| ✅ | Smart Alerts & Bill Reminders |
-| 🚧 | Mobile App (Android & iOS) |
-| 🚧 | Voice-Based AI Assistant |
-| 🔜 | Multi-Language Support |
-| 🔜 | Bank API Integration |
-| 🔜 | Advanced Portfolio Tracker |
-| 💡 | Multi-Agent AI System |
-| 💡 | Tax Optimization Module |
-| 💡 | Crypto & DeFi Dashboard |
+| Status | Feature                               |
+| :----: | :------------------------------------ |
+|   ✅   | AI Chat Assistant                     |
+|   ✅   | Expense Tracker + Auto-Categorization |
+|   ✅   | Smart Budget Planner                  |
+|   ✅   | Investment Suggestions                |
+|   ✅   | Financial Reports (Weekly/Monthly)    |
+|   ✅   | Smart Alerts & Bill Reminders         |
+|   🚧   | Mobile App (Android & iOS)            |
+|   🚧   | Voice-Based AI Assistant              |
+|   🔜   | Multi-Language Support                |
+|   🔜   | Bank API Integration                  |
+|   🔜   | Advanced Portfolio Tracker            |
+|   💡   | Multi-Agent AI System                 |
+|   💡   | Tax Optimization Module               |
+|   💡   | Crypto & DeFi Dashboard               |
 
 ---
 
@@ -247,7 +247,7 @@ git push origin feature/amazing-feature
 <div align="center">
 
 | 📉 Reduces Financial Illiteracy | 💰 Builds Saving Habits | 📈 Smarter Investments | 🧠 Accessible to All |
-|:---:|:---:|:---:|:---:|
+| :-----------------------------: | :---------------------: | :--------------------: | :------------------: |
 
 </div>
 
@@ -277,6 +277,6 @@ MIT License © 2025 Om Roy — free to use, modify, and distribute.
 
 [![GitHub](https://img.shields.io/badge/github-omroy07-E94560?style=for-the-badge&logo=github)](https://github.com/omroy07)
 
-*Made with ❤️ to democratize financial intelligence for everyone.*
+_Made with ❤️ to democratize financial intelligence for everyone._
 
 </div>

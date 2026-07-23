@@ -10,9 +10,9 @@ Advanced patterns covering functional programming, modern class features, ES6 mo
 
 ```javascript
 const users = [
-  { id: 1, name: "John", age: 30, active: true },
-  { id: 2, name: "Jane", age: 25, active: false },
-  { id: 3, name: "Bob", age: 35, active: true },
+  { id: 1, name: 'John', age: 30, active: true },
+  { id: 2, name: 'Jane', age: 25, active: false },
+  { id: 3, name: 'Bob', age: 35, active: true },
 ];
 
 // Map - Transform array
@@ -29,7 +29,7 @@ const avgAge = totalAge / users.length;
 
 // Group by property
 const byActive = users.reduce((groups, user) => {
-  const key = user.active ? "active" : "inactive";
+  const key = user.active ? 'active' : 'inactive';
   return {
     ...groups,
     [key]: [...(groups[key] || []), user],
@@ -41,7 +41,7 @@ const result = users
   .filter((user) => user.active)
   .map((user) => user.name)
   .sort()
-  .join(", ");
+  .join(', ');
 ```
 
 **Advanced Array Methods:**
@@ -51,7 +51,7 @@ const result = users
 const user = users.find((u) => u.id === 2);
 
 // FindIndex - Index of first match
-const index = users.findIndex((u) => u.name === "Jane");
+const index = users.findIndex((u) => u.name === 'Jane');
 
 // Some - At least one matches
 const hasActive = users.some((u) => u.active);
@@ -61,13 +61,13 @@ const allAdults = users.every((u) => u.age >= 18);
 
 // FlatMap - Map and flatten
 const userTags = [
-  { name: "John", tags: ["admin", "user"] },
-  { name: "Jane", tags: ["user"] },
+  { name: 'John', tags: ['admin', 'user'] },
+  { name: 'Jane', tags: ['user'] },
 ];
 const allTags = userTags.flatMap((u) => u.tags);
 
 // From - Create array from iterable
-const str = "hello";
+const str = 'hello';
 const chars = Array.from(str);
 const numbers = Array.from({ length: 5 }, (_, i) => i + 1);
 
@@ -181,9 +181,9 @@ const processUser = pipe(
 );
 
 const user = processUser({
-  name: "  John  ",
-  email: "JOHN@EXAMPLE.COM",
-  age: "30",
+  name: '  John  ',
+  email: 'JOHN@EXAMPLE.COM',
+  age: '30',
 });
 ```
 
@@ -219,13 +219,13 @@ const withoutThree = numbers.filter((n) => n !== 3);
 const doubled = numbers.map((n) => (n === 3 ? n * 2 : n));
 
 // Immutable object operations
-const user = { name: "John", age: 30 };
+const user = { name: 'John', age: 30 };
 
 // Update property
 const olderUser = { ...user, age: 31 };
 
 // Add property
-const withEmail = { ...user, email: "john@example.com" };
+const withEmail = { ...user, email: 'john@example.com' };
 
 // Remove property
 const { age, ...withoutAge } = user;
@@ -318,21 +318,21 @@ export default function multiply(a, b) {
 
 // Importing
 // app.js
-import multiply, { PI, add, Calculator } from "./math.js";
+import multiply, { PI, add, Calculator } from './math.js';
 
 // Rename imports
-import { add as sum } from "./math.js";
+import { add as sum } from './math.js';
 
 // Import all
-import * as Math from "./math.js";
+import * as Math from './math.js';
 
 // Dynamic imports
-const module = await import("./math.js");
-const { add } = await import("./math.js");
+const module = await import('./math.js');
+const { add } = await import('./math.js');
 
 // Conditional loading
 if (condition) {
-  const module = await import("./feature.js");
+  const module = await import('./feature.js');
   module.init();
 }
 ```
@@ -397,7 +397,7 @@ async function* fetchPages(url) {
   }
 }
 
-for await (const page of fetchPages("/api/users")) {
+for await (const page of fetchPages('/api/users')) {
   console.log(page);
 }
 ```
@@ -406,7 +406,7 @@ for await (const page of fetchPages("/api/users")) {
 
 ```javascript
 // Optional chaining
-const user = { name: "John", address: { city: "NYC" } };
+const user = { name: 'John', address: { city: 'NYC' } };
 const city = user?.address?.city;
 const zipCode = user?.address?.zipCode; // undefined
 
@@ -417,14 +417,14 @@ const result = obj.method?.();
 const first = arr?.[0];
 
 // Nullish coalescing
-const value = null ?? "default"; // 'default'
-const value = undefined ?? "default"; // 'default'
-const value = 0 ?? "default"; // 0 (not 'default')
-const value = "" ?? "default"; // '' (not 'default')
+const value = null ?? 'default'; // 'default'
+const value = undefined ?? 'default'; // 'default'
+const value = 0 ?? 'default'; // 0 (not 'default')
+const value = '' ?? 'default'; // '' (not 'default')
 
 // Logical assignment
 let a = null;
-a ??= "default"; // a = 'default'
+a ??= 'default'; // a = 'default'
 
 let b = 5;
 b ??= 10; // b = 5 (unchanged)

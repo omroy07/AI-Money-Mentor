@@ -1,203 +1,348 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Core Banking Ledger - AI Money Mentor</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
     <style>
-        body { background: #070b12; color: #eef0f5; font-family: 'Instrument Sans', sans-serif; }
-        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
-        .card { background: rgba(15,22,38,0.96); border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; padding: 24px; margin-bottom: 20px; }
-        .btn-gold { background: linear-gradient(135deg, #f3d687, #d4a843); color: #0a0e18; border: none; padding: 10px 24px; border-radius: 999px; font-weight: 700; }
-        .btn-gold:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(212,168,67,0.3); }
-        .btn-danger { background: linear-gradient(135deg, #e05252, #c0392b); color: white; border: none; }
-        .btn-success { background: linear-gradient(135deg, #2ecc8a, #27ae60); color: white; border: none; }
-        .text-gold { color: #d4a843; }
-        .text-muted { color: #5a6a82; }
-        .balance-positive { color: #2ecc8a; }
-        .balance-negative { color: #e05252; }
-        .stat-card { background: rgba(255,255,255,0.03); border-radius: 14px; padding: 20px; text-align: center; border: 1px solid rgba(255,255,255,0.06); }
-        .stat-card .value { font-size: 28px; font-weight: 800; }
-        .stat-card .label { font-size: 12px; color: #5a6a82; text-transform: uppercase; }
-        .table-dark { background: transparent; }
-        .table-dark th { border-bottom: 1px solid rgba(255,255,255,0.06); color: #5a6a82; text-transform: uppercase; font-size: 11px; }
-        .table-dark td { border-bottom: 1px solid rgba(255,255,255,0.04); }
-        .form-control { background: rgba(17,26,46,0.9); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; color: #eef0f5; }
-        .form-control:focus { background: rgba(17,26,46,0.95); border-color: #d4a843; color: #eef0f5; box-shadow: 0 0 0 3px rgba(212,168,67,0.1); }
-        .form-select { background: rgba(17,26,46,0.9); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; color: #eef0f5; }
-        .entry-debit { color: #e05252; }
-        .entry-credit { color: #2ecc8a; }
-        .badge-completed { background: rgba(46,204,138,0.15); color: #2ecc8a; }
-        .badge-pending { background: rgba(243,156,18,0.15); color: #f39c12; }
-        .badge-failed { background: rgba(224,82,82,0.15); color: #e05252; }
+      body {
+        background: #070b12;
+        color: #eef0f5;
+        font-family: 'Instrument Sans', sans-serif;
+      }
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .card {
+        background: rgba(15, 22, 38, 0.96);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 18px;
+        padding: 24px;
+        margin-bottom: 20px;
+      }
+      .btn-gold {
+        background: linear-gradient(135deg, #f3d687, #d4a843);
+        color: #0a0e18;
+        border: none;
+        padding: 10px 24px;
+        border-radius: 999px;
+        font-weight: 700;
+      }
+      .btn-gold:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(212, 168, 67, 0.3);
+      }
+      .btn-danger {
+        background: linear-gradient(135deg, #e05252, #c0392b);
+        color: white;
+        border: none;
+      }
+      .btn-success {
+        background: linear-gradient(135deg, #2ecc8a, #27ae60);
+        color: white;
+        border: none;
+      }
+      .text-gold {
+        color: #d4a843;
+      }
+      .text-muted {
+        color: #5a6a82;
+      }
+      .balance-positive {
+        color: #2ecc8a;
+      }
+      .balance-negative {
+        color: #e05252;
+      }
+      .stat-card {
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 14px;
+        padding: 20px;
+        text-align: center;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+      }
+      .stat-card .value {
+        font-size: 28px;
+        font-weight: 800;
+      }
+      .stat-card .label {
+        font-size: 12px;
+        color: #5a6a82;
+        text-transform: uppercase;
+      }
+      .table-dark {
+        background: transparent;
+      }
+      .table-dark th {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        color: #5a6a82;
+        text-transform: uppercase;
+        font-size: 11px;
+      }
+      .table-dark td {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      }
+      .form-control {
+        background: rgba(17, 26, 46, 0.9);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 14px;
+        color: #eef0f5;
+      }
+      .form-control:focus {
+        background: rgba(17, 26, 46, 0.95);
+        border-color: #d4a843;
+        color: #eef0f5;
+        box-shadow: 0 0 0 3px rgba(212, 168, 67, 0.1);
+      }
+      .form-select {
+        background: rgba(17, 26, 46, 0.9);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 14px;
+        color: #eef0f5;
+      }
+      .entry-debit {
+        color: #e05252;
+      }
+      .entry-credit {
+        color: #2ecc8a;
+      }
+      .badge-completed {
+        background: rgba(46, 204, 138, 0.15);
+        color: #2ecc8a;
+      }
+      .badge-pending {
+        background: rgba(243, 156, 18, 0.15);
+        color: #f39c12;
+      }
+      .badge-failed {
+        background: rgba(224, 82, 82, 0.15);
+        color: #e05252;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <div>
-                <h1 class="text-gold"><i class="fa-solid fa-building-columns"></i> Core Banking Ledger</h1>
-                <p class="text-muted">Double-Entry Accounting System</p>
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h1 class="text-gold">
+            <i class="fa-solid fa-building-columns"></i> Core Banking Ledger
+          </h1>
+          <p class="text-muted">Double-Entry Accounting System</p>
+        </div>
+        <a href="/" class="btn btn-gold">← Back to Dashboard</a>
+      </div>
+
+      <!-- Summary Stats -->
+      <div class="row mb-4" id="statsRow">
+        <div class="col-md-3">
+          <div class="stat-card">
+            <div class="label">Total Balance</div>
+            <div class="value text-gold" id="totalBalance">₹0</div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="stat-card">
+            <div class="label">Accounts</div>
+            <div class="value" id="accountCount">0</div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="stat-card">
+            <div class="label">Transactions</div>
+            <div class="value" id="transactionCount">0</div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="stat-card">
+            <div class="label">Status</div>
+            <div class="value" style="font-size: 16px" id="systemStatus">
+              <i class="fa-solid fa-circle-check"></i> Active
             </div>
-            <a href="/" class="btn btn-gold">← Back to Dashboard</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <!-- Left: Accounts -->
+        <div class="col-md-6">
+          <div class="card">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h5><i class="fa-solid fa-user"></i> Accounts</h5>
+              <button class="btn btn-gold btn-sm" onclick="showCreateAccount()">
+                + New Account
+              </button>
+            </div>
+            <div id="accountsList">
+              <div class="text-center text-muted py-4">Loading accounts...</div>
+            </div>
+          </div>
+
+          <!-- Create Account Form -->
+          <div class="card" id="createAccountForm" style="display: none">
+            <h5><i class="fa-solid fa-user"></i> Create New Account</h5>
+            <form id="accountForm">
+              <div class="mb-3">
+                <label class="form-label text-muted">Account Name</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="accName"
+                  placeholder="e.g., Savings Account"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label class="form-label text-muted">Account Type</label>
+                <select class="form-select" id="accType">
+                  <option value="savings">Savings</option>
+                  <option value="current">Current</option>
+                  <option value="investment">Investment</option>
+                  <option value="wallet">Wallet</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label class="form-label text-muted">Initial Balance (₹)</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="accBalance"
+                  value="0"
+                  step="0.01"
+                />
+              </div>
+              <button type="submit" class="btn btn-gold w-100">
+                Create Account
+              </button>
+              <button
+                type="button"
+                class="btn btn-ghost w-100 mt-2"
+                onclick="hideCreateAccount()"
+              >
+                Cancel
+              </button>
+            </form>
+          </div>
         </div>
 
-        <!-- Summary Stats -->
-        <div class="row mb-4" id="statsRow">
-            <div class="col-md-3">
-                <div class="stat-card">
-                    <div class="label">Total Balance</div>
-                    <div class="value text-gold" id="totalBalance">₹0</div>
-                </div>
+        <!-- Right: Transfer -->
+        <div class="col-md-6">
+          <div class="card">
+            <h5>
+              <i class="fa-solid fa-money-bill-transfer"></i> Transfer Money
+            </h5>
+            <form id="transferForm">
+              <div class="mb-3">
+                <label class="form-label text-muted">From Account</label>
+                <select class="form-select" id="fromAccount" required></select>
+              </div>
+              <div class="mb-3">
+                <label class="form-label text-muted">To Account</label>
+                <select class="form-select" id="toAccount" required></select>
+              </div>
+              <div class="mb-3">
+                <label class="form-label text-muted">Amount (₹)</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="transferAmount"
+                  placeholder="Enter amount"
+                  step="0.01"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label class="form-label text-muted">Description</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="transferDesc"
+                  placeholder="Optional description"
+                />
+              </div>
+              <button type="submit" class="btn btn-gold w-100">Transfer</button>
+            </form>
+          </div>
+
+          <!-- Quick Actions -->
+          <div class="card">
+            <h5><i class="fa-solid fa-bolt"></i> Quick Actions</h5>
+            <div class="row g-2">
+              <div class="col-6">
+                <button class="btn btn-success w-100" onclick="quickDeposit()">
+                  <i class="fa-solid fa-arrow-down"></i> Deposit
+                </button>
+              </div>
+              <div class="col-6">
+                <button class="btn btn-danger w-100" onclick="quickWithdraw()">
+                  <i class="fa-solid fa-arrow-up"></i> Withdraw
+                </button>
+              </div>
+              <div class="col-12">
+                <button class="btn btn-ghost w-100" onclick="reconcileAll()">
+                  <i class="fa-solid fa-magnifying-glass"></i> Reconcile All
+                </button>
+              </div>
             </div>
-            <div class="col-md-3">
-                <div class="stat-card">
-                    <div class="label">Accounts</div>
-                    <div class="value" id="accountCount">0</div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="stat-card">
-                    <div class="label">Transactions</div>
-                    <div class="value" id="transactionCount">0</div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="stat-card">
-                    <div class="label">Status</div>
-                    <div class="value" style="font-size:16px;" id="systemStatus"><i class="fa-solid fa-circle-check"></i> Active</div>
-                </div>
-            </div>
+          </div>
         </div>
+      </div>
 
-        <div class="row">
-            <!-- Left: Accounts -->
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h5><i class="fa-solid fa-user"></i> Accounts</h5>
-                        <button class="btn btn-gold btn-sm" onclick="showCreateAccount()">+ New Account</button>
-                    </div>
-                    <div id="accountsList">
-                        <div class="text-center text-muted py-4">Loading accounts...</div>
-                    </div>
-                </div>
-
-                <!-- Create Account Form -->
-                <div class="card" id="createAccountForm" style="display:none;">
-                    <h5><i class="fa-solid fa-user"></i> Create New Account</h5>
-                    <form id="accountForm">
-                        <div class="mb-3">
-                            <label class="form-label text-muted">Account Name</label>
-                            <input type="text" class="form-control" id="accName" placeholder="e.g., Savings Account" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label text-muted">Account Type</label>
-                            <select class="form-select" id="accType">
-                                <option value="savings">Savings</option>
-                                <option value="current">Current</option>
-                                <option value="investment">Investment</option>
-                                <option value="wallet">Wallet</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label text-muted">Initial Balance (₹)</label>
-                            <input type="number" class="form-control" id="accBalance" value="0" step="0.01">
-                        </div>
-                        <button type="submit" class="btn btn-gold w-100">Create Account</button>
-                        <button type="button" class="btn btn-ghost w-100 mt-2" onclick="hideCreateAccount()">Cancel</button>
-                    </form>
-                </div>
-            </div>
-
-            <!-- Right: Transfer -->
-            <div class="col-md-6">
-                <div class="card">
-                    <h5><i class="fa-solid fa-money-bill-transfer"></i> Transfer Money</h5>
-                    <form id="transferForm">
-                        <div class="mb-3">
-                            <label class="form-label text-muted">From Account</label>
-                            <select class="form-select" id="fromAccount" required></select>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label text-muted">To Account</label>
-                            <select class="form-select" id="toAccount" required></select>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label text-muted">Amount (₹)</label>
-                            <input type="number" class="form-control" id="transferAmount" placeholder="Enter amount" step="0.01" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label text-muted">Description</label>
-                            <input type="text" class="form-control" id="transferDesc" placeholder="Optional description">
-                        </div>
-                        <button type="submit" class="btn btn-gold w-100"> Transfer</button>
-                    </form>
-                </div>
-
-                <!-- Quick Actions -->
-                <div class="card">
-                    <h5><i class="fa-solid fa-bolt"></i> Quick Actions</h5>
-                    <div class="row g-2">
-                        <div class="col-6">
-                            <button class="btn btn-success w-100" onclick="quickDeposit()"><i class="fa-solid fa-arrow-down"></i> Deposit</button>
-                        </div>
-                        <div class="col-6">
-                            <button class="btn btn-danger w-100" onclick="quickWithdraw()"><i class="fa-solid fa-arrow-up"></i> Withdraw</button>
-                        </div>
-                        <div class="col-12">
-                            <button class="btn btn-ghost w-100" onclick="reconcileAll()"><i class="fa-solid fa-magnifying-glass"></i> Reconcile All</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+      <!-- Transaction History -->
+      <div class="card">
+        <h5>
+          <i class="fa-solid fa-clock-rotate-left"></i> Transaction History
+        </h5>
+        <div id="transactionHistory">
+          <div class="text-center text-muted py-4">
+            Select an account to view transactions
+          </div>
         </div>
-
-        <!-- Transaction History -->
-        <div class="card">
-            <h5><i class="fa-solid fa-clock-rotate-left"></i> Transaction History</h5>
-            <div id="transactionHistory">
-                <div class="text-center text-muted py-4">Select an account to view transactions</div>
-            </div>
-        </div>
+      </div>
     </div>
 
     <script>
-        let currentAccountId = null;
+      let currentAccountId = null;
 
-        // Load accounts on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            loadAccounts();
-        });
+      // Load accounts on page load
+      document.addEventListener('DOMContentLoaded', function () {
+        loadAccounts();
+      });
 
-        async function loadAccounts() {
-            try {
-                const response = await fetch('/api/ledger/accounts');
-                const data = await response.json();
+      async function loadAccounts() {
+        try {
+          const response = await fetch('/api/ledger/accounts');
+          const data = await response.json();
 
-                if (data.success) {
-                    renderAccounts(data.accounts);
-                    renderStats(data.summary);
-                    populateAccountSelects(data.accounts);
-                }
-            } catch (error) {
-                console.error('Error loading accounts:', error);
-            }
+          if (data.success) {
+            renderAccounts(data.accounts);
+            renderStats(data.summary);
+            populateAccountSelects(data.accounts);
+          }
+        } catch (error) {
+          console.error('Error loading accounts:', error);
+        }
+      }
+
+      function renderAccounts(accounts) {
+        const container = document.getElementById('accountsList');
+        if (!accounts || accounts.length === 0) {
+          container.innerHTML =
+            '<div class="text-center text-muted py-4">No accounts yet. Create one!</div>';
+          return;
         }
 
-        function renderAccounts(accounts) {
-            const container = document.getElementById('accountsList');
-            if (!accounts || accounts.length === 0) {
-                container.innerHTML = '<div class="text-center text-muted py-4">No accounts yet. Create one!</div>';
-                return;
-            }
-
-            let html = '';
-            accounts.forEach(acc => {
-                const balance = acc.balance;
-                const balanceClass = balance >= 0 ? 'balance-positive' : 'balance-negative';
-                html += `
+        let html = '';
+        accounts.forEach((acc) => {
+          const balance = acc.balance;
+          const balanceClass =
+            balance >= 0 ? 'balance-positive' : 'balance-negative';
+          html += `
                     <div class="d-flex justify-content-between align-items-center p-3" style="border-bottom:1px solid rgba(255,255,255,0.04);">
                         <div>
                             <div><strong>${acc.account_name}</strong> <span class="badge bg-secondary">${acc.account_type}</span></div>
@@ -209,133 +354,152 @@
                         </div>
                     </div>
                 `;
+        });
+        container.innerHTML = html;
+      }
+
+      function renderStats(summary) {
+        document.getElementById('totalBalance').textContent =
+          '₹' + summary.total_balance.toFixed(2);
+        document.getElementById('accountCount').textContent =
+          summary.account_count;
+      }
+
+      function populateAccountSelects(accounts) {
+        const fromSelect = document.getElementById('fromAccount');
+        const toSelect = document.getElementById('toAccount');
+
+        fromSelect.innerHTML = '';
+        toSelect.innerHTML = '';
+
+        accounts.forEach((acc) => {
+          const opt1 = document.createElement('option');
+          opt1.value = acc.id;
+          opt1.textContent = `${acc.account_name} (₹${acc.balance.toFixed(2)})`;
+          fromSelect.appendChild(opt1);
+
+          const opt2 = document.createElement('option');
+          opt2.value = acc.id;
+          opt2.textContent = `${acc.account_name} (₹${acc.balance.toFixed(2)})`;
+          toSelect.appendChild(opt2);
+        });
+      }
+
+      // Transfer Form
+      document
+        .getElementById('transferForm')
+        .addEventListener('submit', async function (e) {
+          e.preventDefault();
+
+          const data = {
+            from_account_id: parseInt(
+              document.getElementById('fromAccount').value,
+            ),
+            to_account_id: parseInt(document.getElementById('toAccount').value),
+            amount: parseFloat(document.getElementById('transferAmount').value),
+            description: document.getElementById('transferDesc').value,
+          };
+
+          if (data.from_account_id === data.to_account_id) {
+            alert('Cannot transfer to the same account!');
+            return;
+          }
+
+          if (data.amount <= 0) {
+            alert('Amount must be greater than 0!');
+            return;
+          }
+
+          try {
+            const response = await fetch('/api/ledger/transfer', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(data),
             });
-            container.innerHTML = html;
-        }
 
-        function renderStats(summary) {
-            document.getElementById('totalBalance').textContent = '₹' + summary.total_balance.toFixed(2);
-            document.getElementById('accountCount').textContent = summary.account_count;
-        }
+            const result = await response.json();
 
-        function populateAccountSelects(accounts) {
-            const fromSelect = document.getElementById('fromAccount');
-            const toSelect = document.getElementById('toAccount');
-
-            fromSelect.innerHTML = '';
-            toSelect.innerHTML = '';
-
-            accounts.forEach(acc => {
-                const opt1 = document.createElement('option');
-                opt1.value = acc.id;
-                opt1.textContent = `${acc.account_name} (₹${acc.balance.toFixed(2)})`;
-                fromSelect.appendChild(opt1);
-
-                const opt2 = document.createElement('option');
-                opt2.value = acc.id;
-                opt2.textContent = `${acc.account_name} (₹${acc.balance.toFixed(2)})`;
-                toSelect.appendChild(opt2);
-            });
-        }
-
-        // Transfer Form
-        document.getElementById('transferForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-
-            const data = {
-                from_account_id: parseInt(document.getElementById('fromAccount').value),
-                to_account_id: parseInt(document.getElementById('toAccount').value),
-                amount: parseFloat(document.getElementById('transferAmount').value),
-                description: document.getElementById('transferDesc').value
-            };
-
-            if (data.from_account_id === data.to_account_id) {
-                alert('Cannot transfer to the same account!');
-                return;
+            if (result.success) {
+              alert(
+                `✅ Transfer successful!\nRef: ${result.reference_id}\nAmount: ₹${result.amount}`,
+              );
+              document.getElementById('transferForm').reset();
+              loadAccounts();
+            } else {
+              alert('❌ Transfer failed: ' + result.error);
             }
-
-            if (data.amount <= 0) {
-                alert('Amount must be greater than 0!');
-                return;
-            }
-
-            try {
-                const response = await fetch('/api/ledger/transfer', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-
-                const result = await response.json();
-
-                if (result.success) {
-                    alert(`✅ Transfer successful!\nRef: ${result.reference_id}\nAmount: ₹${result.amount}`);
-                    document.getElementById('transferForm').reset();
-                    loadAccounts();
-                } else {
-                    alert('❌ Transfer failed: ' + result.error);
-                }
-            } catch (error) {
-                alert('❌ Error: ' + error.message);
-            }
+          } catch (error) {
+            alert('❌ Error: ' + error.message);
+          }
         });
 
-        // Create Account Form
-        document.getElementById('accountForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
+      // Create Account Form
+      document
+        .getElementById('accountForm')
+        .addEventListener('submit', async function (e) {
+          e.preventDefault();
 
-            const data = {
-                account_name: document.getElementById('accName').value,
-                account_type: document.getElementById('accType').value,
-                initial_balance: parseFloat(document.getElementById('accBalance').value) || 0
-            };
+          const data = {
+            account_name: document.getElementById('accName').value,
+            account_type: document.getElementById('accType').value,
+            initial_balance:
+              parseFloat(document.getElementById('accBalance').value) || 0,
+          };
 
-            try {
-                const response = await fetch('/api/ledger/account', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
+          try {
+            const response = await fetch('/api/ledger/account', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(data),
+            });
 
-                const result = await response.json();
+            const result = await response.json();
 
-                if (result.success) {
-                    alert('✅ Account created successfully!');
-                    document.getElementById('accountForm').reset();
-                    hideCreateAccount();
-                    loadAccounts();
-                } else {
-                    alert('❌ Error: ' + result.error);
-                }
-            } catch (error) {
-                alert('❌ Error: ' + error.message);
+            if (result.success) {
+              alert('✅ Account created successfully!');
+              document.getElementById('accountForm').reset();
+              hideCreateAccount();
+              loadAccounts();
+            } else {
+              alert('❌ Error: ' + result.error);
             }
+          } catch (error) {
+            alert('❌ Error: ' + error.message);
+          }
         });
 
-        function showCreateAccount() {
-            document.getElementById('createAccountForm').style.display = 'block';
-        }
+      function showCreateAccount() {
+        document.getElementById('createAccountForm').style.display = 'block';
+      }
 
-        function hideCreateAccount() {
-            document.getElementById('createAccountForm').style.display = 'none';
-        }
+      function hideCreateAccount() {
+        document.getElementById('createAccountForm').style.display = 'none';
+      }
 
-        async function viewTransactions(accountId) {
-            try {
-                const response = await fetch(`/api/ledger/transactions/${accountId}`);
-                const data = await response.json();
+      async function viewTransactions(accountId) {
+        try {
+          const response = await fetch(`/api/ledger/transactions/${accountId}`);
+          const data = await response.json();
 
-                const container = document.getElementById('transactionHistory');
-                if (!data.transactions || data.transactions.length === 0) {
-                    container.innerHTML = '<div class="text-center text-muted py-4">No transactions for this account</div>';
-                    return;
-                }
+          const container = document.getElementById('transactionHistory');
+          if (!data.transactions || data.transactions.length === 0) {
+            container.innerHTML =
+              '<div class="text-center text-muted py-4">No transactions for this account</div>';
+            return;
+          }
 
-                let html = '<table class="table table-dark"><thead><tr><th>Date</th><th>Type</th><th>Amount</th><th>Description</th><th>Status</th></tr></thead><tbody>';
-                data.transactions.forEach(tx => {
-                    const typeClass = tx.type === 'CREDIT' ? 'entry-credit' : 'entry-debit';
-                    const statusClass = tx.status === 'COMPLETED' ? 'badge-completed' : tx.status === 'PENDING' ? 'badge-pending' : 'badge-failed';
-                    html += `
+          let html =
+            '<table class="table table-dark"><thead><tr><th>Date</th><th>Type</th><th>Amount</th><th>Description</th><th>Status</th></tr></thead><tbody>';
+          data.transactions.forEach((tx) => {
+            const typeClass =
+              tx.type === 'CREDIT' ? 'entry-credit' : 'entry-debit';
+            const statusClass =
+              tx.status === 'COMPLETED'
+                ? 'badge-completed'
+                : tx.status === 'PENDING'
+                  ? 'badge-pending'
+                  : 'badge-failed';
+            html += `
                         <tr>
                             <td>${new Date(tx.timestamp).toLocaleDateString()}</td>
                             <td class="${typeClass}">${tx.type}</td>
@@ -344,98 +508,108 @@
                             <td><span class="badge ${statusClass}">${tx.status}</span></td>
                         </tr>
                     `;
-                });
-                html += '</tbody></table>';
-                container.innerHTML = html;
-                currentAccountId = accountId;
-            } catch (error) {
-                console.error('Error:', error);
-            }
+          });
+          html += '</tbody></table>';
+          container.innerHTML = html;
+          currentAccountId = accountId;
+        } catch (error) {
+          console.error('Error:', error);
         }
+      }
 
-        async function quickDeposit() {
-            const accountId = prompt('Enter account ID for deposit:');
-            if (!accountId) return;
+      async function quickDeposit() {
+        const accountId = prompt('Enter account ID for deposit:');
+        if (!accountId) return;
 
-            const amount = prompt('Enter amount to deposit:');
-            if (!amount || isNaN(amount)) return;
+        const amount = prompt('Enter amount to deposit:');
+        if (!amount || isNaN(amount)) return;
 
-            try {
-                const response = await fetch('/api/ledger/deposit', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ account_id: parseInt(accountId), amount: parseFloat(amount) })
-                });
+        try {
+          const response = await fetch('/api/ledger/deposit', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              account_id: parseInt(accountId),
+              amount: parseFloat(amount),
+            }),
+          });
 
-                const result = await response.json();
-                if (result.success) {
-                    alert(`✅ Deposit successful! New balance: ₹${result.new_balance.toFixed(2)}`);
-                    loadAccounts();
-                } else {
-                    alert('❌ Error: ' + result.error);
-                }
-            } catch (error) {
-                alert('❌ Error: ' + error.message);
-            }
+          const result = await response.json();
+          if (result.success) {
+            alert(
+              `✅ Deposit successful! New balance: ₹${result.new_balance.toFixed(2)}`,
+            );
+            loadAccounts();
+          } else {
+            alert('❌ Error: ' + result.error);
+          }
+        } catch (error) {
+          alert('❌ Error: ' + error.message);
         }
+      }
 
-        async function quickWithdraw() {
-            const accountId = prompt('Enter account ID for withdrawal:');
-            if (!accountId) return;
+      async function quickWithdraw() {
+        const accountId = prompt('Enter account ID for withdrawal:');
+        if (!accountId) return;
 
-            const amount = prompt('Enter amount to withdraw:');
-            if (!amount || isNaN(amount)) return;
+        const amount = prompt('Enter amount to withdraw:');
+        if (!amount || isNaN(amount)) return;
 
-            try {
-                const response = await fetch('/api/ledger/withdraw', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ account_id: parseInt(accountId), amount: parseFloat(amount) })
-                });
+        try {
+          const response = await fetch('/api/ledger/withdraw', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              account_id: parseInt(accountId),
+              amount: parseFloat(amount),
+            }),
+          });
 
-                const result = await response.json();
-                if (result.success) {
-                    alert(`✅ Withdrawal successful! New balance: ₹${result.new_balance.toFixed(2)}`);
-                    loadAccounts();
-                } else {
-                    alert('❌ Error: ' + result.error);
-                }
-            } catch (error) {
-                alert('❌ Error: ' + error.message);
-            }
+          const result = await response.json();
+          if (result.success) {
+            alert(
+              `✅ Withdrawal successful! New balance: ₹${result.new_balance.toFixed(2)}`,
+            );
+            loadAccounts();
+          } else {
+            alert('❌ Error: ' + result.error);
+          }
+        } catch (error) {
+          alert('❌ Error: ' + error.message);
         }
+      }
 
-        async function reconcileAll() {
-            try {
-                const accountsResponse = await fetch('/api/ledger/accounts');
-                const accountsData = await accountsResponse.json();
+      async function reconcileAll() {
+        try {
+          const accountsResponse = await fetch('/api/ledger/accounts');
+          const accountsData = await accountsResponse.json();
 
-                if (!accountsData.success) {
-                    alert('Failed to load accounts');
-                    return;
-                }
+          if (!accountsData.success) {
+            alert('Failed to load accounts');
+            return;
+          }
 
-                let results = [];
-                for (const acc of accountsData.accounts) {
-                    const response = await fetch(`/api/ledger/reconcile/${acc.id}`, {
-                        method: 'POST'
-                    });
-                    const data = await response.json();
-                    if (data.success) {
-                        results.push(data.reconciliation);
-                    }
-                }
-
-                let msg = '🔍 Reconciliation Results:\n\n';
-                results.forEach(r => {
-                    msg += `${r.account_name}: ${r.is_balanced ? '✅ Balanced' : '❌ Mismatch'}\n`;
-                    msg += `  Account: ₹${r.account_balance.toFixed(2)} | Ledger: ₹${r.ledger_balance.toFixed(2)}\n\n`;
-                });
-                alert(msg);
-            } catch (error) {
-                alert('❌ Error: ' + error.message);
+          let results = [];
+          for (const acc of accountsData.accounts) {
+            const response = await fetch(`/api/ledger/reconcile/${acc.id}`, {
+              method: 'POST',
+            });
+            const data = await response.json();
+            if (data.success) {
+              results.push(data.reconciliation);
             }
+          }
+
+          let msg = '🔍 Reconciliation Results:\n\n';
+          results.forEach((r) => {
+            msg += `${r.account_name}: ${r.is_balanced ? '✅ Balanced' : '❌ Mismatch'}\n`;
+            msg += `  Account: ₹${r.account_balance.toFixed(2)} | Ledger: ₹${r.ledger_balance.toFixed(2)}\n\n`;
+          });
+          alert(msg);
+        } catch (error) {
+          alert('❌ Error: ' + error.message);
         }
+      }
     </script>
-</body>
+  </body>
 </html>

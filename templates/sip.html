@@ -1,360 +1,672 @@
-{% extends 'base.html' %}
-
-{% block title %}SIP Calculator{% endblock %}
-
-{% block content %}
+{% extends 'base.html' %} {% block title %}SIP Calculator{% endblock %} {% block
+content %}
 <div id="sip" class="page active">
-  <div class="page-title"><i class="fa-solid fa-calculator"></i> SIP <span>Calculator</span></div>
+  <div class="page-title">
+    <i class="fa-solid fa-calculator"></i> SIP <span>Calculator</span>
+  </div>
 
-  <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 20px; align-items: start; max-width: 900px;">
+  <div
+    style="
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 20px;
+      align-items: start;
+      max-width: 900px;
+    "
+  >
     <div class="card">
       <div class="card-title">SIP Projection</div>
 
       <label>Monthly Investment (₹)</label>
-      <input type="number" required min="0" id="sip_monthly" placeholder="e.g. 10000">
+      <input
+        type="number"
+        required
+        min="0"
+        id="sip_monthly"
+        placeholder="e.g. 10000"
+      />
 
       <label>Annual Return Rate (%)</label>
-      <input type="number" required min="0" id="sip_rate" placeholder="e.g. 12">
+      <input
+        type="number"
+        required
+        min="0"
+        id="sip_rate"
+        placeholder="e.g. 12"
+      />
 
       <label>Investment Period (Years)</label>
-      <input type="number" required min="0" id="sip_years" placeholder="e.g. 10">
+      <input
+        type="number"
+        required
+        min="0"
+        id="sip_years"
+        placeholder="e.g. 10"
+      />
 
       <label>Inflation Rate (%)</label>
-      <input type="number" min="0" id="sip_inflation" placeholder="e.g. 6" value="6" style="margin-bottom:12px;">
+      <input
+        type="number"
+        min="0"
+        id="sip_inflation"
+        placeholder="e.g. 6"
+        value="6"
+        style="margin-bottom: 12px"
+      />
 
-      <div style="display:flex;gap:10px;margin-top:16px;">
-        <button class="btn btn-gold" style="flex:1" onclick="calcSIP()" id="sipBtn">Calculate</button>
-        <button class="btn btn-ghost" style="flex:1" onclick="resetSIP()" id="sipResetBtn">Reset</button>
+      <div style="display: flex; gap: 10px; margin-top: 16px">
+        <button
+          class="btn btn-gold"
+          style="flex: 1"
+          onclick="calcSIP()"
+          id="sipBtn"
+        >
+          Calculate
+        </button>
+        <button
+          class="btn btn-ghost"
+          style="flex: 1"
+          onclick="resetSIP()"
+          id="sipResetBtn"
+        >
+          Reset
+        </button>
       </div>
 
       <div id="sipResult" class="result-box"></div>
-      <div id="export-section" style="display:none; gap:10px; margin-top:14px;">
-        <button class="btn btn-ghost" style="flex:1" onclick="exportReport('csv')" id="exportCsvBtn"><i class="fa-solid fa-download"></i> Download CSV</button>
-        <button class="btn btn-ghost" style="flex:1" onclick="exportReport('pdf')" id="exportPdfBtn"><i class="fa-solid fa-download"></i>Download PDF</button>
+      <div
+        id="export-section"
+        style="display: none; gap: 10px; margin-top: 14px"
+      >
+        <button
+          class="btn btn-ghost"
+          style="flex: 1"
+          onclick="exportReport('csv')"
+          id="exportCsvBtn"
+        >
+          <i class="fa-solid fa-download"></i> Download CSV
+        </button>
+        <button
+          class="btn btn-ghost"
+          style="flex: 1"
+          onclick="exportReport('pdf')"
+          id="exportPdfBtn"
+        >
+          <i class="fa-solid fa-download"></i>Download PDF
+        </button>
       </div>
     </div>
 
-    <div class="card" style="min-height: 380px;">
+    <div class="card" style="min-height: 380px">
       <div class="card-title">Wealth Growth Curve</div>
-      <div style="position: relative; height: 320px;">
+      <div style="position: relative; height: 320px">
         <canvas id="sipChart"></canvas>
       </div>
     </div>
   </div>
 
-
   <!-- SIP Explainability & What-If Simulation -->
-  <div id="sip-explainability" class="card" style="display: none; max-width: 900px; margin-top: 20px;">
-    <div class="card-title"><i class="fa-solid fa-lightbulb"></i> Explainable Projections & Sensitivity Analysis</div>
-    
+  <div
+    id="sip-explainability"
+    class="card"
+    style="display: none; max-width: 900px; margin-top: 20px"
+  >
+    <div class="card-title">
+      <i class="fa-solid fa-lightbulb"></i> Explainable Projections &
+      Sensitivity Analysis
+    </div>
+
     <!-- Sliders section -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid var(--border);">
+    <div
+      style="
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 20px;
+        margin-bottom: 24px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid var(--border);
+      "
+    >
       <div>
-        <label style="display: flex; justify-content: space-between; font-weight: 500; font-size: 13px;">
+        <label
+          style="
+            display: flex;
+            justify-content: space-between;
+            font-weight: 500;
+            font-size: 13px;
+          "
+        >
           <span>Return Rate Slider</span>
-          <span id="sliderSipRateVal" style="color: var(--gold2); font-weight: 600;">0%</span>
+          <span
+            id="sliderSipRateVal"
+            style="color: var(--gold2); font-weight: 600"
+            >0%</span
+          >
         </label>
-        <input type="range" id="sliderSipRate" min="0" max="30" step="0.5" value="12" style="width: 100%; margin-top: 8px;" oninput="updateSipSlider('sip_rate', this.value, 'sliderSipRateVal', '%')">
-        <span style="font-size: 10px; color: var(--muted); display: block; margin-top: 4px;">Adjust return rate to simulate market cycles (0% to 30%).</span>
+        <input
+          type="range"
+          id="sliderSipRate"
+          min="0"
+          max="30"
+          step="0.5"
+          value="12"
+          style="width: 100%; margin-top: 8px"
+          oninput="
+            updateSipSlider('sip_rate', this.value, 'sliderSipRateVal', '%')
+          "
+        />
+        <span
+          style="
+            font-size: 10px;
+            color: var(--muted);
+            display: block;
+            margin-top: 4px;
+          "
+          >Adjust return rate to simulate market cycles (0% to 30%).</span
+        >
       </div>
-      
+
       <div>
-        <label style="display: flex; justify-content: space-between; font-weight: 500; font-size: 13px;">
+        <label
+          style="
+            display: flex;
+            justify-content: space-between;
+            font-weight: 500;
+            font-size: 13px;
+          "
+        >
           <span>Inflation Rate Slider</span>
-          <span id="sliderSipInflationVal" style="color: var(--gold2); font-weight: 600;">0%</span>
+          <span
+            id="sliderSipInflationVal"
+            style="color: var(--gold2); font-weight: 600"
+            >0%</span
+          >
         </label>
-        <input type="range" id="sliderSipInflation" min="0" max="15" step="0.5" value="6" style="width: 100%; margin-top: 8px;" oninput="updateSipSlider('sip_inflation', this.value, 'sliderSipInflationVal', '%')">
-        <span style="font-size: 10px; color: var(--muted); display: block; margin-top: 4px;">Adjust inflation rate to see purchasing power impact (0% to 15%).</span>
+        <input
+          type="range"
+          id="sliderSipInflation"
+          min="0"
+          max="15"
+          step="0.5"
+          value="6"
+          style="width: 100%; margin-top: 8px"
+          oninput="
+            updateSipSlider(
+              'sip_inflation',
+              this.value,
+              'sliderSipInflationVal',
+              '%',
+            )
+          "
+        />
+        <span
+          style="
+            font-size: 10px;
+            color: var(--muted);
+            display: block;
+            margin-top: 4px;
+          "
+          >Adjust inflation rate to see purchasing power impact (0% to
+          15%).</span
+        >
       </div>
     </div>
 
     <!-- Details -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+    <div
+      style="
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 20px;
+      "
+    >
       <!-- Formulas used -->
-      <div style="background: rgba(255,255,255,0.02); padding: 16px; border-radius: 12px; border: 1px solid var(--border);">
-        <div style="font-family:'Syne',sans-serif; font-size: 14px; font-weight: 700; color: var(--gold2); margin-bottom: 12px;">⚙️ Compounding Formula</div>
-        <div style="font-size: 12px; color: var(--muted); line-height: 1.5; margin-bottom: 8px;" id="sipFormulaNominal"></div>
-        <div style="font-size: 12px; color: var(--muted); line-height: 1.5;" id="sipFormulaAdjusted"></div>
+      <div
+        style="
+          background: rgba(255, 255, 255, 0.02);
+          padding: 16px;
+          border-radius: 12px;
+          border: 1px solid var(--border);
+        "
+      >
+        <div
+          style="
+            font-family: 'Syne', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--gold2);
+            margin-bottom: 12px;
+          "
+        >
+          ⚙️ Compounding Formula
+        </div>
+        <div
+          style="
+            font-size: 12px;
+            color: var(--muted);
+            line-height: 1.5;
+            margin-bottom: 8px;
+          "
+          id="sipFormulaNominal"
+        ></div>
+        <div
+          style="font-size: 12px; color: var(--muted); line-height: 1.5"
+          id="sipFormulaAdjusted"
+        ></div>
       </div>
 
       <!-- Sensitivity -->
-      <div style="background: rgba(255,255,255,0.02); padding: 16px; border-radius: 12px; border: 1px solid var(--border);">
-        <div style="font-family:'Syne',sans-serif; font-size: 14px; font-weight: 700; color: var(--gold2); margin-bottom: 12px;">⚡ Sensitivity Drivers</div>
-        <div style="display: flex; flex-direction: column; gap: 10px; font-size: 13px;">
-          <div style="border-bottom: 1px dashed var(--border); padding-bottom: 6px;">
-            <div style="font-weight:600; display:flex; justify-content:space-between;">
+      <div
+        style="
+          background: rgba(255, 255, 255, 0.02);
+          padding: 16px;
+          border-radius: 12px;
+          border: 1px solid var(--border);
+        "
+      >
+        <div
+          style="
+            font-family: 'Syne', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--gold2);
+            margin-bottom: 12px;
+          "
+        >
+          ⚡ Sensitivity Drivers
+        </div>
+        <div
+          style="
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            font-size: 13px;
+          "
+        >
+          <div
+            style="border-bottom: 1px dashed var(--border); padding-bottom: 6px"
+          >
+            <div
+              style="
+                font-weight: 600;
+                display: flex;
+                justify-content: space-between;
+              "
+            >
               <span>If returns are +1%:</span>
-              <span style="color:#2ecc8a;" id="sipSensRateP1">₹0</span>
+              <span style="color: #2ecc8a" id="sipSensRateP1">₹0</span>
             </div>
-            <div style="font-size:11px; color:var(--muted)">Future nominal value increases by the above amount.</div>
+            <div style="font-size: 11px; color: var(--muted)">
+              Future nominal value increases by the above amount.
+            </div>
           </div>
-          <div style="border-bottom: 1px dashed var(--border); padding-bottom: 6px;">
-            <div style="font-weight:600; display:flex; justify-content:space-between;">
+          <div
+            style="border-bottom: 1px dashed var(--border); padding-bottom: 6px"
+          >
+            <div
+              style="
+                font-weight: 600;
+                display: flex;
+                justify-content: space-between;
+              "
+            >
               <span>If returns are -1%:</span>
-              <span style="color:#e74c3c;" id="sipSensRateM1">₹0</span>
+              <span style="color: #e74c3c" id="sipSensRateM1">₹0</span>
             </div>
-            <div style="font-size:11px; color:var(--muted)">Future nominal value decreases by the above amount.</div>
+            <div style="font-size: 11px; color: var(--muted)">
+              Future nominal value decreases by the above amount.
+            </div>
           </div>
-          <div style="border-bottom: 1px dashed var(--border); padding-bottom: 6px;">
-            <div style="font-weight:600; display:flex; justify-content:space-between;">
+          <div
+            style="border-bottom: 1px dashed var(--border); padding-bottom: 6px"
+          >
+            <div
+              style="
+                font-weight: 600;
+                display: flex;
+                justify-content: space-between;
+              "
+            >
               <span>If inflation is +1%:</span>
-              <span style="color:#e74c3c;" id="sipSensInfP1">₹0</span>
+              <span style="color: #e74c3c" id="sipSensInfP1">₹0</span>
             </div>
-            <div style="font-size:11px; color:var(--muted)">Adjusted purchasing power decreases by the above amount.</div>
+            <div style="font-size: 11px; color: var(--muted)">
+              Adjusted purchasing power decreases by the above amount.
+            </div>
           </div>
           <div>
-            <div style="font-weight:600; display:flex; justify-content:space-between;">
+            <div
+              style="
+                font-weight: 600;
+                display: flex;
+                justify-content: space-between;
+              "
+            >
               <span>If inflation is -1%:</span>
-              <span style="color:#2ecc8a;" id="sipSensInfM1">₹0</span>
+              <span style="color: #2ecc8a" id="sipSensInfM1">₹0</span>
             </div>
-            <div style="font-size:11px; color:var(--muted)">Adjusted purchasing power increases by the above amount.</div>
+            <div style="font-size: 11px; color: var(--muted)">
+              Adjusted purchasing power increases by the above amount.
+            </div>
           </div>
         </div>
 
-<!-- ── STEP-UP SIP ─────────────────── -->
-  <div style="display:flex;flex-wrap:wrap;gap:20px;align-items:start;max-width:900px;margin-top:4px;">
-    <div class="card" style="flex:1;min-width:280px;">
-      <div class="card-title"><i class="fa-solid fa-stairs"></i> Step-Up SIP</div>
-      <div style="font-size:13px;color:var(--muted);margin-bottom:14px;">Uses Monthly, Rate &amp; Years from SIP Projection above.</div>
-      <label>Step-Up Type</label>
-      <div style="display:flex;gap:10px;margin-bottom:14px;">
-        <button id="stepupTypePerc" class="btn btn-gold" style="flex:1" onclick="setStepupType('percentage')">% Annual</button>
-        <button id="stepupTypeAmt" class="btn btn-ghost" style="flex:1" onclick="setStepupType('amount')">₹ Annual</button>
+        <!-- ── STEP-UP SIP ─────────────────── -->
+        <div
+          style="
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: start;
+            max-width: 900px;
+            margin-top: 4px;
+          "
+        >
+          <div class="card" style="flex: 1; min-width: 280px">
+            <div class="card-title">
+              <i class="fa-solid fa-stairs"></i> Step-Up SIP
+            </div>
+            <div
+              style="font-size: 13px; color: var(--muted); margin-bottom: 14px"
+            >
+              Uses Monthly, Rate &amp; Years from SIP Projection above.
+            </div>
+            <label>Step-Up Type</label>
+            <div style="display: flex; gap: 10px; margin-bottom: 14px">
+              <button
+                id="stepupTypePerc"
+                class="btn btn-gold"
+                style="flex: 1"
+                onclick="setStepupType('percentage')"
+              >
+                % Annual
+              </button>
+              <button
+                id="stepupTypeAmt"
+                class="btn btn-ghost"
+                style="flex: 1"
+                onclick="setStepupType('amount')"
+              >
+                ₹ Annual
+              </button>
+            </div>
+            <label id="stepupValueLabel">Annual Step-Up (%)</label>
+            <input
+              type="number"
+              min="0"
+              id="stepup_value"
+              placeholder="e.g. 10"
+            />
+            <label
+              >Inflation Rate (%)
+              <span style="font-size: 11px; color: var(--muted)"
+                >(optional)</span
+              ></label
+            >
+            <input
+              type="number"
+              min="0"
+              id="stepup_inflation"
+              placeholder="e.g. 6"
+            />
+            <button
+              class="btn btn-gold"
+              style="margin-top: 16px; width: 100%"
+              onclick="calcStepupSIP()"
+              id="stepupBtn"
+            >
+              Compare with Step-Up
+            </button>
+            <div id="stepupResult" class="result-box"></div>
+          </div>
+          <div
+            class="card"
+            style="min-height: 380px; flex: 1.2; min-width: 280px"
+          >
+            <div class="card-title">Flat vs Step-Up Comparison</div>
+            <div style="position: relative; height: 320px">
+              <canvas id="stepupChart"></canvas>
+            </div>
+          </div>
+        </div>
       </div>
-      <label id="stepupValueLabel">Annual Step-Up (%)</label>
-      <input type="number" min="0" id="stepup_value" placeholder="e.g. 10">
-      <label>Inflation Rate (%) <span style="font-size:11px;color:var(--muted)">(optional)</span></label>
-      <input type="number" min="0" id="stepup_inflation" placeholder="e.g. 6">
-      <button class="btn btn-gold" style="margin-top:16px;width:100%" onclick="calcStepupSIP()" id="stepupBtn">
-        Compare with Step-Up
-      </button>
-      <div id="stepupResult" class="result-box"></div>
-    </div>
-    <div class="card" style="min-height:380px;flex:1.2;min-width:280px;">
-      <div class="card-title">Flat vs Step-Up Comparison</div>
-      <div style="position:relative;height:320px;">
-        <canvas id="stepupChart"></canvas>
-      </div>
-    </div>
-  </div>
-</div>
-{% endblock %}
+      {% endblock %} {% block scripts %}
+      <script>
+        let sipChartInstance = null;
 
-{% block scripts %}
-<script>
-  let sipChartInstance = null;
+        function updateSipSlider(inputId, val, valSpanId, suffix = '') {
+          document.getElementById(inputId).value = val;
+          document.getElementById(valSpanId).textContent = val + suffix;
+          calcSIP();
+        }
 
-  function updateSipSlider(inputId, val, valSpanId, suffix = '') {
-    document.getElementById(inputId).value = val;
-    document.getElementById(valSpanId).textContent = val + suffix;
-    calcSIP();
-  }
+        async function calcSIP() {
+          const monthly = document.getElementById('sip_monthly').value;
+          const rate = document.getElementById('sip_rate').value;
+          const years = document.getElementById('sip_years').value;
+          const inflation = document.getElementById('sip_inflation').value || 0;
 
-  async function calcSIP() {
-    const monthly = document.getElementById('sip_monthly').value;
-    const rate = document.getElementById('sip_rate').value;
-    const years = document.getElementById('sip_years').value;
-    const inflation = document.getElementById('sip_inflation').value || 0;
+          if (!monthly || !rate || !years) {
+            showResult('sipResult', '⚠ Please fill all fields.');
+            return;
+          }
 
-    if (!monthly || !rate || !years) {
-      showResult('sipResult', '⚠ Please fill all fields.');
-      return;
-    }
+          setLoading('sipBtn', true);
+          try {
+            const data = await apiFetch('/sip', {
+              monthly: parseFloat(monthly),
+              rate: parseFloat(rate),
+              years: parseInt(years),
+              inflation: parseFloat(inflation),
+            });
 
-    setLoading('sipBtn', true);
-    try {
-      const data = await apiFetch('/sip', {
-        monthly: parseFloat(monthly),
-        rate: parseFloat(rate),
-        years: parseInt(years),
-        inflation: parseFloat(inflation)
-      });
+            if (data.error) {
+              showResult('sipResult', `⚠ ${data.error}`);
+            } else {
+              const fv = data.future_value;
+              const infVal = data.inflation_adjusted_value;
+              const inflationApplied = data.inflation_applied;
 
-      if (data.error) {
-        showResult('sipResult', `⚠ ${data.error}`);
-      } else {
-        const fv = data.future_value;
-        const infVal = data.inflation_adjusted_value;
-        const inflationApplied = data.inflation_applied;
-
-        let resultHtml = `
+              let resultHtml = `
           <div style="font-size:11px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.06em">Estimated Future Value</div>
           <div class="result-big">₹${fmtNum(fv)}</div>
         `;
 
-        if (inflationApplied > 0) {
-          resultHtml += `
+              if (inflationApplied > 0) {
+                resultHtml += `
             <div style="font-size:12px;color:var(--gold2);margin-top:4px;font-weight:600">
               Inflation-Adjusted Value (${inflationApplied}%): ₹${fmtNum(infVal)}
             </div>
           `;
-        }
+              }
 
-        resultHtml += `
+              resultHtml += `
           <div style="font-size:12px;color:var(--muted);margin-top:6px">
             Invested: ₹${fmtNum(monthly * years * 12)} &nbsp;·&nbsp;
             Gains: ₹${fmtNum(fv - monthly * years * 12)}
           </div>
         `;
-        showResult('sipResult', resultHtml);
+              showResult('sipResult', resultHtml);
 
-        updateReportData({
-          sip_projection: `Rs. ${fmtNum(fv)} (Invested: Rs. ${fmtNum(monthly * years * 12)})`
-        });
-        showExportSection();
+              updateReportData({
+                sip_projection: `Rs. ${fmtNum(fv)} (Invested: Rs. ${fmtNum(monthly * years * 12)})`,
+              });
+              showExportSection();
 
-        // Explainability & Simulation card
-        if (data.explainability) {
-          document.getElementById('sip-explainability').style.display = 'block';
-          
-          // Sync sliders
-          document.getElementById('sliderSipRate').value = rate;
-          document.getElementById('sliderSipRateVal').textContent = rate + '%';
-          document.getElementById('sliderSipInflation').value = inflation;
-          document.getElementById('sliderSipInflationVal').textContent = inflation + '%';
+              // Explainability & Simulation card
+              if (data.explainability) {
+                document.getElementById('sip-explainability').style.display =
+                  'block';
 
-          // Set formulas
-          document.getElementById('sipFormulaNominal').innerHTML = `<strong>Nominal FV Formula:</strong><br/>${data.explainability.formulas.nominal_future_value}`;
-          document.getElementById('sipFormulaAdjusted').innerHTML = `<strong>Inflation Adjusted Formula:</strong><br/>${data.explainability.formulas.inflation_adjusted_value}`;
+                // Sync sliders
+                document.getElementById('sliderSipRate').value = rate;
+                document.getElementById('sliderSipRateVal').textContent =
+                  rate + '%';
+                document.getElementById('sliderSipInflation').value = inflation;
+                document.getElementById('sliderSipInflationVal').textContent =
+                  inflation + '%';
 
-          // Set sensitivity values
-          const sens = data.explainability.sensitivity;
-          
-          const formatDiff = (diff) => {
-            const prefix = diff >= 0 ? '+₹' : '-₹';
-            return `${prefix}${fmtNum(Math.abs(diff))}`;
-          };
+                // Set formulas
+                document.getElementById('sipFormulaNominal').innerHTML =
+                  `<strong>Nominal FV Formula:</strong><br/>${data.explainability.formulas.nominal_future_value}`;
+                document.getElementById('sipFormulaAdjusted').innerHTML =
+                  `<strong>Inflation Adjusted Formula:</strong><br/>${data.explainability.formulas.inflation_adjusted_value}`;
 
-          document.getElementById('sipSensRateP1').textContent = formatDiff(sens.rate_plus_1_percent.difference);
-          document.getElementById('sipSensRateM1').textContent = formatDiff(sens.rate_minus_1_percent.difference);
-          document.getElementById('sipSensInfP1').textContent = formatDiff(sens.inflation_plus_1_percent.difference);
-          document.getElementById('sipSensInfM1').textContent = formatDiff(sens.inflation_minus_1_percent.difference);
-        }
+                // Set sensitivity values
+                const sens = data.explainability.sensitivity;
 
-        // Compute compounding points
-        const monthlyFloat = parseFloat(monthly);
-        const rateFloat = parseFloat(rate);
-        const yearsInt = parseInt(years);
+                const formatDiff = (diff) => {
+                  const prefix = diff >= 0 ? '+₹' : '-₹';
+                  return `${prefix}${fmtNum(Math.abs(diff))}`;
+                };
 
-        const labels = [];
-        const investedData = [];
-        const totalData = [];
-
-        const r = rateFloat / 100 / 12;
-        for (let y = 1; y <= yearsInt; y++) {
-          const n = y * 12;
-          const fv_point = monthlyFloat * ((Math.pow(1 + r, n) - 1) / r) * (1 + r);
-          const invested_point = monthlyFloat * n;
-          labels.push(`Year ${y}`);
-          investedData.push(Math.round(invested_point));
-          totalData.push(Math.round(fv_point));
-        }
-
-        // Draw compounding line chart
-        if (sipChartInstance) sipChartInstance.destroy();
-        const sipCtx = document.getElementById('sipChart').getContext('2d');
-        sipChartInstance = new Chart(sipCtx, {
-          type: 'line',
-          data: {
-            labels: labels,
-            datasets: [
-              {
-                label: 'Est. Wealth Value',
-                data: totalData,
-                borderColor: '#d4a843',
-                backgroundColor: 'rgba(212, 168, 67, 0.1)',
-                fill: true,
-                tension: 0.3
-              },
-              {
-                label: 'Amount Invested',
-                data: investedData,
-                borderColor: '#5a6a82',
-                backgroundColor: 'transparent',
-                borderDash: [5, 5],
-                tension: 0.1
+                document.getElementById('sipSensRateP1').textContent =
+                  formatDiff(sens.rate_plus_1_percent.difference);
+                document.getElementById('sipSensRateM1').textContent =
+                  formatDiff(sens.rate_minus_1_percent.difference);
+                document.getElementById('sipSensInfP1').textContent =
+                  formatDiff(sens.inflation_plus_1_percent.difference);
+                document.getElementById('sipSensInfM1').textContent =
+                  formatDiff(sens.inflation_minus_1_percent.difference);
               }
-            ]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              legend: {
-                labels: { color: '#eef0f5', font: { family: 'Instrument Sans' } }
+
+              // Compute compounding points
+              const monthlyFloat = parseFloat(monthly);
+              const rateFloat = parseFloat(rate);
+              const yearsInt = parseInt(years);
+
+              const labels = [];
+              const investedData = [];
+              const totalData = [];
+
+              const r = rateFloat / 100 / 12;
+              for (let y = 1; y <= yearsInt; y++) {
+                const n = y * 12;
+                const fv_point =
+                  monthlyFloat * ((Math.pow(1 + r, n) - 1) / r) * (1 + r);
+                const invested_point = monthlyFloat * n;
+                labels.push(`Year ${y}`);
+                investedData.push(Math.round(invested_point));
+                totalData.push(Math.round(fv_point));
               }
-            },
-            scales: {
-              x: {
-                grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                ticks: { color: '#5a6a82' }
-              },
-              y: {
-                grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                ticks: {
-                  color: '#5a6a82',
-                  callback: function (value) { return '₹' + fmtNum(value); }
-                }
-              }
+
+              // Draw compounding line chart
+              if (sipChartInstance) sipChartInstance.destroy();
+              const sipCtx = document
+                .getElementById('sipChart')
+                .getContext('2d');
+              sipChartInstance = new Chart(sipCtx, {
+                type: 'line',
+                data: {
+                  labels: labels,
+                  datasets: [
+                    {
+                      label: 'Est. Wealth Value',
+                      data: totalData,
+                      borderColor: '#d4a843',
+                      backgroundColor: 'rgba(212, 168, 67, 0.1)',
+                      fill: true,
+                      tension: 0.3,
+                    },
+                    {
+                      label: 'Amount Invested',
+                      data: investedData,
+                      borderColor: '#5a6a82',
+                      backgroundColor: 'transparent',
+                      borderDash: [5, 5],
+                      tension: 0.1,
+                    },
+                  ],
+                },
+                options: {
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  plugins: {
+                    legend: {
+                      labels: {
+                        color: '#eef0f5',
+                        font: { family: 'Instrument Sans' },
+                      },
+                    },
+                  },
+                  scales: {
+                    x: {
+                      grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                      ticks: { color: '#5a6a82' },
+                    },
+                    y: {
+                      grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                      ticks: {
+                        color: '#5a6a82',
+                        callback: function (value) {
+                          return '₹' + fmtNum(value);
+                        },
+                      },
+                    },
+                  },
+                },
+              });
             }
+          } catch (e) {
+            showResult('sipResult', '⚠ Could not reach server.');
           }
-        });
-      }
-    } catch (e) {
-      showResult('sipResult', '⚠ Could not reach server.');
-    }
-    setLoading('sipBtn', false);
-  }
+          setLoading('sipBtn', false);
+        }
 
-  let stepupChartInstance = null;
-  let currentStepupType = 'percentage';
+        let stepupChartInstance = null;
+        let currentStepupType = 'percentage';
 
-  function setStepupType(type) {
-    currentStepupType = type;
-    document.getElementById('stepupValueLabel').textContent =
-      type === 'percentage' ? 'Annual Step-Up (%)' : 'Annual Step-Up (₹)';
-    document.getElementById('stepup_value').placeholder =
-      type === 'percentage' ? 'e.g. 10' : 'e.g. 1000';
-    document.getElementById('stepupTypePerc').className =
-      type === 'percentage' ? 'btn btn-gold' : 'btn btn-ghost';
-    document.getElementById('stepupTypeAmt').className =
-      type === 'amount' ? 'btn btn-gold' : 'btn btn-ghost';
-  }
+        function setStepupType(type) {
+          currentStepupType = type;
+          document.getElementById('stepupValueLabel').textContent =
+            type === 'percentage' ? 'Annual Step-Up (%)' : 'Annual Step-Up (₹)';
+          document.getElementById('stepup_value').placeholder =
+            type === 'percentage' ? 'e.g. 10' : 'e.g. 1000';
+          document.getElementById('stepupTypePerc').className =
+            type === 'percentage' ? 'btn btn-gold' : 'btn btn-ghost';
+          document.getElementById('stepupTypeAmt').className =
+            type === 'amount' ? 'btn btn-gold' : 'btn btn-ghost';
+        }
 
-  async function calcStepupSIP() {
-    const monthly = document.getElementById('sip_monthly').value;
-    const rate = document.getElementById('sip_rate').value;
-    const years = document.getElementById('sip_years').value;
-    const stepup_value = document.getElementById('stepup_value').value;
-    const inflation = document.getElementById('stepup_inflation').value;
+        async function calcStepupSIP() {
+          const monthly = document.getElementById('sip_monthly').value;
+          const rate = document.getElementById('sip_rate').value;
+          const years = document.getElementById('sip_years').value;
+          const stepup_value = document.getElementById('stepup_value').value;
+          const inflation = document.getElementById('stepup_inflation').value;
 
-    if (!monthly || !rate || !years) {
-      showResult('stepupResult', '⚠ Please fill Monthly Investment, Rate and Years in SIP Projection above first.');
-      return;
-    }
-    if (stepup_value === '') {
-      showResult('stepupResult', '⚠ Please enter a Step-Up value.');
-      return;
-    }
+          if (!monthly || !rate || !years) {
+            showResult(
+              'stepupResult',
+              '⚠ Please fill Monthly Investment, Rate and Years in SIP Projection above first.',
+            );
+            return;
+          }
+          if (stepup_value === '') {
+            showResult('stepupResult', '⚠ Please enter a Step-Up value.');
+            return;
+          }
 
-    setLoading('stepupBtn', true);
-    try {
-      const data = await apiFetch('/sip-stepup', {
-        monthly: parseFloat(monthly),
-        rate: parseFloat(rate),
-        years: parseInt(years),
-        stepup_type: currentStepupType,
-        stepup_value: parseFloat(stepup_value),
-        inflation: inflation ? parseFloat(inflation) : 0.0
-      });
+          setLoading('stepupBtn', true);
+          try {
+            const data = await apiFetch('/sip-stepup', {
+              monthly: parseFloat(monthly),
+              rate: parseFloat(rate),
+              years: parseInt(years),
+              stepup_type: currentStepupType,
+              stepup_value: parseFloat(stepup_value),
+              inflation: inflation ? parseFloat(inflation) : 0.0,
+            });
 
-      if (data.error) {
-        showResult('stepupResult', `⚠ ${data.error}`);
-      } else {
-        const fvFlat = data.flat_nominal_value;
-        const fvStepup = data.stepup_nominal_value;
-        const gain = fvStepup - fvFlat;
-        showResult('stepupResult', `
+            if (data.error) {
+              showResult('stepupResult', `⚠ ${data.error}`);
+            } else {
+              const fvFlat = data.flat_nominal_value;
+              const fvStepup = data.stepup_nominal_value;
+              const gain = fvStepup - fvFlat;
+              showResult(
+                'stepupResult',
+                `
           <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:8px;">
             <div style="flex:1;min-width:120px;">
               <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;">Flat SIP</div>
@@ -370,96 +682,115 @@
           <div style="font-size:12px;color:var(--muted);">
             Extra wealth from step-up: <strong style="color:#14c8bf;">₹${fmtNum(gain)}</strong>
           </div>
-        `);
+        `,
+              );
 
-        const labels = data.yearly_breakdown.map(y => `Year ${y.year}`);
-        const flatData = data.yearly_breakdown.map(y => Math.round(y.flat_value));
-        const stepupData = data.yearly_breakdown.map(y => Math.round(y.stepup_value));
-        const investedData = data.yearly_breakdown.map(y => Math.round(y.flat_invested));
+              const labels = data.yearly_breakdown.map((y) => `Year ${y.year}`);
+              const flatData = data.yearly_breakdown.map((y) =>
+                Math.round(y.flat_value),
+              );
+              const stepupData = data.yearly_breakdown.map((y) =>
+                Math.round(y.stepup_value),
+              );
+              const investedData = data.yearly_breakdown.map((y) =>
+                Math.round(y.flat_invested),
+              );
 
-        if (stepupChartInstance) stepupChartInstance.destroy();
-        const ctx = document.getElementById('stepupChart').getContext('2d');
-        stepupChartInstance = new Chart(ctx, {
-          type: 'line',
-          data: {
-            labels: labels,
-            datasets: [
-              {
-                label: 'Step-Up SIP',
-                data: stepupData,
-                borderColor: '#14c8bf',
-                backgroundColor: 'rgba(20, 200, 191, 0.1)',
-                fill: true,
-                tension: 0.3
-              },
-              {
-                label: 'Flat SIP',
-                data: flatData,
-                borderColor: '#d4a843',
-                backgroundColor: 'rgba(212, 168, 67, 0.08)',
-                fill: true,
-                tension: 0.3
-              },
-              {
-                label: 'Amount Invested',
-                data: investedData,
-                borderColor: '#5a6a82',
-                backgroundColor: 'transparent',
-                borderDash: [5, 5],
-                tension: 0.1
-              }
-            ]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              legend: { labels: { color: '#eef0f5', font: { family: 'Instrument Sans' } } }
-            },
-            scales: {
-              x: {
-                grid: { color: 'rgba(255,255,255,0.05)' },
-                ticks: { color: '#5a6a82' }
-              },
-              y: {
-                grid: { color: 'rgba(255,255,255,0.05)' },
-                ticks: {
-                  color: '#5a6a82',
-                  callback: function(value) { return '₹' + fmtNum(value); }
-                }
-              }
+              if (stepupChartInstance) stepupChartInstance.destroy();
+              const ctx = document
+                .getElementById('stepupChart')
+                .getContext('2d');
+              stepupChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                  labels: labels,
+                  datasets: [
+                    {
+                      label: 'Step-Up SIP',
+                      data: stepupData,
+                      borderColor: '#14c8bf',
+                      backgroundColor: 'rgba(20, 200, 191, 0.1)',
+                      fill: true,
+                      tension: 0.3,
+                    },
+                    {
+                      label: 'Flat SIP',
+                      data: flatData,
+                      borderColor: '#d4a843',
+                      backgroundColor: 'rgba(212, 168, 67, 0.08)',
+                      fill: true,
+                      tension: 0.3,
+                    },
+                    {
+                      label: 'Amount Invested',
+                      data: investedData,
+                      borderColor: '#5a6a82',
+                      backgroundColor: 'transparent',
+                      borderDash: [5, 5],
+                      tension: 0.1,
+                    },
+                  ],
+                },
+                options: {
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  plugins: {
+                    legend: {
+                      labels: {
+                        color: '#eef0f5',
+                        font: { family: 'Instrument Sans' },
+                      },
+                    },
+                  },
+                  scales: {
+                    x: {
+                      grid: { color: 'rgba(255,255,255,0.05)' },
+                      ticks: { color: '#5a6a82' },
+                    },
+                    y: {
+                      grid: { color: 'rgba(255,255,255,0.05)' },
+                      ticks: {
+                        color: '#5a6a82',
+                        callback: function (value) {
+                          return '₹' + fmtNum(value);
+                        },
+                      },
+                    },
+                  },
+                },
+              });
             }
+          } catch (e) {
+            showResult('stepupResult', '⚠ Could not reach server.');
           }
-        });
-      }
-    } catch (e) {
-      showResult('stepupResult', '⚠ Could not reach server.');
-    }
-    setLoading('stepupBtn', false);
-  }
-  
-  function resetSIP() {
-    document.getElementById('sip_monthly').value = '';
-    document.getElementById('sip_rate').value = '';
-    document.getElementById('sip_years').value = '';
-    document.getElementById('sip_inflation').value = '6';
-    const res = document.getElementById('sipResult');
-    res.innerHTML = '';
-    res.classList.remove('visible');
-    if (sipChartInstance) {
-      sipChartInstance.destroy();
-      sipChartInstance = null;
-    }
-    const exportSection = document.getElementById('export-section');
-    if (exportSection) exportSection.style.display = 'none';
+          setLoading('stepupBtn', false);
+        }
 
-    // Hide explainability card and reset sliders
-    const expCard = document.getElementById('sip-explainability');
-    if (expCard) expCard.style.display = 'none';
-    document.getElementById('sliderSipRate').value = 12;
-    document.getElementById('sliderSipRateVal').textContent = '12%';
-    document.getElementById('sliderSipInflation').value = 6;
-    document.getElementById('sliderSipInflationVal').textContent = '6%';
-  }
-</script>
-{% endblock %}
+        function resetSIP() {
+          document.getElementById('sip_monthly').value = '';
+          document.getElementById('sip_rate').value = '';
+          document.getElementById('sip_years').value = '';
+          document.getElementById('sip_inflation').value = '6';
+          const res = document.getElementById('sipResult');
+          res.innerHTML = '';
+          res.classList.remove('visible');
+          if (sipChartInstance) {
+            sipChartInstance.destroy();
+            sipChartInstance = null;
+          }
+          const exportSection = document.getElementById('export-section');
+          if (exportSection) exportSection.style.display = 'none';
+
+          // Hide explainability card and reset sliders
+          const expCard = document.getElementById('sip-explainability');
+          if (expCard) expCard.style.display = 'none';
+          document.getElementById('sliderSipRate').value = 12;
+          document.getElementById('sliderSipRateVal').textContent = '12%';
+          document.getElementById('sliderSipInflation').value = 6;
+          document.getElementById('sliderSipInflationVal').textContent = '6%';
+        }
+      </script>
+      {% endblock %}
+    </div>
+  </div>
+</div>

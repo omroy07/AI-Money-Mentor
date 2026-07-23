@@ -4,25 +4,33 @@
    ===================================================== */
 
 body.light-theme {
-  --bg:     #f0f4f8;
-  --bg2:    #ffffff;
-  --bg3:    #e4eaf2;
-  --gold:   #b8892e;
-  --gold2:  #c9a240;
-  --teal:   #0fa89f;
-  --red:    #d44040;
-  --green:  #24a870;
-  --text:   #1a2235;
-  --muted:  #6b7a92;
+  --bg: #f0f4f8;
+  --bg2: #ffffff;
+  --bg3: #e4eaf2;
+  --gold: #b8892e;
+  --gold2: #c9a240;
+  --teal: #0fa89f;
+  --red: #d44040;
+  --green: #24a870;
+  --text: #1a2235;
+  --muted: #6b7a92;
   --border: rgba(0, 0, 0, 0.09);
-  --glow:   rgba(184, 137, 46, 0.12);
+  --glow: rgba(184, 137, 46, 0.12);
 }
 
 /* ── Background gradient overlay ── */
 body.light-theme::before {
   background:
-    radial-gradient(circle at 16% 16%, rgba(20, 200, 191, 0.06), transparent 18%),
-    radial-gradient(circle at 88% 12%, rgba(212, 168, 67, 0.06), transparent 14%),
+    radial-gradient(
+      circle at 16% 16%,
+      rgba(20, 200, 191, 0.06),
+      transparent 18%
+    ),
+    radial-gradient(
+      circle at 88% 12%,
+      rgba(212, 168, 67, 0.06),
+      transparent 14%
+    ),
     radial-gradient(circle at 50% 96%, rgba(0, 0, 0, 0.02), transparent 20%);
 }
 
@@ -48,7 +56,7 @@ body.light-theme .nav-item:hover {
 }
 
 body.light-theme .nav-item.active {
-  background: rgba(184, 137, 46, 0.10);
+  background: rgba(184, 137, 46, 0.1);
   color: var(--gold);
 }
 
@@ -56,7 +64,7 @@ body.light-theme .nav-item.active {
 body.light-theme .mobile-header {
   background: #ffffff;
   border-bottom-color: var(--border);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
 body.light-theme .menu-toggle-btn {
@@ -71,16 +79,22 @@ body.light-theme .mobile-logo {
 body.light-theme .card {
   background: #ffffff;
   border: 1px solid rgba(0, 0, 0, 0.07);
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.07), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.07),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
   color: var(--text);
 }
 
 body.light-theme .card::before {
-  background: linear-gradient(90deg, rgba(20, 200, 191, 0.04), rgba(212, 168, 67, 0.04));
+  background: linear-gradient(
+    90deg,
+    rgba(20, 200, 191, 0.04),
+    rgba(212, 168, 67, 0.04)
+  );
 }
 
 body.light-theme .card:hover {
-  box-shadow: 0 8px 36px rgba(0, 0, 0, 0.10);
+  box-shadow: 0 8px 36px rgba(0, 0, 0, 0.1);
 }
 
 body.light-theme .card-title {
@@ -95,10 +109,10 @@ body.light-theme .stat-card {
 }
 
 /* ── Inputs, selects, textareas ── */
-body.light-theme input[type="text"],
-body.light-theme input[type="number"],
-body.light-theme input[type="date"],
-body.light-theme input[type="file"],
+body.light-theme input[type='text'],
+body.light-theme input[type='number'],
+body.light-theme input[type='date'],
+body.light-theme input[type='file'],
 body.light-theme textarea,
 body.light-theme select {
   background: #f8fafc;
@@ -111,7 +125,7 @@ body.light-theme textarea:focus,
 body.light-theme select:focus {
   border-color: var(--gold);
   background: #ffffff;
-  box-shadow: 0 0 0 3px rgba(184, 137, 46, 0.10);
+  box-shadow: 0 0 0 3px rgba(184, 137, 46, 0.1);
 }
 
 body.light-theme input::placeholder,
@@ -143,7 +157,7 @@ body.light-theme .chat-messages {
 }
 
 body.light-theme .msg.user {
-  background: rgba(184, 137, 46, 0.10);
+  background: rgba(184, 137, 46, 0.1);
   border: 1px solid rgba(184, 137, 46, 0.25);
   color: #1a2235;
 }
@@ -205,7 +219,7 @@ body.light-theme .badge-green {
 }
 
 body.light-theme .badge-red {
-  background: rgba(212, 64, 64, 0.10);
+  background: rgba(212, 64, 64, 0.1);
   color: var(--red);
 }
 
@@ -332,9 +346,9 @@ body.light-theme .goal-input::placeholder {
 
 /* ── Expense form ── */
 body.light-theme #expenseForm select,
-body.light-theme #expenseForm input[type="date"],
-body.light-theme #expenseForm input[type="number"],
-body.light-theme #expenseForm input[type="text"] {
+body.light-theme #expenseForm input[type='date'],
+body.light-theme #expenseForm input[type='number'],
+body.light-theme #expenseForm input[type='text'] {
   background: #f8fafc;
   color: var(--text);
   border: 1px solid #d1d9e6;
@@ -357,7 +371,7 @@ body.light-theme #avgCard p {
 }
 
 /* ── Net worth special card ── */
-body.light-theme .stat-card[style*="rgba(212, 168, 67, 0.1)"] {
+body.light-theme .stat-card[style*='rgba(212, 168, 67, 0.1)'] {
   background: rgba(184, 137, 46, 0.07) !important;
   border-color: var(--gold) !important;
 }

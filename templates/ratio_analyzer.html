@@ -1,67 +1,74 @@
-{% extends 'base.html' %}
-
-{% block title %}Financial Ratio Analyzer{% endblock %}
-
-{% block content %}
+{% extends 'base.html' %} {% block title %}Financial Ratio Analyzer{% endblock
+%} {% block content %}
 <div id="ratio_analyzer" class="page active">
-  <div class="page-title"><i class="fa-solid fa-scale-balanced"></i> Financial Ratio <span>Analysis Dashboard</span></div>
+  <div class="page-title">
+    <i class="fa-solid fa-scale-balanced"></i> Financial Ratio
+    <span>Analysis Dashboard</span>
+  </div>
 
   <!-- Input Section -->
   <div class="card">
     <h5><i class="fa-solid fa-file-lines"></i> Enter Your Financial Data</h5>
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;">
+    <div
+      style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px"
+    >
       <div>
         <label>Current Assets (₹)</label>
-        <input type="number" id="currentAssets" value="500000" step="1000">
+        <input type="number" id="currentAssets" value="500000" step="1000" />
       </div>
       <div>
         <label>Current Liabilities (₹)</label>
-        <input type="number" id="currentLiabilities" value="250000" step="1000">
+        <input
+          type="number"
+          id="currentLiabilities"
+          value="250000"
+          step="1000"
+        />
       </div>
       <div>
         <label>Total Assets (₹)</label>
-        <input type="number" id="totalAssets" value="1000000" step="1000">
+        <input type="number" id="totalAssets" value="1000000" step="1000" />
       </div>
       <div>
         <label>Total Liabilities (₹)</label>
-        <input type="number" id="totalLiabilities" value="400000" step="1000">
+        <input type="number" id="totalLiabilities" value="400000" step="1000" />
       </div>
       <div>
         <label>Equity (₹)</label>
-        <input type="number" id="equity" value="600000" step="1000">
+        <input type="number" id="equity" value="600000" step="1000" />
       </div>
       <div>
         <label>Revenue (₹)</label>
-        <input type="number" id="revenue" value="800000" step="1000">
+        <input type="number" id="revenue" value="800000" step="1000" />
       </div>
       <div>
         <label>Net Income (₹)</label>
-        <input type="number" id="netIncome" value="80000" step="1000">
+        <input type="number" id="netIncome" value="80000" step="1000" />
       </div>
       <div>
         <label>EBIT (₹)</label>
-        <input type="number" id="ebit" value="100000" step="1000">
+        <input type="number" id="ebit" value="100000" step="1000" />
       </div>
       <div>
         <label>Inventory (₹)</label>
-        <input type="number" id="inventory" value="100000" step="1000">
+        <input type="number" id="inventory" value="100000" step="1000" />
       </div>
       <div>
         <label>Cash (₹)</label>
-        <input type="number" id="cash" value="150000" step="1000">
+        <input type="number" id="cash" value="150000" step="1000" />
       </div>
       <div>
         <label>COGS (₹)</label>
-        <input type="number" id="cogs" value="480000" step="1000">
+        <input type="number" id="cogs" value="480000" step="1000" />
       </div>
       <div>
         <label>Interest Expense (₹)</label>
-        <input type="number" id="interestExpense" value="20000" step="1000">
+        <input type="number" id="interestExpense" value="20000" step="1000" />
       </div>
     </div>
-    <div style="display:flex;gap:10px;margin-top:16px;">
+    <div style="display: flex; gap: 10px; margin-top: 16px">
       <label>Industry</label>
-      <select id="industry" style="flex:1;">
+      <select id="industry" style="flex: 1">
         <option value="general">General</option>
         <option value="tech">Tech</option>
         <option value="finance">Finance</option>
@@ -71,14 +78,16 @@
         <option value="manufacturing">Manufacturing</option>
         <option value="energy">Energy</option>
       </select>
-      <button class="btn btn-gold" onclick="analyzeRatios()"><i class="fa-solid fa-magnifying-glass"></i> Analyze</button>
+      <button class="btn btn-gold" onclick="analyzeRatios()">
+        <i class="fa-solid fa-magnifying-glass"></i> Analyze
+      </button>
     </div>
   </div>
 
   <!-- Results -->
-  <div id="results" style="display:none;">
+  <div id="results" style="display: none">
     <!-- Health Score -->
-    <div class="stats-row" style="margin-bottom:20px;">
+    <div class="stats-row" style="margin-bottom: 20px">
       <div class="stat-card">
         <div class="stat-label">Overall Health Score</div>
         <div class="stat-val" id="healthScore">0</div>
@@ -96,13 +105,15 @@
       </div>
       <div class="stat-card">
         <div class="stat-label">Industry Benchmark</div>
-        <div class="stat-val" id="industryDisplay" style="font-size:20px;">General</div>
+        <div class="stat-val" id="industryDisplay" style="font-size: 20px">
+          General
+        </div>
         <div class="stat-sub">Comparison basis</div>
       </div>
     </div>
 
     <!-- Ratio Cards -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px">
       <!-- Liquidity -->
       <div class="card">
         <h5><i class="fa-solid fa-droplet"></i> Liquidity Ratios</h5>
@@ -123,7 +134,7 @@
 
       <!-- Profitability -->
       <div class="card">
-        <h5> <i class="fa-solid fa-arrow-trend-up"></i>Profitability Ratios</h5>
+        <h5><i class="fa-solid fa-arrow-trend-up"></i>Profitability Ratios</h5>
         <div id="profitabilityRatios"></div>
       </div>
     </div>
@@ -144,21 +155,45 @@
 
 <style>
   .ratio-item {
-    display:flex;
-    justify-content:space-between;
-    padding:8px 0;
-    border-bottom:1px solid rgba(255,255,255,0.04);
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
   }
-  .ratio-item .value { font-weight:700; }
-  .ratio-item .status-excellent { color:#2ecc8a; }
-  .ratio-item .status-good { color:#d4a843; }
-  .ratio-item .status-fair { color:#f39c12; }
-  .ratio-item .status-poor { color:#e05252; }
-  .ratio-item .status-neutral { color:#5a6a82; }
-  .badge-excellent { background:rgba(46,204,138,0.15); color:#2ecc8a; }
-  .badge-good { background:rgba(212,168,67,0.15); color:#d4a843; }
-  .badge-fair { background:rgba(243,156,18,0.15); color:#f39c12; }
-  .badge-poor { background:rgba(224,82,82,0.15); color:#e05252; }
+  .ratio-item .value {
+    font-weight: 700;
+  }
+  .ratio-item .status-excellent {
+    color: #2ecc8a;
+  }
+  .ratio-item .status-good {
+    color: #d4a843;
+  }
+  .ratio-item .status-fair {
+    color: #f39c12;
+  }
+  .ratio-item .status-poor {
+    color: #e05252;
+  }
+  .ratio-item .status-neutral {
+    color: #5a6a82;
+  }
+  .badge-excellent {
+    background: rgba(46, 204, 138, 0.15);
+    color: #2ecc8a;
+  }
+  .badge-good {
+    background: rgba(212, 168, 67, 0.15);
+    color: #d4a843;
+  }
+  .badge-fair {
+    background: rgba(243, 156, 18, 0.15);
+    color: #f39c12;
+  }
+  .badge-poor {
+    background: rgba(224, 82, 82, 0.15);
+    color: #e05252;
+  }
 </style>
 
 <script>
@@ -166,10 +201,14 @@
 
   function analyzeRatios() {
     const data = {
-      current_assets: parseFloat(document.getElementById('currentAssets').value) || 0,
-      current_liabilities: parseFloat(document.getElementById('currentLiabilities').value) || 0,
-      total_assets: parseFloat(document.getElementById('totalAssets').value) || 0,
-      total_liabilities: parseFloat(document.getElementById('totalLiabilities').value) || 0,
+      current_assets:
+        parseFloat(document.getElementById('currentAssets').value) || 0,
+      current_liabilities:
+        parseFloat(document.getElementById('currentLiabilities').value) || 0,
+      total_assets:
+        parseFloat(document.getElementById('totalAssets').value) || 0,
+      total_liabilities:
+        parseFloat(document.getElementById('totalLiabilities').value) || 0,
       equity: parseFloat(document.getElementById('equity').value) || 0,
       revenue: parseFloat(document.getElementById('revenue').value) || 0,
       net_income: parseFloat(document.getElementById('netIncome').value) || 0,
@@ -177,8 +216,11 @@
       inventory: parseFloat(document.getElementById('inventory').value) || 0,
       cash: parseFloat(document.getElementById('cash').value) || 0,
       cogs: parseFloat(document.getElementById('cogs').value) || 0,
-      interest_expense: parseFloat(document.getElementById('interestExpense').value) || 0,
-      receivables: parseFloat(document.getElementById('receivables')?.value) || data.revenue * 0.15
+      interest_expense:
+        parseFloat(document.getElementById('interestExpense').value) || 0,
+      receivables:
+        parseFloat(document.getElementById('receivables')?.value) ||
+        data.revenue * 0.15,
     };
 
     const industry = document.getElementById('industry').value;
@@ -186,33 +228,53 @@
     fetch('/api/ratios/analyze', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ financial_data: data, industry })
+      body: JSON.stringify({ financial_data: data, industry }),
     })
-    .then(res => res.json())
-    .then(response => {
-      if (response.success) {
-        renderResults(response.data, industry);
-        document.getElementById('results').style.display = 'block';
-      } else {
-        alert('Error: ' + response.error);
-      }
-    })
-    .catch(err => alert('Error: ' + err.message));
+      .then((res) => res.json())
+      .then((response) => {
+        if (response.success) {
+          renderResults(response.data, industry);
+          document.getElementById('results').style.display = 'block';
+        } else {
+          alert('Error: ' + response.error);
+        }
+      })
+      .catch((err) => alert('Error: ' + err.message));
   }
 
   function renderResults(data, industry) {
     const health = data.overall_health;
     document.getElementById('healthScore').textContent = health.score;
-    document.getElementById('healthGrade').textContent = health.grade + ' - ' + health.description;
-    document.getElementById('strengthsCount').textContent = data.strengths.length;
-    document.getElementById('weaknessesCount').textContent = data.weaknesses.length;
-    document.getElementById('industryDisplay').textContent = industry.charAt(0).toUpperCase() + industry.slice(1);
+    document.getElementById('healthGrade').textContent =
+      health.grade + ' - ' + health.description;
+    document.getElementById('strengthsCount').textContent =
+      data.strengths.length;
+    document.getElementById('weaknessesCount').textContent =
+      data.weaknesses.length;
+    document.getElementById('industryDisplay').textContent =
+      industry.charAt(0).toUpperCase() + industry.slice(1);
 
     // Render each ratio category
-    renderRatioCategory('liquidityRatios', data.ratios.liquidity, data.comparison.comparison.liquidity);
-    renderRatioCategory('solvencyRatios', data.ratios.solvency, data.comparison.comparison.solvency);
-    renderRatioCategory('efficiencyRatios', data.ratios.efficiency, data.comparison.comparison.efficiency);
-    renderRatioCategory('profitabilityRatios', data.ratios.profitability, data.comparison.comparison.profitability);
+    renderRatioCategory(
+      'liquidityRatios',
+      data.ratios.liquidity,
+      data.comparison.comparison.liquidity,
+    );
+    renderRatioCategory(
+      'solvencyRatios',
+      data.ratios.solvency,
+      data.comparison.comparison.solvency,
+    );
+    renderRatioCategory(
+      'efficiencyRatios',
+      data.ratios.efficiency,
+      data.comparison.comparison.efficiency,
+    );
+    renderRatioCategory(
+      'profitabilityRatios',
+      data.ratios.profitability,
+      data.comparison.comparison.profitability,
+    );
 
     // Peer Comparison
     renderPeerComparison(data.comparison);
@@ -224,16 +286,22 @@
   function renderRatioCategory(elementId, ratios, comparison) {
     const container = document.getElementById(elementId);
     let html = '';
-    
+
     for (const [key, value] of Object.entries(ratios)) {
       const comp = comparison[key] || {};
       const status = comp.status || 'neutral';
       const statusLabel = status.charAt(0).toUpperCase() + status.slice(1);
-      const badgeClass = status === 'excellent' ? 'badge-excellent' : 
-                        status === 'good' ? 'badge-good' : 
-                        status === 'fair' ? 'badge-fair' : 
-                        status === 'poor' ? 'badge-poor' : 'badge-neutral';
-      
+      const badgeClass =
+        status === 'excellent'
+          ? 'badge-excellent'
+          : status === 'good'
+            ? 'badge-good'
+            : status === 'fair'
+              ? 'badge-fair'
+              : status === 'poor'
+                ? 'badge-poor'
+                : 'badge-neutral';
+
       html += `
         <div class="ratio-item">
           <span>${formatLabel(key)}</span>
@@ -247,20 +315,27 @@
         </div>
       `;
     }
-    
+
     container.innerHTML = html;
   }
 
   function renderPeerComparison(comparison) {
     const container = document.getElementById('peerComparison');
-    let html = '<div style="overflow-x:auto;"><table class="table table-dark"><thead><tr><th>Ratio</th><th>Your Value</th><th>Benchmark</th><th>Difference</th><th>Status</th></tr></thead><tbody>';
-    
+    let html =
+      '<div style="overflow-x:auto;"><table class="table table-dark"><thead><tr><th>Ratio</th><th>Your Value</th><th>Benchmark</th><th>Difference</th><th>Status</th></tr></thead><tbody>';
+
     for (const [category, ratios] of Object.entries(comparison.comparison)) {
       for (const [ratio, data] of Object.entries(ratios)) {
-        const statusClass = data.status === 'excellent' ? 'text-success' : 
-                           data.status === 'good' ? 'text-gold' : 
-                           data.status === 'fair' ? 'text-warning' : 
-                           data.status === 'poor' ? 'text-danger' : 'text-muted';
+        const statusClass =
+          data.status === 'excellent'
+            ? 'text-success'
+            : data.status === 'good'
+              ? 'text-gold'
+              : data.status === 'fair'
+                ? 'text-warning'
+                : data.status === 'poor'
+                  ? 'text-danger'
+                  : 'text-muted';
         html += `
           <tr>
             <td>${formatLabel(ratio)}</td>
@@ -272,21 +347,22 @@
         `;
       }
     }
-    
+
     html += '</tbody></table></div>';
     container.innerHTML = html;
   }
 
   function renderRecommendations(weaknesses) {
     const container = document.getElementById('recommendations');
-    
+
     if (weaknesses.length === 0) {
-      container.innerHTML = '<div class="text-success">✅ All ratios are performing well! Keep up the good work.</div>';
+      container.innerHTML =
+        '<div class="text-success">✅ All ratios are performing well! Keep up the good work.</div>';
       return;
     }
-    
+
     let html = '<div style="display:grid;gap:10px;">';
-    weaknesses.forEach(w => {
+    weaknesses.forEach((w) => {
       html += `
         <div style="background:rgba(224,82,82,0.05);border:1px solid rgba(224,82,82,0.1);border-radius:8px;padding:12px;">
           <div style="display:flex;justify-content:space-between;">
@@ -303,25 +379,25 @@
 
   function formatLabel(key) {
     const labels = {
-      'current_ratio': 'Current Ratio',
-      'quick_ratio': 'Quick Ratio',
-      'cash_ratio': 'Cash Ratio',
-      'debt_to_equity': 'Debt to Equity',
-      'interest_coverage': 'Interest Coverage',
-      'debt_ratio': 'Debt Ratio',
-      'asset_turnover': 'Asset Turnover',
-      'inventory_turnover': 'Inventory Turnover',
-      'receivables_turnover': 'Receivables Turnover',
-      'gross_margin': 'Gross Margin',
-      'net_margin': 'Net Margin',
-      'roi': 'ROI',
-      'roe': 'ROE'
+      current_ratio: 'Current Ratio',
+      quick_ratio: 'Quick Ratio',
+      cash_ratio: 'Cash Ratio',
+      debt_to_equity: 'Debt to Equity',
+      interest_coverage: 'Interest Coverage',
+      debt_ratio: 'Debt Ratio',
+      asset_turnover: 'Asset Turnover',
+      inventory_turnover: 'Inventory Turnover',
+      receivables_turnover: 'Receivables Turnover',
+      gross_margin: 'Gross Margin',
+      net_margin: 'Net Margin',
+      roi: 'ROI',
+      roe: 'ROE',
     };
     return labels[key] || key.replace(/_/g, ' ').toUpperCase();
   }
 
   // Auto-analyze on page load
-  document.addEventListener('DOMContentLoaded', function() {
+  document.addEventListener('DOMContentLoaded', function () {
     // Load with default values after a short delay
     setTimeout(analyzeRatios, 500);
   });

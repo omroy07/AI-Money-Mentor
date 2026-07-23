@@ -1,358 +1,524 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Recurring Expenses - AI Money Mentor</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
-    <style>
-        body {
-            background: #070b12;
-            color: #eef0f5;
-            font-family: 'Instrument Sans', sans-serif;
-        }
-        .gradient-text {
-            background: linear-gradient(135deg, #d4a843 0%, #f0cc6e 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        .card {
-            background: rgba(15, 22, 38, 0.96);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 18px;
-            padding: 24px;
-            margin-bottom: 20px;
-        }
-        .btn-gold {
-            background: linear-gradient(135deg, #f3d687 0%, #d4a843 60%);
-            color: #0a0e18;
-            border: none;
-            padding: 10px 24px;
-            border-radius: 999px;
-            font-weight: 700;
-            transition: all 0.2s;
-        }
-        .btn-gold:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(212, 168, 67, 0.3);
-        }
-        .btn-outline-secondary {
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: #5a6a82;
-            background: transparent;
-            padding: 8px 16px;
-            border-radius: 999px;
-            text-decoration: none;
-        }
-        .btn-outline-secondary:hover {
-            background: rgba(255, 255, 255, 0.05);
-            color: #eef0f5;
-        }
-        .text-muted {
-            color: #5a6a82 !important;
-        }
-        .container-fluid {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        .stat-card {
-            background: rgba(15, 22, 38, 0.96);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 18px;
-            padding: 20px;
-            text-align: center;
-        }
-        .stat-card h2 {
-            font-size: 32px;
-            font-weight: 800;
-            margin: 10px 0 5px;
-        }
-        .stat-card .label {
-            font-size: 12px;
-            color: #5a6a82;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-        }
-        .bg-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important; }
-        .bg-success { background: linear-gradient(135deg, #2ecc8a 0%, #27ae60 100%) !important; }
-        .bg-warning { background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%) !important; }
-        .bg-info { background: linear-gradient(135deg, #14c8bf 0%, #0e9e95 100%) !important; }
-        
-        .table-dark {
-            background: transparent;
-        }
-        .table-dark th {
-            border-bottom: 1px solid rgba(255,255,255,0.06);
-            color: #5a6a82;
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-        }
-        .table-dark td {
-            border-bottom: 1px solid rgba(255,255,255,0.04);
-            vertical-align: middle;
-        }
-        .detected-item {
-            background: rgba(46, 204, 138, 0.1);
-            border-left: 4px solid #2ecc8a;
-            padding: 12px;
-            margin-bottom: 8px;
-            border-radius: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .detected-item .info {
-            flex: 1;
-        }
-        .badge {
-            font-size: 10px;
-            padding: 4px 10px;
-        }
-        .form-control, .form-select {
-            background: rgba(17, 26, 46, 0.9);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 14px;
-            color: #eef0f5;
-            padding: 12px 16px;
-        }
-        .form-control:focus, .form-select:focus {
-            background: rgba(17, 26, 46, 0.95);
-            border-color: #d4a843;
-            box-shadow: 0 0 0 3px rgba(212, 168, 67, 0.1);
-            color: #eef0f5;
-        }
-        .form-control::placeholder {
-            color: #5a6a82;
-        }
-        .form-check-input {
-            background-color: rgba(17, 26, 46, 0.9);
-            border-color: rgba(255, 255, 255, 0.08);
-        }
-        .form-check-input:checked {
-            background-color: #d4a843;
-            border-color: #d4a843;
-        }
-        .form-check-label {
-            color: #5a6a82;
-            font-size: 13px;
-        }
-        .btn-sm {
-            padding: 4px 10px;
-            font-size: 12px;
-            border-radius: 8px;
-        }
-    </style>
-</head>
-<body>
 
-<div class="container-fluid px-4">
-    <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mt-4 mb-4">
+    <style>
+      body {
+        background: #070b12;
+        color: #eef0f5;
+        font-family: 'Instrument Sans', sans-serif;
+      }
+      .gradient-text {
+        background: linear-gradient(135deg, #d4a843 0%, #f0cc6e 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .card {
+        background: rgba(15, 22, 38, 0.96);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 18px;
+        padding: 24px;
+        margin-bottom: 20px;
+      }
+      .btn-gold {
+        background: linear-gradient(135deg, #f3d687 0%, #d4a843 60%);
+        color: #0a0e18;
+        border: none;
+        padding: 10px 24px;
+        border-radius: 999px;
+        font-weight: 700;
+        transition: all 0.2s;
+      }
+      .btn-gold:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(212, 168, 67, 0.3);
+      }
+      .btn-outline-secondary {
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #5a6a82;
+        background: transparent;
+        padding: 8px 16px;
+        border-radius: 999px;
+        text-decoration: none;
+      }
+      .btn-outline-secondary:hover {
+        background: rgba(255, 255, 255, 0.05);
+        color: #eef0f5;
+      }
+      .text-muted {
+        color: #5a6a82 !important;
+      }
+      .container-fluid {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .stat-card {
+        background: rgba(15, 22, 38, 0.96);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 18px;
+        padding: 20px;
+        text-align: center;
+      }
+      .stat-card h2 {
+        font-size: 32px;
+        font-weight: 800;
+        margin: 10px 0 5px;
+      }
+      .stat-card .label {
+        font-size: 12px;
+        color: #5a6a82;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+      .bg-primary {
+        background: linear-gradient(
+          135deg,
+          #667eea 0%,
+          #764ba2 100%
+        ) !important;
+      }
+      .bg-success {
+        background: linear-gradient(
+          135deg,
+          #2ecc8a 0%,
+          #27ae60 100%
+        ) !important;
+      }
+      .bg-warning {
+        background: linear-gradient(
+          135deg,
+          #f39c12 0%,
+          #e67e22 100%
+        ) !important;
+      }
+      .bg-info {
+        background: linear-gradient(
+          135deg,
+          #14c8bf 0%,
+          #0e9e95 100%
+        ) !important;
+      }
+
+      .table-dark {
+        background: transparent;
+      }
+      .table-dark th {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        color: #5a6a82;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+      .table-dark td {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        vertical-align: middle;
+      }
+      .detected-item {
+        background: rgba(46, 204, 138, 0.1);
+        border-left: 4px solid #2ecc8a;
+        padding: 12px;
+        margin-bottom: 8px;
+        border-radius: 8px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .detected-item .info {
+        flex: 1;
+      }
+      .badge {
+        font-size: 10px;
+        padding: 4px 10px;
+      }
+      .form-control,
+      .form-select {
+        background: rgba(17, 26, 46, 0.9);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 14px;
+        color: #eef0f5;
+        padding: 12px 16px;
+      }
+      .form-control:focus,
+      .form-select:focus {
+        background: rgba(17, 26, 46, 0.95);
+        border-color: #d4a843;
+        box-shadow: 0 0 0 3px rgba(212, 168, 67, 0.1);
+        color: #eef0f5;
+      }
+      .form-control::placeholder {
+        color: #5a6a82;
+      }
+      .form-check-input {
+        background-color: rgba(17, 26, 46, 0.9);
+        border-color: rgba(255, 255, 255, 0.08);
+      }
+      .form-check-input:checked {
+        background-color: #d4a843;
+        border-color: #d4a843;
+      }
+      .form-check-label {
+        color: #5a6a82;
+        font-size: 13px;
+      }
+      .btn-sm {
+        padding: 4px 10px;
+        font-size: 12px;
+        border-radius: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container-fluid px-4">
+      <!-- Header -->
+      <div class="d-flex justify-content-between align-items-center mt-4 mb-4">
         <div>
-            <h1 class="display-5 fw-bold gradient-text"><i class="fa-solid fa-wallet"></i> Recurring Expenses</h1>
-            <p class="text-muted">Manage your recurring bills and subscriptions</p>
+          <h1 class="display-5 fw-bold gradient-text">
+            <i class="fa-solid fa-wallet"></i> Recurring Expenses
+          </h1>
+          <p class="text-muted">
+            Manage your recurring bills and subscriptions
+          </p>
         </div>
         <a href="/" class="btn btn-outline-secondary">← Back to Dashboard</a>
-    </div>
+      </div>
 
-    <!-- Stats Cards -->
-    <div class="row mb-4">
+      <!-- Stats Cards -->
+      <div class="row mb-4">
         <div class="col-md-3">
-            <div class="stat-card bg-primary text-white">
-                <div class="label text-white-50">Total Monthly</div>
-                <h2 class="fw-bold" id="totalMonthly">₹0</h2>
-            </div>
+          <div class="stat-card bg-primary text-white">
+            <div class="label text-white-50">Total Monthly</div>
+            <h2 class="fw-bold" id="totalMonthly">₹0</h2>
+          </div>
         </div>
         <div class="col-md-3">
-            <div class="stat-card bg-success text-white">
-                <div class="label text-white-50">Active</div>
-                <h2 class="fw-bold" id="activeCount">0</h2>
-            </div>
+          <div class="stat-card bg-success text-white">
+            <div class="label text-white-50">Active</div>
+            <h2 class="fw-bold" id="activeCount">0</h2>
+          </div>
         </div>
         <div class="col-md-3">
-            <div class="stat-card bg-warning text-dark">
-                <div class="label text-dark-50">Due This Week</div>
-                <h2 class="fw-bold" id="dueThisWeek">0</h2>
-            </div>
+          <div class="stat-card bg-warning text-dark">
+            <div class="label text-dark-50">Due This Week</div>
+            <h2 class="fw-bold" id="dueThisWeek">0</h2>
+          </div>
         </div>
         <div class="col-md-3">
-            <div class="stat-card bg-info text-white">
-                <div class="label text-white-50">Auto-Add Enabled</div>
-                <h2 class="fw-bold" id="autoAddCount">0</h2>
-            </div>
+          <div class="stat-card bg-info text-white">
+            <div class="label text-white-50">Auto-Add Enabled</div>
+            <h2 class="fw-bold" id="autoAddCount">0</h2>
+          </div>
         </div>
-    </div>
+      </div>
 
-    <!-- ✂️ AI Subscription Optimizer -->
-    <div class="row mb-4">
+      <!-- ✂️ AI Subscription Optimizer -->
+      <div class="row mb-4">
         <div class="col-12">
-            <div class="card" style="background: linear-gradient(135deg, rgba(212, 168, 67, 0.05) 0%, rgba(20, 200, 191, 0.05) 100%); border: 1px solid rgba(212, 168, 67, 0.3);">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h5 class="fw-bold mb-1"><span style="font-size:20px;"><i class="fa-solid fa-scissors"></i></span> AI Subscription Optimizer</h5>
-                        <p class="text-muted small mb-0">Your projected <strong>Yearly Burn Rate</strong> is <span id="yearlyBurnRate" class="text-white fw-bold">₹0</span>. We identified <span class="text-warning fw-bold">2 unused subscriptions</span>.</p>
-                    </div>
-                    <div>
-                        <button class="btn btn-gold" onclick="simulateCancel()">Optimize & Cancel Unused</button>
-                    </div>
-                </div>
+          <div
+            class="card"
+            style="
+              background: linear-gradient(
+                135deg,
+                rgba(212, 168, 67, 0.05) 0%,
+                rgba(20, 200, 191, 0.05) 100%
+              );
+              border: 1px solid rgba(212, 168, 67, 0.3);
+            "
+          >
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h5 class="fw-bold mb-1">
+                  <span style="font-size: 20px"
+                    ><i class="fa-solid fa-scissors"></i
+                  ></span>
+                  AI Subscription Optimizer
+                </h5>
+                <p class="text-muted small mb-0">
+                  Your projected <strong>Yearly Burn Rate</strong> is
+                  <span id="yearlyBurnRate" class="text-white fw-bold">₹0</span
+                  >. We identified
+                  <span class="text-warning fw-bold"
+                    >2 unused subscriptions</span
+                  >.
+                </p>
+              </div>
+              <div>
+                <button class="btn btn-gold" onclick="simulateCancel()">
+                  Optimize & Cancel Unused
+                </button>
+              </div>
             </div>
+          </div>
         </div>
-    </div>
+      </div>
 
-    <div class="row">
+      <div class="row">
         <!-- Left Panel: Detection & Manual Add -->
         <div class="col-md-5 mb-4">
-            <!-- Auto Detection -->
-            <div class="card">
-                <h5 class="fw-bold mb-3"><i class="fa-solid fa-magnifying-glass"></i> Auto-Detect Patterns</h5>
-                <p class="text-muted small">Scan last 60 days to find recurring expense patterns</p>
-                <button class="btn btn-gold w-100" onclick="detectRecurring()">
-                    <i class="fa-solid fa-magnifying-glass"></i> Scan for Patterns
-                </button>
-                <div id="detectionResults" class="mt-3"></div>
-            </div>
+          <!-- Auto Detection -->
+          <div class="card">
+            <h5 class="fw-bold mb-3">
+              <i class="fa-solid fa-magnifying-glass"></i> Auto-Detect Patterns
+            </h5>
+            <p class="text-muted small">
+              Scan last 60 days to find recurring expense patterns
+            </p>
+            <button class="btn btn-gold w-100" onclick="detectRecurring()">
+              <i class="fa-solid fa-magnifying-glass"></i> Scan for Patterns
+            </button>
+            <div id="detectionResults" class="mt-3"></div>
+          </div>
 
-            <!-- Manual Add -->
-            <div class="card">
-                <h5 class="fw-bold mb-3"><i class="fa-solid fa-pen"></i> Add Manually</h5>
-                <form id="recurringForm">
-                    <div class="mb-3">
-                        <label class="form-label text-muted small text-uppercase">Merchant</label>
-                        <input type="text" class="form-control" id="recMerchant" placeholder="e.g., Netflix">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label text-muted small text-uppercase">Category</label>
-                        <select class="form-select" id="recCategory">
-                            <option value="Food">Food</option>
-                            <option value="Rent">Rent</option>
-                            <option value="Utilities">Utilities</option>
-                            <option value="Entertainment">Entertainment</option>
-                            <option value="Shopping">Shopping</option>
-                            <option value="Transport">Transport</option>
-                            <option value="Healthcare">Healthcare</option>
-                            <option value="Other">Other</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label text-muted small text-uppercase">Amount (₹)</label>
-                        <input type="number" class="form-control" id="recAmount" placeholder="e.g., 500">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label text-muted small text-uppercase">Frequency</label>
-                        <select class="form-select" id="recFrequency">
-                            <option value="weekly">Weekly</option>
-                            <option value="monthly" selected>Monthly</option>
-                            <option value="quarterly">Quarterly</option>
-                            <option value="yearly">Yearly</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label text-muted small text-uppercase">Start Date</label>
-                        <input type="date" class="form-control" id="recStartDate">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label text-muted small text-uppercase">Next Due Date</label>
-                        <input type="date" class="form-control" id="recNextDue">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label text-muted small text-uppercase">End Date (Optional)</label>
-                        <input type="date" class="form-control" id="recEndDate">
-                    </div>
-                    <div class="mb-3 form-check">
-                        <input type="checkbox" class="form-check-input" id="recAutoAdd" checked>
-                        <label class="form-check-label">Auto-add without confirmation</label>
-                    </div>
-                    <button type="submit" class="btn btn-gold w-100">➕ Add Recurring Expense</button>
-                </form>
-            </div>
+          <!-- Manual Add -->
+          <div class="card">
+            <h5 class="fw-bold mb-3">
+              <i class="fa-solid fa-pen"></i> Add Manually
+            </h5>
+            <form id="recurringForm">
+              <div class="mb-3">
+                <label class="form-label text-muted small text-uppercase"
+                  >Merchant</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="recMerchant"
+                  placeholder="e.g., Netflix"
+                />
+              </div>
+              <div class="mb-3">
+                <label class="form-label text-muted small text-uppercase"
+                  >Category</label
+                >
+                <select class="form-select" id="recCategory">
+                  <option value="Food">Food</option>
+                  <option value="Rent">Rent</option>
+                  <option value="Utilities">Utilities</option>
+                  <option value="Entertainment">Entertainment</option>
+                  <option value="Shopping">Shopping</option>
+                  <option value="Transport">Transport</option>
+                  <option value="Healthcare">Healthcare</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label class="form-label text-muted small text-uppercase"
+                  >Amount (₹)</label
+                >
+                <input
+                  type="number"
+                  class="form-control"
+                  id="recAmount"
+                  placeholder="e.g., 500"
+                />
+              </div>
+              <div class="mb-3">
+                <label class="form-label text-muted small text-uppercase"
+                  >Frequency</label
+                >
+                <select class="form-select" id="recFrequency">
+                  <option value="weekly">Weekly</option>
+                  <option value="monthly" selected>Monthly</option>
+                  <option value="quarterly">Quarterly</option>
+                  <option value="yearly">Yearly</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label class="form-label text-muted small text-uppercase"
+                  >Start Date</label
+                >
+                <input type="date" class="form-control" id="recStartDate" />
+              </div>
+              <div class="mb-3">
+                <label class="form-label text-muted small text-uppercase"
+                  >Next Due Date</label
+                >
+                <input type="date" class="form-control" id="recNextDue" />
+              </div>
+              <div class="mb-3">
+                <label class="form-label text-muted small text-uppercase"
+                  >End Date (Optional)</label
+                >
+                <input type="date" class="form-control" id="recEndDate" />
+              </div>
+              <div class="mb-3 form-check">
+                <input
+                  type="checkbox"
+                  class="form-check-input"
+                  id="recAutoAdd"
+                  checked
+                />
+                <label class="form-check-label"
+                  >Auto-add without confirmation</label
+                >
+              </div>
+              <button type="submit" class="btn btn-gold w-100">
+                ➕ Add Recurring Expense
+              </button>
+            </form>
+          </div>
         </div>
 
         <!-- Right Panel: List -->
         <div class="col-md-7 mb-4">
-            <div class="card">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h5 class="fw-bold mb-0"><i class="fa-solid fa-list"></i> Your Recurring Expenses</h5>
-                    <button class="btn btn-outline-secondary btn-sm" onclick="loadRecurring()">🔄 Refresh</button>
-                </div>
-                <div id="recurringList">
-                    <div class="text-center text-muted py-4">
-                        <div class="spinner-border text-primary" role="status">
-                            <span class="visually-hidden">Loading...</span>
-                        </div>
-                        <p class="mt-2">Loading recurring expenses...</p>
-                    </div>
-                </div>
+          <div class="card">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h5 class="fw-bold mb-0">
+                <i class="fa-solid fa-list"></i> Your Recurring Expenses
+              </h5>
+              <button
+                class="btn btn-outline-secondary btn-sm"
+                onclick="loadRecurring()"
+              >
+                🔄 Refresh
+              </button>
             </div>
-        </div>
-    </div>
-</div>
-
-<!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-<!-- ========================================== -->
-<!-- LINK RECURRING.JS HERE -->
-<!-- ========================================== -->
-<!-- Premium Cancel Modal -->
-<div class="modal fade" id="cancelModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content" style="background: #0d1320; border: 1px solid rgba(212, 168, 67, 0.3); border-radius: 20px;">
-      <div class="modal-header" style="border-bottom: 1px solid rgba(255,255,255,0.05);">
-        <h5 class="modal-title text-white fw-bold">✂️ One-Click Cancel Simulator</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body text-center py-5">
-        <div id="cancelAnim" style="font-size: 50px; margin-bottom: 15px; animation: float 2s infinite;">🤖</div>
-        <h4 class="text-white fw-bold mb-3" id="cancelStatus">Analyzing subscriptions...</h4>
-        <p class="text-muted" id="cancelDesc">Our AI is scanning your bank statements to verify cancellation endpoints.</p>
-        
-        <div class="progress mt-4" style="height: 6px; background: rgba(255,255,255,0.1); border-radius: 10px;">
-            <div id="cancelProgress" class="progress-bar" role="progressbar" style="width: 0%; background: linear-gradient(90deg, #d4a843, #14c8bf); transition: width 0.5s ease;"></div>
+            <div id="recurringList">
+              <div class="text-center text-muted py-4">
+                <div class="spinner-border text-primary" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-2">Loading recurring expenses...</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-</div>
 
-<script src="{{ url_for('static', filename='scripts/recurring.js') }}"></script>
-<script>
-function simulateCancel() {
-    const modal = new bootstrap.Modal(document.getElementById('cancelModal'));
-    modal.show();
-    
-    document.getElementById('cancelProgress').style.width = '10%';
-    document.getElementById('cancelStatus').innerText = 'Contacting Merchants...';
-    document.getElementById('cancelDesc').innerText = 'Negotiating cancellation terms with Netflix and Spotify.';
-    
-    setTimeout(() => {
-        document.getElementById('cancelProgress').style.width = '60%';
-        document.getElementById('cancelStatus').innerText = 'Processing Request...';
-        document.getElementById('cancelDesc').innerText = 'Revoking auto-pay mandates.';
-    }, 1500);
-    
-    setTimeout(() => {
-        document.getElementById('cancelProgress').style.width = '100%';
-        document.getElementById('cancelAnim').innerText = '✅';
-        document.getElementById('cancelStatus').innerText = 'Successfully Cancelled!';
-        document.getElementById('cancelDesc').innerText = 'You just saved ₹14,400 per year!';
-    }, 3000);
-}
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-// Intercept total calculation to update yearly burn
-const observer = new MutationObserver(() => {
-    const totalText = document.getElementById('totalMonthly').innerText.replace(/[^0-9.]/g, '');
-    const monthly = parseFloat(totalText) || 0;
-    document.getElementById('yearlyBurnRate').innerText = '₹' + (monthly * 12).toLocaleString();
-});
-observer.observe(document.getElementById('totalMonthly'), { characterData: true, childList: true, subtree: true });
-</script>
+    <!-- ========================================== -->
+    <!-- LINK RECURRING.JS HERE -->
+    <!-- ========================================== -->
+    <!-- Premium Cancel Modal -->
+    <div class="modal fade" id="cancelModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div
+          class="modal-content"
+          style="
+            background: #0d1320;
+            border: 1px solid rgba(212, 168, 67, 0.3);
+            border-radius: 20px;
+          "
+        >
+          <div
+            class="modal-header"
+            style="border-bottom: 1px solid rgba(255, 255, 255, 0.05)"
+          >
+            <h5 class="modal-title text-white fw-bold">
+              ✂️ One-Click Cancel Simulator
+            </h5>
+            <button
+              type="button"
+              class="btn-close btn-close-white"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body text-center py-5">
+            <div
+              id="cancelAnim"
+              style="
+                font-size: 50px;
+                margin-bottom: 15px;
+                animation: float 2s infinite;
+              "
+            >
+              🤖
+            </div>
+            <h4 class="text-white fw-bold mb-3" id="cancelStatus">
+              Analyzing subscriptions...
+            </h4>
+            <p class="text-muted" id="cancelDesc">
+              Our AI is scanning your bank statements to verify cancellation
+              endpoints.
+            </p>
 
-</body>
+            <div
+              class="progress mt-4"
+              style="
+                height: 6px;
+                background: rgba(255, 255, 255, 0.1);
+                border-radius: 10px;
+              "
+            >
+              <div
+                id="cancelProgress"
+                class="progress-bar"
+                role="progressbar"
+                style="
+                  width: 0%;
+                  background: linear-gradient(90deg, #d4a843, #14c8bf);
+                  transition: width 0.5s ease;
+                "
+              ></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='scripts/recurring.js') }}"></script>
+    <script>
+      function simulateCancel() {
+        const modal = new bootstrap.Modal(
+          document.getElementById('cancelModal'),
+        );
+        modal.show();
+
+        document.getElementById('cancelProgress').style.width = '10%';
+        document.getElementById('cancelStatus').innerText =
+          'Contacting Merchants...';
+        document.getElementById('cancelDesc').innerText =
+          'Negotiating cancellation terms with Netflix and Spotify.';
+
+        setTimeout(() => {
+          document.getElementById('cancelProgress').style.width = '60%';
+          document.getElementById('cancelStatus').innerText =
+            'Processing Request...';
+          document.getElementById('cancelDesc').innerText =
+            'Revoking auto-pay mandates.';
+        }, 1500);
+
+        setTimeout(() => {
+          document.getElementById('cancelProgress').style.width = '100%';
+          document.getElementById('cancelAnim').innerText = '✅';
+          document.getElementById('cancelStatus').innerText =
+            'Successfully Cancelled!';
+          document.getElementById('cancelDesc').innerText =
+            'You just saved ₹14,400 per year!';
+        }, 3000);
+      }
+
+      // Intercept total calculation to update yearly burn
+      const observer = new MutationObserver(() => {
+        const totalText = document
+          .getElementById('totalMonthly')
+          .innerText.replace(/[^0-9.]/g, '');
+        const monthly = parseFloat(totalText) || 0;
+        document.getElementById('yearlyBurnRate').innerText =
+          '₹' + (monthly * 12).toLocaleString();
+      });
+      observer.observe(document.getElementById('totalMonthly'), {
+        characterData: true,
+        childList: true,
+        subtree: true,
+      });
+    </script>
+  </body>
 </html>

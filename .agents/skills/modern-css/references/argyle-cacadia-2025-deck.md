@@ -1,5 +1,3 @@
-
-
 --- URL: https://cascadiajs-2025.netlify.app/ ---
 
 Oops, CSS Got Away From Me… Send Halp! \| 2025
@@ -11,7 +9,6 @@ Oops, CSS Got Away From Me… Send Halp! \| 2025
 [cascadiajs-2025.netlify.app/](https://cascadiajs-2025.netlify.app)
 
 Adam Argyle [next slide](/01-page-transitions/)
-
 
 --- URL: https://cascadiajs-2025.netlify.app/01-page-transitions/ ---
 
@@ -31,7 +28,6 @@ Easily transition elements or entire pages
 
 [nerdy.dev](https://nerdy.dev) [next slide](/02-media-query-ranges/)
 
-
 --- URL: https://cascadiajs-2025.netlify.app/02-media-query-ranges/ ---
 
 Media Query Ranges
@@ -41,15 +37,15 @@ Media Query Ranges
 # Range Syntax
 
     @media (width <= 1024px) {
-        
+
     }
 
     @media (360px < width < 1024px) {
-        
+
     }
 
     @container (20ch < width < 50ch) {
-        
+
     }
 
     .card-grid {
@@ -61,7 +57,6 @@ Media Query Ranges
     }
 
 [next slide](/03-container-query/)
-
 
 --- URL: https://cascadiajs-2025.netlify.app/03-container-query/ ---
 
@@ -101,7 +96,6 @@ Container Queries
 
 [Demo](https://codepen.io/argyleink/pres/RwdRaVg?editors=0100) [next slide](/04-cascade-layers/)
 
-
 --- URL: https://cascadiajs-2025.netlify.app/04-cascade-layers/ ---
 
 Cascade Layers
@@ -135,7 +129,6 @@ Cascade Layers
 
 [next slide](/05-field-sizing/)
 
-
 --- URL: https://cascadiajs-2025.netlify.app/05-field-sizing/ ---
 
 Field Sizing
@@ -160,7 +153,6 @@ Field Sizing
     }
 
 [Demo](https://codepen.io/argyleink/pres/JjxQLoW?editors=0100) [Demo](https://codepen.io/argyleink/pres/WNLzyJK?editors=0100) [next slide](/06-color-scheme/)
-
 
 --- URL: https://cascadiajs-2025.netlify.app/06-color-scheme/ ---
 
@@ -192,7 +184,6 @@ Toggle light/dark page, inputs and custom components
 
 [Demo](https://codepen.io/argyleink/pres/QwjPWGe?editors=0100) [next slide](/07-light-dark/)
 
-
 --- URL: https://cascadiajs-2025.netlify.app/07-light-dark/ ---
 
 light-dark()
@@ -220,7 +211,6 @@ easy adaptive color
 
 [Demo](https://codepen.io/argyleink/pres/bGPvvqm?editors=0100) [Demo](https://codepen.io/argyleink/pres/QWXmrqN?editors=0100) [next slide](/08-accent-color/)
 
-
 --- URL: https://cascadiajs-2025.netlify.app/08-accent-color/ ---
 
 Accent Color
@@ -238,7 +228,6 @@ Quickly tint tons of built-in elements
     }
 
 [Demo](https://codepen.io/argyleink/pres/KKmaaEK?editors=0100) [Demo](https://codepen.io/argyleink/pres/vYPdBOO?editors=0100) [next slide](/09-@property/)
-
 
 --- URL: https://cascadiajs-2025.netlify.app/09-@property/ ---
 
@@ -280,7 +269,6 @@ Type safe, interpolatable, CSS variables
 
 [Noisee](https://noisee.netlify.app) [Demo](https://codepen.io/argyleink/pres/rNwWwor?editors=0100) [next slide](/10-scroll-driven-animation/)
 
-
 --- URL: https://cascadiajs-2025.netlify.app/10-scroll-driven-animation/ ---
 
 Scroll Driven Animation
@@ -307,7 +295,6 @@ Animate on scroll or on viewport intersection
 
 [scroll()](https://codepen.io/argyleink/pres/vYxGKPz?editors=0100) [scroll()](https://codepen.io/argyleink/pres/ZEdrzJZ?editors=0100) [view()](https://codepen.io/argyleink/pres/VwNMLQN?editors=0100) [view()](https://codepen.io/argyleink/pres/gOyoBLj?editors=0100) [view()](https://codepen.io/argyleink/pres/MWMQJQy?editors=0100) [view()](https://codepen.io/argyleink/pres/qBQByGN?editors=0100) [next slide](/11-linear/)
 
-
 --- URL: https://cascadiajs-2025.netlify.app/11-linear/ ---
 
 linear()
@@ -333,7 +320,6 @@ Doesn't feel linear
 
 [Demo](https://codepen.io/argyleink/pres/XWOOydB?editors=0100) [Tool](https://linear-easing-generator.netlify.app/) [Library](https://open-props.style/#easing) [next slide](/12-hr-in-select/)
 
-
 --- URL: https://cascadiajs-2025.netlify.app/12-hr-in-select/ ---
 
 \<hr\> in \<select\>
@@ -349,18 +335,17 @@ Doesn't feel linear
 
 Select with HR example
 
-------------------------------------------------------------------------
+---
 
 Option 1 Option 2 Option 3
 
-------------------------------------------------------------------------
+---
 
 Option 4 Option 5 Option 6 [Article](https://developer.chrome.com/blog/hr-in-select)
 
 Chrome 119+, Safari 17+, Firefox 122+
 
 [next slide](/13-search-element/)
-
 
 --- URL: https://cascadiajs-2025.netlify.app/13-search-element/ ---
 
@@ -377,7 +362,6 @@ A search element
     </search>
 
 [Demo](https://codepen.io/argyleink/pres/WNLZqYZ?editors=1100) [next slide](/14-user-valid/)
-
 
 --- URL: https://cascadiajs-2025.netlify.app/14-user-valid/ ---
 
@@ -411,7 +395,6 @@ are lazy
 
 [Demo](https://codepen.io/web-dot-dev/pen/wvNJGrO) [Demo](https://codepen.io/argyleink/pres/mdaPvYY?editors=0100) [Demo](https://codepen.io/argyleink/pres/eYbZbPY?editors=0100) [Demo](https://codepen.io/argyleink/pres/GRbYMGw?editors=1100) [next slide](/15-exclusive-accordion/)
 
-
 --- URL: https://cascadiajs-2025.netlify.app/15-exclusive-accordion/ ---
 
 Exclusive Accordion
@@ -426,7 +409,6 @@ Exclusive Accordion
     </details>
 
 [Demo](https://codepen.io/argyleink/pres/MWMPOap?editors=1000) [next slide](/16-math/)
-
 
 --- URL: https://cascadiajs-2025.netlify.app/16-math/ ---
 
@@ -444,8 +426,8 @@ Lots of math
 
     .radial-layout {
       --_angle: calc(var(--sibling-index) * var(--_offset));
-      
-      translate: 
+
+      translate:
         calc(cos(var(--_angle)) * var(--_circle-size))
         calc(sin(var(--_angle)) * var(--_circle-size))
       ;
@@ -455,11 +437,10 @@ Lots of math
       --mass: 1;
       --stiffness: 100;
       --damping: 5;
-      --start-velocity: 0; 
+      --start-velocity: 0;
     }
 
 [Demo](https://codepen.io/argyleink/pres/jOovoav?editors=0100) [Demo](https://codepen.io/argyleink/pres/OJozxrB?editors=0100) [Demo](https://codepen.io/matthiasott/pen/yLWoXaN?editors=1000) [Demo](https://codepen.io/argyleink/pres/KKLaNdd?editors=0100) [Demo](https://codepen.io/nocksock/pres/QWXzPQg?editors=0100) [Demo](https://codepen.io/enbee81/pres/xxNzJem?editors=0100) [next slide](/17-function-teaser-slide/)
-
 
 --- URL: https://cascadiajs-2025.netlify.app/17-function-teaser-slide/ ---
 
@@ -502,7 +483,6 @@ CSS [Values Level 5](https://drafts.csswg.org/css-values-5/)
 
 [next slide](/18-text-wrap/)
 
-
 --- URL: https://cascadiajs-2025.netlify.app/18-text-wrap/ ---
 
 Text Wrap
@@ -522,7 +502,6 @@ Balanced blocks or orphanless paragraphs
     }
 
 [Demo](https://codepen.io/argyleink/pres/eYxEENW?editors=0100) [Demo](https://codepen.io/web-dot-dev/pen/KKxjpQm?editors=0100) [Demo](https://codepen.io/web-dot-dev/pen/eYLwpRx?editors=0100) [next slide](/19-color-mix/)
-
 
 --- URL: https://cascadiajs-2025.netlify.app/19-color-mix/ ---
 
@@ -545,7 +524,6 @@ Brew your own colors
     }
 
 [Demo](https://codepen.io/web-dot-dev/pen/poZKLdw?editors=0100) [Demo](https://codepen.io/web-dot-dev/pen/bGjKvyW?editors=0100) [Demo](https://color-mix.style) [next slide](/20-color-spaces/)
-
 
 --- URL: https://cascadiajs-2025.netlify.app/20-color-spaces/ ---
 
@@ -575,14 +553,13 @@ Blueray-like colors & gradients
 
     .better-gradients {
       background: linear-gradient(
-        to right in oklch, 
-        color(display-p3 1 0 .5), 
+        to right in oklch,
+        color(display-p3 1 0 .5),
         color(display-p3 0 1 1)
       );
     }
 
 [Demo](https://codepen.io/argyleink/pen/RwyOyeq?editors=0100) [Demo](https://codepen.io/argyleink/pen/rNvEeQp?editors=0100) [Demo](https://codepen.io/argyleink/pen/abarGpJ?editors=0100) [Demo](https://codepen.io/argyleink/pen/XWdapvY?editors=0100) [Demo](https://codepen.io/argyleink/pen/xxyNNdx?editors=0100) [Demo](https://gradient.style) [next slide](/21-relative-color/)
-
 
 --- URL: https://cascadiajs-2025.netlify.app/21-relative-color/ ---
 
@@ -613,7 +590,6 @@ Derive and compute colors from colors
 
 [Demo](https://codepen.io/web-dot-dev/pen/oNVLPPK?editors=0100) [Demo](https://codepen.io/web-dot-dev/pen/QWoEVJO?editors=0100) [Demo](https://codepen.io/web-dot-dev/pen/YzdByvg?editors=0100) [Demo](https://codepen.io/web-dot-dev/pen/PoVWEGK?editors=0100) [next slide](/22-scrollbars/)
 
-
 --- URL: https://cascadiajs-2025.netlify.app/22-scrollbars/ ---
 
 Scrollbars
@@ -633,7 +609,6 @@ Easily customize the scrollbar
 
 [Demo](https://codepen.io/web-dot-dev/pen/yLwMexO?editors=0100) [Demo](https://codepen.io/web-dot-dev/pen/YzgZwOO?editors=0100) [next slide](/23-starting-style/)
 
-
 --- URL: https://cascadiajs-2025.netlify.app/23-starting-style/ ---
 
 Starting Style
@@ -642,21 +617,20 @@ Starting Style
 
 Easy entry effects
 
-    @starting-style { 
-      scale: 0; 
+    @starting-style {
+      scale: 0;
     }
 
     .present-the-thing {
       transition: opacity .5s ease, scale .5s ease;
 
       @starting-style {
-        opacity: 0; 
-        scale: 1.1; 
+        opacity: 0;
+        scale: 1.1;
       }
     }
 
 [Demo](https://codepen.io/argyleink/pres/qBGOamz?editors=0100) [Demo](https://codepen.io/jh3y/pen/bGyrwbE?editors=0100) [next slide](/24-dialog/)
-
 
 --- URL: https://cascadiajs-2025.netlify.app/24-dialog/ ---
 
@@ -684,10 +658,9 @@ An element for synchronous blocking UI
       <button commandfor="dialog" command="close">Ok</button>
     </dialog>
 
-    <button commandfor="dialog" command="showModal">Open Dialog</button> 
+    <button commandfor="dialog" command="showModal">Open Dialog</button>
 
 [Demo](https://codepen.io/argyleink/pres/OJeWWNZ?editors=0100) [Demo](https://codepen.io/argyleink/pres/VwJvqrW?editors=0100) [Demo](https://codepen.io/argyleink/pres/ZENRLva?editors=0100) [Demo](https://nerdy.dev/have-a-dialog) [next slide](/25-popover/)
-
 
 --- URL: https://cascadiajs-2025.netlify.app/25-popover/ ---
 
@@ -698,14 +671,14 @@ Popover
 An element for asynchronous non-blocking UI
 
     <button popovertarget="demo">Show</button>
-      
+
     <div popover id="demo">…</div>
 
     [popover] {
       &, &::backdrop {
-        transition: 
-          display .5s allow-discrete, 
-          overlay .5s allow-discrete, 
+        transition:
+          display .5s allow-discrete,
+          overlay .5s allow-discrete,
           opacity .5s;
         opacity: 0;
       }
@@ -721,7 +694,6 @@ An element for asynchronous non-blocking UI
     }
 
 [Demo](https://codepen.io/argyleink/pres/xxozrJw?editors=0100) [Read](https://nerdy.dev/steal-this-popover-starter-kit) [next slide](/26-anchor/)
-
 
 --- URL: https://cascadiajs-2025.netlify.app/26-anchor/ ---
 
@@ -751,7 +723,6 @@ Intelligent and convenient element positioning
 
 [Demo](https://codepen.io/argyleink/pres/bGZoBYO?editors=0100) [Demo](https://codepen.io/jh3y/pres/BaVOqwz?editors=0100) [Demo](https://codepen.io/jh3y/pres/nRgxPoB?editors=0100) [Demo](https://codepen.io/jh3y/pres/dyLjbwG?editors=0100) [Demo](https://codepen.io/jh3y/pres/PoxjQRX?editors=0100) [Tool](https://chrome.dev/anchor-tool/) [next slide](/27-text-box-trim/)
 
-
 --- URL: https://cascadiajs-2025.netlify.app/27-text-box-trim/ ---
 
 Text Box Trim
@@ -766,12 +737,11 @@ Switch from double leading to fit line-heights
 
 [Demo](https://codepen.io/argyleink/pres/wvboZdY?editors=0100) [Demo](https://codepen.io/argyleink/pres/wvberMj?editors=0100) [Demo](https://codepen.io/argyleink/pres/wvLmmyQ?editors=0100) [next slide](/28-outro/)
 
-
 --- URL: https://cascadiajs-2025.netlify.app/28-outro/ ---
 
 Oops, CSS Got Away From Me… Send Halp! \| 2025
-[](https://nerdy.dev "site") [](https://nerdy.dev "site") [](https://nerdy.dev "site") [](https://nerdy.dev "site") [](https://nerdy.dev "site") [](https://nerdy.dev "site") [](https://nerdy.dev "site")
+[](https://nerdy.dev 'site') [](https://nerdy.dev 'site') [](https://nerdy.dev 'site') [](https://nerdy.dev 'site') [](https://nerdy.dev 'site') [](https://nerdy.dev 'site') [](https://nerdy.dev 'site')
 
 # Thank You
 
-[](https://twitter.com/argyleink "twitter") [](https://elk.zone/front-end.social/@argyleink "mastodon") [](https://bsky.app/profile/nerdy.dev "bluesky") [next slide]()
+[](https://twitter.com/argyleink 'twitter') [](https://elk.zone/front-end.social/@argyleink 'mastodon') [](https://bsky.app/profile/nerdy.dev 'bluesky') [next slide](<>)

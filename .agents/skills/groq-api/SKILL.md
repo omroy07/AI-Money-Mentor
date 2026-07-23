@@ -28,6 +28,7 @@ export GROQ_API_KEY=<your-api-key>
 ### Basic Chat Completion
 
 **Python:**
+
 ```python
 from groq import Groq
 
@@ -41,30 +42,31 @@ print(response.choices[0].message.content)
 ```
 
 **TypeScript:**
+
 ```typescript
-import Groq from "groq-sdk";
+import Groq from 'groq-sdk';
 
 const client = new Groq();
 
 const response = await client.chat.completions.create({
-    model: "llama-3.3-70b-versatile",
-    messages: [{ role: "user", content: "Hello" }],
+  model: 'llama-3.3-70b-versatile',
+  messages: [{ role: 'user', content: 'Hello' }],
 });
 console.log(response.choices[0].message.content);
 ```
 
 ## Model Selection
 
-| Use Case | Model | Notes |
-|----------|-------|-------|
-| Fast + cheap | `llama-3.1-8b-instant` | Best for simple tasks |
-| Balanced | `llama-3.3-70b-versatile` | Quality/cost balance |
-| Highest quality | `openai/gpt-oss-120b` | Built-in tools + reasoning |
-| Agentic | `groq/compound` | Web search + code exec |
-| Reasoning | `openai/gpt-oss-20b` | Fast reasoning (low/med/high) |
-| Vision/OCR | `llama-4-scout-17b-16e-instruct` | Image understanding |
-| Audio STT | `whisper-large-v3-turbo` | Transcription |
-| TTS | `playai-tts` | Text-to-speech |
+| Use Case        | Model                            | Notes                         |
+| --------------- | -------------------------------- | ----------------------------- |
+| Fast + cheap    | `llama-3.1-8b-instant`           | Best for simple tasks         |
+| Balanced        | `llama-3.3-70b-versatile`        | Quality/cost balance          |
+| Highest quality | `openai/gpt-oss-120b`            | Built-in tools + reasoning    |
+| Agentic         | `groq/compound`                  | Web search + code exec        |
+| Reasoning       | `openai/gpt-oss-20b`             | Fast reasoning (low/med/high) |
+| Vision/OCR      | `llama-4-scout-17b-16e-instruct` | Image understanding           |
+| Audio STT       | `whisper-large-v3-turbo`         | Transcription                 |
+| TTS             | `playai-tts`                     | Text-to-speech                |
 
 See [references/models.md](references/models.md) for full model list and pricing.
 
@@ -127,12 +129,13 @@ response = client.chat.completions.create(
 
 Force output to match a schema. Two modes available:
 
-| Mode | Guarantee | Models |
-|------|-----------|--------|
-| `strict: true` | 100% schema compliance | `openai/gpt-oss-20b`, `openai/gpt-oss-120b` |
-| `strict: false` | Best-effort compliance | All supported models |
+| Mode            | Guarantee              | Models                                      |
+| --------------- | ---------------------- | ------------------------------------------- |
+| `strict: true`  | 100% schema compliance | `openai/gpt-oss-20b`, `openai/gpt-oss-120b` |
+| `strict: false` | Best-effort compliance | All supported models                        |
 
 **Strict Mode (guaranteed compliance):**
+
 ```python
 response = client.chat.completions.create(
     model="openai/gpt-oss-20b",
@@ -157,6 +160,7 @@ response = client.chat.completions.create(
 ```
 
 **With Pydantic:**
+
 ```python
 from pydantic import BaseModel
 
@@ -286,6 +290,7 @@ See [references/vision.md](references/vision.md) for multi-image, tool use with 
 For tool calling patterns and examples, see [references/tool-use.md](references/tool-use.md).
 
 **Quick example:**
+
 ```python
 import json
 
@@ -426,12 +431,14 @@ Automatically reduce latency and costs by 50% for repeated prompt prefixes. No c
 **Supported models:** `moonshotai/kimi-k2-instruct-0905`, `openai/gpt-oss-20b`, `openai/gpt-oss-120b`, `openai/gpt-oss-safeguard-20b`
 
 **How it works:**
+
 - Place static content (system prompts, tools, examples) at the beginning
 - Place dynamic content (user queries) at the end
 - Cache automatically matches prefixes and applies 50% discount
 - Cache expires after 2 hours without use
 
 **Track cache usage:**
+
 ```python
 response = client.chat.completions.create(
     model="moonshotai/kimi-k2-instruct-0905",

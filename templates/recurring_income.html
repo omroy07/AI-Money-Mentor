@@ -1,13 +1,13 @@
-{% extends 'base.html' %}
-
-{% block title %}Recurring Incomes{% endblock %}
-
-{% block content %}
+{% extends 'base.html' %} {% block title %}Recurring Incomes{% endblock %} {%
+block content %}
 <div id="recurring-income" class="page active">
-  <div class="page-title"><i class="fa-solid fa-money-bill-trend-up"></i> Recurring <span>Income Streams</span></div>
+  <div class="page-title">
+    <i class="fa-solid fa-money-bill-trend-up"></i> Recurring
+    <span>Income Streams</span>
+  </div>
 
   <!-- Stats Cards -->
-  <div class="stats-row" style="margin-bottom: 20px;">
+  <div class="stats-row" style="margin-bottom: 20px">
     <div class="stat-card">
       <div class="stat-label">Total Monthly Projected Income (Base INR)</div>
       <div class="stat-val" id="totalProjectedIncome">₹0</div>
@@ -22,15 +22,58 @@
     <!-- Manual Add -->
     <div class="card">
       <div class="card-title">Add Recurring Income Stream</div>
-      <form id="recurringIncomeForm" style="display: flex; flex-direction: column; gap: 12px;">
+      <form
+        id="recurringIncomeForm"
+        style="display: flex; flex-direction: column; gap: 12px"
+      >
         <div>
-          <label style="font-size: 12px; color: var(--muted); display: block; margin-bottom: 4px;">Source Name</label>
-          <input type="text" id="incSource" placeholder="e.g. Acme Corp salary, Apartment 4B Rent" required style="width: 100%; padding: 10px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text);">
+          <label
+            style="
+              font-size: 12px;
+              color: var(--muted);
+              display: block;
+              margin-bottom: 4px;
+            "
+            >Source Name</label
+          >
+          <input
+            type="text"
+            id="incSource"
+            placeholder="e.g. Acme Corp salary, Apartment 4B Rent"
+            required
+            style="
+              width: 100%;
+              padding: 10px;
+              background: var(--bg);
+              border: 1px solid var(--border);
+              border-radius: 8px;
+              color: var(--text);
+            "
+          />
         </div>
 
         <div>
-          <label style="font-size: 12px; color: var(--muted); display: block; margin-bottom: 4px;">Category</label>
-          <select id="incCategory" required style="width: 100%; padding: 10px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text);">
+          <label
+            style="
+              font-size: 12px;
+              color: var(--muted);
+              display: block;
+              margin-bottom: 4px;
+            "
+            >Category</label
+          >
+          <select
+            id="incCategory"
+            required
+            style="
+              width: 100%;
+              padding: 10px;
+              background: var(--bg);
+              border: 1px solid var(--border);
+              border-radius: 8px;
+              color: var(--text);
+            "
+          >
             <option value="Salary" selected>Salary</option>
             <option value="Rent">Rent</option>
             <option value="Freelance">Freelance</option>
@@ -39,10 +82,43 @@
         </div>
 
         <div>
-          <label style="font-size: 12px; color: var(--muted); display: block; margin-bottom: 4px;">Amount & Currency</label>
-          <div style="display: flex; gap: 8px;">
-            <input type="number" required min="0.01" step="0.01" id="incAmount" placeholder="0.00" style="flex: 2; padding: 10px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text);">
-            <select id="incCurrency" style="flex: 1; padding: 10px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text);">
+          <label
+            style="
+              font-size: 12px;
+              color: var(--muted);
+              display: block;
+              margin-bottom: 4px;
+            "
+            >Amount & Currency</label
+          >
+          <div style="display: flex; gap: 8px">
+            <input
+              type="number"
+              required
+              min="0.01"
+              step="0.01"
+              id="incAmount"
+              placeholder="0.00"
+              style="
+                flex: 2;
+                padding: 10px;
+                background: var(--bg);
+                border: 1px solid var(--border);
+                border-radius: 8px;
+                color: var(--text);
+              "
+            />
+            <select
+              id="incCurrency"
+              style="
+                flex: 1;
+                padding: 10px;
+                background: var(--bg);
+                border: 1px solid var(--border);
+                border-radius: 8px;
+                color: var(--text);
+              "
+            >
               <option value="INR" selected>INR (₹)</option>
               <option value="USD">USD ($)</option>
               <option value="EUR">EUR (€)</option>
@@ -57,8 +133,27 @@
         </div>
 
         <div>
-          <label style="font-size: 12px; color: var(--muted); display: block; margin-bottom: 4px;">Frequency</label>
-          <select id="incFrequency" required style="width: 100%; padding: 10px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text);">
+          <label
+            style="
+              font-size: 12px;
+              color: var(--muted);
+              display: block;
+              margin-bottom: 4px;
+            "
+            >Frequency</label
+          >
+          <select
+            id="incFrequency"
+            required
+            style="
+              width: 100%;
+              padding: 10px;
+              background: var(--bg);
+              border: 1px solid var(--border);
+              border-radius: 8px;
+              color: var(--text);
+            "
+          >
             <option value="weekly">Weekly</option>
             <option value="monthly" selected>Monthly</option>
             <option value="quarterly">Quarterly</option>
@@ -66,38 +161,110 @@
           </select>
         </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px">
           <div>
-            <label style="font-size: 12px; color: var(--muted); display: block; margin-bottom: 4px;">Start Date</label>
-            <input type="date" id="incStartDate" required style="width: 100%; padding: 10px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text);">
+            <label
+              style="
+                font-size: 12px;
+                color: var(--muted);
+                display: block;
+                margin-bottom: 4px;
+              "
+              >Start Date</label
+            >
+            <input
+              type="date"
+              id="incStartDate"
+              required
+              style="
+                width: 100%;
+                padding: 10px;
+                background: var(--bg);
+                border: 1px solid var(--border);
+                border-radius: 8px;
+                color: var(--text);
+              "
+            />
           </div>
           <div>
-            <label style="font-size: 12px; color: var(--muted); display: block; margin-bottom: 4px;">End Date (Optional)</label>
-            <input type="date" id="incEndDate" style="width: 100%; padding: 10px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text);">
+            <label
+              style="
+                font-size: 12px;
+                color: var(--muted);
+                display: block;
+                margin-bottom: 4px;
+              "
+              >End Date (Optional)</label
+            >
+            <input
+              type="date"
+              id="incEndDate"
+              style="
+                width: 100%;
+                padding: 10px;
+                background: var(--bg);
+                border: 1px solid var(--border);
+                border-radius: 8px;
+                color: var(--text);
+              "
+            />
           </div>
         </div>
 
-        <button type="submit" class="btn btn-gold" id="addIncomeBtn" style="width: 100%; padding: 12px; margin-top: 10px;">➕ Add Recurring Income</button>
+        <button
+          type="submit"
+          class="btn btn-gold"
+          id="addIncomeBtn"
+          style="width: 100%; padding: 12px; margin-top: 10px"
+        >
+          ➕ Add Recurring Income
+        </button>
       </form>
     </div>
 
     <!-- Active Income Streams list -->
     <div class="card">
-      <div class="card-title"><i class="fa-solid fa-money-bill-trend-up"></i> Your Recurring Income Streams</div>
-      <div style="overflow-x: auto;">
-        <table style="width: 100%; border-collapse: collapse; font-size: 13px; color: var(--text);">
-          <thead style="color: var(--muted); text-align: left; border-bottom: 1px solid var(--border);">
+      <div class="card-title">
+        <i class="fa-solid fa-money-bill-trend-up"></i> Your Recurring Income
+        Streams
+      </div>
+      <div style="overflow-x: auto">
+        <table
+          style="
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            color: var(--text);
+          "
+        >
+          <thead
+            style="
+              color: var(--muted);
+              text-align: left;
+              border-bottom: 1px solid var(--border);
+            "
+          >
             <tr>
-              <th style="padding: 10px;">Source / Category</th>
-              <th style="padding: 10px; text-align: center;">Frequency</th>
-              <th style="padding: 10px; text-align: center;">Next Due</th>
-              <th style="padding: 10px; text-align: right;">Amount</th>
-              <th style="padding: 10px; text-align: center;">Action</th>
+              <th style="padding: 10px">Source / Category</th>
+              <th style="padding: 10px; text-align: center">Frequency</th>
+              <th style="padding: 10px; text-align: center">Next Due</th>
+              <th style="padding: 10px; text-align: right">Amount</th>
+              <th style="padding: 10px; text-align: center">Action</th>
             </tr>
           </thead>
           <tbody id="incomeListBody">
             <tr>
-              <td colspan="5" style="text-align: center; padding: 20px; color: var(--muted); font-style: italic;">Loading recurring incomes...</td>
+              <td
+                colspan="5"
+                style="
+                  text-align: center;
+                  padding: 20px;
+                  color: var(--muted);
+                  font-style: italic;
+                "
+              >
+                Loading recurring incomes...
+              </td>
             </tr>
           </tbody>
         </table>
@@ -105,17 +272,24 @@
     </div>
   </div>
 </div>
-{% endblock %}
-
-{% block scripts %}
+{% endblock %} {% block scripts %}
 <script>
   const symbolMap = {
-    'INR': '₹', 'USD': '$', 'EUR': '€', 'GBP': '£',
-    'JPY': '¥', 'CAD': '$', 'AUD': '$', 'AED': 'د.إ', 'SGD': '$'
+    INR: '₹',
+    USD: '$',
+    EUR: '€',
+    GBP: '£',
+    JPY: '¥',
+    CAD: '$',
+    AUD: '$',
+    AED: 'د.إ',
+    SGD: '$',
   };
 
   document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('incStartDate').value = new Date().toISOString().split('T')[0];
+    document.getElementById('incStartDate').value = new Date()
+      .toISOString()
+      .split('T')[0];
     loadIncomes();
   });
 
@@ -123,9 +297,9 @@
     try {
       const res = await fetch('/recurring-income');
       const data = await res.json();
-      
+
       if (!data.success) {
-        console.error("Failed to load incomes:", data.error);
+        console.error('Failed to load incomes:', data.error);
         return;
       }
 
@@ -133,23 +307,35 @@
       tbody.innerHTML = '';
 
       if (data.incomes.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 20px; color: var(--muted); font-style: italic;">No active recurring incomes configured.</td></tr>';
+        tbody.innerHTML =
+          '<tr><td colspan="5" style="text-align: center; padding: 20px; color: var(--muted); font-style: italic;">No active recurring incomes configured.</td></tr>';
         document.getElementById('totalProjectedIncome').textContent = '₹0';
         document.getElementById('activeIncomeStreams').textContent = '0';
         return;
       }
 
-      document.getElementById('activeIncomeStreams').textContent = data.incomes.length;
+      document.getElementById('activeIncomeStreams').textContent =
+        data.incomes.length;
 
       // We will estimate the monthly base INR total on client side for display,
       // but the exact conversions will also be computed when we pull cashflows.
       // Let's do a simple calculation of monthly total for display.
       // Using standard offline fallbacks for display:
-      const rates = { 'INR': 1.0, 'USD': 83.5, 'EUR': 90.5, 'GBP': 106.0, 'JPY': 0.53, 'CAD': 61.5, 'AUD': 55.0, 'AED': 22.7, 'SGD': 62.0 };
-      
+      const rates = {
+        INR: 1.0,
+        USD: 83.5,
+        EUR: 90.5,
+        GBP: 106.0,
+        JPY: 0.53,
+        CAD: 61.5,
+        AUD: 55.0,
+        AED: 22.7,
+        SGD: 62.0,
+      };
+
       let monthlyTotalINR = 0.0;
 
-      data.incomes.forEach(inc => {
+      data.incomes.forEach((inc) => {
         const amount = inc.amount;
         const curr = inc.currency || 'INR';
         const rate = rates[curr] || 1.0;
@@ -166,11 +352,19 @@
           multiplier = 30.0;
         }
 
-        monthlyTotalINR += (amountINR * multiplier);
+        monthlyTotalINR += amountINR * multiplier;
 
         const sym = symbolMap[curr] || curr;
-        const amtText = curr === 'INR' ? `₹${fmtNum(amount)}` : `${sym}${fmtNum(amount)} (${curr})`;
-        const nextDue = inc.next_due_date ? new Date(inc.next_due_date).toLocaleDateString("en-IN", { day: 'numeric', month: 'short' }) : 'N/A';
+        const amtText =
+          curr === 'INR'
+            ? `₹${fmtNum(amount)}`
+            : `${sym}${fmtNum(amount)} (${curr})`;
+        const nextDue = inc.next_due_date
+          ? new Date(inc.next_due_date).toLocaleDateString('en-IN', {
+              day: 'numeric',
+              month: 'short',
+            })
+          : 'N/A';
 
         tbody.innerHTML += `
           <tr style="border-bottom: 1px solid var(--border);">
@@ -188,61 +382,76 @@
         `;
       });
 
-      document.getElementById('totalProjectedIncome').textContent = '₹' + fmtNum(monthlyTotalINR);
-
+      document.getElementById('totalProjectedIncome').textContent =
+        '₹' + fmtNum(monthlyTotalINR);
     } catch (e) {
       console.error(e);
     }
   }
 
   // Handle Form submit
-  document.getElementById('recurringIncomeForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
+  document
+    .getElementById('recurringIncomeForm')
+    .addEventListener('submit', async function (e) {
+      e.preventDefault();
 
-    const source = document.getElementById('incSource').value.trim();
-    const category = document.getElementById('incCategory').value;
-    const amount = parseFloat(document.getElementById('incAmount').value);
-    const currency = document.getElementById('incCurrency').value;
-    const frequency = document.getElementById('incFrequency').value;
-    const start_date = document.getElementById('incStartDate').value;
-    const end_date = document.getElementById('incEndDate').value || null;
+      const source = document.getElementById('incSource').value.trim();
+      const category = document.getElementById('incCategory').value;
+      const amount = parseFloat(document.getElementById('incAmount').value);
+      const currency = document.getElementById('incCurrency').value;
+      const frequency = document.getElementById('incFrequency').value;
+      const start_date = document.getElementById('incStartDate').value;
+      const end_date = document.getElementById('incEndDate').value || null;
 
-    if (!source || !amount || amount <= 0 || !start_date) {
-      alert("Please fill in all required fields.");
-      return;
-    }
-
-    setLoading('addIncomeBtn', true);
-    try {
-      const res = await fetch('/recurring-income', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ source, category, amount, currency, frequency, start_date, end_date })
-      });
-      const data = await res.json();
-      if (data.success) {
-        document.getElementById('recurringIncomeForm').reset();
-        document.getElementById('incStartDate').value = new Date().toISOString().split('T')[0];
-        loadIncomes();
-      } else {
-        alert("Error adding income stream: " + data.error);
+      if (!source || !amount || amount <= 0 || !start_date) {
+        alert('Please fill in all required fields.');
+        return;
       }
-    } catch (err) {
-      console.error(err);
-      alert("Network error.");
-    }
-    setLoading('addIncomeBtn', false);
-  });
+
+      setLoading('addIncomeBtn', true);
+      try {
+        const res = await fetch('/recurring-income', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            source,
+            category,
+            amount,
+            currency,
+            frequency,
+            start_date,
+            end_date,
+          }),
+        });
+        const data = await res.json();
+        if (data.success) {
+          document.getElementById('recurringIncomeForm').reset();
+          document.getElementById('incStartDate').value = new Date()
+            .toISOString()
+            .split('T')[0];
+          loadIncomes();
+        } else {
+          alert('Error adding income stream: ' + data.error);
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Network error.');
+      }
+      setLoading('addIncomeBtn', false);
+    });
 
   async function disableIncome(id) {
-    if (!confirm("Are you sure you want to disable this recurring income stream?")) return;
+    if (
+      !confirm('Are you sure you want to disable this recurring income stream?')
+    )
+      return;
     try {
       const res = await fetch(`/recurring-income/${id}`, { method: 'DELETE' });
       const data = await res.json();
       if (data.success) {
         loadIncomes();
       } else {
-        alert("Failed to disable stream: " + data.error);
+        alert('Failed to disable stream: ' + data.error);
       }
     } catch (err) {
       console.error(err);

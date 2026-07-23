@@ -4,5 +4,7 @@ export function esc(s) {
   return d.innerHTML;
 }
 export function escAttr(s) {
-  return String(s ?? '').replace(/"/g, '"').replace(/'/g, '&#39;');
+  return String(s ?? '')
+    .replace(/"/g, '"')
+    .replace(/'/g, '&#39;');
 }

@@ -130,12 +130,12 @@ def process_request(request: Request) -> Response:
 
 Use log levels consistently across the application.
 
-| Level | Purpose | Examples |
-|-------|---------|----------|
-| `DEBUG` | Development diagnostics | Variable values, internal state |
-| `INFO` | Request lifecycle, operations | Request start/end, job completion |
-| `WARNING` | Recoverable anomalies | Retry attempts, fallback used |
-| `ERROR` | Failures needing attention | Exceptions, service unavailable |
+| Level     | Purpose                       | Examples                          |
+| --------- | ----------------------------- | --------------------------------- |
+| `DEBUG`   | Development diagnostics       | Variable values, internal state   |
+| `INFO`    | Request lifecycle, operations | Request start/end, job completion |
+| `WARNING` | Recoverable anomalies         | Retry attempts, fallback used     |
+| `ERROR`   | Failures needing attention    | Exceptions, service unavailable   |
 
 ```python
 # DEBUG: Detailed internal information

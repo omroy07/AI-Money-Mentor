@@ -20,8 +20,8 @@ Groq provides fast speech-to-text and text-to-speech APIs with OpenAI-compatible
 
 ## Endpoints
 
-| Endpoint       | Usage                           | API URL                                             |
-|----------------|--------------------------------|-----------------------------------------------------|
+| Endpoint       | Usage                           | API URL                                               |
+| -------------- | ------------------------------- | ----------------------------------------------------- |
 | Transcriptions | Convert audio to text           | `https://api.groq.com/openai/v1/audio/transcriptions` |
 | Translations   | Translate audio to English text | `https://api.groq.com/openai/v1/audio/translations`   |
 | Speech         | Convert text to audio           | `https://api.groq.com/openai/v1/audio/speech`         |
@@ -32,29 +32,30 @@ Groq provides fast speech-to-text and text-to-speech APIs with OpenAI-compatible
 
 ### Speech-to-Text Models
 
-| Model ID               | Description                                                                 | Languages    |
-|------------------------|-----------------------------------------------------------------------------|--------------|
-| `whisper-large-v3-turbo` | Pruned Whisper Large V3, optimized for speed. Best price/performance.      | Multilingual |
-| `whisper-large-v3`       | Full Whisper Large V3. Highest accuracy for error-sensitive applications.  | Multilingual |
+| Model ID                 | Description                                                               | Languages    |
+| ------------------------ | ------------------------------------------------------------------------- | ------------ |
+| `whisper-large-v3-turbo` | Pruned Whisper Large V3, optimized for speed. Best price/performance.     | Multilingual |
+| `whisper-large-v3`       | Full Whisper Large V3. Highest accuracy for error-sensitive applications. | Multilingual |
 
 ### Model Comparison
 
-| Model                  | Cost/Hour | Transcription | Translation | Speed Factor | Word Error Rate |
-|------------------------|-----------|---------------|-------------|--------------|-----------------|
+| Model                    | Cost/Hour | Transcription | Translation | Speed Factor | Word Error Rate |
+| ------------------------ | --------- | ------------- | ----------- | ------------ | --------------- |
 | `whisper-large-v3`       | $0.111    | Yes           | Yes         | 189x         | 10.3%           |
 | `whisper-large-v3-turbo` | $0.04     | Yes           | No          | 216x         | 12%             |
 
 **Selection guide:**
+
 - Error-sensitive + multilingual: Use `whisper-large-v3`
 - Best price/performance + multilingual: Use `whisper-large-v3-turbo`
 
 ### Text-to-Speech Models
 
-| Model ID                       | Description                                      | Languages |
-|--------------------------------|--------------------------------------------------|-----------|
-| `playai-tts`                   | High-quality text-to-speech                      | English   |
-| `canopylabs/orpheus-v1-english` | Expressive TTS with vocal directions support    | English   |
-| `canopylabs/orpheus-v1-arabic`  | Expressive TTS with vocal directions support    | Arabic    |
+| Model ID                        | Description                                  | Languages |
+| ------------------------------- | -------------------------------------------- | --------- |
+| `playai-tts`                    | High-quality text-to-speech                  | English   |
+| `canopylabs/orpheus-v1-english` | Expressive TTS with vocal directions support | English   |
+| `canopylabs/orpheus-v1-arabic`  | Expressive TTS with vocal directions support | Arabic    |
 
 ---
 
@@ -64,16 +65,16 @@ Convert audio to text in the same language.
 
 ### Request Parameters
 
-| Parameter                | Type   | Default  | Description                                                                                      |
-|--------------------------|--------|----------|--------------------------------------------------------------------------------------------------|
-| `file`                   | file   | Required (or `url`) | Audio file to transcribe                                                            |
-| `url`                    | string | Required (or `file`) | URL to audio file (supports Base64URL)                                              |
-| `model`                  | string | Required | Model ID (`whisper-large-v3-turbo` or `whisper-large-v3`)                                        |
-| `language`               | string | Optional | ISO-639-1 language code (e.g., `en`, `es`). Improves accuracy and latency.                       |
-| `prompt`                 | string | Optional | Context/spelling hints (max 224 tokens)                                                          |
-| `response_format`        | string | `json`   | Output format: `json`, `verbose_json`, `text`                                                    |
-| `temperature`            | float  | 0        | Sampling temperature (0-1). Use 0 for deterministic output.                                      |
-| `timestamp_granularities` | array  | `["segment"]` | Timestamp detail: `segment`, `word`, or both. Requires `verbose_json`.                      |
+| Parameter                 | Type   | Default              | Description                                                                |
+| ------------------------- | ------ | -------------------- | -------------------------------------------------------------------------- |
+| `file`                    | file   | Required (or `url`)  | Audio file to transcribe                                                   |
+| `url`                     | string | Required (or `file`) | URL to audio file (supports Base64URL)                                     |
+| `model`                   | string | Required             | Model ID (`whisper-large-v3-turbo` or `whisper-large-v3`)                  |
+| `language`                | string | Optional             | ISO-639-1 language code (e.g., `en`, `es`). Improves accuracy and latency. |
+| `prompt`                  | string | Optional             | Context/spelling hints (max 224 tokens)                                    |
+| `response_format`         | string | `json`               | Output format: `json`, `verbose_json`, `text`                              |
+| `temperature`             | float  | 0                    | Sampling temperature (0-1). Use 0 for deterministic output.                |
+| `timestamp_granularities` | array  | `["segment"]`        | Timestamp detail: `segment`, `word`, or both. Requires `verbose_json`.     |
 
 ### Basic Transcription
 
@@ -109,16 +110,16 @@ print(json.dumps(transcription, indent=2, default=str))
 ### TypeScript Example
 
 ```typescript
-import Groq from "groq-sdk";
-import fs from "fs";
+import Groq from 'groq-sdk';
+import fs from 'fs';
 
 const client = new Groq();
 
 const transcription = await client.audio.transcriptions.create({
-    file: fs.createReadStream("audio.mp3"),
-    model: "whisper-large-v3-turbo",
-    response_format: "verbose_json",
-    timestamp_granularities: ["word", "segment"],
+  file: fs.createReadStream('audio.mp3'),
+  model: 'whisper-large-v3-turbo',
+  response_format: 'verbose_json',
+  timestamp_granularities: ['word', 'segment'],
 });
 console.log(transcription.text);
 ```
@@ -146,8 +147,8 @@ print(translation.text)  # English text
 
 ```typescript
 const translation = await client.audio.translations.create({
-    file: fs.createReadStream("german_audio.mp3"),
-    model: "whisper-large-v3",
+  file: fs.createReadStream('german_audio.mp3'),
+  model: 'whisper-large-v3',
 });
 console.log(translation.text);
 ```
@@ -160,19 +161,20 @@ Convert text to spoken audio. Groq provides fast TTS with support for English an
 
 ### Request Parameters
 
-| Parameter        | Type   | Default | Description                                      |
-|------------------|--------|---------|--------------------------------------------------|
-| `model`          | string | Required | Model ID (see TTS models table)                 |
-| `input`          | string | Required | Text to convert to speech                        |
-| `voice`          | string | Required | Voice ID (model-specific)                       |
-| `response_format` | string | `mp3`   | Output format: `flac`, `mp3`, `mulaw`, `ogg`, `wav` |
-| `speed`          | float  | 1.0     | Playback speed (0.5 to 5.0)                      |
+| Parameter         | Type   | Default  | Description                                         |
+| ----------------- | ------ | -------- | --------------------------------------------------- |
+| `model`           | string | Required | Model ID (see TTS models table)                     |
+| `input`           | string | Required | Text to convert to speech                           |
+| `voice`           | string | Required | Voice ID (model-specific)                           |
+| `response_format` | string | `mp3`    | Output format: `flac`, `mp3`, `mulaw`, `ogg`, `wav` |
+| `speed`           | float  | 1.0      | Playback speed (0.5 to 5.0)                         |
 
 ### PlayAI TTS
 
 Basic high-quality English text-to-speech.
 
 **Python:**
+
 ```python
 response = client.audio.speech.create(
     model="playai-tts",
@@ -185,21 +187,22 @@ response.write_to_file("output.wav")
 ```
 
 **TypeScript:**
+
 ```typescript
-import Groq from "groq-sdk";
-import fs from "fs";
+import Groq from 'groq-sdk';
+import fs from 'fs';
 
 const client = new Groq();
 
 const response = await client.audio.speech.create({
-    model: "playai-tts",
-    input: "Hello, world!",
-    voice: "Fritz-PlayAI",
-    response_format: "wav",
+  model: 'playai-tts',
+  input: 'Hello, world!',
+  voice: 'Fritz-PlayAI',
+  response_format: 'wav',
 });
 
 const buffer = Buffer.from(await response.arrayBuffer());
-await fs.promises.writeFile("output.wav", buffer);
+await fs.promises.writeFile('output.wav', buffer);
 ```
 
 ### Orpheus TTS (Expressive Speech)
@@ -211,6 +214,7 @@ Orpheus models support vocal directions for expressive speech generation.
 **Voices:** `tara`, `leah`, `jess`, `leo`, `dan`, `mia`, `zac`, `zoe`, `austin`
 
 **Python:**
+
 ```python
 response = client.audio.speech.create(
     model="canopylabs/orpheus-v1-english",
@@ -222,16 +226,18 @@ response.write_to_file("orpheus-english.wav")
 ```
 
 **TypeScript:**
+
 ```typescript
 const response = await client.audio.speech.create({
-    model: "canopylabs/orpheus-v1-english",
-    input: "Welcome to Orpheus. [cheerful] This demonstrates vocal directions support.",
-    voice: "austin",
-    response_format: "wav",
+  model: 'canopylabs/orpheus-v1-english',
+  input:
+    'Welcome to Orpheus. [cheerful] This demonstrates vocal directions support.',
+  voice: 'austin',
+  response_format: 'wav',
 });
 
 const buffer = Buffer.from(await response.arrayBuffer());
-await fs.promises.writeFile("orpheus-english.wav", buffer);
+await fs.promises.writeFile('orpheus-english.wav', buffer);
 ```
 
 #### Orpheus Arabic
@@ -296,16 +302,16 @@ with client.audio.speech.with_streaming_response.create(
 
 ### File Limitations
 
-| Constraint              | Value                                                      |
-|-------------------------|------------------------------------------------------------|
-| Max file size           | 25 MB (free tier), 100 MB (dev tier)                       |
-| Max attachment size     | 25 MB. Use `url` parameter for larger files.               |
-| Min file length         | 0.01 seconds                                               |
-| Min billed length       | 10 seconds (shorter files still billed for 10s)            |
+| Constraint              | Value                                                             |
+| ----------------------- | ----------------------------------------------------------------- |
+| Max file size           | 25 MB (free tier), 100 MB (dev tier)                              |
+| Max attachment size     | 25 MB. Use `url` parameter for larger files.                      |
+| Min file length         | 0.01 seconds                                                      |
+| Min billed length       | 10 seconds (shorter files still billed for 10s)                   |
 | Supported formats       | `flac`, `mp3`, `mp4`, `mpeg`, `mpga`, `m4a`, `ogg`, `wav`, `webm` |
-| Audio tracks            | Only first track transcribed for multi-track files          |
-| Response formats        | `json`, `verbose_json`, `text`                              |
-| Timestamp granularities | `segment`, `word`                                           |
+| Audio tracks            | Only first track transcribed for multi-track files                |
+| Response formats        | `json`, `verbose_json`, `text`                                    |
+| Timestamp granularities | `segment`, `word`                                                 |
 
 ### Audio Preprocessing
 
@@ -354,29 +360,32 @@ With `response_format="verbose_json"`, each segment includes quality metadata:
 
 ### Metadata Fields
 
-| Field             | Description                                                                 |
-|-------------------|-----------------------------------------------------------------------------|
-| `id`              | Segment index (0-based)                                                     |
-| `seek`            | Position in audio file where segment begins                                 |
-| `start`, `end`    | Timestamps in seconds                                                       |
-| `avg_logprob`     | Confidence score. Closer to 0 = higher confidence. Below -0.5 may indicate issues. |
-| `no_speech_prob`  | Probability of non-speech. Low values confirm speech content.               |
-| `compression_ratio` | Speech pattern indicator. Unusual values may indicate clarity issues.      |
+| Field               | Description                                                                        |
+| ------------------- | ---------------------------------------------------------------------------------- |
+| `id`                | Segment index (0-based)                                                            |
+| `seek`              | Position in audio file where segment begins                                        |
+| `start`, `end`      | Timestamps in seconds                                                              |
+| `avg_logprob`       | Confidence score. Closer to 0 = higher confidence. Below -0.5 may indicate issues. |
+| `no_speech_prob`    | Probability of non-speech. Low values confirm speech content.                      |
+| `compression_ratio` | Speech pattern indicator. Unusual values may indicate clarity issues.              |
 
 ### Debugging with Metadata
 
 **Low confidence (`avg_logprob` very negative):**
+
 - Background noise
 - Multiple speakers
 - Unclear pronunciation
 - Strong accents
 
 **High `no_speech_prob`:**
+
 - Silence periods
 - Background music
 - Non-verbal sounds
 
 **Unusual `compression_ratio`:**
+
 - Stuttering or repetition
 - Unusually fast/slow speech
 - Audio quality issues
@@ -388,6 +397,7 @@ With `response_format="verbose_json"`, each segment includes quality metadata:
 The `prompt` parameter (max 224 tokens) provides context and style guidance.
 
 **Best practices:**
+
 - Provide context about audio content (topic, speakers, conversation type)
 - Use the same language as the audio
 - Specify proper spellings for names, technical terms, or acronyms
