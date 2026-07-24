@@ -1,190 +1,369 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-<script>
-// HTML escape helper (issue #517)
-function esc(s){ const d=document.createElement('div'); d.textContent=String(s==null?'':s); return d.innerHTML; }
-</script>
+  <head>
+    <meta charset="UTF-8" />
+    <script>
+      // HTML escape helper (issue #517)
+      function esc(s) {
+        const d = document.createElement('div');
+        d.textContent = String(s == null ? '' : s);
+        return d.innerHTML;
+      }
+    </script>
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Multi-Agent System - AI Money Mentor</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
     <style>
-        body {
-            background: #070b12;
-            color: #eef0f5;
-            font-family: 'Instrument Sans', sans-serif;
+      body {
+        background: #070b12;
+        color: #eef0f5;
+        font-family: 'Instrument Sans', sans-serif;
+      }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .card {
+        background: rgba(15, 22, 38, 0.96);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 18px;
+        padding: 24px;
+        margin-bottom: 20px;
+      }
+      .btn-gold {
+        background: linear-gradient(135deg, #f3d687, #d4a843);
+        color: #0a0e18;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 999px;
+        font-weight: 700;
+      }
+      .btn-gold:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(212, 168, 67, 0.3);
+      }
+      .agent-card {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 12px;
+      }
+      .agent-card .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 8px;
+      }
+      .dot-active {
+        background: #2ecc8a;
+      }
+      .dot-inactive {
+        background: #5a6a82;
+      }
+      .text-gold {
+        color: #d4a843;
+      }
+      .text-muted {
+        color: #5a6a82;
+      }
+      .response-box {
+        background: rgba(17, 26, 46, 0.9);
+        border-radius: 12px;
+        padding: 20px;
+        margin-top: 15px;
+        border-left: 4px solid #d4a843;
+      }
+      .loading {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid rgba(255, 255, 255, 0.1);
+        border-top-color: #d4a843;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
         }
-        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-        .card { background: rgba(15, 22, 38, 0.96); border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; padding: 24px; margin-bottom: 20px; }
-        .btn-gold { background: linear-gradient(135deg, #f3d687, #d4a843); color: #0a0e18; border: none; padding: 12px 24px; border-radius: 999px; font-weight: 700; }
-        .btn-gold:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(212,168,67,0.3); }
-        .agent-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 16px; margin-bottom: 12px; }
-        .agent-card .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 8px; }
-        .dot-active { background: #2ecc8a; }
-        .dot-inactive { background: #5a6a82; }
-        .text-gold { color: #d4a843; }
-        .text-muted { color: #5a6a82; }
-        .response-box { background: rgba(17,26,46,0.9); border-radius: 12px; padding: 20px; margin-top: 15px; border-left: 4px solid #d4a843; }
-        .loading { display: inline-block; width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.1); border-top-color: #d4a843; border-radius: 50%; animation: spin 0.8s linear infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        textarea { width: 100%; padding: 12px; background: rgba(17,26,46,0.9); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; color: #eef0f5; resize: vertical; }
-        textarea:focus { border-color: #d4a843; outline: none; }
-        .agent-tag { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 11px; margin: 3px; }
-        .tag-tax { background: rgba(212,168,67,0.2); color: #d4a843; }
-        .tag-investment { background: rgba(20,200,191,0.2); color: #14c8bf; }
-        .tag-debt { background: rgba(224,82,82,0.2); color: #e05252; }
-        .tag-insurance { background: rgba(46,204,138,0.2); color: #2ecc8a; }
-        .tag-portfolio { background: rgba(124,114,224,0.2); color: #7c72e0; }
+      }
+      textarea {
+        width: 100%;
+        padding: 12px;
+        background: rgba(17, 26, 46, 0.9);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 14px;
+        color: #eef0f5;
+        resize: vertical;
+      }
+      textarea:focus {
+        border-color: #d4a843;
+        outline: none;
+      }
+      .agent-tag {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 11px;
+        margin: 3px;
+      }
+      .tag-tax {
+        background: rgba(212, 168, 67, 0.2);
+        color: #d4a843;
+      }
+      .tag-investment {
+        background: rgba(20, 200, 191, 0.2);
+        color: #14c8bf;
+      }
+      .tag-debt {
+        background: rgba(224, 82, 82, 0.2);
+        color: #e05252;
+      }
+      .tag-insurance {
+        background: rgba(46, 204, 138, 0.2);
+        color: #2ecc8a;
+      }
+      .tag-portfolio {
+        background: rgba(124, 114, 224, 0.2);
+        color: #7c72e0;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <div>
-                <h1 class="text-gold"><i class="fa-solid fa-brain"></i> Multi-Agent System</h1>
-                <p class="text-muted">Specialized AI agents working together for comprehensive financial advice</p>
-            </div>
-            <a href="/" class="btn btn-gold">← Back to Dashboard</a>
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h1 class="text-gold">
+            <i class="fa-solid fa-brain"></i> Multi-Agent System
+          </h1>
+          <p class="text-muted">
+            Specialized AI agents working together for comprehensive financial
+            advice
+          </p>
         </div>
+        <a href="/" class="btn btn-gold">← Back to Dashboard</a>
+      </div>
 
-        <!-- Agent Status -->
+      <!-- Agent Status -->
+      <div class="card">
+        <h5><i class="fa-solid fa-robot"></i> Active Agents</h5>
+        <div id="agentStatus" class="row">
+          <div class="col-md-4">
+            <div class="agent-card">
+              <div>
+                <span class="dot dot-active"></span><strong>Tax Agent</strong>
+              </div>
+              <small class="text-muted"
+                >Expert in tax planning & deductions</small
+              >
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="agent-card">
+              <div>
+                <span class="dot dot-active"></span
+                ><strong>Investment Agent</strong>
+              </div>
+              <small class="text-muted"
+                >Expert in SIPs, stocks & mutual funds</small
+              >
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="agent-card">
+              <div>
+                <span class="dot dot-active"></span><strong>Debt Agent</strong>
+              </div>
+              <small class="text-muted"
+                >Expert in loans, EMIs & debt reduction</small
+              >
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="agent-card">
+              <div>
+                <span class="dot dot-active"></span
+                ><strong>Insurance Agent</strong>
+              </div>
+              <small class="text-muted"
+                >Expert in life, health & term insurance</small
+              >
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="agent-card">
+              <div>
+                <span class="dot dot-active"></span
+                ><strong>Portfolio Agent</strong>
+              </div>
+              <small class="text-muted"
+                >Expert in asset allocation & rebalancing</small
+              >
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="agent-card" style="border-color: #d4a843">
+              <div>
+                <span class="dot dot-active" style="background: #d4a843"></span
+                ><strong
+                  ><i class="fa-solid fa-brain"></i> Chief Planner</strong
+                >
+              </div>
+              <small class="text-muted"
+                >Orchestrates all agents for comprehensive advice</small
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Query Input -->
+      <div class="card">
+        <h5><i class="fa-solid fa-comments"></i> Ask the Multi-Agent System</h5>
+        <p class="text-muted small">
+          The Chief Planner will analyze your query and route it to the right
+          specialized agents.
+        </p>
+        <textarea
+          id="queryInput"
+          rows="3"
+          placeholder="e.g., I earn ₹12L/year. Should I invest in NPS or ELSS?"
+        >
+I earn ₹12L/year. Should I invest in NPS or ELSS?</textarea>
+        <div class="mt-3">
+          <button class="btn btn-gold" onclick="sendQuery()">
+            <i class="fa-solid fa-rocket"></i> Ask Multi-Agent System
+          </button>
+          <button class="btn btn-ghost" onclick="clearResponse()">Clear</button>
+        </div>
+      </div>
+
+      <!-- Response -->
+      <div id="responseArea" style="display: none">
         <div class="card">
-            <h5><i class="fa-solid fa-robot"></i> Active Agents</h5>
-            <div id="agentStatus" class="row">
-                <div class="col-md-4">
-                    <div class="agent-card">
-                        <div><span class="dot dot-active"></span><strong>Tax Agent</strong></div>
-                        <small class="text-muted">Expert in tax planning & deductions</small>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="agent-card">
-                        <div><span class="dot dot-active"></span><strong>Investment Agent</strong></div>
-                        <small class="text-muted">Expert in SIPs, stocks & mutual funds</small>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="agent-card">
-                        <div><span class="dot dot-active"></span><strong>Debt Agent</strong></div>
-                        <small class="text-muted">Expert in loans, EMIs & debt reduction</small>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="agent-card">
-                        <div><span class="dot dot-active"></span><strong>Insurance Agent</strong></div>
-                        <small class="text-muted">Expert in life, health & term insurance</small>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="agent-card">
-                        <div><span class="dot dot-active"></span><strong>Portfolio Agent</strong></div>
-                        <small class="text-muted">Expert in asset allocation & rebalancing</small>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="agent-card" style="border-color: #d4a843;">
-                        <div><span class="dot dot-active" style="background: #d4a843;"></span><strong><i class="fa-solid fa-brain"></i> Chief Planner</strong></div>
-                        <small class="text-muted">Orchestrates all agents for comprehensive advice</small>
-                    </div>
-                </div>
-            </div>
+          <h5><i class="fa-solid fa-reply"></i> Response</h5>
+          <div id="responseContent" class="response-box"></div>
+          <div id="agentResults" class="mt-3"></div>
         </div>
+      </div>
 
-        <!-- Query Input -->
-        <div class="card">
-            <h5><i class="fa-solid fa-comments"></i> Ask the Multi-Agent System</h5>
-            <p class="text-muted small">The Chief Planner will analyze your query and route it to the right specialized agents.</p>
-            <textarea id="queryInput" rows="3" placeholder="e.g., I earn ₹12L/year. Should I invest in NPS or ELSS?">I earn ₹12L/year. Should I invest in NPS or ELSS?</textarea>
-            <div class="mt-3">
-                <button class="btn btn-gold" onclick="sendQuery()"><i class="fa-solid fa-rocket"></i> Ask Multi-Agent System</button>
-                <button class="btn btn-ghost" onclick="clearResponse()">Clear</button>
-            </div>
-        </div>
+      <!-- Loading -->
+      <div id="loadingArea" style="display: none" class="text-center py-4">
+        <div class="loading"></div>
+        <p class="text-muted mt-2">
+          Chief Planner is analyzing your query and consulting specialized
+          agents...
+        </p>
+      </div>
 
-        <!-- Response -->
-        <div id="responseArea" style="display:none;">
-            <div class="card">
-                <h5><i class="fa-solid fa-reply"></i> Response</h5>
-                <div id="responseContent" class="response-box"></div>
-                <div id="agentResults" class="mt-3"></div>
-            </div>
+      <!-- Example Queries -->
+      <div class="card">
+        <h6><i class="fa-solid fa-lightbulb"></i> Try These Queries</h6>
+        <div class="d-flex flex-wrap gap-2">
+          <button
+            class="btn btn-sm btn-ghost"
+            onclick="setQuery('Should I choose Old or New Tax Regime?')"
+          >
+            <i class="fa-solid fa-money-bill-wave"></i> Tax Regime
+          </button>
+          <button
+            class="btn btn-sm btn-ghost"
+            onclick="
+              setQuery('How to build a diversified investment portfolio?')
+            "
+          >
+            <i class="fa-solid fa-briefcase"></i> Portfolio
+          </button>
+          <button
+            class="btn btn-sm btn-ghost"
+            onclick="setQuery('How to reduce my debt and save more?')"
+          >
+            <i class="fa-solid fa-hand-holding-dollar"></i> Debt Reduction
+          </button>
+          <button
+            class="btn btn-sm btn-ghost"
+            onclick="setQuery('What insurance do I need at age 30?')"
+          >
+            <i class="fa-solid fa-shield-halved"></i> Insurance
+          </button>
+          <button
+            class="btn btn-sm btn-ghost"
+            onclick="
+              setQuery('I earn ₹80,000 monthly. How should I plan my finances?')
+            "
+          >
+            <i class="fa-solid fa-calendar-check"></i> Financial Planning
+          </button>
         </div>
-
-        <!-- Loading -->
-        <div id="loadingArea" style="display:none;" class="text-center py-4">
-            <div class="loading"></div>
-            <p class="text-muted mt-2">Chief Planner is analyzing your query and consulting specialized agents...</p>
-        </div>
-
-        <!-- Example Queries -->
-        <div class="card">
-            <h6><i class="fa-solid fa-lightbulb"></i> Try These Queries</h6>
-            <div class="d-flex flex-wrap gap-2">
-                <button class="btn btn-sm btn-ghost" onclick="setQuery('Should I choose Old or New Tax Regime?')"><i class="fa-solid fa-money-bill-wave"></i> Tax Regime</button>
-                <button class="btn btn-sm btn-ghost" onclick="setQuery('How to build a diversified investment portfolio?')"><i class="fa-solid fa-briefcase"></i> Portfolio</button>
-                <button class="btn btn-sm btn-ghost" onclick="setQuery('How to reduce my debt and save more?')"><i class="fa-solid fa-hand-holding-dollar"></i> Debt Reduction</button>
-                <button class="btn btn-sm btn-ghost" onclick="setQuery('What insurance do I need at age 30?')"><i class="fa-solid fa-shield-halved"></i> Insurance</button>
-                <button class="btn btn-sm btn-ghost" onclick="setQuery('I earn ₹80,000 monthly. How should I plan my finances?')"><i class="fa-solid fa-calendar-check"></i> Financial Planning</button>
-            </div>
-        </div>
+      </div>
     </div>
 
     <script>
-        function setQuery(text) {
-            document.getElementById('queryInput').value = text;
+      function setQuery(text) {
+        document.getElementById('queryInput').value = text;
+      }
+
+      async function sendQuery() {
+        const query = document.getElementById('queryInput').value.trim();
+        if (!query) {
+          alert('Please enter a query.');
+          return;
         }
 
-        async function sendQuery() {
-            const query = document.getElementById('queryInput').value.trim();
-            if (!query) {
-                alert('Please enter a query.');
-                return;
-            }
+        const loadingArea = document.getElementById('loadingArea');
+        const responseArea = document.getElementById('responseArea');
+        const responseContent = document.getElementById('responseContent');
+        const agentResults = document.getElementById('agentResults');
 
-            const loadingArea = document.getElementById('loadingArea');
-            const responseArea = document.getElementById('responseArea');
-            const responseContent = document.getElementById('responseContent');
-            const agentResults = document.getElementById('agentResults');
+        loadingArea.style.display = 'block';
+        responseArea.style.display = 'none';
+        responseContent.innerHTML = '';
+        agentResults.innerHTML = '';
 
-            loadingArea.style.display = 'block';
-            responseArea.style.display = 'none';
-            responseContent.innerHTML = '';
-            agentResults.innerHTML = '';
+        try {
+          const res = await fetch('/api/multi-agent', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ query }),
+          });
 
-            try {
-                const res = await fetch('/api/multi-agent', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ query })
-                });
+          const data = await res.json();
 
-                const data = await res.json();
+          loadingArea.style.display = 'none';
+          responseArea.style.display = 'block';
 
-                loadingArea.style.display = 'none';
-                responseArea.style.display = 'block';
+          if (data.error) {
+            responseContent.innerHTML = `<div class="text-danger">❌ Error: ${esc(data.error)}</div>`;
+            return;
+          }
 
-                if (data.error) {
-                    responseContent.innerHTML = `<div class="text-danger">❌ Error: ${esc(data.error)}</div>`;
-                    return;
-                }
+          // Format response
+          const formatted = data.response
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*(.*?)\*/g, '<em>$1</em>')
+            .replace(/\n/g, '<br>');
 
-                // Format response
-                const formatted = data.response
-                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                    .replace(/\*(.*?)\*/g, '<em>$1</em>')
-                    .replace(/\n/g, '<br>');
+          responseContent.innerHTML = formatted;
 
-                responseContent.innerHTML = formatted;
-
-                // Show agent results
-                if (data.results) {
-                    let agentHtml = '<h6>🤖 Agent Contributions</h6><div class="row">';
-                    for (const [key, result] of Object.entries(data.results)) {
-                        const agentName = result.agent || key;
-                        const confidenceColor = result.confidence === 'high' ? '#2ecc8a' : result.confidence === 'medium' ? '#d4a843' : '#e05252';
-                        agentHtml += `
+          // Show agent results
+          if (data.results) {
+            let agentHtml = '<h6>🤖 Agent Contributions</h6><div class="row">';
+            for (const [key, result] of Object.entries(data.results)) {
+              const agentName = result.agent || key;
+              const confidenceColor =
+                result.confidence === 'high'
+                  ? '#2ecc8a'
+                  : result.confidence === 'medium'
+                    ? '#d4a843'
+                    : '#e05252';
+              agentHtml += `
                             <div class="col-md-6">
                                 <div class="agent-card">
                                     <div><strong>${agentName}</strong> <span style="color:${confidenceColor};">● ${result.confidence || 'medium'}</span></div>
@@ -192,27 +371,26 @@ function esc(s){ const d=document.createElement('div'); d.textContent=String(s==
                                 </div>
                             </div>
                         `;
-                    }
-                    agentHtml += '</div>';
-                    agentResults.innerHTML = agentHtml;
-                }
-
-            } catch (error) {
-                loadingArea.style.display = 'none';
-                responseArea.style.display = 'block';
-                responseContent.innerHTML = `<div class="text-danger">❌ Error: ${esc(error.message)}</div>`;
             }
+            agentHtml += '</div>';
+            agentResults.innerHTML = agentHtml;
+          }
+        } catch (error) {
+          loadingArea.style.display = 'none';
+          responseArea.style.display = 'block';
+          responseContent.innerHTML = `<div class="text-danger">❌ Error: ${esc(error.message)}</div>`;
         }
+      }
 
-        function clearResponse() {
-            document.getElementById('responseArea').style.display = 'none';
-            document.getElementById('queryInput').value = '';
-        }
+      function clearResponse() {
+        document.getElementById('responseArea').style.display = 'none';
+        document.getElementById('queryInput').value = '';
+      }
 
-        // Auto-load example on page load
-        document.addEventListener('DOMContentLoaded', () => {
-            // Optionally auto-run the example
-        });
+      // Auto-load example on page load
+      document.addEventListener('DOMContentLoaded', () => {
+        // Optionally auto-run the example
+      });
     </script>
-</body>
+  </body>
 </html>

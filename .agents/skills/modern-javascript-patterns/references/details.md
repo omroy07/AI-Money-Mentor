@@ -67,11 +67,11 @@ class Counter {
 ```javascript
 const user = {
   id: 1,
-  name: "John Doe",
-  email: "john@example.com",
+  name: 'John Doe',
+  email: 'john@example.com',
   address: {
-    city: "New York",
-    country: "USA",
+    city: 'New York',
+    country: 'USA',
   },
 };
 
@@ -139,8 +139,8 @@ const arr2 = [4, 5, 6];
 const combined = [...arr1, ...arr2];
 
 // Object spreading
-const defaults = { theme: "dark", lang: "en" };
-const userPrefs = { theme: "light" };
+const defaults = { theme: 'dark', lang: 'en' };
+const userPrefs = { theme: 'light' };
 const settings = { ...defaults, ...userPrefs };
 
 // Function arguments
@@ -167,9 +167,9 @@ sum(1, 2, 3, 4, 5);
 
 // With regular parameters
 function greet(greeting, ...names) {
-  return `${greeting} ${names.join(", ")}`;
+  return `${greeting} ${names.join(', ')}`;
 }
-greet("Hello", "John", "Jane", "Bob");
+greet('Hello', 'John', 'Jane', 'Bob');
 
 // Object rest
 const { id, ...userData } = user;
@@ -182,7 +182,7 @@ const [first, ...rest] = [1, 2, 3, 4, 5];
 
 ```javascript
 // Basic usage
-const name = "John";
+const name = 'John';
 const greeting = `Hello, ${name}!`;
 
 // Multi-line strings
@@ -200,12 +200,12 @@ const total = `Total: $${(price * 1.2).toFixed(2)}`;
 // Tagged template literals
 function highlight(strings, ...values) {
   return strings.reduce((result, str, i) => {
-    const value = values[i] || "";
+    const value = values[i] || '';
     return result + str + `<mark>${value}</mark>`;
-  }, "");
+  }, '');
 }
 
-const name = "John";
+const name = 'John';
 const age = 30;
 const html = highlight`Name: ${name}, Age: ${age}`;
 // Output: "Name: <mark>John</mark>, Age: <mark>30</mark>"
@@ -214,7 +214,7 @@ const html = highlight`Name: ${name}, Age: ${age}`;
 ### 5. Enhanced Object Literals
 
 ```javascript
-const name = "John";
+const name = 'John';
 const age = 30;
 
 // Shorthand property names
@@ -231,10 +231,10 @@ const calculator = {
 };
 
 // Computed property names
-const field = "email";
+const field = 'email';
 const user = {
-  name: "John",
-  [field]: "john@example.com",
+  name: 'John',
+  [field]: 'john@example.com',
   [`get${field.charAt(0).toUpperCase()}${field.slice(1)}`]() {
     return this[field];
   },
@@ -251,7 +251,7 @@ const createUser = (name, ...props) => {
   );
 };
 
-const user = createUser("John", ["age", 30], ["email", "john@example.com"]);
+const user = createUser('John', ['age', 30], ['email', 'john@example.com']);
 ```
 
 ## Asynchronous Patterns
@@ -266,9 +266,9 @@ const fetchUser = (id) => {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       if (id > 0) {
-        resolve({ id, name: "John" });
+        resolve({ id, name: 'John' });
       } else {
-        reject(new Error("Invalid ID"));
+        reject(new Error('Invalid ID'));
       }
     }, 1000);
   });
@@ -278,7 +278,7 @@ const fetchUser = (id) => {
 fetchUser(1)
   .then((user) => console.log(user))
   .catch((error) => console.error(error))
-  .finally(() => console.log("Done"));
+  .finally(() => console.log('Done'));
 
 // Chaining promises
 fetchUser(1)
@@ -296,28 +296,28 @@ const promises = [fetchUser(1), fetchUser(2), fetchUser(3)];
 
 Promise.all(promises)
   .then((users) => console.log(users))
-  .catch((error) => console.error("At least one failed:", error));
+  .catch((error) => console.error('At least one failed:', error));
 
 // Promise.allSettled - Wait for all, regardless of outcome
 Promise.allSettled(promises).then((results) => {
   results.forEach((result) => {
-    if (result.status === "fulfilled") {
-      console.log("Success:", result.value);
+    if (result.status === 'fulfilled') {
+      console.log('Success:', result.value);
     } else {
-      console.log("Error:", result.reason);
+      console.log('Error:', result.reason);
     }
   });
 });
 
 // Promise.race - First to complete
 Promise.race(promises)
-  .then((winner) => console.log("First:", winner))
+  .then((winner) => console.log('First:', winner))
   .catch((error) => console.error(error));
 
 // Promise.any - First to succeed
 Promise.any(promises)
-  .then((first) => console.log("First success:", first))
-  .catch((error) => console.error("All failed:", error));
+  .then((first) => console.log('First success:', first))
+  .catch((error) => console.error('All failed:', error));
 ```
 
 ### 2. Async/Await
@@ -339,7 +339,7 @@ async function getUserData(id) {
     const posts = await fetchUserPosts(user.id);
     return { user, posts };
   } catch (error) {
-    console.error("Error fetching data:", error);
+    console.error('Error fetching data:', error);
     throw error;
   }
 }
@@ -375,7 +375,7 @@ async function processUsers(userIds) {
 }
 
 // Top-level await (ES2022)
-const config = await fetch("/config.json").then((r) => r.json());
+const config = await fetch('/config.json').then((r) => r.json());
 
 // Retry logic
 async function fetchWithRetry(url, retries = 3) {
@@ -392,7 +392,7 @@ async function fetchWithRetry(url, retries = 3) {
 // Timeout wrapper
 async function withTimeout(promise, ms) {
   const timeout = new Promise((_, reject) =>
-    setTimeout(() => reject(new Error("Timeout")), ms),
+    setTimeout(() => reject(new Error('Timeout')), ms),
   );
   return Promise.race([promise, timeout]);
 }
@@ -403,6 +403,7 @@ async function withTimeout(promise, ms) {
 Functional programming in JavaScript centers on pure functions, immutability, and composable transformations.
 
 Key topics covered in [references/advanced-patterns.md](references/advanced-patterns.md):
+
 - **Array methods** — `map`, `filter`, `reduce`, `find`, `findIndex`, `some`, `every`, `flatMap`, `Array.from`
 - **Higher-order functions** — custom `forEach`/`map`/`filter`, currying, partial application, memoization
 - **Composition and piping** — `compose`/`pipe` utilities with practical data transformation examples
@@ -417,16 +418,20 @@ ES2022 classes support private fields (`#field`), static fields, getters/setters
 ```javascript
 // Named exports
 export const PI = 3.14159;
-export function add(a, b) { return a + b; }
+export function add(a, b) {
+  return a + b;
+}
 
 // Default export
-export default function multiply(a, b) { return a * b; }
+export default function multiply(a, b) {
+  return a * b;
+}
 
 // Import
-import multiply, { PI, add } from "./math.js";
+import multiply, { PI, add } from './math.js';
 
 // Dynamic import (code splitting)
-const { add } = await import("./math.js");
+const { add } = await import('./math.js');
 ```
 
 For re-exports, namespace imports, and conditional dynamic loading see [references/advanced-patterns.md](references/advanced-patterns.md).
@@ -443,13 +448,13 @@ const city = user?.address?.city;
 const result = obj.method?.();
 
 // Nullish coalescing — default only for null/undefined (not 0 or "")
-const value = null ?? "default"; // 'default'
-const zero = 0 ?? "default";    // 0
+const value = null ?? 'default'; // 'default'
+const zero = 0 ?? 'default'; // 0
 
 // Logical assignment
-a ??= "default";   // assign if null/undefined
-obj.count ||= 1;   // assign if falsy
-obj.count &&= 2;   // assign if truthy
+a ??= 'default'; // assign if null/undefined
+obj.count ||= 1; // assign if falsy
+obj.count &&= 2; // assign if truthy
 ```
 
 ## Performance Optimization

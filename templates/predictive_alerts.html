@@ -1,169 +1,312 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Predictive Alerts - AI Money Mentor</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        function esc(s){ const d=document.createElement('div'); d.textContent=String(s==null?'':s); return d.innerHTML; }
+      function esc(s) {
+        const d = document.createElement('div');
+        d.textContent = String(s == null ? '' : s);
+        return d.innerHTML;
+      }
     </script>
     <style>
-        body { background: #070b12; color: #eef0f5; font-family: 'Instrument Sans', sans-serif; }
-        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
-        .card { background: rgba(15,22,38,0.96); border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; padding: 24px; margin-bottom: 20px; }
-        .btn-gold { background: linear-gradient(135deg, #f3d687, #d4a843); color: #0a0e18; border: none; padding: 10px 24px; border-radius: 999px; font-weight: 700; }
-        .btn-gold:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(212,168,67,0.3); }
-        .text-gold { color: #d4a843; }
-        .text-muted { color: #5a6a82; }
-        .stat-card { background: rgba(255,255,255,0.03); border-radius: 14px; padding: 20px; text-align: center; border: 1px solid rgba(255,255,255,0.06); }
-        .stat-card .value { font-size: 28px; font-weight: 800; }
-        .stat-card .label { font-size: 12px; color: #5a6a82; text-transform: uppercase; }
-        .alert-box { padding: 12px 16px; border-radius: 12px; margin-bottom: 10px; border-left: 4px solid; }
-        .alert-box.high { background: rgba(224,82,82,0.08); border-left-color: #e05252; }
-        .alert-box.medium { background: rgba(243,156,18,0.08); border-left-color: #f39c12; }
-        .alert-box.low { background: rgba(46,204,138,0.08); border-left-color: #2ecc8a; }
-        .form-control { background: rgba(17,26,46,0.9); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; color: #eef0f5; }
-        .form-control:focus { background: rgba(17,26,46,0.95); border-color: #d4a843; color: #eef0f5; box-shadow: 0 0 0 3px rgba(212,168,67,0.1); }
-        .table-dark { background: transparent; }
-        .table-dark th { border-bottom: 1px solid rgba(255,255,255,0.06); color: #5a6a82; text-transform: uppercase; font-size: 11px; }
-        .table-dark td { border-bottom: 1px solid rgba(255,255,255,0.04); }
-        .recommendation-card { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04); border-radius: 12px; padding: 16px; margin-bottom: 10px; }
-        .recommendation-card .priority-high { color: #e05252; }
-        .recommendation-card .priority-medium { color: #f39c12; }
-        .recommendation-card .priority-low { color: #2ecc8a; }
-        .spinner { display: inline-block; width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.1); border-top-color: #d4a843; border-radius: 50%; animation: spin 0.8s linear infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
+      body {
+        background: #070b12;
+        color: #eef0f5;
+        font-family: 'Instrument Sans', sans-serif;
+      }
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .card {
+        background: rgba(15, 22, 38, 0.96);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 18px;
+        padding: 24px;
+        margin-bottom: 20px;
+      }
+      .btn-gold {
+        background: linear-gradient(135deg, #f3d687, #d4a843);
+        color: #0a0e18;
+        border: none;
+        padding: 10px 24px;
+        border-radius: 999px;
+        font-weight: 700;
+      }
+      .btn-gold:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(212, 168, 67, 0.3);
+      }
+      .text-gold {
+        color: #d4a843;
+      }
+      .text-muted {
+        color: #5a6a82;
+      }
+      .stat-card {
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 14px;
+        padding: 20px;
+        text-align: center;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+      }
+      .stat-card .value {
+        font-size: 28px;
+        font-weight: 800;
+      }
+      .stat-card .label {
+        font-size: 12px;
+        color: #5a6a82;
+        text-transform: uppercase;
+      }
+      .alert-box {
+        padding: 12px 16px;
+        border-radius: 12px;
+        margin-bottom: 10px;
+        border-left: 4px solid;
+      }
+      .alert-box.high {
+        background: rgba(224, 82, 82, 0.08);
+        border-left-color: #e05252;
+      }
+      .alert-box.medium {
+        background: rgba(243, 156, 18, 0.08);
+        border-left-color: #f39c12;
+      }
+      .alert-box.low {
+        background: rgba(46, 204, 138, 0.08);
+        border-left-color: #2ecc8a;
+      }
+      .form-control {
+        background: rgba(17, 26, 46, 0.9);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 14px;
+        color: #eef0f5;
+      }
+      .form-control:focus {
+        background: rgba(17, 26, 46, 0.95);
+        border-color: #d4a843;
+        color: #eef0f5;
+        box-shadow: 0 0 0 3px rgba(212, 168, 67, 0.1);
+      }
+      .table-dark {
+        background: transparent;
+      }
+      .table-dark th {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        color: #5a6a82;
+        text-transform: uppercase;
+        font-size: 11px;
+      }
+      .table-dark td {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      }
+      .recommendation-card {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(255, 255, 255, 0.04);
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 10px;
+      }
+      .recommendation-card .priority-high {
+        color: #e05252;
+      }
+      .recommendation-card .priority-medium {
+        color: #f39c12;
+      }
+      .recommendation-card .priority-low {
+        color: #2ecc8a;
+      }
+      .spinner {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid rgba(255, 255, 255, 0.1);
+        border-top-color: #d4a843;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <div>
-                <h1 class="text-gold">🔮 Predictive Financial Alerts</h1>
-                <p class="text-muted">AI-powered forecasting and proactive alerts</p>
-            </div>
-            <a href="/" class="btn btn-gold">← Back to Dashboard</a>
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h1 class="text-gold">🔮 Predictive Financial Alerts</h1>
+          <p class="text-muted">AI-powered forecasting and proactive alerts</p>
         </div>
+        <a href="/" class="btn btn-gold">← Back to Dashboard</a>
+      </div>
 
-        <!-- Train Section -->
-        <div class="card">
-            <h5><i class="fa-solid fa-brain"></i> Train AI Models</h5>
-            <p class="text-muted">Train ML models on your transaction history for accurate predictions</p>
-            <button class="btn btn-gold" onclick="trainModels()" id="trainBtn"><i class="fa-solid fa-rocket"></i> Train Models</button>
-            <div id="trainResult" class="mt-3"></div>
+      <!-- Train Section -->
+      <div class="card">
+        <h5><i class="fa-solid fa-brain"></i> Train AI Models</h5>
+        <p class="text-muted">
+          Train ML models on your transaction history for accurate predictions
+        </p>
+        <button class="btn btn-gold" onclick="trainModels()" id="trainBtn">
+          <i class="fa-solid fa-rocket"></i> Train Models
+        </button>
+        <div id="trainResult" class="mt-3"></div>
+      </div>
+
+      <!-- Stats -->
+      <div class="row mb-4" id="statsRow">
+        <div class="col-md-3">
+          <div class="stat-card">
+            <div class="label">Savings Rate</div>
+            <div class="value" id="savingsRate">-</div>
+          </div>
         </div>
-
-        <!-- Stats -->
-        <div class="row mb-4" id="statsRow">
-            <div class="col-md-3">
-                <div class="stat-card">
-                    <div class="label">Savings Rate</div>
-                    <div class="value" id="savingsRate">-</div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="stat-card">
-                    <div class="label">Monthly Expenses</div>
-                    <div class="value" id="monthlyExpenses">-</div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="stat-card">
-                    <div class="label">Income</div>
-                    <div class="value" id="incomeDisplay">-</div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="stat-card">
-                    <div class="label">Model Status</div>
-                    <div class="value" style="font-size:16px;" id="modelStatus">❌ Untrained</div>
-                </div>
-            </div>
+        <div class="col-md-3">
+          <div class="stat-card">
+            <div class="label">Monthly Expenses</div>
+            <div class="value" id="monthlyExpenses">-</div>
+          </div>
         </div>
-
-        <!-- Prediction Input -->
-        <div class="card">
-            <h5><i class="fa-solid fa-money-bill-wave"></i> Predict Future Cash Flow</h5>
-            <form id="predictionForm" class="row g-3">
-                <div class="col-md-4">
-                    <label class="form-label text-muted">Monthly Income (₹)</label>
-                    <input type="number" class="form-control" id="predIncome" placeholder="e.g., 50000" required>
-                </div>
-                <div class="col-md-4">
-                    <label class="form-label text-muted">Current Balance (₹)</label>
-                    <input type="number" class="form-control" id="predBalance" placeholder="e.g., 20000" required>
-                </div>
-                <div class="col-md-4 d-flex align-items-end">
-                    <button type="submit" class="btn btn-gold w-100"><i class="fa-solid fa-money-bill-wave"></i> Predict</button>
-                </div>
-            </form>
+        <div class="col-md-3">
+          <div class="stat-card">
+            <div class="label">Income</div>
+            <div class="value" id="incomeDisplay">-</div>
+          </div>
         </div>
-
-        <!-- Prediction Results -->
-        <div id="predictionResults" style="display:none;">
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="card">
-                        <h5><i class="fa-solid fa-scale-balanced"></i> Balance Forecast</h5>
-                        <canvas id="balanceChart" height="250"></canvas>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="card">
-                        <h5><i class="fa-solid fa-file-lines"></i> Summary</h5>
-                        <div id="predictionSummary"></div>
-                    </div>
-                </div>
+        <div class="col-md-3">
+          <div class="stat-card">
+            <div class="label">Model Status</div>
+            <div class="value" style="font-size: 16px" id="modelStatus">
+              ❌ Untrained
             </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Prediction Input -->
+      <div class="card">
+        <h5>
+          <i class="fa-solid fa-money-bill-wave"></i> Predict Future Cash Flow
+        </h5>
+        <form id="predictionForm" class="row g-3">
+          <div class="col-md-4">
+            <label class="form-label text-muted">Monthly Income (₹)</label>
+            <input
+              type="number"
+              class="form-control"
+              id="predIncome"
+              placeholder="e.g., 50000"
+              required
+            />
+          </div>
+          <div class="col-md-4">
+            <label class="form-label text-muted">Current Balance (₹)</label>
+            <input
+              type="number"
+              class="form-control"
+              id="predBalance"
+              placeholder="e.g., 20000"
+              required
+            />
+          </div>
+          <div class="col-md-4 d-flex align-items-end">
+            <button type="submit" class="btn btn-gold w-100">
+              <i class="fa-solid fa-money-bill-wave"></i> Predict
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Prediction Results -->
+      <div id="predictionResults" style="display: none">
+        <div class="row">
+          <div class="col-md-6">
             <div class="card">
-                <h5><i class="fa-solid fa-triangle-exclamation"></i> Alerts & Recommendations</h5>
-                <div id="alertsContainer"></div>
+              <h5>
+                <i class="fa-solid fa-scale-balanced"></i> Balance Forecast
+              </h5>
+              <canvas id="balanceChart" height="250"></canvas>
             </div>
+          </div>
+          <div class="col-md-6">
+            <div class="card">
+              <h5><i class="fa-solid fa-file-lines"></i> Summary</h5>
+              <div id="predictionSummary"></div>
+            </div>
+          </div>
         </div>
-
-        <!-- Seasonal Analysis -->
         <div class="card">
-            <h5><i class="fa-solid fa-chart-pie"></i> Seasonal Spending Analysis</h5>
-            <button class="btn btn-gold" onclick="analyzeSeasonal()">📊 Analyze Patterns</button>
-            <div id="seasonalResults" class="mt-3"></div>
+          <h5>
+            <i class="fa-solid fa-triangle-exclamation"></i> Alerts &
+            Recommendations
+          </h5>
+          <div id="alertsContainer"></div>
         </div>
+      </div>
 
-        <!-- Savings Recommendations -->
-        <div class="card">
-            <h5><i class="fa-solid fa-lightbulb"></i> Smart Recommendations</h5>
-            <button class="btn btn-gold" onclick="getRecommendations()">💡 Get Recommendations</button>
-            <div id="recommendationsContainer" class="mt-3"></div>
-        </div>
+      <!-- Seasonal Analysis -->
+      <div class="card">
+        <h5>
+          <i class="fa-solid fa-chart-pie"></i> Seasonal Spending Analysis
+        </h5>
+        <button class="btn btn-gold" onclick="analyzeSeasonal()">
+          📊 Analyze Patterns
+        </button>
+        <div id="seasonalResults" class="mt-3"></div>
+      </div>
 
-        <!-- Anomaly Detection -->
-        <div class="card">
-            <h5><i class="fa-solid fa-circle-exclamation"></i> Anomaly Detection</h5>
-            <button class="btn btn-gold" onclick="detectAnomalies()">🔍 Scan for Anomalies</button>
-            <div id="anomaliesContainer" class="mt-3"></div>
-        </div>
+      <!-- Savings Recommendations -->
+      <div class="card">
+        <h5><i class="fa-solid fa-lightbulb"></i> Smart Recommendations</h5>
+        <button class="btn btn-gold" onclick="getRecommendations()">
+          💡 Get Recommendations
+        </button>
+        <div id="recommendationsContainer" class="mt-3"></div>
+      </div>
+
+      <!-- Anomaly Detection -->
+      <div class="card">
+        <h5>
+          <i class="fa-solid fa-circle-exclamation"></i> Anomaly Detection
+        </h5>
+        <button class="btn btn-gold" onclick="detectAnomalies()">
+          🔍 Scan for Anomalies
+        </button>
+        <div id="anomaliesContainer" class="mt-3"></div>
+      </div>
     </div>
 
     <script>
-        let balanceChart = null;
+      let balanceChart = null;
 
-        async function trainModels() {
-            const btn = document.getElementById('trainBtn');
-            const result = document.getElementById('trainResult');
-            
-            btn.disabled = true;
-            btn.innerHTML = '<span class="spinner"></span> Training...';
-            result.innerHTML = '<div class="text-muted">Training models on your transaction data...</div>';
-            
-            try {
-                const response = await fetch('/api/predict/train', {
-                    method: 'POST'
-                });
-                const data = await response.json();
-                
-                if (data.success) {
-                    result.innerHTML = `
+      async function trainModels() {
+        const btn = document.getElementById('trainBtn');
+        const result = document.getElementById('trainResult');
+
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner"></span> Training...';
+        result.innerHTML =
+          '<div class="text-muted">Training models on your transaction data...</div>';
+
+        try {
+          const response = await fetch('/api/predict/train', {
+            method: 'POST',
+          });
+          const data = await response.json();
+
+          if (data.success) {
+            result.innerHTML = `
                         <div class="alert-box low">✅ Models trained successfully!</div>
                         <div class="row">
                             <div class="col-6">
@@ -182,57 +325,64 @@
                             </div>
                         </div>
                     `;
-                    document.getElementById('modelStatus').textContent = '✅ Trained';
-                    document.getElementById('modelStatus').style.color = '#2ecc8a';
-                } else {
-                    result.innerHTML = `<div class="alert-box high">❌ ${esc(data.error)}</div>`;
-                }
-            } catch (error) {
-                result.innerHTML = `<div class="alert-box high">❌ ${esc(error.message)}</div>`;
-            }
-            
-            btn.disabled = false;
-            btn.innerHTML = '🚀 Train Models';
+            document.getElementById('modelStatus').textContent = '✅ Trained';
+            document.getElementById('modelStatus').style.color = '#2ecc8a';
+          } else {
+            result.innerHTML = `<div class="alert-box high">❌ ${esc(data.error)}</div>`;
+          }
+        } catch (error) {
+          result.innerHTML = `<div class="alert-box high">❌ ${esc(error.message)}</div>`;
         }
 
-        document.getElementById('predictionForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const income = parseFloat(document.getElementById('predIncome').value);
-            const balance = parseFloat(document.getElementById('predBalance').value);
-            
-            if (!income || !balance) {
-                alert('Please enter both income and balance');
-                return;
+        btn.disabled = false;
+        btn.innerHTML = '🚀 Train Models';
+      }
+
+      document
+        .getElementById('predictionForm')
+        .addEventListener('submit', async function (e) {
+          e.preventDefault();
+
+          const income = parseFloat(
+            document.getElementById('predIncome').value,
+          );
+          const balance = parseFloat(
+            document.getElementById('predBalance').value,
+          );
+
+          if (!income || !balance) {
+            alert('Please enter both income and balance');
+            return;
+          }
+
+          const loading = document.getElementById('predictionResults');
+          loading.style.display = 'block';
+          loading.innerHTML =
+            '<div class="text-center py-4"><div class="spinner"></div><p class="text-muted mt-2">Generating predictions...</p></div>';
+
+          try {
+            const response = await fetch('/api/predict/balance', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ income, balance, days: 30 }),
+            });
+            const data = await response.json();
+
+            if (data.success) {
+              renderPredictionResults(data);
+            } else {
+              loading.innerHTML = `<div class="alert-box high">❌ ${esc(data.error)}</div>`;
             }
-            
-            const loading = document.getElementById('predictionResults');
-            loading.style.display = 'block';
-            loading.innerHTML = '<div class="text-center py-4"><div class="spinner"></div><p class="text-muted mt-2">Generating predictions...</p></div>';
-            
-            try {
-                const response = await fetch('/api/predict/balance', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ income, balance, days: 30 })
-                });
-                const data = await response.json();
-                
-                if (data.success) {
-                    renderPredictionResults(data);
-                } else {
-                    loading.innerHTML = `<div class="alert-box high">❌ ${esc(data.error)}</div>`;
-                }
-            } catch (error) {
-                loading.innerHTML = `<div class="alert-box high">❌ ${esc(error.message)}</div>`;
-            }
+          } catch (error) {
+            loading.innerHTML = `<div class="alert-box high">❌ ${esc(error.message)}</div>`;
+          }
         });
 
-        function renderPredictionResults(data) {
-            const container = document.getElementById('predictionResults');
-            
-            // Summary
-            document.getElementById('predictionSummary').innerHTML = `
+      function renderPredictionResults(data) {
+        const container = document.getElementById('predictionResults');
+
+        // Summary
+        document.getElementById('predictionSummary').innerHTML = `
                 <div class="row">
                     <div class="col-6">
                         <div class="stat-card">
@@ -263,98 +413,121 @@
                     </div>
                 </div>
             `;
-            
-            // Chart
-            const ctx = document.getElementById('balanceChart').getContext('2d');
-            if (balanceChart) balanceChart.destroy();
-            
-            const labels = data.balance_forecast.map(d => {
-                const dt = new Date(d.date);
-                return dt.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
-            });
-            const values = data.balance_forecast.map(d => d.balance);
-            
-            balanceChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Forecasted Balance',
-                        data: values,
-                        borderColor: '#d4a843',
-                        backgroundColor: 'rgba(212,168,67,0.1)',
-                        fill: true,
-                        tension: 0.4,
-                        pointRadius: 2
-                    }]
+
+        // Chart
+        const ctx = document.getElementById('balanceChart').getContext('2d');
+        if (balanceChart) balanceChart.destroy();
+
+        const labels = data.balance_forecast.map((d) => {
+          const dt = new Date(d.date);
+          return dt.toLocaleDateString('en-IN', {
+            day: 'numeric',
+            month: 'short',
+          });
+        });
+        const values = data.balance_forecast.map((d) => d.balance);
+
+        balanceChart = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: labels,
+            datasets: [
+              {
+                label: 'Forecasted Balance',
+                data: values,
+                borderColor: '#d4a843',
+                backgroundColor: 'rgba(212,168,67,0.1)',
+                fill: true,
+                tension: 0.4,
+                pointRadius: 2,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { labels: { color: '#eef0f5' } },
+            },
+            scales: {
+              y: {
+                ticks: {
+                  color: '#5a6a82',
+                  callback: (value) => '₹' + value.toLocaleString(),
                 },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { labels: { color: '#eef0f5' } }
-                    },
-                    scales: {
-                        y: {
-                            ticks: { color: '#5a6a82', callback: value => '₹' + value.toLocaleString() },
-                            grid: { color: 'rgba(255,255,255,0.05)' }
-                        },
-                        x: {
-                            ticks: { color: '#5a6a82', maxTicksLimit: 15 },
-                            grid: { display: false }
-                        }
-                    }
-                }
-            });
-            
-            // Alerts
-            const alertsContainer = document.getElementById('alertsContainer');
-            let alertHtml = '';
-            
-            if (data.alerts && data.alerts.length > 0) {
-                data.alerts.forEach(alert => {
-                    const severityClass = alert.severity;
-                    alertHtml += `
+                grid: { color: 'rgba(255,255,255,0.05)' },
+              },
+              x: {
+                ticks: { color: '#5a6a82', maxTicksLimit: 15 },
+                grid: { display: false },
+              },
+            },
+          },
+        });
+
+        // Alerts
+        const alertsContainer = document.getElementById('alertsContainer');
+        let alertHtml = '';
+
+        if (data.alerts && data.alerts.length > 0) {
+          data.alerts.forEach((alert) => {
+            const severityClass = alert.severity;
+            alertHtml += `
                         <div class="alert-box ${severityClass}">
                             ${esc(alert.message)}
                             ${alert.action_required ? '<span class="badge bg-danger ms-2">Action Required</span>' : ''}
                         </div>
                     `;
-                });
-            } else {
-                alertHtml = '<div class="alert-box low">✅ No alerts. Your financial health looks good!</div>';
-            }
-            
-            if (data.recommendations && data.recommendations.length > 0) {
-                alertHtml += '<h6 class="mt-3">💡 Recommendations</h6>';
-                data.recommendations.forEach(rec => {
-                    alertHtml += `
+          });
+        } else {
+          alertHtml =
+            '<div class="alert-box low">✅ No alerts. Your financial health looks good!</div>';
+        }
+
+        if (data.recommendations && data.recommendations.length > 0) {
+          alertHtml += '<h6 class="mt-3">💡 Recommendations</h6>';
+          data.recommendations.forEach((rec) => {
+            alertHtml += `
                         <div class="recommendation-card">
                             <p class="mb-0">${rec.message}</p>
                         </div>
                     `;
-                });
-            }
-            
-            alertsContainer.innerHTML = alertHtml;
-            container.style.display = 'block';
+          });
         }
 
-        async function analyzeSeasonal() {
-            const container = document.getElementById('seasonalResults');
-            container.innerHTML = '<div class="text-muted"><div class="spinner"></div> Analyzing...</div>';
-            
-            try {
-                const response = await fetch('/api/predict/seasonal');
-                const data = await response.json();
-                
-                if (data.success) {
-                    let html = '<div class="row">';
-                    
-                    // Peak month
-                    if (data.peak_month) {
-                        const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-                        html += `
+        alertsContainer.innerHTML = alertHtml;
+        container.style.display = 'block';
+      }
+
+      async function analyzeSeasonal() {
+        const container = document.getElementById('seasonalResults');
+        container.innerHTML =
+          '<div class="text-muted"><div class="spinner"></div> Analyzing...</div>';
+
+        try {
+          const response = await fetch('/api/predict/seasonal');
+          const data = await response.json();
+
+          if (data.success) {
+            let html = '<div class="row">';
+
+            // Peak month
+            if (data.peak_month) {
+              const monthNames = [
+                'Jan',
+                'Feb',
+                'Mar',
+                'Apr',
+                'May',
+                'Jun',
+                'Jul',
+                'Aug',
+                'Sep',
+                'Oct',
+                'Nov',
+                'Dec',
+              ];
+              html += `
                             <div class="col-md-4">
                                 <div class="stat-card">
                                     <div class="label">Peak Spending Month</div>
@@ -362,11 +535,11 @@
                                 </div>
                             </div>
                         `;
-                    }
-                    
-                    // Peak day
-                    if (data.peak_day) {
-                        html += `
+            }
+
+            // Peak day
+            if (data.peak_day) {
+              html += `
                             <div class="col-md-4">
                                 <div class="stat-card">
                                     <div class="label">Highest Spending Day</div>
@@ -374,10 +547,10 @@
                                 </div>
                             </div>
                         `;
-                    }
-                    
-                    // Total transactions
-                    html += `
+            }
+
+            // Total transactions
+            html += `
                         <div class="col-md-4">
                             <div class="stat-card">
                                 <div class="label">Transactions Analyzed</div>
@@ -385,47 +558,70 @@
                             </div>
                         </div>
                     `;
-                    
-                    html += '</div>';
-                    
-                    // Monthly spending table
-                    if (data.monthly_spending) {
-                        html += '<h6 class="mt-3">📊 Monthly Spending</h6><table class="table table-dark"><thead><tr><th>Month</th><th>Total Spend</th></tr></thead><tbody>';
-                        const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-                        for (const [month, amount] of Object.entries(data.monthly_spending)) {
-                            html += `<tr><td>${monthNames[parseInt(month) - 1]}</td><td>₹${amount.toLocaleString()}</td></tr>`;
-                        }
-                        html += '</tbody></table>';
-                    }
-                    
-                    // Category spending
-                    if (data.category_spending && Object.keys(data.category_spending).length > 0) {
-                        html += '<h6 class="mt-3">🏷️ Spending by Category</h6><table class="table table-dark"><thead><tr><th>Category</th><th>Total</th></tr></thead><tbody>';
-                        for (const [category, amount] of Object.entries(data.category_spending)) {
-                            html += `<tr><td>${category}</td><td>₹${amount.toLocaleString()}</td></tr>`;
-                        }
-                        html += '</tbody></table>';
-                    }
-                    
-                    container.innerHTML = html;
-                } else {
-                    container.innerHTML = `<div class="alert-box high">❌ ${esc(data.error)}</div>`;
-                }
-            } catch (error) {
-                container.innerHTML = `<div class="alert-box high">❌ ${esc(error.message)}</div>`;
-            }
-        }
 
-        async function getRecommendations() {
-            const container = document.getElementById('recommendationsContainer');
-            container.innerHTML = '<div class="text-muted"><div class="spinner"></div> Generating recommendations...</div>';
-            
-            try {
-                const response = await fetch('/api/predict/recommendations');
-                const data = await response.json();
-                
-                if (data.success) {
-                    let html = `
+            html += '</div>';
+
+            // Monthly spending table
+            if (data.monthly_spending) {
+              html +=
+                '<h6 class="mt-3">📊 Monthly Spending</h6><table class="table table-dark"><thead><tr><th>Month</th><th>Total Spend</th></tr></thead><tbody>';
+              const monthNames = [
+                'Jan',
+                'Feb',
+                'Mar',
+                'Apr',
+                'May',
+                'Jun',
+                'Jul',
+                'Aug',
+                'Sep',
+                'Oct',
+                'Nov',
+                'Dec',
+              ];
+              for (const [month, amount] of Object.entries(
+                data.monthly_spending,
+              )) {
+                html += `<tr><td>${monthNames[parseInt(month) - 1]}</td><td>₹${amount.toLocaleString()}</td></tr>`;
+              }
+              html += '</tbody></table>';
+            }
+
+            // Category spending
+            if (
+              data.category_spending &&
+              Object.keys(data.category_spending).length > 0
+            ) {
+              html +=
+                '<h6 class="mt-3">🏷️ Spending by Category</h6><table class="table table-dark"><thead><tr><th>Category</th><th>Total</th></tr></thead><tbody>';
+              for (const [category, amount] of Object.entries(
+                data.category_spending,
+              )) {
+                html += `<tr><td>${category}</td><td>₹${amount.toLocaleString()}</td></tr>`;
+              }
+              html += '</tbody></table>';
+            }
+
+            container.innerHTML = html;
+          } else {
+            container.innerHTML = `<div class="alert-box high">❌ ${esc(data.error)}</div>`;
+          }
+        } catch (error) {
+          container.innerHTML = `<div class="alert-box high">❌ ${esc(error.message)}</div>`;
+        }
+      }
+
+      async function getRecommendations() {
+        const container = document.getElementById('recommendationsContainer');
+        container.innerHTML =
+          '<div class="text-muted"><div class="spinner"></div> Generating recommendations...</div>';
+
+        try {
+          const response = await fetch('/api/predict/recommendations');
+          const data = await response.json();
+
+          if (data.success) {
+            let html = `
                         <div class="row mb-3">
                             <div class="col-md-4">
                                 <div class="stat-card">
@@ -449,12 +645,17 @@
                             </div>
                         </div>
                     `;
-                    
-                    if (data.recommendations && data.recommendations.length > 0) {
-                        html += '<h6>💡 Recommendations</h6>';
-                        data.recommendations.forEach(rec => {
-                            const priorityClass = rec.priority === 'high' ? 'priority-high' : rec.priority === 'medium' ? 'priority-medium' : 'priority-low';
-                            html += `
+
+            if (data.recommendations && data.recommendations.length > 0) {
+              html += '<h6>💡 Recommendations</h6>';
+              data.recommendations.forEach((rec) => {
+                const priorityClass =
+                  rec.priority === 'high'
+                    ? 'priority-high'
+                    : rec.priority === 'medium'
+                      ? 'priority-medium'
+                      : 'priority-low';
+                html += `
                                 <div class="recommendation-card">
                                     <div class="d-flex justify-content-between align-items-start">
                                         <div>
@@ -466,36 +667,39 @@
                                     </div>
                                 </div>
                             `;
-                        });
-                    }
-                    
-                    container.innerHTML = html;
-                } else {
-                    container.innerHTML = `<div class="alert-box high">❌ ${esc(data.error)}</div>`;
-                }
-            } catch (error) {
-                container.innerHTML = `<div class="alert-box high">❌ ${esc(error.message)}</div>`;
+              });
             }
-        }
 
-        async function detectAnomalies() {
-            const container = document.getElementById('anomaliesContainer');
-            container.innerHTML = '<div class="text-muted"><div class="spinner"></div> Scanning for anomalies...</div>';
-            
-            try {
-                const response = await fetch('/api/predict/anomalies');
-                const data = await response.json();
-                
-                if (data.success && data.anomalies) {
-                    if (data.anomalies.length === 0) {
-                        container.innerHTML = '<div class="alert-box low">✅ No anomalies detected in your transactions!</div>';
-                        return;
-                    }
-                    
-                    let html = `<h6>🚨 ${data.anomalies.length} Anomalies Detected</h6><table class="table table-dark"><thead><tr><th>Date</th><th>Amount</th><th>Category</th><th>Reason</th><th>Severity</th></tr></thead><tbody>`;
-                    data.anomalies.forEach(a => {
-                        const severityClass = a.severity === 'high' ? 'text-danger' : 'text-warning';
-                        html += `
+            container.innerHTML = html;
+          } else {
+            container.innerHTML = `<div class="alert-box high">❌ ${esc(data.error)}</div>`;
+          }
+        } catch (error) {
+          container.innerHTML = `<div class="alert-box high">❌ ${esc(error.message)}</div>`;
+        }
+      }
+
+      async function detectAnomalies() {
+        const container = document.getElementById('anomaliesContainer');
+        container.innerHTML =
+          '<div class="text-muted"><div class="spinner"></div> Scanning for anomalies...</div>';
+
+        try {
+          const response = await fetch('/api/predict/anomalies');
+          const data = await response.json();
+
+          if (data.success && data.anomalies) {
+            if (data.anomalies.length === 0) {
+              container.innerHTML =
+                '<div class="alert-box low">✅ No anomalies detected in your transactions!</div>';
+              return;
+            }
+
+            let html = `<h6>🚨 ${data.anomalies.length} Anomalies Detected</h6><table class="table table-dark"><thead><tr><th>Date</th><th>Amount</th><th>Category</th><th>Reason</th><th>Severity</th></tr></thead><tbody>`;
+            data.anomalies.forEach((a) => {
+              const severityClass =
+                a.severity === 'high' ? 'text-danger' : 'text-warning';
+              html += `
                             <tr>
                                 <td>${a.date}</td>
                                 <td>₹${a.amount.toLocaleString()}</td>
@@ -504,30 +708,30 @@
                                 <td class="${severityClass}">${a.severity}</td>
                             </tr>
                         `;
-                    });
-                    html += '</tbody></table>';
-                    container.innerHTML = html;
-                } else {
-                    container.innerHTML = `<div class="alert-box high">❌ ${data.error || 'No data available'}</div>`;
-                }
-            } catch (error) {
-                container.innerHTML = `<div class="alert-box high">❌ ${esc(error.message)}</div>`;
-            }
+            });
+            html += '</tbody></table>';
+            container.innerHTML = html;
+          } else {
+            container.innerHTML = `<div class="alert-box high">❌ ${data.error || 'No data available'}</div>`;
+          }
+        } catch (error) {
+          container.innerHTML = `<div class="alert-box high">❌ ${esc(error.message)}</div>`;
         }
+      }
 
-        // Load initial data
-        document.addEventListener('DOMContentLoaded', function() {
-            // Load model status
-            fetch('/api/predict/status')
-                .then(res => res.json())
-                .then(data => {
-                    if (data.is_trained) {
-                        document.getElementById('modelStatus').textContent = '✅ Trained';
-                        document.getElementById('modelStatus').style.color = '#2ecc8a';
-                    }
-                })
-                .catch(() => {});
-        });
+      // Load initial data
+      document.addEventListener('DOMContentLoaded', function () {
+        // Load model status
+        fetch('/api/predict/status')
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.is_trained) {
+              document.getElementById('modelStatus').textContent = '✅ Trained';
+              document.getElementById('modelStatus').style.color = '#2ecc8a';
+            }
+          })
+          .catch(() => {});
+      });
     </script>
-</body>
+  </body>
 </html>

@@ -1,38 +1,93 @@
-{% extends 'base.html' %}
-
-{% block title %}AI Chat{% endblock %}
-
-{% block content %}
+{% extends 'base.html' %} {% block title %}AI Chat{% endblock %} {% block
+content %}
 <div id="chat" class="page active">
-  <div class="page-title"><i class="fa-solid fa-robot"></i> AI <span>Chat</span></div>
-  <div class="card" style="max-width:900px;margin:0 auto;flex:1;width:100%">
-    <div class="chat-messages" id="chatMessages" style="height:420px">
+  <div class="page-title">
+    <i class="fa-solid fa-robot"></i> AI <span>Chat</span>
+  </div>
+  <div
+    class="card"
+    style="max-width: 900px; margin: 0 auto; flex: 1; width: 100%"
+  >
+    <div class="chat-messages" id="chatMessages" style="height: 420px">
       <div class="chat-welcome" id="chatPageWelcome">
         <div class="chat-welcome-icon"><i class="fa-solid fa-hand"></i></div>
         <h3>Financial Guidance at Your Fingertips</h3>
-        <p>Ask questions about investments, tax planning, portfolio strategy, SIPs, risk assessment, or any financial topic.</p>
+        <p>
+          Ask questions about investments, tax planning, portfolio strategy,
+          SIPs, risk assessment, or any financial topic.
+        </p>
         <div class="chat-features">
-          <div class="chat-feature-item" onclick="chatQuick('How should I diversify my portfolio?')"><i class="fa-solid fa-briefcase"></i> Portfolio</div>
-          <div class="chat-feature-item" onclick="chatQuick('Best tax saving strategies for 2024-25')"><i class="fa-solid fa-chess"></i> Tax Strategy</div>
-          <div class="chat-feature-item" onclick="chatQuick('Should I invest in mutual funds or stocks?')"><i class="fa-solid fa-chart-line"></i> Investments</div>
-          <div class="chat-feature-item" onclick="chatQuick('How much emergency fund do I need?')"><i class="fa-solid fa-triangle-exclamation"></i> Emergency Fund</div>
+          <div
+            class="chat-feature-item"
+            onclick="chatQuick('How should I diversify my portfolio?')"
+          >
+            <i class="fa-solid fa-briefcase"></i> Portfolio
+          </div>
+          <div
+            class="chat-feature-item"
+            onclick="chatQuick('Best tax saving strategies for 2024-25')"
+          >
+            <i class="fa-solid fa-chess"></i> Tax Strategy
+          </div>
+          <div
+            class="chat-feature-item"
+            onclick="chatQuick('Should I invest in mutual funds or stocks?')"
+          >
+            <i class="fa-solid fa-chart-line"></i> Investments
+          </div>
+          <div
+            class="chat-feature-item"
+            onclick="chatQuick('How much emergency fund do I need?')"
+          >
+            <i class="fa-solid fa-triangle-exclamation"></i> Emergency Fund
+          </div>
         </div>
       </div>
     </div>
-     <div class="chat-input-row">
-       <input type="text" id="chatInput" placeholder="Ask anything financial…"
-        onkeypress="if(event.key==='Enter') chatSend()">
-       <button class="btn btn-gold" onclick="chatSend()" id="chatBtn">Send</button>
-       <button class="btn btn-ghost" onclick="clearChat()" id="clearBtn" title="Clear conversation">Clear</button>
-     </div>
-     <div style="display: flex; justify-content: flex-end; margin-top: 12px;">
-       <button id="downloadPdfBtn" class="btn-ghost" onclick="downloadChatAsPDF('chatMessages')" style="display: none; font-size: 12px; padding: 6px 12px; border-radius: 6px; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.02); color: var(--text); transition: all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.08)'" onmouseout="this.style.background='rgba(255,255,255,0.02)'">↓ Download Chat as PDF</button>
-     </div>
+    <div class="chat-input-row">
+      <input
+        type="text"
+        id="chatInput"
+        placeholder="Ask anything financial…"
+        onkeypress="if (event.key === 'Enter') chatSend();"
+      />
+      <button class="btn btn-gold" onclick="chatSend()" id="chatBtn">
+        Send
+      </button>
+      <button
+        class="btn btn-ghost"
+        onclick="clearChat()"
+        id="clearBtn"
+        title="Clear conversation"
+      >
+        Clear
+      </button>
+    </div>
+    <div style="display: flex; justify-content: flex-end; margin-top: 12px">
+      <button
+        id="downloadPdfBtn"
+        class="btn-ghost"
+        onclick="downloadChatAsPDF('chatMessages')"
+        style="
+          display: none;
+          font-size: 12px;
+          padding: 6px 12px;
+          border-radius: 6px;
+          cursor: pointer;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          background: rgba(255, 255, 255, 0.02);
+          color: var(--text);
+          transition: all 0.2s;
+        "
+        onmouseover="this.style.background = 'rgba(255,255,255,0.08)'"
+        onmouseout="this.style.background = 'rgba(255,255,255,0.02)'"
+      >
+        ↓ Download Chat as PDF
+      </button>
+    </div>
   </div>
 </div>
-{% endblock %}
-list_recurring_expenses
-{% block scripts %}
+{% endblock %} list_recurring_expenses {% block scripts %}
 <script>
   // ─── Constants ────────────────────────────────────────────────────────────
   var STORAGE_KEY = 'aiMentorChatHistory';
@@ -41,7 +96,7 @@ list_recurring_expenses
   // ─── localStorage helpers ─────────────────────────────────────────────────
   function saveHistory() {
     try {
-       const trimmed = chatHistory.slice(-50);
+      const trimmed = chatHistory.slice(-50);
       localStorage.setItem(STORAGE_KEY, JSON.stringify(trimmed));
     } catch (e) {
       console.warn('Could not save chat history to localStorage:', e);
@@ -64,17 +119,17 @@ list_recurring_expenses
       '<div class="chat-welcome-icon"><i class="fa-solid fa-hand"></i></div>',
       '<h3>Financial Guidance at Your Fingertips</h3>',
       '<p>Ask questions about investments, tax planning, portfolio strategy,',
-        'SIPs, risk assessment, or any financial topic.</p>',
+      'SIPs, risk assessment, or any financial topic.</p>',
       '<div class="chat-features">',
-        '<div class="chat-feature-item"',
-          'onclick="chatQuick(\'How should I diversify my portfolio?\')"><i class="fa-solid fa-briefcase"></i> Portfolio</div>',
-        '<div class="chat-feature-item"',
-          'onclick="chatQuick(\'Best tax saving strategies for 2024-25\')"><i class="fa-solid fa-chess"></i> Tax Strategy</div>',
-        '<div class="chat-feature-item"',
-          'onclick="chatQuick(\'Should I invest in mutual funds or stocks?\')"><i class="fa-solid fa-chart-line"></i> Investments</div>',
-        '<div class="chat-feature-item"',
-          'onclick="chatQuick(\'How much emergency fund do I need?\')"><i class="fa-solid fa-triangle-exclamation"></i> Emergency Fund</div>',
-      '</div>'
+      '<div class="chat-feature-item"',
+      'onclick="chatQuick(\'How should I diversify my portfolio?\')"><i class="fa-solid fa-briefcase"></i> Portfolio</div>',
+      '<div class="chat-feature-item"',
+      'onclick="chatQuick(\'Best tax saving strategies for 2024-25\')"><i class="fa-solid fa-chess"></i> Tax Strategy</div>',
+      '<div class="chat-feature-item"',
+      'onclick="chatQuick(\'Should I invest in mutual funds or stocks?\')"><i class="fa-solid fa-chart-line"></i> Investments</div>',
+      '<div class="chat-feature-item"',
+      'onclick="chatQuick(\'How much emergency fund do I need?\')"><i class="fa-solid fa-triangle-exclamation"></i> Emergency Fund</div>',
+      '</div>',
     ].join('');
   }
 
@@ -85,10 +140,10 @@ list_recurring_expenses
     if (welcome && !welcome.classList.contains('hidden')) {
       welcome.classList.add('hidden');
     }
-    
+
     const downloadBtn = document.getElementById('downloadPdfBtn');
     if (downloadBtn && downloadBtn.style.display === 'none') {
-        downloadBtn.style.display = 'inline-block';
+      downloadBtn.style.display = 'inline-block';
     }
     const d = document.createElement('div');
     d.className = `msg ${role}`;
@@ -98,18 +153,16 @@ list_recurring_expenses
     const chartRegex = /\[CHART_DATA:\s*({.*})\s*\]/is;
     const match = content.match(chartRegex);
     if (match) {
-        try {
-            chartData = JSON.parse(match[1]);
-            content = content.replace(chartRegex, '');
-        } catch(e) {
-            console.error("Failed to parse chart data", e);
-        }
+      try {
+        chartData = JSON.parse(match[1]);
+        content = content.replace(chartRegex, '');
+      } catch (e) {
+        console.error('Failed to parse chart data', e);
+      }
     }
 
     if (role === 'bot') {
-        content = DOMPurify.sanitize(
-            marked.parse(content || '')
-        );
+      content = DOMPurify.sanitize(marked.parse(content || ''));
     }
 
     d.innerHTML = `
@@ -121,43 +174,43 @@ list_recurring_expenses
     `;
 
     if (role === 'bot') {
-        const btn = d.querySelector('.copy-btn');
-        if (btn) {
-            btn.onclick = () => {
-                navigator.clipboard.writeText(text).then(() => {
-                    const original = btn.innerHTML;
-                    btn.innerHTML = '✓ Copied!';
-                    setTimeout(() => btn.innerHTML = original, 2000);
-                });
-            };
-        }
+      const btn = d.querySelector('.copy-btn');
+      if (btn) {
+        btn.onclick = () => {
+          navigator.clipboard.writeText(text).then(() => {
+            const original = btn.innerHTML;
+            btn.innerHTML = '✓ Copied!';
+            setTimeout(() => (btn.innerHTML = original), 2000);
+          });
+        };
+      }
     }
 
     if (chartData) {
-        const canvasId = 'chart-' + Math.random().toString(36).substr(2, 9);
-        const chartWrapper = document.createElement('div');
-        chartWrapper.style.margin = '16px 0';
-        chartWrapper.style.background = 'rgba(15, 22, 38, 0.6)';
-        chartWrapper.style.border = '1px solid rgba(212, 168, 67, 0.2)';
-        chartWrapper.style.padding = '12px';
-        chartWrapper.style.borderRadius = '12px';
-        chartWrapper.innerHTML = `<canvas id="${canvasId}" style="max-height: 250px;"></canvas>`;
-        d.appendChild(chartWrapper);
-        
-        // Wait for next tick so canvas is in DOM
-        setTimeout(() => {
-            new Chart(document.getElementById(canvasId).getContext('2d'), {
-                type: chartData.type || 'pie',
-                data: chartData.data,
-                options: { 
-                    responsive: true, 
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { labels: { color: '#eef0f5' } }
-                    }
-                }
-            });
-        }, 50);
+      const canvasId = 'chart-' + Math.random().toString(36).substr(2, 9);
+      const chartWrapper = document.createElement('div');
+      chartWrapper.style.margin = '16px 0';
+      chartWrapper.style.background = 'rgba(15, 22, 38, 0.6)';
+      chartWrapper.style.border = '1px solid rgba(212, 168, 67, 0.2)';
+      chartWrapper.style.padding = '12px';
+      chartWrapper.style.borderRadius = '12px';
+      chartWrapper.innerHTML = `<canvas id="${canvasId}" style="max-height: 250px;"></canvas>`;
+      d.appendChild(chartWrapper);
+
+      // Wait for next tick so canvas is in DOM
+      setTimeout(() => {
+        new Chart(document.getElementById(canvasId).getContext('2d'), {
+          type: chartData.type || 'pie',
+          data: chartData.data,
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { labels: { color: '#eef0f5' } },
+            },
+          },
+        });
+      }, 50);
     }
 
     box.appendChild(d);
@@ -191,7 +244,10 @@ list_recurring_expenses
     appendMsg('chatMessages', 'user', msg);
     setLoading('chatBtn', true);
     try {
-      var data = await apiFetch('/chat', { message: msg, history: chatHistory });
+      var data = await apiFetch('/chat', {
+        message: msg,
+        history: chatHistory,
+      });
       var reply = data.reply || data.error || 'No response';
       chatHistory.push({ role: 'user', content: msg });
       chatHistory.push({ role: 'assistant', content: reply });
@@ -222,10 +278,10 @@ list_recurring_expenses
     welcome.className = 'chat-welcome';
     welcome.innerHTML = getWelcomeHTML();
     box.appendChild(welcome);
-    
+
     const downloadBtn = document.getElementById('downloadPdfBtn');
     if (downloadBtn) {
-        downloadBtn.style.display = 'none';
+      downloadBtn.style.display = 'none';
     }
   }
 

@@ -5,6 +5,7 @@ This document details the backend REST API endpoints exposed by the Flask applic
 ---
 
 ## 🤖 Chat Endpoint
+
 - **URL**: `/chat`
 - **Method**: `POST`
 - **Headers**: `Content-Type: application/json`
@@ -24,6 +25,7 @@ This document details the backend REST API endpoints exposed by the Flask applic
 ---
 
 ## 📈 SIP Calculator Endpoint
+
 - **URL**: `/sip`
 - **Method**: `POST`
 - **Request Body**:
@@ -48,6 +50,7 @@ This document details the backend REST API endpoints exposed by the Flask applic
 ---
 
 ## 💸 Tax Planner Endpoint
+
 - **URL**: `/tax`
 - **Method**: `POST`
 - **Request Body**:
@@ -93,6 +96,7 @@ This document details the backend REST API endpoints exposed by the Flask applic
 ---
 
 ## 📄 PDF Parser Upload Endpoint
+
 - **URL**: `/upload`
 - **Method**: `POST`
 - **Request Headers**: `Content-Type: multipart/form-data`

@@ -1,41 +1,93 @@
-{% extends 'base.html' %}
-
-{% block title %}Tax Planner{% endblock %}
-
-{% block content %}
+{% extends 'base.html' %} {% block title %}Tax Planner{% endblock %} {% block
+content %}
 <div id="tax" class="page active">
-  <div class="page-title"><i class="fa-solid fa-calendar-check"></i> Tax <span>Planner</span></div>
+  <div class="page-title">
+    <i class="fa-solid fa-calendar-check"></i> Tax <span>Planner</span>
+  </div>
 
-  <div style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 20px; align-items: start; max-width: 950px;">
+  <div
+    style="
+      display: grid;
+      grid-template-columns: 1fr 1.5fr;
+      gap: 20px;
+      align-items: start;
+      max-width: 950px;
+    "
+  >
     <div class="card">
       <div class="card-title">Income Tax Calculator (Old vs New Regime)</div>
       <label>Gross Annual Income (₹)</label>
-      <input type="number" required min="0" id="taxIncome" placeholder="e.g. 1200000" style="margin-bottom:12px;">
+      <input
+        type="number"
+        required
+        min="0"
+        id="taxIncome"
+        placeholder="e.g. 1200000"
+        style="margin-bottom: 12px"
+      />
 
       <label>Section 80C Deductions (₹)</label>
-      <input type="number" min="0" max="150000" id="tax80c" placeholder="e.g. 150000 (PPF, ELSS, EPF)" style="margin-bottom:12px;">
+      <input
+        type="number"
+        min="0"
+        max="150000"
+        id="tax80c"
+        placeholder="e.g. 150000 (PPF, ELSS, EPF)"
+        style="margin-bottom: 12px"
+      />
 
       <label>Section 80D Deductions (₹)</label>
-      <input type="number" min="0" max="25000" id="tax80d" placeholder="e.g. 25000 (Health Insurance)" style="margin-bottom:12px;">
+      <input
+        type="number"
+        min="0"
+        max="25000"
+        id="tax80d"
+        placeholder="e.g. 25000 (Health Insurance)"
+        style="margin-bottom: 12px"
+      />
 
       <label>HRA Deductions (₹)</label>
-      <input type="number" min="0" id="taxHra" placeholder="e.g. 50000" style="margin-bottom:12px;">
+      <input
+        type="number"
+        min="0"
+        id="taxHra"
+        placeholder="e.g. 50000"
+        style="margin-bottom: 12px"
+      />
 
-      <div style="display:flex;gap:10px;margin-top:16px;">
-        <button class="btn btn-gold" style="flex:1" onclick="calcTax()" id="taxBtn">Calculate Tax</button>
-        <button class="btn btn-ghost" style="flex:1" onclick="resetTax()" id="taxResetBtn">Reset</button>
+      <div style="display: flex; gap: 10px; margin-top: 16px">
+        <button
+          class="btn btn-gold"
+          style="flex: 1"
+          onclick="calcTax()"
+          id="taxBtn"
+        >
+          Calculate Tax
+        </button>
+        <button
+          class="btn btn-ghost"
+          style="flex: 1"
+          onclick="resetTax()"
+          id="taxResetBtn"
+        >
+          Reset
+        </button>
       </div>
       <div id="taxResult" class="result-box"></div>
     </div>
 
-    <div class="card" id="taxComparisonCard" style="display:none; min-height: 280px;">
+    <div
+      class="card"
+      id="taxComparisonCard"
+      style="display: none; min-height: 280px"
+    >
       <div class="card-title">Regime Comparison (Old vs. New)</div>
       <div id="taxComparisonResult"></div>
     </div>
   </div>
-  
+
   <!-- Tax Optimization Module -->
-  <div id="tax-optimize" class="card" style="display: none; max-width: 950px;">
+  <div id="tax-optimize" class="card" style="display: none; max-width: 950px">
     <div class="card-title">Tax Optimization Suggestions</div>
     <div class="result-row">
       <span>Current Tax:</span>
@@ -45,87 +97,272 @@
       <span>Optimized Tax:</span>
       <span id="optOptimizedTax">Rs.0</span>
     </div>
-    <div class="result-row" style="font-weight:bold">
+    <div class="result-row" style="font-weight: bold">
       <span>Potential Savings:</span>
       <span id="optSavings">Rs.0</span>
     </div>
-    <div id="optSuggestions" style="margin-top:14px"></div>
+    <div id="optSuggestions" style="margin-top: 14px"></div>
   </div>
 
   <!-- Tax Explainability & What-If Simulation -->
-  <div id="tax-explainability" class="card" style="display: none; max-width: 950px; margin-top: 20px;">
-    <div class="card-title"><i class="fa-solid fa-lightbulb"></i> Explainable Projections & What-If Simulation</div>
-    
+  <div
+    id="tax-explainability"
+    class="card"
+    style="display: none; max-width: 950px; margin-top: 20px"
+  >
+    <div class="card-title">
+      <i class="fa-solid fa-lightbulb"></i> Explainable Projections & What-If
+      Simulation
+    </div>
+
     <!-- Sliders section -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid var(--border);">
+    <div
+      style="
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin-bottom: 24px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid var(--border);
+      "
+    >
       <div>
-        <label style="display: flex; justify-content: space-between; font-weight: 500; font-size: 13px;">
+        <label
+          style="
+            display: flex;
+            justify-content: space-between;
+            font-weight: 500;
+            font-size: 13px;
+          "
+        >
           <span>Section 80C Contribution</span>
-          <span id="slider80cVal" style="color: var(--gold2); font-weight: 600;">₹0</span>
+          <span id="slider80cVal" style="color: var(--gold2); font-weight: 600"
+            >₹0</span
+          >
         </label>
-        <input type="range" id="slider80c" min="0" max="150000" step="5000" value="0" style="width: 100%; margin-top: 8px;" oninput="updateTaxSlider('tax80c', this.value, 'slider80cVal')">
-        <span style="font-size: 10px; color: var(--muted); display: block; margin-top: 4px;">ELSS, PPF, EPF contributions. Max ₹1.5L.</span>
+        <input
+          type="range"
+          id="slider80c"
+          min="0"
+          max="150000"
+          step="5000"
+          value="0"
+          style="width: 100%; margin-top: 8px"
+          oninput="updateTaxSlider('tax80c', this.value, 'slider80cVal')"
+        />
+        <span
+          style="
+            font-size: 10px;
+            color: var(--muted);
+            display: block;
+            margin-top: 4px;
+          "
+          >ELSS, PPF, EPF contributions. Max ₹1.5L.</span
+        >
       </div>
-      
+
       <div>
-        <label style="display: flex; justify-content: space-between; font-weight: 500; font-size: 13px;">
+        <label
+          style="
+            display: flex;
+            justify-content: space-between;
+            font-weight: 500;
+            font-size: 13px;
+          "
+        >
           <span>Section 80D Contribution</span>
-          <span id="slider80dVal" style="color: var(--gold2); font-weight: 600;">₹0</span>
+          <span id="slider80dVal" style="color: var(--gold2); font-weight: 600"
+            >₹0</span
+          >
         </label>
-        <input type="range" id="slider80d" min="0" max="25000" step="1000" value="0" style="width: 100%; margin-top: 8px;" oninput="updateTaxSlider('tax80d', this.value, 'slider80dVal')">
-        <span style="font-size: 10px; color: var(--muted); display: block; margin-top: 4px;">Health insurance premiums. Max ₹25k.</span>
+        <input
+          type="range"
+          id="slider80d"
+          min="0"
+          max="25000"
+          step="1000"
+          value="0"
+          style="width: 100%; margin-top: 8px"
+          oninput="updateTaxSlider('tax80d', this.value, 'slider80dVal')"
+        />
+        <span
+          style="
+            font-size: 10px;
+            color: var(--muted);
+            display: block;
+            margin-top: 4px;
+          "
+          >Health insurance premiums. Max ₹25k.</span
+        >
       </div>
-      
+
       <div>
-        <label style="display: flex; justify-content: space-between; font-weight: 500; font-size: 13px;">
+        <label
+          style="
+            display: flex;
+            justify-content: space-between;
+            font-weight: 500;
+            font-size: 13px;
+          "
+        >
           <span>HRA Exemption Amount</span>
-          <span id="sliderHraVal" style="color: var(--gold2); font-weight: 600;">₹0</span>
+          <span id="sliderHraVal" style="color: var(--gold2); font-weight: 600"
+            >₹0</span
+          >
         </label>
-        <input type="range" id="sliderHra" min="0" max="200000" step="5000" value="0" style="width: 100%; margin-top: 8px;" oninput="updateTaxSlider('taxHra', this.value, 'sliderHraVal')">
-        <span style="font-size: 10px; color: var(--muted); display: block; margin-top: 4px;">Exempt rent portion. Max ₹2L.</span>
+        <input
+          type="range"
+          id="sliderHra"
+          min="0"
+          max="200000"
+          step="5000"
+          value="0"
+          style="width: 100%; margin-top: 8px"
+          oninput="updateTaxSlider('taxHra', this.value, 'sliderHraVal')"
+        />
+        <span
+          style="
+            font-size: 10px;
+            color: var(--muted);
+            display: block;
+            margin-top: 4px;
+          "
+          >Exempt rent portion. Max ₹2L.</span
+        >
       </div>
     </div>
 
     <!-- Assumptions, Drivers, Lever Contributions -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+    <div
+      style="
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 20px;
+      "
+    >
       <!-- Lever Savings contributions -->
-      <div style="background: rgba(255,255,255,0.02); padding: 16px; border-radius: 12px; border: 1px solid var(--border);">
-        <div style="font-family:'Syne',sans-serif; font-size: 14px; font-weight: 700; color: var(--gold2); margin-bottom: 12px;">📊 Tax Saved by Lever (Old Regime)</div>
-        <div style="display: flex; flex-direction: column; gap: 10px;">
-          <div class="result-row" style="margin: 0; padding: 6px 0; border-bottom: 1px dashed var(--border);">
+      <div
+        style="
+          background: rgba(255, 255, 255, 0.02);
+          padding: 16px;
+          border-radius: 12px;
+          border: 1px solid var(--border);
+        "
+      >
+        <div
+          style="
+            font-family: 'Syne', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--gold2);
+            margin-bottom: 12px;
+          "
+        >
+          📊 Tax Saved by Lever (Old Regime)
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 10px">
+          <div
+            class="result-row"
+            style="
+              margin: 0;
+              padding: 6px 0;
+              border-bottom: 1px dashed var(--border);
+            "
+          >
             <span>Section 80C Savings:</span>
-            <span id="lever80cVal" style="font-weight: 600; color: #2ecc8a;">₹0</span>
+            <span id="lever80cVal" style="font-weight: 600; color: #2ecc8a"
+              >₹0</span
+            >
           </div>
-          <div class="result-row" style="margin: 0; padding: 6px 0; border-bottom: 1px dashed var(--border);">
+          <div
+            class="result-row"
+            style="
+              margin: 0;
+              padding: 6px 0;
+              border-bottom: 1px dashed var(--border);
+            "
+          >
             <span>Section 80D Savings:</span>
-            <span id="lever80dVal" style="font-weight: 600; color: #2ecc8a;">₹0</span>
+            <span id="lever80dVal" style="font-weight: 600; color: #2ecc8a"
+              >₹0</span
+            >
           </div>
-          <div class="result-row" style="margin: 0; padding: 6px 0;">
+          <div class="result-row" style="margin: 0; padding: 6px 0">
             <span>HRA Savings:</span>
-            <span id="leverHraVal" style="font-weight: 600; color: #2ecc8a;">₹0</span>
+            <span id="leverHraVal" style="font-weight: 600; color: #2ecc8a"
+              >₹0</span
+            >
           </div>
         </div>
       </div>
 
       <!-- Drivers & Sensitivity -->
-      <div style="background: rgba(255,255,255,0.02); padding: 16px; border-radius: 12px; border: 1px solid var(--border);">
-        <div style="font-family:'Syne',sans-serif; font-size: 14px; font-weight: 700; color: var(--gold2); margin-bottom: 12px;"><i class="fa-solid fa-bolt"></i> Sensitivity & Top Drivers</div>
-        <ul id="taxDriversList" style="font-size: 13px; color: var(--text); padding-left: 20px; line-height: 1.6; margin: 0;">
-        </ul>
+      <div
+        style="
+          background: rgba(255, 255, 255, 0.02);
+          padding: 16px;
+          border-radius: 12px;
+          border: 1px solid var(--border);
+        "
+      >
+        <div
+          style="
+            font-family: 'Syne', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--gold2);
+            margin-bottom: 12px;
+          "
+        >
+          <i class="fa-solid fa-bolt"></i> Sensitivity & Top Drivers
+        </div>
+        <ul
+          id="taxDriversList"
+          style="
+            font-size: 13px;
+            color: var(--text);
+            padding-left: 20px;
+            line-height: 1.6;
+            margin: 0;
+          "
+        ></ul>
       </div>
 
       <!-- Assumptions -->
-      <div style="background: rgba(255,255,255,0.02); padding: 16px; border-radius: 12px; border: 1px solid var(--border);">
-        <div style="font-family:'Syne',sans-serif; font-size: 14px; font-weight: 700; color: var(--gold2); margin-bottom: 12px;"><i class="fa-solid fa-gear"></i> Key Calculation Assumptions</div>
-        <ul id="taxAssumptionsList" style="font-size: 12px; color: var(--muted); padding-left: 20px; line-height: 1.5; margin: 0;">
-        </ul>
+      <div
+        style="
+          background: rgba(255, 255, 255, 0.02);
+          padding: 16px;
+          border-radius: 12px;
+          border: 1px solid var(--border);
+        "
+      >
+        <div
+          style="
+            font-family: 'Syne', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--gold2);
+            margin-bottom: 12px;
+          "
+        >
+          <i class="fa-solid fa-gear"></i> Key Calculation Assumptions
+        </div>
+        <ul
+          id="taxAssumptionsList"
+          style="
+            font-size: 12px;
+            color: var(--muted);
+            padding-left: 20px;
+            line-height: 1.5;
+            margin: 0;
+          "
+        ></ul>
       </div>
     </div>
   </div>
 </div>
-{% endblock %}
-
-{% block scripts %}
+{% endblock %} {% block scripts %}
 <script>
   function updateTaxSlider(inputId, val, valSpanId) {
     document.getElementById(inputId).value = val;
@@ -135,20 +372,35 @@
 
   async function calcTax() {
     const income = document.getElementById('taxIncome').value;
-    if (!income) { showResult('taxResult', '⚠ Enter your annual income.'); return; }
+    if (!income) {
+      showResult('taxResult', '⚠ Enter your annual income.');
+      return;
+    }
 
     const deduction_80c = document.getElementById('tax80c').value || 0;
     const deduction_80d = document.getElementById('tax80d').value || 0;
     const deduction_hra = document.getElementById('taxHra').value || 0;
 
-    if (parseFloat(income) < 0 || parseFloat(deduction_80c) < 0 || parseFloat(deduction_80d) < 0 || parseFloat(deduction_hra) < 0) {
+    if (
+      parseFloat(income) < 0 ||
+      parseFloat(deduction_80c) < 0 ||
+      parseFloat(deduction_80d) < 0 ||
+      parseFloat(deduction_hra) < 0
+    ) {
       showResult('taxResult', 'Inputs cannot be negative values.');
       return;
     }
-    
-    let constraint= parseFloat(income)-parseFloat(deduction_80c)-parseFloat(deduction_80d)-parseFloat(deduction_hra);
-    if (constraint<0){
-      showResult('taxResult', 'Ensure proper inputs. Tax deductions cannot exceed gross income.');
+
+    let constraint =
+      parseFloat(income) -
+      parseFloat(deduction_80c) -
+      parseFloat(deduction_80d) -
+      parseFloat(deduction_hra);
+    if (constraint < 0) {
+      showResult(
+        'taxResult',
+        'Ensure proper inputs. Tax deductions cannot exceed gross income.',
+      );
       return;
     }
 
@@ -158,7 +410,7 @@
         income: parseFloat(income),
         deduction_80c: parseFloat(deduction_80c),
         deduction_80d: parseFloat(deduction_80d),
-        deduction_hra: parseFloat(deduction_hra)
+        deduction_hra: parseFloat(deduction_hra),
       });
 
       if (data.error) {
@@ -222,7 +474,7 @@
         `;
 
         // Format AI tax-saving advice
-        let aiAdviceHtml = "";
+        let aiAdviceHtml = '';
         if (taxRes.ai_recommendations) {
           let formattedAdvice = taxRes.ai_recommendations
             .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
@@ -240,44 +492,60 @@
           `;
         }
 
-        document.getElementById('taxComparisonResult').innerHTML = tableHtml + aiAdviceHtml;
+        document.getElementById('taxComparisonResult').innerHTML =
+          tableHtml + aiAdviceHtml;
 
-        showResult('taxResult', `
+        showResult(
+          'taxResult',
+          `
           <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em">Tax Payable (${taxRes.recommended})</div>
-          <div class="result-big" style="color:#2ecc8a;">₹${fmtNum(taxRes.recommended === "New Regime" ? taxRes.new_regime.total_tax : taxRes.old_regime.total_tax)}</div>
+          <div class="result-big" style="color:#2ecc8a;">₹${fmtNum(taxRes.recommended === 'New Regime' ? taxRes.new_regime.total_tax : taxRes.old_regime.total_tax)}</div>
           <div style="font-size:12px;color:var(--muted);margin-top:4px">Annual Savings: ₹${fmtNum(taxRes.savings)}</div>
-        `);
+        `,
+        );
 
         // Explainability & Simulation card
         if (taxRes.explainability) {
           document.getElementById('tax-explainability').style.display = 'block';
-          
+
           // Sync sliders with inputs
           document.getElementById('slider80c').value = deduction_80c;
-          document.getElementById('slider80cVal').textContent = '₹' + fmtNum(deduction_80c);
+          document.getElementById('slider80cVal').textContent =
+            '₹' + fmtNum(deduction_80c);
           document.getElementById('slider80d').value = deduction_80d;
-          document.getElementById('slider80dVal').textContent = '₹' + fmtNum(deduction_80d);
+          document.getElementById('slider80dVal').textContent =
+            '₹' + fmtNum(deduction_80d);
           document.getElementById('sliderHra').value = deduction_hra;
-          document.getElementById('sliderHraVal').textContent = '₹' + fmtNum(deduction_hra);
+          document.getElementById('sliderHraVal').textContent =
+            '₹' + fmtNum(deduction_hra);
 
           // Render lever contributions
           const lever = taxRes.explainability.lever_contributions || {};
-          document.getElementById('lever80cVal').textContent = '₹' + fmtNum(lever['80c'] || 0);
-          document.getElementById('lever80dVal').textContent = '₹' + fmtNum(lever['80d'] || 0);
-          document.getElementById('leverHraVal').textContent = '₹' + fmtNum(lever['hra'] || 0);
+          document.getElementById('lever80cVal').textContent =
+            '₹' + fmtNum(lever['80c'] || 0);
+          document.getElementById('lever80dVal').textContent =
+            '₹' + fmtNum(lever['80d'] || 0);
+          document.getElementById('leverHraVal').textContent =
+            '₹' + fmtNum(lever['hra'] || 0);
 
           // Render drivers
           const drDiv = document.getElementById('taxDriversList');
-          drDiv.innerHTML = (taxRes.explainability.top_drivers || []).map(item => `
+          drDiv.innerHTML = (taxRes.explainability.top_drivers || [])
+            .map(
+              (item) => `
             <li style="margin-bottom: 8px;">
               <strong>${item.driver}:</strong> ${item.delta}
               <div style="font-size: 11px; color: var(--muted);">${item.reason}</div>
             </li>
-          `).join('');
+          `,
+            )
+            .join('');
 
           // Render assumptions
           const assDiv = document.getElementById('taxAssumptionsList');
-          assDiv.innerHTML = (taxRes.explainability.assumptions || []).map(item => `<li>${item}</li>`).join('');
+          assDiv.innerHTML = (taxRes.explainability.assumptions || [])
+            .map((item) => `<li>${item}</li>`)
+            .join('');
         }
 
         // Fetch optimization suggestions alongside the regime comparison
@@ -294,19 +562,24 @@
     if (!income) return;
 
     const investments = {
-      "80C": parseFloat(document.getElementById('tax80c').value) || 0,
-      "80D": parseFloat(document.getElementById('tax80d').value) || 0,
-      "HRA": parseFloat(document.getElementById('taxHra').value) || 0,
+      '80C': parseFloat(document.getElementById('tax80c').value) || 0,
+      '80D': parseFloat(document.getElementById('tax80d').value) || 0,
+      HRA: parseFloat(document.getElementById('taxHra').value) || 0,
     };
     const expenses = {};
 
     try {
-      const data = await apiFetch('/tax-optimize', { income, expenses, investments });
+      const data = await apiFetch('/tax-optimize', {
+        income,
+        expenses,
+        investments,
+      });
       renderTaxOptimizeResult(data);
     } catch (e) {
       const card = document.getElementById('tax-optimize');
       card.style.display = 'block';
-      document.getElementById('optSuggestions').innerHTML = '⚠ Could not load suggestions.';
+      document.getElementById('optSuggestions').innerHTML =
+        '⚠ Could not load suggestions.';
     }
   }
 
@@ -316,20 +589,24 @@
     const card = document.getElementById('tax-optimize');
     card.style.display = 'block';
 
-    document.getElementById('optCurrentTax').textContent = `₹${fmtNum(data.current_tax)}`;
-    document.getElementById('optOptimizedTax').textContent = `₹${fmtNum(data.optimized_tax)}`;
-    document.getElementById('optSavings').textContent = `₹${fmtNum(data.potential_savings)}`;
+    document.getElementById('optCurrentTax').textContent =
+      `₹${fmtNum(data.current_tax)}`;
+    document.getElementById('optOptimizedTax').textContent =
+      `₹${fmtNum(data.optimized_tax)}`;
+    document.getElementById('optSavings').textContent =
+      `₹${fmtNum(data.potential_savings)}`;
 
     const suggestionsDiv = document.getElementById('optSuggestions');
     suggestionsDiv.innerHTML = '';
 
     const sectionKeys = Object.keys(data.suggestions || {});
     if (sectionKeys.length === 0) {
-      suggestionsDiv.innerHTML = '<p>You\'ve already maximized all available deductions. 🎉</p>';
+      suggestionsDiv.innerHTML =
+        "<p>You've already maximized all available deductions. 🎉</p>";
       return;
     }
 
-    sectionKeys.forEach(section => {
+    sectionKeys.forEach((section) => {
       const p = document.createElement('p');
       p.textContent = data.suggestions[section];
       suggestionsDiv.appendChild(p);
@@ -373,6 +650,5 @@
     document.getElementById('sliderHra').value = 0;
     document.getElementById('sliderHraVal').textContent = '₹0';
   }
-
 </script>
 {% endblock %}

@@ -8,49 +8,49 @@ Base URL: `https://api.groq.com/openai/v1`
 
 ### Required Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `model` | string | Model ID (see models.md) |
-| `messages` | array | Conversation messages |
+| Parameter  | Type   | Description              |
+| ---------- | ------ | ------------------------ |
+| `model`    | string | Model ID (see models.md) |
+| `messages` | array  | Conversation messages    |
 
 ### Common Optional Parameters
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `temperature` | number | 1 | 0-2, lower = more deterministic |
-| `top_p` | number | 1 | 0-1, nucleus sampling |
-| `max_completion_tokens` | integer | - | Max output tokens |
-| `stream` | boolean | false | Enable streaming |
-| `stop` | string/array | - | Stop sequences (up to 4) |
-| `tools` | array | - | Function definitions |
-| `tool_choice` | string/object | auto | `auto`, `none`, `required`, or specific function |
-| `response_format` | object | - | `{"type": "json_object"}` or JSON schema |
-| `seed` | integer | - | For deterministic outputs |
+| Parameter               | Type          | Default | Description                                      |
+| ----------------------- | ------------- | ------- | ------------------------------------------------ |
+| `temperature`           | number        | 1       | 0-2, lower = more deterministic                  |
+| `top_p`                 | number        | 1       | 0-1, nucleus sampling                            |
+| `max_completion_tokens` | integer       | -       | Max output tokens                                |
+| `stream`                | boolean       | false   | Enable streaming                                 |
+| `stop`                  | string/array  | -       | Stop sequences (up to 4)                         |
+| `tools`                 | array         | -       | Function definitions                             |
+| `tool_choice`           | string/object | auto    | `auto`, `none`, `required`, or specific function |
+| `response_format`       | object        | -       | `{"type": "json_object"}` or JSON schema         |
+| `seed`                  | integer       | -       | For deterministic outputs                        |
 
 ### Reasoning Parameters (Qwen3, GPT-OSS)
 
-| Parameter | Type | Values |
-|-----------|------|--------|
-| `reasoning_effort` | string | `none`, `default`, `low`, `medium`, `high` |
-| `reasoning_format` | string | `hidden`, `raw`, `parsed` |
-| `include_reasoning` | boolean | Include reasoning in response |
+| Parameter           | Type    | Values                                     |
+| ------------------- | ------- | ------------------------------------------ |
+| `reasoning_effort`  | string  | `none`, `default`, `low`, `medium`, `high` |
+| `reasoning_format`  | string  | `hidden`, `raw`, `parsed`                  |
+| `include_reasoning` | boolean | Include reasoning in response              |
 
 ### Agentic Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `documents` | array | Context documents for RAG |
-| `search_settings` | object | Web search configuration |
-| `citation_options` | string | `enabled` or `disabled` |
+| Parameter          | Type   | Description               |
+| ------------------ | ------ | ------------------------- |
+| `documents`        | array  | Context documents for RAG |
+| `search_settings`  | object | Web search configuration  |
+| `citation_options` | string | `enabled` or `disabled`   |
 
 ### Service Tiers
 
-| Tier | Description |
-|------|-------------|
-| `on_demand` | Default, standard processing |
-| `flex` | Lower cost, may queue |
-| `performance` | Prioritized processing |
-| `auto` | Auto-select based on limits |
+| Tier          | Description                  |
+| ------------- | ---------------------------- |
+| `on_demand`   | Default, standard processing |
+| `flex`        | Lower cost, may queue        |
+| `performance` | Prioritized processing       |
+| `auto`        | Auto-select based on limits  |
 
 ### Response Object
 
@@ -60,15 +60,17 @@ Base URL: `https://api.groq.com/openai/v1`
   "object": "chat.completion",
   "created": 1730241104,
   "model": "openai/gpt-oss-20b",
-  "choices": [{
-    "index": 0,
-    "message": {
-      "role": "assistant",
-      "content": "...",
-      "tool_calls": []
-    },
-    "finish_reason": "stop"
-  }],
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "...",
+        "tool_calls": []
+      },
+      "finish_reason": "stop"
+    }
+  ],
   "usage": {
     "prompt_tokens": 18,
     "completion_tokens": 556,
@@ -93,15 +95,15 @@ response = client.responses.create(
 
 ### Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `input` | string/array | Text input or conversation |
-| `model` | string | Model ID |
-| `instructions` | string | System message |
-| `max_output_tokens` | integer | Output limit |
-| `reasoning` | object | Reasoning config |
-| `text` | object | Response format config |
-| `tools` | array | Available tools |
+| Parameter           | Type         | Description                |
+| ------------------- | ------------ | -------------------------- |
+| `input`             | string/array | Text input or conversation |
+| `model`             | string       | Model ID                   |
+| `instructions`      | string       | System message             |
+| `max_output_tokens` | integer      | Output limit               |
+| `reasoning`         | object       | Reasoning config           |
+| `text`              | object       | Response format config     |
+| `tools`             | array        | Available tools            |
 
 ## Audio Transcription
 
@@ -120,15 +122,15 @@ with open("audio.mp3", "rb") as f:
 
 ### Parameters
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `model` | string | required | `whisper-large-v3` or `whisper-large-v3-turbo` |
-| `file` | file | - | Audio file (flac, mp3, mp4, m4a, ogg, wav, webm) |
-| `url` | string | - | Audio URL (alternative to file) |
-| `language` | string | - | ISO-639-1 language code |
-| `prompt` | string | - | Guide transcription style |
-| `response_format` | string | json | `json`, `text`, `verbose_json` |
-| `timestamp_granularities` | array | segment | `word`, `segment` |
+| Parameter                 | Type   | Default  | Description                                      |
+| ------------------------- | ------ | -------- | ------------------------------------------------ |
+| `model`                   | string | required | `whisper-large-v3` or `whisper-large-v3-turbo`   |
+| `file`                    | file   | -        | Audio file (flac, mp3, mp4, m4a, ogg, wav, webm) |
+| `url`                     | string | -        | Audio URL (alternative to file)                  |
+| `language`                | string | -        | ISO-639-1 language code                          |
+| `prompt`                  | string | -        | Guide transcription style                        |
+| `response_format`         | string | json     | `json`, `text`, `verbose_json`                   |
+| `timestamp_granularities` | array  | segment  | `word`, `segment`                                |
 
 ## Audio Translation
 
@@ -158,14 +160,14 @@ response.write_to_file("output.wav")
 
 ### Parameters
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `model` | string | required | TTS model (e.g., `playai-tts`) |
-| `input` | string | required | Text to synthesize |
-| `voice` | string | required | Voice ID |
-| `response_format` | string | mp3 | `flac`, `mp3`, `mulaw`, `ogg`, `wav` |
-| `sample_rate` | integer | 48000 | 8000-48000 |
-| `speed` | number | 1 | 0.5-5 |
+| Parameter         | Type    | Default  | Description                          |
+| ----------------- | ------- | -------- | ------------------------------------ |
+| `model`           | string  | required | TTS model (e.g., `playai-tts`)       |
+| `input`           | string  | required | Text to synthesize                   |
+| `voice`           | string  | required | Voice ID                             |
+| `response_format` | string  | mp3      | `flac`, `mp3`, `mulaw`, `ogg`, `wav` |
+| `sample_rate`     | integer | 48000    | 8000-48000                           |
+| `speed`           | number  | 1        | 0.5-5                                |
 
 ## Batch API
 
@@ -274,10 +276,10 @@ Force model output to match a schema with guaranteed or best-effort compliance.
 
 ### Two Modes
 
-| Mode | Guarantee | Requirements |
-|------|-----------|--------------|
-| **Strict** (`strict: true`) | 100% schema compliance | All fields required, `additionalProperties: false` |
-| **Best-effort** (`strict: false`) | Best-effort, may error | More flexible constraints |
+| Mode                              | Guarantee              | Requirements                                       |
+| --------------------------------- | ---------------------- | -------------------------------------------------- |
+| **Strict** (`strict: true`)       | 100% schema compliance | All fields required, `additionalProperties: false` |
+| **Best-effort** (`strict: false`) | Best-effort, may error | More flexible constraints                          |
 
 ### Model Support
 
@@ -339,18 +341,21 @@ response = client.chat.completions.create(
 ### Schema Requirements for Strict Mode
 
 1. **All fields must be required:**
+
 ```json
-{"required": ["field1", "field2", "field3"]}
+{ "required": ["field1", "field2", "field3"] }
 ```
 
 2. **All objects need `additionalProperties: false`:**
+
 ```json
-{"additionalProperties": false}
+{ "additionalProperties": false }
 ```
 
 3. **Optional fields use union with null:**
+
 ```json
-{"nickname": {"type": ["string", "null"]}}
+{ "nickname": { "type": ["string", "null"] } }
 ```
 
 ### Using Pydantic (Python)

@@ -6,16 +6,16 @@ This document consolidates the findings, remediation status, and rationale for e
 
 ## Triage summary
 
-| Issue | Title | Severity | Resolution | PR | Status |
-|-------|-------|----------|------------|-----|--------|
-| #514 | Hardcoded `'your-email@gmail.com'` fallback in `/test-email` route | High | Fixed in dedicated PR | #523 | Open |
-| #515 | Hardcoded `'dev-secret-key'` Flask session key | High | Already fixed via PR #492 (merged). Closing note posted on issue; no new PR raised to avoid duplicate work | #492 | Closed (covered) |
-| #516 | Use of `hashlib.md5(...)` (weak hash) | High | Already fixed via PR #492 — replaced with `hashlib.sha256` | #492 | Closed (covered) |
-| #517 | XSS via `innerHTML` across `templates/` and `static/scripts/` | High | Fixed in dedicated PR | #536 | Open |
-| #518 | `app.py` models layer interleaved with route handlers (CodeQL flag `py/...`) | Medium | Already fixed via PR #492 — `models.py` de-interleaved, dead code removed | #492 | Closed (covered) |
-| #519 | Duplicate and shadowed `from models import ...` blocks in `app.py` | Medium | Already fixed via PR #492 — collapsed into single top-level import | #492 | Closed (covered) |
-| #520 | Missing top-level imports of new models (`BankConnection`, `FraudAlert`, `Notification`, `InvestmentGoal`, …) | Medium | Fixed in dedicated PR | #531 | Open |
-| #521 | Triage of remaining CodeQL alerts (this umbrella issue) | Medium | Audit report via this `docs/SECURITY_AUDIT.md` (this PR) | TBD | Open |
+| Issue | Title                                                                                                         | Severity | Resolution                                                                                                 | PR   | Status           |
+| ----- | ------------------------------------------------------------------------------------------------------------- | -------- | ---------------------------------------------------------------------------------------------------------- | ---- | ---------------- |
+| #514  | Hardcoded `'your-email@gmail.com'` fallback in `/test-email` route                                            | High     | Fixed in dedicated PR                                                                                      | #523 | Open             |
+| #515  | Hardcoded `'dev-secret-key'` Flask session key                                                                | High     | Already fixed via PR #492 (merged). Closing note posted on issue; no new PR raised to avoid duplicate work | #492 | Closed (covered) |
+| #516  | Use of `hashlib.md5(...)` (weak hash)                                                                         | High     | Already fixed via PR #492 — replaced with `hashlib.sha256`                                                 | #492 | Closed (covered) |
+| #517  | XSS via `innerHTML` across `templates/` and `static/scripts/`                                                 | High     | Fixed in dedicated PR                                                                                      | #536 | Open             |
+| #518  | `app.py` models layer interleaved with route handlers (CodeQL flag `py/...`)                                  | Medium   | Already fixed via PR #492 — `models.py` de-interleaved, dead code removed                                  | #492 | Closed (covered) |
+| #519  | Duplicate and shadowed `from models import ...` blocks in `app.py`                                            | Medium   | Already fixed via PR #492 — collapsed into single top-level import                                         | #492 | Closed (covered) |
+| #520  | Missing top-level imports of new models (`BankConnection`, `FraudAlert`, `Notification`, `InvestmentGoal`, …) | Medium   | Fixed in dedicated PR                                                                                      | #531 | Open             |
+| #521  | Triage of remaining CodeQL alerts (this umbrella issue)                                                       | Medium   | Audit report via this `docs/SECURITY_AUDIT.md` (this PR)                                                   | TBD  | Open             |
 
 All 8 issues are addressed. Three are merged-and-closed upstream; four are in open PRs awaiting maintainer review; one is this PR.
 
@@ -52,7 +52,7 @@ All 8 issues are addressed. Three are merged-and-closed upstream; four are in op
 
 ### #517 — XSS via `innerHTML` across `templates/` and `static/scripts/`
 
-- **Location**: ~100 `.innerHTML = \`...${field}...\`` sinks across `static/scripts/*.js` (6 files) and `templates/*.html` (19 files).
+- **Location**: ~100 `.innerHTML = \`...${field}...\``sinks across`static/scripts/_.js`(6 files) and`templates/_.html` (19 files).
 - **CodeQL rule**: `js/xss-through-dom` (and the HTML template rule variant)
 - **Fix strategy**: shared `esc()` helper added to `templates/base.html` (extends-available) plus standalone-helper added to `templates/index.html` and `templates/predictive_alerts.html`. User-controlled fields — `widget.title`, `h.symbol`, `goal.name`, `t.category`, `data.error`, `error.message`, `file.name`, `data.runway_message`, `taxRes.recommended`, etc. — wrapped in `esc()` only where they flow into `innerHTML`. Numeric-only fields intentionally left untouched since their stringification cannot produce HTML.
 - **Bonus fix**: `script.js` portfolio row no longer interpolates `h.id` into inline `onclick="deleteFromPortfolio(${h.id})"` (a JS-injection vector since `h.id` was used inside a JS expression context). Replaced with `data-portfolio-id` attribute + a single event-delegation `click` listener on `<tbody>`.

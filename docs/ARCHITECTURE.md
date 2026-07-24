@@ -50,10 +50,10 @@ serving both a server-rendered web UI and a REST API.
 
 Two SQLite files coexist:
 
-| File | ORM | Purpose |
-|------|-----|---------|
+| File              | ORM                          | Purpose              |
+| ----------------- | ---------------------------- | -------------------- |
 | `money_mentor.db` | Flask-SQLAlchemy (models.py) | All application data |
-| `database.db` | raw sqlite3 module | Email settings only |
+| `database.db`     | raw sqlite3 module           | Email settings only  |
 
 Schema is created via `db.create_all()` at startup. No migration system exists.
 
@@ -70,6 +70,7 @@ Both use Groq's `llama-3.1-8b-instant` model.
 ## Stock Data Pipeline
 
 `utils/stock.py` provides real-time and historical data via yfinance:
+
 - Automatic `.NS` suffix for Indian stocks when bare symbol lookup fails
 - 10-minute in-memory cache (`STOCK_CACHE` dict)
 - Separate cache for historical data
@@ -77,6 +78,7 @@ Both use Groq's `llama-3.1-8b-instant` model.
 ## Scheduling
 
 APScheduler handles background tasks:
+
 - Price alert checks
 - Notification delivery
 - Auto-rebalancing triggers

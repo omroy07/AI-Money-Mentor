@@ -1,40 +1,40 @@
 # Labels based on changed file paths
-"app":
+'app':
   - changed-files:
       - any-glob-to-any-file: app.py
 
-"agents":
+'agents':
   - changed-files:
       - any-glob-to-any-file: agents.py
 
-"models":
+'models':
   - changed-files:
       - any-glob-to-any-file: models.py
 
-"backend":
+'backend':
   - changed-files:
       - any-glob-to-any-file: utils/**/*
       - any-glob-to-any-file: app.py
       - any-glob-to-any-file: agents.py
 
-"templates":
+'templates':
   - changed-files:
       - any-glob-to-any-file: templates/**/*
 
-"frontend":
+'frontend':
   - changed-files:
       - any-glob-to-any-file: static/**/*
       - any-glob-to-any-file: templates/**/*
 
-"tests":
+'tests':
   - changed-files:
       - any-glob-to-any-file: tests/**/*
 
-"documentation":
+'documentation':
   - changed-files:
       - any-glob-to-any-file: docs/**/*
-      - any-glob-to-any-file: "**/*.md"
+      - any-glob-to-any-file: '**/*.md'
 
-"ci/cd":
+'ci/cd':
   - changed-files:
       - any-glob-to-any-file: .github/**/*

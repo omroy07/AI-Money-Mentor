@@ -1,171 +1,197 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Weekly Financial Digest</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f6f9;
-            margin: 0;
-            padding: 0;
-        }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background: #ffffff;
-            border-radius: 16px;
-            padding: 30px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-        }
-        .header {
-            text-align: center;
-            border-bottom: 2px solid #d4a843;
-            padding-bottom: 20px;
-        }
-        .header h1 {
-            color: #d4a843;
-            font-family: 'Syne', sans-serif;
-            margin: 0;
-        }
-        .header p {
-            color: #5a6a82;
-            font-size: 14px;
-        }
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin: 20px 0;
-        }
-        .stat-card {
-            background: #f8f9fa;
-            border-radius: 12px;
-            padding: 15px;
-            text-align: center;
-        }
-        .stat-card .label {
-            font-size: 12px;
-            color: #5a6a82;
-            text-transform: uppercase;
-        }
-        .stat-card .value {
-            font-size: 24px;
-            font-weight: 700;
-            color: #1f2937;
-            margin-top: 5px;
-        }
-        .stat-card .change {
-            font-size: 12px;
-        }
-        .change.positive { color: #2ecc8a; }
-        .change.negative { color: #e05252; }
-        .insight-box {
-            background: #fef9e7;
-            border-left: 4px solid #d4a843;
-            padding: 15px;
-            margin: 20px 0;
-            border-radius: 8px;
-        }
-        .insight-box h3 {
-            color: #d4a843;
-            margin: 0 0 8px 0;
-        }
-        .insight-box p {
-            margin: 0;
-            color: #333;
-        }
-        .btn {
-            display: inline-block;
-            background: linear-gradient(135deg, #d4a843, #f0cc6e);
-            color: #0a0e18;
-            padding: 12px 30px;
-            border-radius: 999px;
-            text-decoration: none;
-            font-weight: 700;
-            margin-top: 20px;
-        }
-        .btn:hover {
-            filter: brightness(1.05);
-        }
-        .footer {
-            text-align: center;
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #ddd;
-            font-size: 12px;
-            color: #5a6a82;
-        }
-        .footer a {
-            color: #d4a843;
-            text-decoration: none;
-        }
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f6f9;
+        margin: 0;
+        padding: 0;
+      }
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 30px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      }
+      .header {
+        text-align: center;
+        border-bottom: 2px solid #d4a843;
+        padding-bottom: 20px;
+      }
+      .header h1 {
+        color: #d4a843;
+        font-family: 'Syne', sans-serif;
+        margin: 0;
+      }
+      .header p {
+        color: #5a6a82;
+        font-size: 14px;
+      }
+      .stats-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+        margin: 20px 0;
+      }
+      .stat-card {
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 15px;
+        text-align: center;
+      }
+      .stat-card .label {
+        font-size: 12px;
+        color: #5a6a82;
+        text-transform: uppercase;
+      }
+      .stat-card .value {
+        font-size: 24px;
+        font-weight: 700;
+        color: #1f2937;
+        margin-top: 5px;
+      }
+      .stat-card .change {
+        font-size: 12px;
+      }
+      .change.positive {
+        color: #2ecc8a;
+      }
+      .change.negative {
+        color: #e05252;
+      }
+      .insight-box {
+        background: #fef9e7;
+        border-left: 4px solid #d4a843;
+        padding: 15px;
+        margin: 20px 0;
+        border-radius: 8px;
+      }
+      .insight-box h3 {
+        color: #d4a843;
+        margin: 0 0 8px 0;
+      }
+      .insight-box p {
+        margin: 0;
+        color: #333;
+      }
+      .btn {
+        display: inline-block;
+        background: linear-gradient(135deg, #d4a843, #f0cc6e);
+        color: #0a0e18;
+        padding: 12px 30px;
+        border-radius: 999px;
+        text-decoration: none;
+        font-weight: 700;
+        margin-top: 20px;
+      }
+      .btn:hover {
+        filter: brightness(1.05);
+      }
+      .footer {
+        text-align: center;
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid #ddd;
+        font-size: 12px;
+        color: #5a6a82;
+      }
+      .footer a {
+        color: #d4a843;
+        text-decoration: none;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
-        <!-- Header -->
-        <div class="header">
-            <h1><i class="fa-solid fa-money-bill-wave"></i> Weekly Financial Digest</h1>
-            <p>Your weekly financial health checkup — {{ date }}</p>
-        </div>
+      <!-- Header -->
+      <div class="header">
+        <h1>
+          <i class="fa-solid fa-money-bill-wave"></i> Weekly Financial Digest
+        </h1>
+        <p>Your weekly financial health checkup — {{ date }}</p>
+      </div>
 
-        <!-- Stats Grid -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="label"><i class="fa-solid fa-calculator"></i> Total Spend</div>
-                <div class="value">{{ total_spend }}</div>
-                <div class="change {{ spend_change_class }}">{{ spend_change }}% vs last week</div>
-            </div>
-            <div class="stat-card">
-                <div class="label"><i class="fa-solid fa-gem"></i> Net Worth</div>
-                <div class="value">{{ net_worth }}</div>
-                <div class="change positive">{{ net_worth_change }}% this week</div>
-            </div>
-            <div class="stat-card">
-                <div class="label"><i class="fa-solid fa-wallet"></i> Budget Health</div>
-                <div class="value">{{ budget_health }}</div>
-                <div class="change {{ budget_health_class }}">{{ budget_health_text }}</div>
-            </div>
-            <div class="stat-card">
-                <div class="label"><i class="fa-solid fa-tags"></i> Top Category</div>
-                <div class="value">{{ top_category }}</div>
-                <div class="change">{{ top_category_amount }}</div>
-            </div>
+      <!-- Stats Grid -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="label">
+            <i class="fa-solid fa-calculator"></i> Total Spend
+          </div>
+          <div class="value">{{ total_spend }}</div>
+          <div class="change {{ spend_change_class }}">
+            {{ spend_change }}% vs last week
+          </div>
         </div>
-
-        <!-- Top Spending Categories -->
-        <h3><i class="fa-solid fa-list"></i> Top 3 Spending Categories</h3>
-        <ul style="list-style: none; padding: 0;">
-            {% for category, amount in top_categories.items() %}
-            <li style="padding: 8px 12px; background: #f8f9fa; margin: 5px 0; border-radius: 8px; display: flex; justify-content: space-between;">
-                <span>{{ category }}</span>
-                <span style="font-weight: 700;">{{ amount }}</span>
-            </li>
-            {% endfor %}
-        </ul>
-
-        <!-- AI Insight -->
-        <div class="insight-box">
-            <h3><i class="fa-solid fa-lightbulb"></i> AI Insight</h3>
-            <p>{{ ai_insight }}</p>
+        <div class="stat-card">
+          <div class="label"><i class="fa-solid fa-gem"></i> Net Worth</div>
+          <div class="value">{{ net_worth }}</div>
+          <div class="change positive">{{ net_worth_change }}% this week</div>
         </div>
-
-        <!-- Call to Action -->
-        <div style="text-align: center;">
-            <a href="{{ dashboard_url }}" class="btn"><i class="fa-solid fa-chart-pie"></i> View Full Dashboard →</a>
+        <div class="stat-card">
+          <div class="label">
+            <i class="fa-solid fa-wallet"></i> Budget Health
+          </div>
+          <div class="value">{{ budget_health }}</div>
+          <div class="change {{ budget_health_class }}">
+            {{ budget_health_text }}
+          </div>
         </div>
-
-        <!-- Footer -->
-        <div class="footer">
-            <p>
-                You're receiving this because you opted in for weekly financial digests.
-                <br>
-                <a href="{{ opt_out_url }}">Unsubscribe</a> · 
-                <a href="{{ dashboard_url }}">Dashboard</a>
-            </p>
+        <div class="stat-card">
+          <div class="label"><i class="fa-solid fa-tags"></i> Top Category</div>
+          <div class="value">{{ top_category }}</div>
+          <div class="change">{{ top_category_amount }}</div>
         </div>
+      </div>
+
+      <!-- Top Spending Categories -->
+      <h3><i class="fa-solid fa-list"></i> Top 3 Spending Categories</h3>
+      <ul style="list-style: none; padding: 0">
+        {% for category, amount in top_categories.items() %}
+        <li
+          style="
+            padding: 8px 12px;
+            background: #f8f9fa;
+            margin: 5px 0;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+          "
+        >
+          <span>{{ category }}</span>
+          <span style="font-weight: 700">{{ amount }}</span>
+        </li>
+        {% endfor %}
+      </ul>
+
+      <!-- AI Insight -->
+      <div class="insight-box">
+        <h3><i class="fa-solid fa-lightbulb"></i> AI Insight</h3>
+        <p>{{ ai_insight }}</p>
+      </div>
+
+      <!-- Call to Action -->
+      <div style="text-align: center">
+        <a href="{{ dashboard_url }}" class="btn"
+          ><i class="fa-solid fa-chart-pie"></i> View Full Dashboard →</a
+        >
+      </div>
+
+      <!-- Footer -->
+      <div class="footer">
+        <p>
+          You're receiving this because you opted in for weekly financial
+          digests.
+          <br />
+          <a href="{{ opt_out_url }}">Unsubscribe</a> ·
+          <a href="{{ dashboard_url }}">Dashboard</a>
+        </p>
+      </div>
     </div>
-</body>
+  </body>
 </html>

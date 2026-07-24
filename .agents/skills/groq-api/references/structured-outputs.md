@@ -21,13 +21,13 @@ Guarantee model responses conform to your JSON schema for reliable, type-safe da
 
 Structured Outputs ensures model responses conform to your provided JSON Schema. Two modes available:
 
-| Feature | Strict Mode | Best-effort Mode |
-|---------|-------------|------------------|
-| Schema adherence | 100% guaranteed | Generally compliant |
-| Error handling | Never produces invalid JSON | May occasionally error |
-| Requirements | All fields required, `additionalProperties: false` | More flexible |
-| Model support | Limited (GPT-OSS 20B, 120B) | All supported models |
-| Use case | Production apps | Development, prototyping |
+| Feature          | Strict Mode                                        | Best-effort Mode         |
+| ---------------- | -------------------------------------------------- | ------------------------ |
+| Schema adherence | 100% guaranteed                                    | Generally compliant      |
+| Error handling   | Never produces invalid JSON                        | May occasionally error   |
+| Requirements     | All fields required, `additionalProperties: false` | More flexible            |
+| Model support    | Limited (GPT-OSS 20B, 120B)                        | All supported models     |
+| Use case         | Production apps                                    | Development, prototyping |
 
 ---
 
@@ -61,6 +61,7 @@ response = client.chat.completions.create(
 ```
 
 **Requirements:**
+
 - All fields must be in `required` array
 - All objects must set `additionalProperties: false`
 - Use union types with `null` for optional fields
@@ -97,19 +98,19 @@ response = client.chat.completions.create(
 
 ### Strict Mode (`strict: true`)
 
-| Model | Notes |
-|-------|-------|
-| `openai/gpt-oss-20b` | Full strict mode support |
+| Model                 | Notes                    |
+| --------------------- | ------------------------ |
+| `openai/gpt-oss-20b`  | Full strict mode support |
 | `openai/gpt-oss-120b` | Full strict mode support |
 
 ### Best-effort Mode (`strict: false`)
 
-| Model | Notes |
-|-------|-------|
-| `llama-3.3-70b-versatile` | Good schema adherence |
-| `llama-3.1-8b-instant` | Basic support |
+| Model                              | Notes                    |
+| ---------------------------------- | ------------------------ |
+| `llama-3.3-70b-versatile`          | Good schema adherence    |
+| `llama-3.1-8b-instant`             | Basic support            |
 | `moonshotai/kimi-k2-instruct-0905` | Good for complex schemas |
-| `qwen/qwen3-32b` | Good schema adherence |
+| `qwen/qwen3-32b`                   | Good schema adherence    |
 
 ---
 
@@ -151,33 +152,38 @@ print(person)
 ### TypeScript with Zod
 
 ```typescript
-import Groq from "groq-sdk";
-import { z } from "zod";
+import Groq from 'groq-sdk';
+import { z } from 'zod';
 
 const client = new Groq();
 
 const personSchema = z.object({
-    name: z.string(),
-    age: z.number(),
-    email: z.string().nullable()
+  name: z.string(),
+  age: z.number(),
+  email: z.string().nullable(),
 });
 
 const response = await client.chat.completions.create({
-    model: "openai/gpt-oss-20b",
-    messages: [
-        { role: "user", content: "Extract: John Smith is 30 years old, email john@example.com" }
-    ],
-    response_format: {
-        type: "json_schema",
-        json_schema: {
-            name: "person_extraction",
-            strict: true,
-            schema: z.toJSONSchema(personSchema)
-        }
-    }
+  model: 'openai/gpt-oss-20b',
+  messages: [
+    {
+      role: 'user',
+      content: 'Extract: John Smith is 30 years old, email john@example.com',
+    },
+  ],
+  response_format: {
+    type: 'json_schema',
+    json_schema: {
+      name: 'person_extraction',
+      strict: true,
+      schema: z.toJSONSchema(personSchema),
+    },
+  },
 });
 
-const person = personSchema.parse(JSON.parse(response.choices[0].message.content || "{}"));
+const person = personSchema.parse(
+  JSON.parse(response.choices[0].message.content || '{}'),
+);
 console.log(person);
 ```
 
@@ -194,6 +200,7 @@ console.log(person);
 ### Strict Mode Constraints
 
 **All fields required:**
+
 ```json
 {
   "type": "object",
@@ -206,6 +213,7 @@ console.log(person);
 ```
 
 **Closed objects:**
+
 ```json
 {
   "type": "object",
@@ -215,6 +223,7 @@ console.log(person);
 ```
 
 **Optional fields with union types:**
+
 ```json
 {
   "type": "object",
@@ -387,13 +396,13 @@ task = Task.model_validate(json.loads(response_content))
 ### Zod (TypeScript)
 
 ```typescript
-import { z } from "zod";
+import { z } from 'zod';
 
 const taskSchema = z.object({
-    title: z.string(),
-    priority: z.enum(["low", "medium", "high"]),
-    tags: z.array(z.string()),
-    dueDate: z.string().datetime().nullable()
+  title: z.string(),
+  priority: z.enum(['low', 'medium', 'high']),
+  tags: z.array(z.string()),
+  dueDate: z.string().datetime().nullable(),
 });
 
 type Task = z.infer<typeof taskSchema>;
@@ -423,14 +432,15 @@ response = client.chat.completions.create(
 ```
 
 **Requirements:**
+
 - Include explicit JSON instructions in your prompt
 - Outputs are syntactically valid but may not match intended schema
 
-| Feature | Strict Mode | Best-effort Mode | JSON Object Mode |
-|---------|-------------|------------------|------------------|
-| Valid JSON | Always | Usually | Usually |
-| Schema adherence | Guaranteed | Best-effort | None |
-| Requires schema | Yes | Yes | No |
+| Feature          | Strict Mode | Best-effort Mode | JSON Object Mode |
+| ---------------- | ----------- | ---------------- | ---------------- |
+| Valid JSON       | Always      | Usually          | Usually          |
+| Schema adherence | Guaranteed  | Best-effort      | None             |
+| Requires schema  | Yes         | Yes              | No               |
 
 ---
 
@@ -472,22 +482,26 @@ response_format={
 ## Best Practices
 
 **Schema design:**
+
 - Keep schemas focused and minimal
 - Use enums for constrained string values
 - Add descriptions to complex fields
 - Test schemas with representative inputs
 
 **Error handling:**
+
 - With strict mode, trust the output structure
 - With best-effort mode, validate and retry on schema errors
 - Consider fallback to JSON object mode for unsupported models
 
 **Performance:**
+
 - Simpler schemas process faster
 - Strict mode may have slightly higher latency
 - Cache validated Pydantic/Zod schemas
 
 **Common pitfalls:**
+
 - Forcing schema on unrelated inputs causes hallucinations
 - Specify fallback responses for incompatible inputs
 - Structured outputs guarantee format, not semantic accuracy

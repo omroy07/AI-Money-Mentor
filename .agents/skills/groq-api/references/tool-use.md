@@ -4,11 +4,11 @@ Tool use transforms LLMs from conversational interfaces into autonomous agents. 
 
 ## Three Approaches Comparison
 
-| Pattern | You Provide | Execution | Orchestration | API Calls |
-|---------|-------------|-----------|---------------|-----------|
-| **Built-In** | List of enabled tools | Groq servers | Groq manages | Single call |
-| **Remote MCP** | MCP server URL + auth | MCP server | Groq manages | Single call |
-| **Local** | Tool definitions + code | Your code | You manage loop | Multiple (2+) |
+| Pattern        | You Provide             | Execution    | Orchestration   | API Calls     |
+| -------------- | ----------------------- | ------------ | --------------- | ------------- |
+| **Built-In**   | List of enabled tools   | Groq servers | Groq manages    | Single call   |
+| **Remote MCP** | MCP server URL + auth   | MCP server   | Groq manages    | Single call   |
+| **Local**      | Tool definitions + code | Your code    | You manage loop | Multiple (2+) |
 
 ## 1. Built-In Tools (Simplest)
 
@@ -58,7 +58,7 @@ response = client.responses.create(
   "type": "mcp",
   "server_label": "stripe",
   "server_url": "https://mcp.stripe.com",
-  "headers": {"Authorization": "Bearer <TOKEN>"},
+  "headers": { "Authorization": "Bearer <TOKEN>" },
   "server_description": "Create invoices and manage payments",
   "require_approval": "never",
   "allowed_tools": ["create_invoice", "list_customers"]
@@ -203,15 +203,15 @@ for tc in response.choices[0].message.tool_calls:
 
 ## Model Support
 
-| Model | Local | Parallel | JSON Mode | Built-In |
-|-------|-------|----------|-----------|----------|
-| `moonshotai/kimi-k2-instruct-0905` | Yes | Yes | Yes | No |
-| `openai/gpt-oss-20b` | Yes | No | Yes | Yes |
-| `openai/gpt-oss-120b` | Yes | No | Yes | Yes |
-| `qwen/qwen3-32b` | Yes | Yes | Yes | No |
-| `llama-3.3-70b-versatile` | Yes | Yes | Yes | No |
-| `llama-3.1-8b-instant` | Yes | Yes | Yes | No |
-| `groq/compound` | No | N/A | Yes | Yes |
+| Model                              | Local | Parallel | JSON Mode | Built-In |
+| ---------------------------------- | ----- | -------- | --------- | -------- |
+| `moonshotai/kimi-k2-instruct-0905` | Yes   | Yes      | Yes       | No       |
+| `openai/gpt-oss-20b`               | Yes   | No       | Yes       | Yes      |
+| `openai/gpt-oss-120b`              | Yes   | No       | Yes       | Yes      |
+| `qwen/qwen3-32b`                   | Yes   | Yes      | Yes       | No       |
+| `llama-3.3-70b-versatile`          | Yes   | Yes      | Yes       | No       |
+| `llama-3.1-8b-instant`             | Yes   | Yes      | Yes       | No       |
+| `groq/compound`                    | No    | N/A      | Yes       | Yes      |
 
 ## Streaming Tool Calls
 

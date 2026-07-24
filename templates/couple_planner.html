@@ -1,368 +1,667 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-<script>
-// HTML escape helper (issue #517)
-function esc(s){ const d=document.createElement('div'); d.textContent=String(s==null?'':s); return d.innerHTML; }
-</script>
+  <head>
+    <meta charset="UTF-8" />
+    <script>
+      // HTML escape helper (issue #517)
+      function esc(s) {
+        const d = document.createElement('div');
+        d.textContent = String(s == null ? '' : s);
+        return d.innerHTML;
+      }
+    </script>
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Couple Finance Planner - AI Money Mentor</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body { background: #070b12; color: #eef0f5; font-family: 'Instrument Sans', sans-serif; }
-        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
-        .card { background: rgba(15,22,38,0.96); border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; padding: 24px; margin-bottom: 20px; }
-        .btn-gold { background: linear-gradient(135deg, #f3d687, #d4a843); color: #0a0e18; border: none; padding: 10px 24px; border-radius: 999px; font-weight: 700; }
-        .btn-gold:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(212,168,67,0.3); }
-        .btn-danger { background: linear-gradient(135deg, #e05252, #c0392b); color: white; border: none; }
-        .btn-success { background: linear-gradient(135deg, #2ecc8a, #27ae60); color: white; border: none; }
-        .btn-outline { background: transparent; border: 1px solid rgba(255,255,255,0.1); color: #eef0f5; }
-        .btn-outline:hover { background: rgba(255,255,255,0.05); }
-        .text-gold { color: #d4a843; }
-        .text-muted { color: #5a6a82; }
-        .form-control { background: rgba(17,26,46,0.9); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; color: #eef0f5; }
-        .form-control:focus { background: rgba(17,26,46,0.95); border-color: #d4a843; color: #eef0f5; box-shadow: 0 0 0 3px rgba(212,168,67,0.1); }
-        .form-select { background: rgba(17,26,46,0.9); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; color: #eef0f5; }
-        .stat-card { background: rgba(255,255,255,0.03); border-radius: 14px; padding: 20px; text-align: center; border: 1px solid rgba(255,255,255,0.06); }
-        .stat-card .value { font-size: 28px; font-weight: 800; }
-        .stat-card .label { font-size: 12px; color: #5a6a82; text-transform: uppercase; }
-        .goal-progress { height: 8px; background: rgba(255,255,255,0.06); border-radius: 4px; overflow: hidden; }
-        .goal-progress .fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, #d4a843, #14c8bf); transition: width 0.5s; }
-        .split-badge { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 11px; }
-        .split-equal { background: rgba(46,204,138,0.15); color: #2ecc8a; }
-        .split-percentage { background: rgba(212,168,67,0.15); color: #d4a843; }
-        .split-custom { background: rgba(124,114,224,0.15); color: #7c72e0; }
-        .badge-active { background: rgba(46,204,138,0.15); color: #2ecc8a; }
-        .badge-completed { background: rgba(212,168,67,0.15); color: #d4a843; }
-        .badge-pending { background: rgba(243,156,18,0.15); color: #f39c12; }
-        .table-dark { background: transparent; }
-        .table-dark th { border-bottom: 1px solid rgba(255,255,255,0.06); color: #5a6a82; text-transform: uppercase; font-size: 11px; }
-        .table-dark td { border-bottom: 1px solid rgba(255,255,255,0.04); }
-        .alert-box { padding: 12px 16px; border-radius: 12px; margin-bottom: 10px; border-left: 4px solid; }
-        .alert-box.info { background: rgba(20,200,191,0.08); border-left-color: #14c8bf; }
-        .alert-box.success { background: rgba(46,204,138,0.08); border-left-color: #2ecc8a; }
-        .alert-box.warning { background: rgba(243,156,18,0.08); border-left-color: #f39c12; }
-        .alert-box.danger { background: rgba(224,82,82,0.08); border-left-color: #e05252; }
-        .modal-content { background: rgba(15,22,38,0.98); border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; }
-        .modal-header { border-bottom: 1px solid rgba(255,255,255,0.06); }
-        .modal-footer { border-top: 1px solid rgba(255,255,255,0.06); }
-        .close-btn { color: #eef0f5; background: transparent; border: none; font-size: 24px; cursor: pointer; }
+      body {
+        background: #070b12;
+        color: #eef0f5;
+        font-family: 'Instrument Sans', sans-serif;
+      }
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .card {
+        background: rgba(15, 22, 38, 0.96);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 18px;
+        padding: 24px;
+        margin-bottom: 20px;
+      }
+      .btn-gold {
+        background: linear-gradient(135deg, #f3d687, #d4a843);
+        color: #0a0e18;
+        border: none;
+        padding: 10px 24px;
+        border-radius: 999px;
+        font-weight: 700;
+      }
+      .btn-gold:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(212, 168, 67, 0.3);
+      }
+      .btn-danger {
+        background: linear-gradient(135deg, #e05252, #c0392b);
+        color: white;
+        border: none;
+      }
+      .btn-success {
+        background: linear-gradient(135deg, #2ecc8a, #27ae60);
+        color: white;
+        border: none;
+      }
+      .btn-outline {
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #eef0f5;
+      }
+      .btn-outline:hover {
+        background: rgba(255, 255, 255, 0.05);
+      }
+      .text-gold {
+        color: #d4a843;
+      }
+      .text-muted {
+        color: #5a6a82;
+      }
+      .form-control {
+        background: rgba(17, 26, 46, 0.9);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 14px;
+        color: #eef0f5;
+      }
+      .form-control:focus {
+        background: rgba(17, 26, 46, 0.95);
+        border-color: #d4a843;
+        color: #eef0f5;
+        box-shadow: 0 0 0 3px rgba(212, 168, 67, 0.1);
+      }
+      .form-select {
+        background: rgba(17, 26, 46, 0.9);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 14px;
+        color: #eef0f5;
+      }
+      .stat-card {
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 14px;
+        padding: 20px;
+        text-align: center;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+      }
+      .stat-card .value {
+        font-size: 28px;
+        font-weight: 800;
+      }
+      .stat-card .label {
+        font-size: 12px;
+        color: #5a6a82;
+        text-transform: uppercase;
+      }
+      .goal-progress {
+        height: 8px;
+        background: rgba(255, 255, 255, 0.06);
+        border-radius: 4px;
+        overflow: hidden;
+      }
+      .goal-progress .fill {
+        height: 100%;
+        border-radius: 4px;
+        background: linear-gradient(90deg, #d4a843, #14c8bf);
+        transition: width 0.5s;
+      }
+      .split-badge {
+        display: inline-block;
+        padding: 2px 10px;
+        border-radius: 12px;
+        font-size: 11px;
+      }
+      .split-equal {
+        background: rgba(46, 204, 138, 0.15);
+        color: #2ecc8a;
+      }
+      .split-percentage {
+        background: rgba(212, 168, 67, 0.15);
+        color: #d4a843;
+      }
+      .split-custom {
+        background: rgba(124, 114, 224, 0.15);
+        color: #7c72e0;
+      }
+      .badge-active {
+        background: rgba(46, 204, 138, 0.15);
+        color: #2ecc8a;
+      }
+      .badge-completed {
+        background: rgba(212, 168, 67, 0.15);
+        color: #d4a843;
+      }
+      .badge-pending {
+        background: rgba(243, 156, 18, 0.15);
+        color: #f39c12;
+      }
+      .table-dark {
+        background: transparent;
+      }
+      .table-dark th {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        color: #5a6a82;
+        text-transform: uppercase;
+        font-size: 11px;
+      }
+      .table-dark td {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      }
+      .alert-box {
+        padding: 12px 16px;
+        border-radius: 12px;
+        margin-bottom: 10px;
+        border-left: 4px solid;
+      }
+      .alert-box.info {
+        background: rgba(20, 200, 191, 0.08);
+        border-left-color: #14c8bf;
+      }
+      .alert-box.success {
+        background: rgba(46, 204, 138, 0.08);
+        border-left-color: #2ecc8a;
+      }
+      .alert-box.warning {
+        background: rgba(243, 156, 18, 0.08);
+        border-left-color: #f39c12;
+      }
+      .alert-box.danger {
+        background: rgba(224, 82, 82, 0.08);
+        border-left-color: #e05252;
+      }
+      .modal-content {
+        background: rgba(15, 22, 38, 0.98);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 18px;
+      }
+      .modal-header {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      }
+      .modal-footer {
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
+      }
+      .close-btn {
+        color: #eef0f5;
+        background: transparent;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <div>
-                <h1 class="text-gold"><i class="fa-solid fa-user-group"></i> Couple Finance Planner</h1>
-                <p class="text-muted">Manage finances together with your partner</p>
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h1 class="text-gold">
+            <i class="fa-solid fa-user-group"></i> Couple Finance Planner
+          </h1>
+          <p class="text-muted">Manage finances together with your partner</p>
+        </div>
+        <a href="/" class="btn btn-gold">← Back to Dashboard</a>
+      </div>
+
+      <!-- Status / Invite Section -->
+      <div id="statusSection"></div>
+
+      <!-- Dashboard -->
+      <div id="dashboardSection" style="display: none">
+        <!-- Stats -->
+        <div class="row mb-4" id="statsRow">
+          <div class="col-md-3">
+            <div class="stat-card">
+              <div class="label">Combined Net Worth</div>
+              <div class="value text-gold" id="combinedNetWorth">₹0</div>
             </div>
-            <a href="/" class="btn btn-gold">← Back to Dashboard</a>
+          </div>
+          <div class="col-md-3">
+            <div class="stat-card">
+              <div class="label">Total Shared Goals</div>
+              <div class="value" id="totalGoals">0</div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="stat-card">
+              <div class="label">Pending Expenses</div>
+              <div class="value" id="pendingExpenses">0</div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="stat-card">
+              <div class="label">Alerts</div>
+              <div class="value" id="alertCount">0</div>
+            </div>
+          </div>
         </div>
 
-        <!-- Status / Invite Section -->
-        <div id="statusSection"></div>
+        <!-- Tabs -->
+        <ul
+          class="nav nav-tabs mb-4"
+          style="border-color: rgba(255, 255, 255, 0.06)"
+        >
+          <li class="nav-item">
+            <button
+              class="nav-link active"
+              data-tab="overview"
+              style="
+                color: #d4a843;
+                background: transparent;
+                border: none;
+                border-bottom: 2px solid #d4a843;
+              "
+            >
+              📊 Overview
+            </button>
+          </li>
+          <li class="nav-item">
+            <button
+              class="nav-link"
+              data-tab="goals"
+              style="color: #5a6a82; background: transparent; border: none"
+              onclick="switchTab('goals')"
+            >
+              🎯 Shared Goals
+            </button>
+          </li>
+          <li class="nav-item">
+            <button
+              class="nav-link"
+              data-tab="expenses"
+              style="color: #5a6a82; background: transparent; border: none"
+              onclick="switchTab('expenses')"
+            >
+              💳 Split Expenses
+            </button>
+          </li>
+          <li class="nav-item">
+            <button
+              class="nav-link"
+              data-tab="budget"
+              style="color: #5a6a82; background: transparent; border: none"
+              onclick="switchTab('budget')"
+            >
+              📊 Joint Budget
+            </button>
+          </li>
+          <li class="nav-item">
+            <button
+              class="nav-link"
+              data-tab="tax"
+              style="color: #5a6a82; background: transparent; border: none"
+              onclick="switchTab('tax')"
+            >
+              💸 Tax Optimization
+            </button>
+          </li>
+        </ul>
 
-        <!-- Dashboard -->
-        <div id="dashboardSection" style="display:none;">
-            <!-- Stats -->
-            <div class="row mb-4" id="statsRow">
-                <div class="col-md-3">
-                    <div class="stat-card">
-                        <div class="label">Combined Net Worth</div>
-                        <div class="value text-gold" id="combinedNetWorth">₹0</div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="stat-card">
-                        <div class="label">Total Shared Goals</div>
-                        <div class="value" id="totalGoals">0</div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="stat-card">
-                        <div class="label">Pending Expenses</div>
-                        <div class="value" id="pendingExpenses">0</div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="stat-card">
-                        <div class="label">Alerts</div>
-                        <div class="value" id="alertCount">0</div>
-                    </div>
-                </div>
+        <!-- Overview Tab -->
+        <div id="tab-overview" class="tab-content">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="card">
+                <h5><i class="fa-solid fa-heart"></i> Partner Info</h5>
+                <div id="partnerInfo"></div>
+              </div>
             </div>
-
-            <!-- Tabs -->
-            <ul class="nav nav-tabs mb-4" style="border-color: rgba(255,255,255,0.06);">
-                <li class="nav-item">
-                    <button class="nav-link active" data-tab="overview" style="color: #d4a843; background: transparent; border: none; border-bottom: 2px solid #d4a843;">📊 Overview</button>
-                </li>
-                <li class="nav-item">
-                    <button class="nav-link" data-tab="goals" style="color: #5a6a82; background: transparent; border: none;" onclick="switchTab('goals')">🎯 Shared Goals</button>
-                </li>
-                <li class="nav-item">
-                    <button class="nav-link" data-tab="expenses" style="color: #5a6a82; background: transparent; border: none;" onclick="switchTab('expenses')">💳 Split Expenses</button>
-                </li>
-                <li class="nav-item">
-                    <button class="nav-link" data-tab="budget" style="color: #5a6a82; background: transparent; border: none;" onclick="switchTab('budget')">📊 Joint Budget</button>
-                </li>
-                <li class="nav-item">
-                    <button class="nav-link" data-tab="tax" style="color: #5a6a82; background: transparent; border: none;" onclick="switchTab('tax')">💸 Tax Optimization</button>
-                </li>
-            </ul>
-
-            <!-- Overview Tab -->
-            <div id="tab-overview" class="tab-content">
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="card">
-                            <h5><i class="fa-solid fa-heart"></i>  Partner Info</h5>
-                            <div id="partnerInfo"></div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="card">
-                            <h5><i class="fa-solid fa-gem"></i> Combined Net Worth</h5>
-                            <canvas id="netWorthChart" height="200"></canvas>
-                        </div>
-                    </div>
-                </div>
-                <div class="card">
-                    <h5><i class="fa-solid fa-chart-line"></i> Recent Activity</h5>
-                    <div id="recentActivity"><div class="text-muted">No activity yet</div></div>
-                </div>
+            <div class="col-md-6">
+              <div class="card">
+                <h5><i class="fa-solid fa-gem"></i> Combined Net Worth</h5>
+                <canvas id="netWorthChart" height="200"></canvas>
+              </div>
             </div>
-
-            <!-- Goals Tab -->
-            <div id="tab-goals" class="tab-content" style="display:none;">
-                <div class="card">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h5><i class="fa-solid fa-bullseye"></i> Shared Goals</h5>
-                        <button class="btn btn-gold btn-sm" onclick="showCreateGoal()">+ New Goal</button>
-                    </div>
-                    <div id="goalsList"></div>
-                </div>
+          </div>
+          <div class="card">
+            <h5><i class="fa-solid fa-chart-line"></i> Recent Activity</h5>
+            <div id="recentActivity">
+              <div class="text-muted">No activity yet</div>
             </div>
-
-            <!-- Expenses Tab -->
-            <div id="tab-expenses" class="tab-content" style="display:none;">
-                <div class="card">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h5><i class="fa-solid fa-code-branch"></i> Split Expenses</h5>
-                        <button class="btn btn-gold btn-sm" onclick="showAddExpense()">+ Add Expense</button>
-                    </div>
-                    <div id="expenseSummary" class="row mb-3"></div>
-                    <div id="expensesList"></div>
-                </div>
-            </div>
-
-            <!-- Budget Tab -->
-            <div id="tab-budget" class="tab-content" style="display:none;">
-                <div class="card">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h5><i class="fa-solid fa-piggy-bank"></i> Joint Budget</h5>
-                        <button class="btn btn-gold btn-sm" onclick="showAddBudget()">+ Add Budget</button>
-                    </div>
-                    <div id="budgetList"></div>
-                </div>
-            </div>
-
-            <!-- Tax Tab -->
-            <div id="tab-tax" class="tab-content" style="display:none;">
-                <div class="card">
-                    <h5><i class="fa-solid fa-sliders"></i> Tax Optimization for Couples</h5>
-                    <form id="taxForm" class="mb-3">
-                        <div class="row">
-                            <div class="col-md-5">
-                                <label class="form-label text-muted">Partner 1 Income (₹)</label>
-                                <input type="number" class="form-control" id="taxIncome1" placeholder="e.g. 800000">
-                            </div>
-                            <div class="col-md-5">
-                                <label class="form-label text-muted">Partner 2 Income (₹)</label>
-                                <input type="number" class="form-control" id="taxIncome2" placeholder="e.g. 600000">
-                            </div>
-                            <div class="col-md-2 d-flex align-items-end">
-                                <button type="submit" class="btn btn-gold w-100">Analyze</button>
-                            </div>
-                        </div>
-                    </form>
-                    <div id="taxResult"></div>
-                </div>
-            </div>
+          </div>
         </div>
+
+        <!-- Goals Tab -->
+        <div id="tab-goals" class="tab-content" style="display: none">
+          <div class="card">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h5><i class="fa-solid fa-bullseye"></i> Shared Goals</h5>
+              <button class="btn btn-gold btn-sm" onclick="showCreateGoal()">
+                + New Goal
+              </button>
+            </div>
+            <div id="goalsList"></div>
+          </div>
+        </div>
+
+        <!-- Expenses Tab -->
+        <div id="tab-expenses" class="tab-content" style="display: none">
+          <div class="card">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h5><i class="fa-solid fa-code-branch"></i> Split Expenses</h5>
+              <button class="btn btn-gold btn-sm" onclick="showAddExpense()">
+                + Add Expense
+              </button>
+            </div>
+            <div id="expenseSummary" class="row mb-3"></div>
+            <div id="expensesList"></div>
+          </div>
+        </div>
+
+        <!-- Budget Tab -->
+        <div id="tab-budget" class="tab-content" style="display: none">
+          <div class="card">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h5><i class="fa-solid fa-piggy-bank"></i> Joint Budget</h5>
+              <button class="btn btn-gold btn-sm" onclick="showAddBudget()">
+                + Add Budget
+              </button>
+            </div>
+            <div id="budgetList"></div>
+          </div>
+        </div>
+
+        <!-- Tax Tab -->
+        <div id="tab-tax" class="tab-content" style="display: none">
+          <div class="card">
+            <h5>
+              <i class="fa-solid fa-sliders"></i> Tax Optimization for Couples
+            </h5>
+            <form id="taxForm" class="mb-3">
+              <div class="row">
+                <div class="col-md-5">
+                  <label class="form-label text-muted"
+                    >Partner 1 Income (₹)</label
+                  >
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="taxIncome1"
+                    placeholder="e.g. 800000"
+                  />
+                </div>
+                <div class="col-md-5">
+                  <label class="form-label text-muted"
+                    >Partner 2 Income (₹)</label
+                  >
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="taxIncome2"
+                    placeholder="e.g. 600000"
+                  />
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                  <button type="submit" class="btn btn-gold w-100">
+                    Analyze
+                  </button>
+                </div>
+              </div>
+            </form>
+            <div id="taxResult"></div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Create Goal Modal -->
     <div class="modal fade" id="goalModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title"><i class="fa-solid fa-bullseye"></i> Create Shared Goal</h5>
-                    <button type="button" class="close-btn" data-bs-dismiss="modal">×</button>
-                </div>
-                <div class="modal-body">
-                    <form id="goalForm">
-                        <div class="mb-3">
-                            <label class="form-label text-muted">Goal Name</label>
-                            <input type="text" class="form-control" id="goalName" placeholder="e.g., Dream Vacation" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label text-muted">Description</label>
-                            <textarea class="form-control" id="goalDesc" placeholder="What's this goal about?"></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label text-muted">Target Amount (₹)</label>
-                            <input type="number" class="form-control" id="goalTarget" placeholder="e.g., 200000" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label text-muted">Deadline</label>
-                            <input type="date" class="form-control" id="goalDeadline">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label text-muted">Priority</label>
-                            <select class="form-select" id="goalPriority">
-                                <option value="LOW">Low</option>
-                                <option value="MEDIUM" selected>Medium</option>
-                                <option value="HIGH">High</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label text-muted">Icon</label>
-                            <select class="form-select" id="goalIcon">
-                                <option value="🏠"><i class="fa-solid fa-house"></i> House</option>
-                                <option value="✈️"><i class="fa-solid fa-plane"></i> Vacation</option>
-                                <option value="💍"><i class="fa-solid fa-ring"></i> Wedding</option>
-                                <option value="🚗"><i class="fa-solid fa-car"></i> Car</option>
-                                <option value="📚"><i class="fa-solid fa-graduation-cap"></i> Education</option>
-                                <option value="🏦"> <i class="fa-solid fa-sack-dollar"></i>Savings</option>
-                                <option value="🎯"><i class="fa-solid fa-bullseye"></i> Goal</option>
-                            </select>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-outline" data-bs-dismiss="modal">Cancel</button>
-                    <button class="btn btn-gold" onclick="createGoal()">Create Goal</button>
-                </div>
-            </div>
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">
+              <i class="fa-solid fa-bullseye"></i> Create Shared Goal
+            </h5>
+            <button type="button" class="close-btn" data-bs-dismiss="modal">
+              ×
+            </button>
+          </div>
+          <div class="modal-body">
+            <form id="goalForm">
+              <div class="mb-3">
+                <label class="form-label text-muted">Goal Name</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="goalName"
+                  placeholder="e.g., Dream Vacation"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label class="form-label text-muted">Description</label>
+                <textarea
+                  class="form-control"
+                  id="goalDesc"
+                  placeholder="What's this goal about?"
+                ></textarea>
+              </div>
+              <div class="mb-3">
+                <label class="form-label text-muted">Target Amount (₹)</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="goalTarget"
+                  placeholder="e.g., 200000"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label class="form-label text-muted">Deadline</label>
+                <input type="date" class="form-control" id="goalDeadline" />
+              </div>
+              <div class="mb-3">
+                <label class="form-label text-muted">Priority</label>
+                <select class="form-select" id="goalPriority">
+                  <option value="LOW">Low</option>
+                  <option value="MEDIUM" selected>Medium</option>
+                  <option value="HIGH">High</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label class="form-label text-muted">Icon</label>
+                <select class="form-select" id="goalIcon">
+                  <option value="🏠">
+                    <i class="fa-solid fa-house"></i> House
+                  </option>
+                  <option value="✈️">
+                    <i class="fa-solid fa-plane"></i> Vacation
+                  </option>
+                  <option value="💍">
+                    <i class="fa-solid fa-ring"></i> Wedding
+                  </option>
+                  <option value="🚗">
+                    <i class="fa-solid fa-car"></i> Car
+                  </option>
+                  <option value="📚">
+                    <i class="fa-solid fa-graduation-cap"></i> Education
+                  </option>
+                  <option value="🏦">
+                    <i class="fa-solid fa-sack-dollar"></i>Savings
+                  </option>
+                  <option value="🎯">
+                    <i class="fa-solid fa-bullseye"></i> Goal
+                  </option>
+                </select>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-outline" data-bs-dismiss="modal">
+              Cancel
+            </button>
+            <button class="btn btn-gold" onclick="createGoal()">
+              Create Goal
+            </button>
+          </div>
         </div>
+      </div>
     </div>
 
     <!-- Add Expense Modal -->
     <div class="modal fade" id="expenseModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title"><i class="fa-solid fa-code-branch"></i> Add Split Expense</h5>
-                    <button type="button" class="close-btn" data-bs-dismiss="modal">×</button>
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">
+              <i class="fa-solid fa-code-branch"></i> Add Split Expense
+            </h5>
+            <button type="button" class="close-btn" data-bs-dismiss="modal">
+              ×
+            </button>
+          </div>
+          <div class="modal-body">
+            <form id="expenseForm">
+              <div class="mb-3">
+                <label class="form-label text-muted">Description</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="expDesc"
+                  placeholder="e.g., Dinner date"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label class="form-label text-muted">Total Amount (₹)</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="expAmount"
+                  placeholder="e.g., 2000"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label class="form-label text-muted">Category</label>
+                <select class="form-select" id="expCategory">
+                  <option value="Food">Food</option>
+                  <option value="Transport">Transport</option>
+                  <option value="Entertainment">Entertainment</option>
+                  <option value="Shopping">Shopping</option>
+                  <option value="Utilities">Utilities</option>
+                  <option value="Rent">Rent</option>
+                  <option value="Healthcare">Healthcare</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label class="form-label text-muted">Split Type</label>
+                <select
+                  class="form-select"
+                  id="expSplitType"
+                  onchange="updateSplitFields()"
+                >
+                  <option value="EQUAL">Equal (50-50)</option>
+                  <option value="PERCENTAGE">Percentage</option>
+                  <option value="CUSTOM">Custom Amount</option>
+                </select>
+              </div>
+              <div id="splitFields">
+                <div class="row">
+                  <div class="col-6">
+                    <label class="form-label text-muted">You Share</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="user1Share"
+                      placeholder="50%"
+                      readonly
+                    />
+                  </div>
+                  <div class="col-6">
+                    <label class="form-label text-muted">Partner Share</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="user2Share"
+                      placeholder="50%"
+                      readonly
+                    />
+                  </div>
                 </div>
-                <div class="modal-body">
-                    <form id="expenseForm">
-                        <div class="mb-3">
-                            <label class="form-label text-muted">Description</label>
-                            <input type="text" class="form-control" id="expDesc" placeholder="e.g., Dinner date" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label text-muted">Total Amount (₹)</label>
-                            <input type="number" class="form-control" id="expAmount" placeholder="e.g., 2000" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label text-muted">Category</label>
-                            <select class="form-select" id="expCategory">
-                                <option value="Food">Food</option>
-                                <option value="Transport">Transport</option>
-                                <option value="Entertainment">Entertainment</option>
-                                <option value="Shopping">Shopping</option>
-                                <option value="Utilities">Utilities</option>
-                                <option value="Rent">Rent</option>
-                                <option value="Healthcare">Healthcare</option>
-                                <option value="Other">Other</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label text-muted">Split Type</label>
-                            <select class="form-select" id="expSplitType" onchange="updateSplitFields()">
-                                <option value="EQUAL">Equal (50-50)</option>
-                                <option value="PERCENTAGE">Percentage</option>
-                                <option value="CUSTOM">Custom Amount</option>
-                            </select>
-                        </div>
-                        <div id="splitFields">
-                            <div class="row">
-                                <div class="col-6">
-                                    <label class="form-label text-muted">You Share</label>
-                                    <input type="text" class="form-control" id="user1Share" placeholder="50%" readonly>
-                                </div>
-                                <div class="col-6">
-                                    <label class="form-label text-muted">Partner Share</label>
-                                    <input type="text" class="form-control" id="user2Share" placeholder="50%" readonly>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label text-muted">Expense Date</label>
-                            <input type="date" class="form-control" id="expDate">
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-outline" data-bs-dismiss="modal">Cancel</button>
-                    <button class="btn btn-gold" onclick="addExpense()">Add Expense</button>
-                </div>
-            </div>
+              </div>
+              <div class="mb-3">
+                <label class="form-label text-muted">Expense Date</label>
+                <input type="date" class="form-control" id="expDate" />
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-outline" data-bs-dismiss="modal">
+              Cancel
+            </button>
+            <button class="btn btn-gold" onclick="addExpense()">
+              Add Expense
+            </button>
+          </div>
         </div>
+      </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        let netWorthChart = null;
-        let currentTab = 'overview';
+      let netWorthChart = null;
+      let currentTab = 'overview';
 
-        // Load couple status on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            loadStatus();
-        });
+      // Load couple status on page load
+      document.addEventListener('DOMContentLoaded', function () {
+        loadStatus();
+      });
 
-        function switchTab(tab) {
-            currentTab = tab;
-            document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
-            document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
-            
-            document.getElementById('tab-' + tab).style.display = 'block';
-            document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
-            
-            if (tab === 'goals') loadGoals();
-            if (tab === 'expenses') loadExpenses();
-            if (tab === 'budget') loadBudget();
-        }
+      function switchTab(tab) {
+        currentTab = tab;
+        document
+          .querySelectorAll('.tab-content')
+          .forEach((el) => (el.style.display = 'none'));
+        document
+          .querySelectorAll('.nav-link')
+          .forEach((el) => el.classList.remove('active'));
 
-        async function loadStatus() {
-            try {
-                const response = await fetch('/api/couple/status');
-                const data = await response.json();
-                
-                if (data.success) {
-                    if (data.has_couple && data.status === 'ACTIVE') {
-                        document.getElementById('statusSection').innerHTML = `
+        document.getElementById('tab-' + tab).style.display = 'block';
+        document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
+
+        if (tab === 'goals') loadGoals();
+        if (tab === 'expenses') loadExpenses();
+        if (tab === 'budget') loadBudget();
+      }
+
+      async function loadStatus() {
+        try {
+          const response = await fetch('/api/couple/status');
+          const data = await response.json();
+
+          if (data.success) {
+            if (data.has_couple && data.status === 'ACTIVE') {
+              document.getElementById('statusSection').innerHTML = `
                             <div class="alert-box success">
                                 <i class="fa-solid fa-circle-check"></i> You are linked with <strong>${data.partner_username || 'your partner'}</strong>
                                 <button class="btn btn-sm btn-danger float-end" onclick="unlinkCouple()">Unlink</button>
                             </div>
                         `;
-                        document.getElementById('dashboardSection').style.display = 'block';
-                        loadDashboard();
-                    } else if (data.has_couple && data.status === 'PENDING') {
-                        document.getElementById('statusSection').innerHTML = `
+              document.getElementById('dashboardSection').style.display =
+                'block';
+              loadDashboard();
+            } else if (data.has_couple && data.status === 'PENDING') {
+              document.getElementById('statusSection').innerHTML = `
                             <div class="alert-box warning">
                                 <i class="fa-solid fa-paper-plane"></i> Invitation sent to ${data.partner_email || 'your partner'}. Waiting for acceptance...
                                 <button class="btn btn-sm btn-danger float-end" onclick="unlinkCouple()">Cancel</button>
                             </div>
                         `;
-                    } else {
-                        document.getElementById('statusSection').innerHTML = `
+            } else {
+              document.getElementById('statusSection').innerHTML = `
                             <div class="card">
                                 <h5><i class="fa-solid fa-user-group"></i> Link with Your Partner</h5>
                                 <p class="text-muted">Enter your partner's email to start managing finances together</p>
@@ -377,72 +676,82 @@ function esc(s){ const d=document.createElement('div'); d.textContent=String(s==
                                 <div id="inviteResult" class="mt-3"></div>
                             </div>
                         `;
-                        
-                        document.getElementById('inviteForm').addEventListener('submit', async function(e) {
-                            e.preventDefault();
-                            const email = document.getElementById('partnerEmail').value;
-                            try {
-                                const response = await fetch('/api/couple/invite', {
-                                    method: 'POST',
-                                    headers: { 'Content-Type': 'application/json' },
-                                    body: JSON.stringify({ email })
-                                });
-                                const result = await response.json();
-                                if (result.success) {
-                                    document.getElementById('inviteResult').innerHTML = `
+
+              document
+                .getElementById('inviteForm')
+                .addEventListener('submit', async function (e) {
+                  e.preventDefault();
+                  const email = document.getElementById('partnerEmail').value;
+                  try {
+                    const response = await fetch('/api/couple/invite', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ email }),
+                    });
+                    const result = await response.json();
+                    if (result.success) {
+                      document.getElementById('inviteResult').innerHTML = `
                                         <div class="alert-box success"><i class="fa-solid fa-circle-check"></i> Invitation sent to ${email}</div>
                                     `;
-                                    loadStatus();
-                                } else {
-                                    document.getElementById('inviteResult').innerHTML = `
+                      loadStatus();
+                    } else {
+                      document.getElementById('inviteResult').innerHTML = `
                                         <div class="alert-box danger"><i class="fa-solid fa-circle-xmark"></i> ${esc(result.error)}</div>
                                     `;
-                                }
-                            } catch (error) {
-                                document.getElementById('inviteResult').innerHTML = `
+                    }
+                  } catch (error) {
+                    document.getElementById('inviteResult').innerHTML = `
                                     <div class="alert-box danger"><i class="fa-solid fa-circle-xmark"></i> ${esc(error.message)}</div>
                                 `;
-                            }
-                        });
-                    }
-                }
-            } catch (error) {
-                console.error('Error loading status:', error);
-            }
-        }
-
-        async function unlinkCouple() {
-            if (!confirm('Are you sure you want to unlink from your partner?')) return;
-            
-            try {
-                const response = await fetch('/api/couple/unlink', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' }
+                  }
                 });
-                const data = await response.json();
-                if (data.success) {
-                    loadStatus();
-                    document.getElementById('dashboardSection').style.display = 'none';
-                }
-            } catch (error) {
-                console.error('Error unlinking:', error);
             }
+          }
+        } catch (error) {
+          console.error('Error loading status:', error);
         }
+      }
 
-        async function loadDashboard() {
-            try {
-                const response = await fetch('/api/couple/dashboard');
-                const data = await response.json();
-                
-                if (data.success && data.has_couple) {
-                    // Update stats
-                    document.getElementById('combinedNetWorth').textContent = '₹' + (data.combined_net_worth?.combined_net_worth || 0).toLocaleString();
-                    document.getElementById('totalGoals').textContent = data.goals?.length || 0;
-                    document.getElementById('pendingExpenses').textContent = data.expense_summary?.total_pending || 0;
-                    document.getElementById('alertCount').textContent = data.alert_count || 0;
-                    
-                    // Partner info
-                    document.getElementById('partnerInfo').innerHTML = `
+      async function unlinkCouple() {
+        if (!confirm('Are you sure you want to unlink from your partner?'))
+          return;
+
+        try {
+          const response = await fetch('/api/couple/unlink', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+          });
+          const data = await response.json();
+          if (data.success) {
+            loadStatus();
+            document.getElementById('dashboardSection').style.display = 'none';
+          }
+        } catch (error) {
+          console.error('Error unlinking:', error);
+        }
+      }
+
+      async function loadDashboard() {
+        try {
+          const response = await fetch('/api/couple/dashboard');
+          const data = await response.json();
+
+          if (data.success && data.has_couple) {
+            // Update stats
+            document.getElementById('combinedNetWorth').textContent =
+              '₹' +
+              (
+                data.combined_net_worth?.combined_net_worth || 0
+              ).toLocaleString();
+            document.getElementById('totalGoals').textContent =
+              data.goals?.length || 0;
+            document.getElementById('pendingExpenses').textContent =
+              data.expense_summary?.total_pending || 0;
+            document.getElementById('alertCount').textContent =
+              data.alert_count || 0;
+
+            // Partner info
+            document.getElementById('partnerInfo').innerHTML = `
                         <div class="row">
                             <div class="col-6">
                                 <div class="stat-card">
@@ -458,91 +767,99 @@ function esc(s){ const d=document.createElement('div'); d.textContent=String(s==
                             </div>
                         </div>
                     `;
-                    
-                    // Render net worth chart
-                    renderNetWorthChart(data.combined_net_worth);
-                    
-                    // Recent activity
-                    renderRecentActivity(data);
-                }
-            } catch (error) {
-                console.error('Error loading dashboard:', error);
-            }
+
+            // Render net worth chart
+            renderNetWorthChart(data.combined_net_worth);
+
+            // Recent activity
+            renderRecentActivity(data);
+          }
+        } catch (error) {
+          console.error('Error loading dashboard:', error);
+        }
+      }
+
+      function renderNetWorthChart(data) {
+        const ctx = document.getElementById('netWorthChart').getContext('2d');
+        if (netWorthChart) netWorthChart.destroy();
+
+        netWorthChart = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: ['You', 'Partner', 'Combined'],
+            datasets: [
+              {
+                label: 'Net Worth (₹)',
+                data: [
+                  data?.user1_net_worth || 0,
+                  data?.user2_net_worth || 0,
+                  data?.combined_net_worth || 0,
+                ],
+                backgroundColor: ['#d4a843', '#14c8bf', '#2ecc8a'],
+                borderRadius: 6,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+              y: {
+                ticks: { color: '#5a6a82' },
+                grid: { color: 'rgba(255,255,255,0.05)' },
+              },
+              x: { ticks: { color: '#5a6a82' }, grid: { display: false } },
+            },
+          },
+        });
+      }
+
+      function renderRecentActivity(data) {
+        const container = document.getElementById('recentActivity');
+        let html = '';
+
+        // Show some goals
+        if (data.goals && data.goals.length > 0) {
+          html += `<div class="alert-box info"><i class="fa-solid fa-bullseye"></i> ${data.goals.length} shared goals active</div>`;
         }
 
-        function renderNetWorthChart(data) {
-            const ctx = document.getElementById('netWorthChart').getContext('2d');
-            if (netWorthChart) netWorthChart.destroy();
-            
-            netWorthChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: ['You', 'Partner', 'Combined'],
-                    datasets: [{
-                        label: 'Net Worth (₹)',
-                        data: [
-                            data?.user1_net_worth || 0,
-                            data?.user2_net_worth || 0,
-                            data?.combined_net_worth || 0
-                        ],
-                        backgroundColor: ['#d4a843', '#14c8bf', '#2ecc8a'],
-                        borderRadius: 6
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        y: { ticks: { color: '#5a6a82' }, grid: { color: 'rgba(255,255,255,0.05)' } },
-                        x: { ticks: { color: '#5a6a82' }, grid: { display: false } }
-                    }
-                }
-            });
+        // Show some expenses
+        if (data.expense_summary) {
+          html += `<div class="alert-box success"><i class="fa-solid fa-wallet"></i> ${data.expense_summary.total_expenses || 0} total expenses</div>`;
         }
 
-        function renderRecentActivity(data) {
-            const container = document.getElementById('recentActivity');
-            let html = '';
-            
-            // Show some goals
-            if (data.goals && data.goals.length > 0) {
-                html += `<div class="alert-box info"><i class="fa-solid fa-bullseye"></i> ${data.goals.length} shared goals active</div>`;
-            }
-            
-            // Show some expenses
-            if (data.expense_summary) {
-                html += `<div class="alert-box success"><i class="fa-solid fa-wallet"></i> ${data.expense_summary.total_expenses || 0} total expenses</div>`;
-            }
-            
-            // Show tax plan
-            if (data.tax_plan) {
-                html += `<div class="alert-box info"><i class="fa-solid fa-sliders"></i> Tax optimization available</div>`;
-            }
-            
-            container.innerHTML = html || '<div class="text-muted">No activity yet</div>';
+        // Show tax plan
+        if (data.tax_plan) {
+          html += `<div class="alert-box info"><i class="fa-solid fa-sliders"></i> Tax optimization available</div>`;
         }
 
-        // ============================================
-        // GOALS
-        // ============================================
-        
-        async function loadGoals() {
-            try {
-                const response = await fetch('/api/couple/goals');
-                const data = await response.json();
-                
-                const container = document.getElementById('goalsList');
-                if (!data.goals || data.goals.length === 0) {
-                    container.innerHTML = '<div class="text-muted text-center py-4">No shared goals yet. Create one!</div>';
-                    return;
-                }
-                
-                let html = '<div class="row">';
-                data.goals.forEach(goal => {
-                    const progress = goal.progress || 0;
-                    const statusClass = goal.status === 'COMPLETED' ? 'badge-completed' : 'badge-active';
-                    html += `
+        container.innerHTML =
+          html || '<div class="text-muted">No activity yet</div>';
+      }
+
+      // ============================================
+      // GOALS
+      // ============================================
+
+      async function loadGoals() {
+        try {
+          const response = await fetch('/api/couple/goals');
+          const data = await response.json();
+
+          const container = document.getElementById('goalsList');
+          if (!data.goals || data.goals.length === 0) {
+            container.innerHTML =
+              '<div class="text-muted text-center py-4">No shared goals yet. Create one!</div>';
+            return;
+          }
+
+          let html = '<div class="row">';
+          data.goals.forEach((goal) => {
+            const progress = goal.progress || 0;
+            const statusClass =
+              goal.status === 'COMPLETED' ? 'badge-completed' : 'badge-active';
+            html += `
                         <div class="col-md-6">
                             <div class="card" style="margin-bottom:15px;">
                                 <div class="d-flex justify-content-between align-items-start">
@@ -572,80 +889,84 @@ function esc(s){ const d=document.createElement('div'); d.textContent=String(s==
                             </div>
                         </div>
                     `;
-                });
-                html += '</div>';
-                container.innerHTML = html;
-            } catch (error) {
-                console.error('Error loading goals:', error);
+          });
+          html += '</div>';
+          container.innerHTML = html;
+        } catch (error) {
+          console.error('Error loading goals:', error);
+        }
+      }
+
+      function showCreateGoal() {
+        const modal = new bootstrap.Modal(document.getElementById('goalModal'));
+        document.getElementById('goalForm').reset();
+        modal.show();
+      }
+
+      async function createGoal() {
+        const data = {
+          name: document.getElementById('goalName').value,
+          description: document.getElementById('goalDesc').value,
+          target_amount: parseFloat(
+            document.getElementById('goalTarget').value,
+          ),
+          deadline: document.getElementById('goalDeadline').value,
+          priority: document.getElementById('goalPriority').value,
+          icon: document.getElementById('goalIcon').value,
+        };
+
+        try {
+          const response = await fetch('/api/couple/goals', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+          });
+          const result = await response.json();
+          if (result.success) {
+            bootstrap.Modal.getInstance(
+              document.getElementById('goalModal'),
+            ).hide();
+            loadGoals();
+          } else {
+            alert('Error: ' + result.error);
+          }
+        } catch (error) {
+          alert('Error: ' + error.message);
+        }
+      }
+
+      function showContribute(goalId) {
+        const amount = prompt('Enter contribution amount (₹):');
+        if (!amount) return;
+
+        fetch('/api/couple/goals/contribute', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ goal_id: goalId, amount: parseFloat(amount) }),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.success) {
+              loadGoals();
+            } else {
+              alert('Error: ' + data.error);
             }
-        }
+          })
+          .catch((err) => alert('Error: ' + err.message));
+      }
 
-        function showCreateGoal() {
-            const modal = new bootstrap.Modal(document.getElementById('goalModal'));
-            document.getElementById('goalForm').reset();
-            modal.show();
-        }
+      // ============================================
+      // EXPENSES
+      // ============================================
 
-        async function createGoal() {
-            const data = {
-                name: document.getElementById('goalName').value,
-                description: document.getElementById('goalDesc').value,
-                target_amount: parseFloat(document.getElementById('goalTarget').value),
-                deadline: document.getElementById('goalDeadline').value,
-                priority: document.getElementById('goalPriority').value,
-                icon: document.getElementById('goalIcon').value
-            };
-            
-            try {
-                const response = await fetch('/api/couple/goals', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-                const result = await response.json();
-                if (result.success) {
-                    bootstrap.Modal.getInstance(document.getElementById('goalModal')).hide();
-                    loadGoals();
-                } else {
-                    alert('Error: ' + result.error);
-                }
-            } catch (error) {
-                alert('Error: ' + error.message);
-            }
-        }
+      async function loadExpenses() {
+        try {
+          const response = await fetch('/api/couple/expenses');
+          const data = await response.json();
 
-        function showContribute(goalId) {
-            const amount = prompt('Enter contribution amount (₹):');
-            if (!amount) return;
-            
-            fetch('/api/couple/goals/contribute', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ goal_id: goalId, amount: parseFloat(amount) })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    loadGoals();
-                } else {
-                    alert('Error: ' + data.error);
-                }
-            })
-            .catch(err => alert('Error: ' + err.message));
-        }
-
-        // ============================================
-        // EXPENSES
-        // ============================================
-        
-        async function loadExpenses() {
-            try {
-                const response = await fetch('/api/couple/expenses');
-                const data = await response.json();
-                
-                // Summary
-                const summary = data.summary || {};
-                document.getElementById('expenseSummary').innerHTML = `
+          // Summary
+          const summary = data.summary || {};
+          document.getElementById('expenseSummary').innerHTML = `
                     <div class="col-md-3">
                         <div class="stat-card"><div class="label">Total</div><div class="value" style="font-size:20px;">₹${(summary.total_expenses || 0).toLocaleString()}</div></div>
                     </div>
@@ -659,19 +980,28 @@ function esc(s){ const d=document.createElement('div'); d.textContent=String(s==
                         <div class="stat-card"><div class="label">Status</div><div class="value" style="font-size:16px;">${summary.settlement_status || 'BALANCED'}</div></div>
                     </div>
                 `;
-                
-                // List
-                const container = document.getElementById('expensesList');
-                if (!data.expenses || data.expenses.length === 0) {
-                    container.innerHTML = '<div class="text-muted text-center py-4">No split expenses yet</div>';
-                    return;
-                }
-                
-                let html = '<table class="table table-dark"><thead><tr><th>Date</th><th>Description</th><th>Category</th><th>Split Type</th><th>Amount</th><th>Status</th><th></th></tr></thead><tbody>';
-                data.expenses.forEach(exp => {
-                    const splitClass = exp.split_type === 'EQUAL' ? 'split-equal' : exp.split_type === 'PERCENTAGE' ? 'split-percentage' : 'split-custom';
-                    const statusBadge = exp.settled ? '<span class="badge badge-completed">✅ Settled</span>' : '<span class="badge badge-pending">⏳ Pending</span>';
-                    html += `
+
+          // List
+          const container = document.getElementById('expensesList');
+          if (!data.expenses || data.expenses.length === 0) {
+            container.innerHTML =
+              '<div class="text-muted text-center py-4">No split expenses yet</div>';
+            return;
+          }
+
+          let html =
+            '<table class="table table-dark"><thead><tr><th>Date</th><th>Description</th><th>Category</th><th>Split Type</th><th>Amount</th><th>Status</th><th></th></tr></thead><tbody>';
+          data.expenses.forEach((exp) => {
+            const splitClass =
+              exp.split_type === 'EQUAL'
+                ? 'split-equal'
+                : exp.split_type === 'PERCENTAGE'
+                  ? 'split-percentage'
+                  : 'split-custom';
+            const statusBadge = exp.settled
+              ? '<span class="badge badge-completed">✅ Settled</span>'
+              : '<span class="badge badge-pending">⏳ Pending</span>';
+            html += `
                         <tr>
                             <td>${exp.expense_date ? new Date(exp.expense_date).toLocaleDateString() : '-'}</td>
                             <td><strong>${exp.description}</strong></td>
@@ -682,124 +1012,138 @@ function esc(s){ const d=document.createElement('div'); d.textContent=String(s==
                             <td>${!exp.settled ? `<button class="btn btn-sm btn-success" onclick="settleExpense(${exp.id})">Settle</button>` : ''}</td>
                         </tr>
                     `;
-                });
-                html += '</tbody></table>';
-                container.innerHTML = html;
-            } catch (error) {
-                console.error('Error loading expenses:', error);
-            }
+          });
+          html += '</tbody></table>';
+          container.innerHTML = html;
+        } catch (error) {
+          console.error('Error loading expenses:', error);
+        }
+      }
+
+      function showAddExpense() {
+        const modal = new bootstrap.Modal(
+          document.getElementById('expenseModal'),
+        );
+        document.getElementById('expenseForm').reset();
+        document.getElementById('expDate').value = new Date()
+          .toISOString()
+          .split('T')[0];
+        updateSplitFields();
+        modal.show();
+      }
+
+      function updateSplitFields() {
+        const splitType = document.getElementById('expSplitType').value;
+        const user1Share = document.getElementById('user1Share');
+        const user2Share = document.getElementById('user2Share');
+
+        if (splitType === 'EQUAL') {
+          user1Share.value = '50%';
+          user2Share.value = '50%';
+          user1Share.readonly = true;
+          user2Share.readonly = true;
+        } else if (splitType === 'PERCENTAGE') {
+          user1Share.value = '50%';
+          user2Share.value = '50%';
+          user1Share.readonly = false;
+          user2Share.readonly = false;
+        } else {
+          user1Share.value = '0';
+          user2Share.value = '0';
+          user1Share.readonly = false;
+          user2Share.readonly = false;
+        }
+      }
+
+      async function addExpense() {
+        const splitType = document.getElementById('expSplitType').value;
+        let user1Share =
+          parseFloat(document.getElementById('user1Share').value) || 0;
+        let user2Share =
+          parseFloat(document.getElementById('user2Share').value) || 0;
+
+        if (splitType === 'EQUAL') {
+          user1Share = 50;
+          user2Share = 50;
+        } else if (splitType === 'PERCENTAGE') {
+          // Already set
+        } else {
+          // Custom amounts
         }
 
-        function showAddExpense() {
-            const modal = new bootstrap.Modal(document.getElementById('expenseModal'));
-            document.getElementById('expenseForm').reset();
-            document.getElementById('expDate').value = new Date().toISOString().split('T')[0];
-            updateSplitFields();
-            modal.show();
-        }
+        const data = {
+          description: document.getElementById('expDesc').value,
+          total_amount: parseFloat(document.getElementById('expAmount').value),
+          category: document.getElementById('expCategory').value,
+          split_type: splitType,
+          user1_share: user1Share,
+          user2_share: user2Share,
+          expense_date: document.getElementById('expDate').value,
+        };
 
-        function updateSplitFields() {
-            const splitType = document.getElementById('expSplitType').value;
-            const user1Share = document.getElementById('user1Share');
-            const user2Share = document.getElementById('user2Share');
-            
-            if (splitType === 'EQUAL') {
-                user1Share.value = '50%';
-                user2Share.value = '50%';
-                user1Share.readonly = true;
-                user2Share.readonly = true;
-            } else if (splitType === 'PERCENTAGE') {
-                user1Share.value = '50%';
-                user2Share.value = '50%';
-                user1Share.readonly = false;
-                user2Share.readonly = false;
-            } else {
-                user1Share.value = '0';
-                user2Share.value = '0';
-                user1Share.readonly = false;
-                user2Share.readonly = false;
-            }
+        try {
+          const response = await fetch('/api/couple/expenses', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+          });
+          const result = await response.json();
+          if (result.success) {
+            bootstrap.Modal.getInstance(
+              document.getElementById('expenseModal'),
+            ).hide();
+            loadExpenses();
+          } else {
+            alert('Error: ' + result.error);
+          }
+        } catch (error) {
+          alert('Error: ' + error.message);
         }
+      }
 
-        async function addExpense() {
-            const splitType = document.getElementById('expSplitType').value;
-            let user1Share = parseFloat(document.getElementById('user1Share').value) || 0;
-            let user2Share = parseFloat(document.getElementById('user2Share').value) || 0;
-            
-            if (splitType === 'EQUAL') {
-                user1Share = 50;
-                user2Share = 50;
-            } else if (splitType === 'PERCENTAGE') {
-                // Already set
-            } else {
-                // Custom amounts
-            }
-            
-            const data = {
-                description: document.getElementById('expDesc').value,
-                total_amount: parseFloat(document.getElementById('expAmount').value),
-                category: document.getElementById('expCategory').value,
-                split_type: splitType,
-                user1_share: user1Share,
-                user2_share: user2Share,
-                expense_date: document.getElementById('expDate').value
-            };
-            
-            try {
-                const response = await fetch('/api/couple/expenses', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-                const result = await response.json();
-                if (result.success) {
-                    bootstrap.Modal.getInstance(document.getElementById('expenseModal')).hide();
-                    loadExpenses();
-                } else {
-                    alert('Error: ' + result.error);
-                }
-            } catch (error) {
-                alert('Error: ' + error.message);
-            }
+      async function settleExpense(expenseId) {
+        try {
+          const response = await fetch(
+            `/api/couple/expenses/settle/${expenseId}`,
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+            },
+          );
+          const data = await response.json();
+          if (data.success) {
+            loadExpenses();
+          } else {
+            alert('Error: ' + data.error);
+          }
+        } catch (error) {
+          alert('Error: ' + error.message);
         }
+      }
 
-        async function settleExpense(expenseId) {
-            try {
-                const response = await fetch(`/api/couple/expenses/settle/${expenseId}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' }
-                });
-                const data = await response.json();
-                if (data.success) {
-                    loadExpenses();
-                } else {
-                    alert('Error: ' + data.error);
-                }
-            } catch (error) {
-                alert('Error: ' + error.message);
-            }
-        }
+      // ============================================
+      // BUDGET
+      // ============================================
 
-        // ============================================
-        // BUDGET
-        // ============================================
-        
-        async function loadBudget() {
-            try {
-                const response = await fetch('/api/couple/budget');
-                const data = await response.json();
-                
-                const container = document.getElementById('budgetList');
-                if (!data.budgets || data.budgets.length === 0) {
-                    container.innerHTML = '<div class="text-muted text-center py-4">No budgets set yet</div>';
-                    return;
-                }
-                
-                let html = '<table class="table table-dark"><thead><tr><th>Category</th><th>Limit</th><th>Spent</th><th>Remaining</th><th>Progress</th></tr></thead><tbody>';
-                data.budgets.forEach(b => {
-                    const pct = b.percentage || 0;
-                    const color = pct > 90 ? '#e05252' : pct > 70 ? '#f39c12' : '#2ecc8a';
-                    html += `
+      async function loadBudget() {
+        try {
+          const response = await fetch('/api/couple/budget');
+          const data = await response.json();
+
+          const container = document.getElementById('budgetList');
+          if (!data.budgets || data.budgets.length === 0) {
+            container.innerHTML =
+              '<div class="text-muted text-center py-4">No budgets set yet</div>';
+            return;
+          }
+
+          let html =
+            '<table class="table table-dark"><thead><tr><th>Category</th><th>Limit</th><th>Spent</th><th>Remaining</th><th>Progress</th></tr></thead><tbody>';
+          data.budgets.forEach((b) => {
+            const pct = b.percentage || 0;
+            const color =
+              pct > 90 ? '#e05252' : pct > 70 ? '#f39c12' : '#2ecc8a';
+            html += `
                         <tr>
                             <td><strong>${b.category}</strong></td>
                             <td>₹${b.limit.toLocaleString()}</td>
@@ -813,57 +1157,65 @@ function esc(s){ const d=document.createElement('div'); d.textContent=String(s==
                             </td>
                         </tr>
                     `;
-                });
-                html += '</tbody></table>';
-                container.innerHTML = html;
-            } catch (error) {
-                console.error('Error loading budget:', error);
-            }
+          });
+          html += '</tbody></table>';
+          container.innerHTML = html;
+        } catch (error) {
+          console.error('Error loading budget:', error);
         }
+      }
 
-        function showAddBudget() {
-            const category = prompt('Enter budget category:');
-            if (!category) return;
-            const limit = prompt('Enter budget limit (₹):');
-            if (!limit) return;
-            
-            fetch('/api/couple/budget', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ category, combined_limit: parseFloat(limit) })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    loadBudget();
-                } else {
-                    alert('Error: ' + data.error);
-                }
-            })
-            .catch(err => alert('Error: ' + err.message));
-        }
+      function showAddBudget() {
+        const category = prompt('Enter budget category:');
+        if (!category) return;
+        const limit = prompt('Enter budget limit (₹):');
+        if (!limit) return;
 
-        // ============================================
-        // TAX
-        // ============================================
-        
-        document.getElementById('taxForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const income1 = parseFloat(document.getElementById('taxIncome1').value);
-            const income2 = parseFloat(document.getElementById('taxIncome2').value);
-            
-            if (!income1 || !income2) {
-                alert('Please enter both incomes');
-                return;
+        fetch('/api/couple/budget', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ category, combined_limit: parseFloat(limit) }),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.success) {
+              loadBudget();
+            } else {
+              alert('Error: ' + data.error);
             }
-            
-            try {
-                const response = await fetch(`/api/couple/tax?user1_income=${income1}&user2_income=${income2}`);
-                const data = await response.json();
-                
-                if (data.success && data.plan) {
-                    document.getElementById('taxResult').innerHTML = `
+          })
+          .catch((err) => alert('Error: ' + err.message));
+      }
+
+      // ============================================
+      // TAX
+      // ============================================
+
+      document
+        .getElementById('taxForm')
+        .addEventListener('submit', async function (e) {
+          e.preventDefault();
+
+          const income1 = parseFloat(
+            document.getElementById('taxIncome1').value,
+          );
+          const income2 = parseFloat(
+            document.getElementById('taxIncome2').value,
+          );
+
+          if (!income1 || !income2) {
+            alert('Please enter both incomes');
+            return;
+          }
+
+          try {
+            const response = await fetch(
+              `/api/couple/tax?user1_income=${income1}&user2_income=${income2}`,
+            );
+            const data = await response.json();
+
+            if (data.success && data.plan) {
+              document.getElementById('taxResult').innerHTML = `
                         <div class="card" style="background:rgba(255,255,255,0.03);">
                             <div class="row">
                                 <div class="col-md-4">
@@ -888,13 +1240,15 @@ function esc(s){ const d=document.createElement('div'); d.textContent=String(s==
                             <div class="mt-3" style="white-space:pre-wrap;font-size:14px;line-height:1.8;">${data.plan.suggestions}</div>
                         </div>
                     `;
-                } else {
-                    document.getElementById('taxResult').innerHTML = `<div class="alert-box danger"><i class="fa-solid fa-circle-xmark"></i> ${data.error || 'Unable to analyze'}</div>`;
-                }
-            } catch (error) {
-                document.getElementById('taxResult').innerHTML = `<div class="alert-box danger"><i class="fa-solid fa-circle-xmark"></i> ${esc(error.message)}</div>`;
+            } else {
+              document.getElementById('taxResult').innerHTML =
+                `<div class="alert-box danger"><i class="fa-solid fa-circle-xmark"></i> ${data.error || 'Unable to analyze'}</div>`;
             }
+          } catch (error) {
+            document.getElementById('taxResult').innerHTML =
+              `<div class="alert-box danger"><i class="fa-solid fa-circle-xmark"></i> ${esc(error.message)}</div>`;
+          }
         });
     </script>
-</body>
+  </body>
 </html>

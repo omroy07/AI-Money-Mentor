@@ -1,299 +1,505 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Money Mentor - {% block title %}{% endblock %}</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- For Markdown parsing in AI responses -->
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.8/dist/purify.min.js"></script>
+    <!-- For sanitizing AI responses -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='styles/main.css') }}"
+    />
+    <script>
+      // Global HTML escape helper (issue #517) — available in all templates extending base.html
+      function esc(s) {
+        const d = document.createElement('div');
+        d.textContent = String(s == null ? '' : s);
+        return d.innerHTML;
+      }
+      function escAttr(s) {
+        return String(s == null ? '' : s)
+          .replace(/"/g, '"')
+          .replace(/'/g, '&#39;');
+      }
+    </script>
+    {% block head %}{% endblock %}
+  </head>
+  <body>
+    <!-- Menu Overlay for Mobile Drawer -->
+    <div class="menu-overlay"></div>
 
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Money Mentor - {% block title %}{% endblock %}</title>
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
-  />
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>  <!-- For Markdown parsing in AI responses -->
-  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.8/dist/purify.min.js"></script> <!-- For sanitizing AI responses -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles/main.css') }}">
-  <script>
-    // Global HTML escape helper (issue #517) — available in all templates extending base.html
-    function esc(s){ const d=document.createElement('div'); d.textContent=String(s==null?'':s); return d.innerHTML; }
-    function escAttr(s){ return String(s==null?'':s).replace(/"/g,'"').replace(/'/g,'&#39;'); }
-  </script>
-  {% block head %}{% endblock %}
-</head>
-<body>
-  <!-- Menu Overlay for Mobile Drawer -->
-  <div class="menu-overlay"></div>
-
-  <!-- Mobile Top Navigation Header -->
-  <div class="mobile-header" style="justify-content: space-between;">
-    <div class="mobile-logo">₹ Money Mentor</div>
-    <button class="theme-toggle-btn theme-toggle-mobile" onclick="toggleTheme()" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 50%; width: 48px; height: 48px; display: flex; flex-direction: column; justify-content: center; align-items: center; color: var(--text); cursor: pointer; padding: 0;">
-      <span class="icon" style="font-size: 16px; line-height: 1;"><i className="fa-solid fa-sun"></i></span>
-      <span class="text" style="font-size: 9px; margin-top: 2px;">Light Mode</span>
-    </button>
-  </div>
-
-  <!-- ══════════ SIDEBAR ══════════ -->
-  <div class="sidebar">
-    <div class="logo">₹ Money Mentor</div>
-    <button class="btn btn-ghost theme-toggle-btn" onclick="toggleTheme()" style="margin-bottom:15px;width:100%;">
-      <i className="fa-solid fa-sun"></i> Light Mode
-    </button>
-
-    {% if current_user.is_authenticated %}
-    <div style="padding: 10px 14px; background: rgba(255,255,255,0.03); border-radius: 8px; margin-bottom: 15px; border: 1px solid var(--border);">
-      <div style="font-size: 10px; color: var(--muted); font-weight: 600; text-transform: uppercase;">Points Balance</div>
-      <div style="font-size: 13px; color: var(--gold2); margin-top: 2px; font-weight: 700; display: flex; align-items: center; gap: 4px;">
-        <span><i className="fa-solid fa-trophy"></i></span> <span id="sidebar-user-points">{{ current_user.points or 0 }}</span> Pts
-      </div>
+    <!-- Mobile Top Navigation Header -->
+    <div class="mobile-header" style="justify-content: space-between">
+      <div class="mobile-logo">₹ Money Mentor</div>
+      <button
+        class="theme-toggle-btn theme-toggle-mobile"
+        onclick="toggleTheme()"
+        style="
+          background: rgba(255, 255, 255, 0.05);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 50%;
+          width: 48px;
+          height: 48px;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          color: var(--text);
+          cursor: pointer;
+          padding: 0;
+        "
+      >
+        <span class="icon" style="font-size: 16px; line-height: 1"
+          ><i className="fa-solid fa-sun"></i
+        ></span>
+        <span class="text" style="font-size: 9px; margin-top: 2px"
+          >Light Mode</span
+        >
+      </button>
     </div>
-    {% endif %}
-    <a href="/" class="nav-item {% if active_page == 'dashboard' %}active{% endif %}"><span class="icon"><i class="fa-solid fa-house"></i></span> Dashboard</a>
-<a href="/learn" class="nav-item {% if active_page == 'learn' %}active{% endif %}"><span class="icon"><i class="fa-solid fa-book-open"></i></span> Learn & Earn</a>
-<a href="/milestones" class="nav-item {% if active_page == 'milestones' %}active{% endif %}"><span class="icon"><i class="fa-solid fa-trophy"></i></span> Milestones</a>
-<a href="/chat" class="nav-item {% if active_page == 'chat' %}active{% endif %}"><span class="icon"><i class="fa-solid fa-robot"></i></span> AI Chat</a>
-<a href="/money-score" class="nav-item {% if active_page == 'score' %}active{% endif %}"><span class="icon"><i class="fa-solid fa-money-bill-wave"></i></span> Money Score</a>
-<a href="/sip" class="nav-item {% if active_page == 'sip' %}active{% endif %}"><span class="icon"><i class="fa-solid fa-chart-line"></i></span> SIP Calc</a>
-<a href="/goal-planner" class="nav-item {% if active_page == 'goal_planner' %}active{% endif %}"><span class="icon"><i class="fa-solid fa-bullseye"></i></span> Goal Planner</a>
-<a href="/stock" class="nav-item {% if active_page == 'stock' %}active{% endif %}"><span class="icon"><i class="fa-solid fa-chart-column"></i></span> Stock Check</a>
-<a href="/tax" class="nav-item {% if active_page == 'tax' %}active{% endif %}"><span class="icon"><i class="fa-solid fa-receipt"></i></span> Tax Planner</a>
-<a href="/insurance" class="nav-item {% if active_page == 'insurance' %}active{% endif %}"><span class="icon"><i class="fa-solid fa-shield-halved"></i></span> Insurance Plan</a>
-<a href="/pdf-parser" class="nav-item {% if active_page == 'pdf' %}active{% endif %}"><span class="icon"><i class="fa-solid fa-file-pdf"></i></span> PDF Parser</a>
-<a href="/agent-page" class="nav-item {% if active_page == 'agent' %}active{% endif %}"><span class="icon"><i class="fa-solid fa-brain"></i></span> Multi Agent</a>
-<a href="/expense" class="nav-item {% if active_page == 'expense' %}active{% endif %}"><span class="icon"><i class="fa-solid fa-wallet"></i></span>Expense Track</a>
-<a href="/group-expenses" class="nav-item {% if active_page == 'group-expenses' %}active{% endif %}"><span class="icon"><i class="fa-solid fa-users"></i></span>Group Expenses</a>
-<a href="/networth" class="nav-item {% if active_page == 'networth' %}active{% endif %}"><span class="icon"><i class="fa-solid fa-gem"></i></span> Net Worth</a>
-<a href="/portfolio-page" class="nav-item {% if active_page == 'portfolio' %}active{% endif %}"><span class="icon"><i class="fa-solid fa-briefcase"></i></span> Portfolio</a>
-<a href="/crypto-page" class="nav-item {% if active_page == 'crypto' %}active{% endif %}"><span class="icon"><i class="fa-brands fa-bitcoin"></i></span> Crypto & DeFi</a>
-<a href="/goals" class="nav-item {% if active_page == 'goals' %}active{% endif %}"><span class="icon"><i class="fa-solid fa-bullseye"></i></span> Financial Goals</a>
-<a href="/risk-advisor" class="nav-item {% if active_page == 'risk-advisor' %}active{% endif %}"><span class="icon"><i class="fa-solid fa-clipboard-list"></i></span> Risk Advisor</a>
-<a href="/budget" class="nav-item {% if active_page == 'budget' %}active{% endif %}"><span class="icon"><i class="fa-solid fa-chart-pie"></i></span> Smart Budget</a>
-<a href="/recurring" class="nav-item {% if active_page == 'recurring' %}active{% endif %}"><span class="icon"><i class="fa-solid fa-calendar-days"></i></span> Recurring Expenses</a>
-<a href="/recurring-income-page" class="nav-item {% if active_page == 'recurring_income' %}active{% endif %}"><span class="icon"><i class="fa-solid fa-money-bill-trend-up"></i></span> Recurring Incomes</a>
-<a href="/loan_planner" class="nav-item {% if active_page == 'loan' %}active{% endif %}"><span class="icon"><i class="fa-solid fa-hand-holding-dollar"></i></span> Loan Planner</a>
-  </div>
 
-  <!-- ══════════ MAIN ══════════ -->
-  <div class="main">
-    {% block content %}{% endblock %}
-  </div>
+    <!-- ══════════ SIDEBAR ══════════ -->
+    <div class="sidebar">
+      <div class="logo">₹ Money Mentor</div>
+      <button
+        class="btn btn-ghost theme-toggle-btn"
+        onclick="toggleTheme()"
+        style="margin-bottom: 15px; width: 100%"
+      >
+        <i className="fa-solid fa-sun"></i> Light Mode
+      </button>
 
-  <!-- Scroll to Top Button -->
-  <button id="scrollTopBtn" onclick="document.querySelector('.main').scrollTo({top: 0, behavior: 'smooth'})"
-    style="display:none; position:fixed; bottom:30px; right:30px; z-index:100; border-radius:50%; width:44px; height:44px; font-size:20px; align-items:center; justify-content:center;"
-    class="btn btn-gold">↑</button>
+      {% if current_user.is_authenticated %}
+      <div
+        style="
+          padding: 10px 14px;
+          background: rgba(255, 255, 255, 0.03);
+          border-radius: 8px;
+          margin-bottom: 15px;
+          border: 1px solid var(--border);
+        "
+      >
+        <div
+          style="
+            font-size: 10px;
+            color: var(--muted);
+            font-weight: 600;
+            text-transform: uppercase;
+          "
+        >
+          Points Balance
+        </div>
+        <div
+          style="
+            font-size: 13px;
+            color: var(--gold2);
+            margin-top: 2px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+          "
+        >
+          <span><i className="fa-solid fa-trophy"></i></span>
+          <span id="sidebar-user-points">{{ current_user.points or 0 }}</span>
+          Pts
+        </div>
+      </div>
+      {% endif %}
+      <a
+        href="/"
+        class="nav-item {% if active_page == 'dashboard' %}active{% endif %}"
+        ><span class="icon"><i class="fa-solid fa-house"></i></span>
+        Dashboard</a
+      >
+      <a
+        href="/learn"
+        class="nav-item {% if active_page == 'learn' %}active{% endif %}"
+        ><span class="icon"><i class="fa-solid fa-book-open"></i></span> Learn &
+        Earn</a
+      >
+      <a
+        href="/milestones"
+        class="nav-item {% if active_page == 'milestones' %}active{% endif %}"
+        ><span class="icon"><i class="fa-solid fa-trophy"></i></span>
+        Milestones</a
+      >
+      <a
+        href="/chat"
+        class="nav-item {% if active_page == 'chat' %}active{% endif %}"
+        ><span class="icon"><i class="fa-solid fa-robot"></i></span> AI Chat</a
+      >
+      <a
+        href="/money-score"
+        class="nav-item {% if active_page == 'score' %}active{% endif %}"
+        ><span class="icon"><i class="fa-solid fa-money-bill-wave"></i></span>
+        Money Score</a
+      >
+      <a
+        href="/sip"
+        class="nav-item {% if active_page == 'sip' %}active{% endif %}"
+        ><span class="icon"><i class="fa-solid fa-chart-line"></i></span> SIP
+        Calc</a
+      >
+      <a
+        href="/goal-planner"
+        class="nav-item {% if active_page == 'goal_planner' %}active{% endif %}"
+        ><span class="icon"><i class="fa-solid fa-bullseye"></i></span> Goal
+        Planner</a
+      >
+      <a
+        href="/stock"
+        class="nav-item {% if active_page == 'stock' %}active{% endif %}"
+        ><span class="icon"><i class="fa-solid fa-chart-column"></i></span>
+        Stock Check</a
+      >
+      <a
+        href="/tax"
+        class="nav-item {% if active_page == 'tax' %}active{% endif %}"
+        ><span class="icon"><i class="fa-solid fa-receipt"></i></span> Tax
+        Planner</a
+      >
+      <a
+        href="/insurance"
+        class="nav-item {% if active_page == 'insurance' %}active{% endif %}"
+        ><span class="icon"><i class="fa-solid fa-shield-halved"></i></span>
+        Insurance Plan</a
+      >
+      <a
+        href="/pdf-parser"
+        class="nav-item {% if active_page == 'pdf' %}active{% endif %}"
+        ><span class="icon"><i class="fa-solid fa-file-pdf"></i></span> PDF
+        Parser</a
+      >
+      <a
+        href="/agent-page"
+        class="nav-item {% if active_page == 'agent' %}active{% endif %}"
+        ><span class="icon"><i class="fa-solid fa-brain"></i></span> Multi
+        Agent</a
+      >
+      <a
+        href="/expense"
+        class="nav-item {% if active_page == 'expense' %}active{% endif %}"
+        ><span class="icon"><i class="fa-solid fa-wallet"></i></span>Expense
+        Track</a
+      >
+      <a
+        href="/group-expenses"
+        class="nav-item {% if active_page == 'group-expenses' %}active{% endif %}"
+        ><span class="icon"><i class="fa-solid fa-users"></i></span>Group
+        Expenses</a
+      >
+      <a
+        href="/networth"
+        class="nav-item {% if active_page == 'networth' %}active{% endif %}"
+        ><span class="icon"><i class="fa-solid fa-gem"></i></span> Net Worth</a
+      >
+      <a
+        href="/portfolio-page"
+        class="nav-item {% if active_page == 'portfolio' %}active{% endif %}"
+        ><span class="icon"><i class="fa-solid fa-briefcase"></i></span>
+        Portfolio</a
+      >
+      <a
+        href="/crypto-page"
+        class="nav-item {% if active_page == 'crypto' %}active{% endif %}"
+        ><span class="icon"><i class="fa-brands fa-bitcoin"></i></span> Crypto &
+        DeFi</a
+      >
+      <a
+        href="/goals"
+        class="nav-item {% if active_page == 'goals' %}active{% endif %}"
+        ><span class="icon"><i class="fa-solid fa-bullseye"></i></span>
+        Financial Goals</a
+      >
+      <a
+        href="/risk-advisor"
+        class="nav-item {% if active_page == 'risk-advisor' %}active{% endif %}"
+        ><span class="icon"><i class="fa-solid fa-clipboard-list"></i></span>
+        Risk Advisor</a
+      >
+      <a
+        href="/budget"
+        class="nav-item {% if active_page == 'budget' %}active{% endif %}"
+        ><span class="icon"><i class="fa-solid fa-chart-pie"></i></span> Smart
+        Budget</a
+      >
+      <a
+        href="/recurring"
+        class="nav-item {% if active_page == 'recurring' %}active{% endif %}"
+        ><span class="icon"><i class="fa-solid fa-calendar-days"></i></span>
+        Recurring Expenses</a
+      >
+      <a
+        href="/recurring-income-page"
+        class="nav-item {% if active_page == 'recurring_income' %}active{% endif %}"
+        ><span class="icon"
+          ><i class="fa-solid fa-money-bill-trend-up"></i
+        ></span>
+        Recurring Incomes</a
+      >
+      <a
+        href="/loan_planner"
+        class="nav-item {% if active_page == 'loan' %}active{% endif %}"
+        ><span class="icon"
+          ><i class="fa-solid fa-hand-holding-dollar"></i
+        ></span>
+        Loan Planner</a
+      >
+    </div>
 
-  <script>
-    // Theme Toggle State Persistence
-    function toggleTheme() {
-      document.body.classList.toggle("light-theme");
-      const btns = document.querySelectorAll(".theme-toggle-btn");
-      if (document.body.classList.contains("light-theme")) {
-        localStorage.setItem("theme", "light");
-        btns.forEach(btn => btn.innerHTML = "🌙 Dark Mode");
-      } else {
-        localStorage.setItem("theme", "dark");
-        btns.forEach(btn => btn.innerHTML = "☀️ Light Mode");
+    <!-- ══════════ MAIN ══════════ -->
+    <div class="main">{% block content %}{% endblock %}</div>
+
+    <!-- Scroll to Top Button -->
+    <button
+      id="scrollTopBtn"
+      onclick="
+        document.querySelector('.main').scrollTo({ top: 0, behavior: 'smooth' })
+      "
+      style="
+        display: none;
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        z-index: 100;
+        border-radius: 50%;
+        width: 44px;
+        height: 44px;
+        font-size: 20px;
+        align-items: center;
+        justify-content: center;
+      "
+      class="btn btn-gold"
+    >
+      ↑
+    </button>
+
+    <script>
+      // Theme Toggle State Persistence
+      function toggleTheme() {
+        document.body.classList.toggle('light-theme');
+        const btns = document.querySelectorAll('.theme-toggle-btn');
+        if (document.body.classList.contains('light-theme')) {
+          localStorage.setItem('theme', 'light');
+          btns.forEach((btn) => (btn.innerHTML = '🌙 Dark Mode'));
+        } else {
+          localStorage.setItem('theme', 'dark');
+          btns.forEach((btn) => (btn.innerHTML = '☀️ Light Mode'));
+        }
       }
-    }
 
-    // Apply saved theme immediately
-    (function () {
-      const savedTheme = localStorage.getItem("theme");
-      const btns = document.querySelectorAll(".theme-toggle-btn");
-      if (savedTheme === "light") {
-        document.body.classList.add("light-theme");
-        btns.forEach(btn => btn.innerHTML = "🌙 Dark Mode");
+      // Apply saved theme immediately
+      (function () {
+        const savedTheme = localStorage.getItem('theme');
+        const btns = document.querySelectorAll('.theme-toggle-btn');
+        if (savedTheme === 'light') {
+          document.body.classList.add('light-theme');
+          btns.forEach((btn) => (btn.innerHTML = '🌙 Dark Mode'));
+        }
+      })();
+
+      // Scroll to Top visibility toggle
+      document.querySelector('.main').addEventListener('scroll', function () {
+        const btn = document.getElementById('scrollTopBtn');
+        if (this.scrollTop > 300) {
+          btn.style.display = 'flex';
+        } else {
+          btn.style.display = 'none';
+        }
+      });
+
+      // Mobile Menu Toggle
+      function toggleMobileMenu() {
+        const sidebar = document.querySelector('.sidebar');
+        if (sidebar) {
+          sidebar.classList.toggle('open');
+        }
       }
-    })();
 
-    // Scroll to Top visibility toggle
-    document.querySelector('.main').addEventListener('scroll', function () {
-      const btn = document.getElementById('scrollTopBtn');
-      if (this.scrollTop > 300) {
-        btn.style.display = 'flex';
-      } else {
-        btn.style.display = 'none';
+      // Common helpers
+      function fmtNum(n) {
+        return new Intl.NumberFormat('en-IN').format(Math.round(n));
       }
-    });
 
-    // Mobile Menu Toggle
-    function toggleMobileMenu() {
-      const sidebar = document.querySelector('.sidebar');
-      if (sidebar) {
-        sidebar.classList.toggle('open');
+      function setLoading(btnId, loading) {
+        const btn = document.getElementById(btnId);
+        if (!btn) return;
+        btn.disabled = loading;
+        if (!btn.dataset.label) btn.dataset.label = btn.innerHTML;
+        btn.innerHTML = loading
+          ? '<span class="spinner"></span>'
+          : btn.dataset.label;
       }
-    }
 
-    // Common helpers
-    function fmtNum(n) {
-      return new Intl.NumberFormat('en-IN').format(Math.round(n));
-    }
-
-    function setLoading(btnId, loading) {
-      const btn = document.getElementById(btnId);
-      if (!btn) return;
-      btn.disabled = loading;
-      if (!btn.dataset.label) btn.dataset.label = btn.innerHTML;
-      btn.innerHTML = loading ? '<span class="spinner"></span>' : btn.dataset.label;
-    }
-
-    function showResult(id, html) {
-      const el = document.getElementById(id);
-      if (el) {
-        el.innerHTML = html;
-        el.classList.add('visible');
+      function showResult(id, html) {
+        const el = document.getElementById(id);
+        if (el) {
+          el.innerHTML = html;
+          el.classList.add('visible');
+        }
       }
-    }
 
-    async function apiFetch(url, body, isForm = false) {
-      const opts = { method: 'POST' };
-      if (isForm) {
-        opts.body = body;
-      } else {
-        opts.headers = { 'Content-Type': 'application/json' };
-        opts.body = JSON.stringify(body);
+      async function apiFetch(url, body, isForm = false) {
+        const opts = { method: 'POST' };
+        if (isForm) {
+          opts.body = body;
+        } else {
+          opts.headers = { 'Content-Type': 'application/json' };
+          opts.body = JSON.stringify(body);
+        }
+        const res = await fetch(url, opts);
+        return res.json();
       }
-      const res = await fetch(url, opts);
-      return res.json();
-    }
 
-    // ---- Financial report export (merges results across pages via localStorage) ----
-    const FINANCIAL_REPORT_KEY = 'financialReportData';
+      // ---- Financial report export (merges results across pages via localStorage) ----
+      const FINANCIAL_REPORT_KEY = 'financialReportData';
 
-    function updateReportData(partial) {
-      let data = {};
-      try {
-        data = JSON.parse(localStorage.getItem(FINANCIAL_REPORT_KEY)) || {};
-      } catch (e) {}
-      Object.assign(data, partial);
-      localStorage.setItem(FINANCIAL_REPORT_KEY, JSON.stringify(data));
-      return data;
-    }
-
-    function getReportData() {
-      try {
-        return JSON.parse(localStorage.getItem(FINANCIAL_REPORT_KEY)) || {};
-      } catch (e) {
-        return {};
+      function updateReportData(partial) {
+        let data = {};
+        try {
+          data = JSON.parse(localStorage.getItem(FINANCIAL_REPORT_KEY)) || {};
+        } catch (e) {}
+        Object.assign(data, partial);
+        localStorage.setItem(FINANCIAL_REPORT_KEY, JSON.stringify(data));
+        return data;
       }
-    }
 
-    function showExportSection() {
-      const el = document.getElementById('export-section');
-      if (el) el.style.display = 'flex';
-    }
-
-    async function exportReport(format) {
-      try {
-        const response = await fetch(`/export/${format}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(getReportData())
-        });
-        if (!response.ok) throw new Error('Export failed');
-
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `financial_report.${format}`;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        window.URL.revokeObjectURL(url);
-      } catch (e) {
-        alert('⚠ Could not export report. Please try again.');
+      function getReportData() {
+        try {
+          return JSON.parse(localStorage.getItem(FINANCIAL_REPORT_KEY)) || {};
+        } catch (e) {
+          return {};
+        }
       }
-    }
 
-    function downloadChatAsPDF(boxId) {
-      const liveElement = document.getElementById(boxId);
-      if (!liveElement) return;
-      
-      const liveCard = liveElement.closest('.card') || liveElement;
-      
-      const cloneCard = liveCard.cloneNode(true);
-      cloneCard.removeAttribute('id'); // prevent duplicate IDs in the DOM
-      
-      const inputRow = cloneCard.querySelector('.chat-input-row');
-      if (inputRow) inputRow.style.display = 'none';
-      
-      const copyBtns = cloneCard.querySelectorAll('.copy-btn');
-      copyBtns.forEach(btn => btn.style.display = 'none');
+      function showExportSection() {
+        const el = document.getElementById('export-section');
+        if (el) el.style.display = 'flex';
+      }
 
-      const cloneElement = cloneCard.querySelector('#' + boxId) || cloneCard;
-      cloneElement.removeAttribute('id');
+      async function exportReport(format) {
+        try {
+          const response = await fetch(`/export/${format}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(getReportData()),
+          });
+          if (!response.ok) throw new Error('Export failed');
 
-      // Lock the exact width from the live layout
-      const exactWidth = liveCard.offsetWidth;
+          const blob = await response.blob();
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `financial_report.${format}`;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          window.URL.revokeObjectURL(url);
+        } catch (e) {
+          alert('⚠ Could not export report. Please try again.');
+        }
+      }
 
-      cloneCard.style.width = exactWidth + 'px';
-      cloneCard.style.position = 'fixed';
-      cloneCard.style.left = '0';
-      cloneCard.style.top = '0';
-      cloneCard.style.margin = '0';
-      cloneCard.style.transform = 'none';
-      cloneCard.style.zIndex = '-9999';
-      cloneCard.style.opacity = '0.001';
-      cloneCard.style.pointerEvents = 'none';
+      function downloadChatAsPDF(boxId) {
+        const liveElement = document.getElementById(boxId);
+        if (!liveElement) return;
 
-      // Expand heights naturally without scrollbars
-      cloneCard.style.height = 'max-content';
-      cloneCard.style.maxHeight = 'none';
-      cloneCard.style.overflow = 'visible';
+        const liveCard = liveElement.closest('.card') || liveElement;
 
-      cloneElement.style.height = 'max-content';
-      cloneElement.style.maxHeight = 'none';
-      cloneElement.style.overflow = 'visible';
-      cloneElement.style.overflowY = 'visible';
+        const cloneCard = liveCard.cloneNode(true);
+        cloneCard.removeAttribute('id'); // prevent duplicate IDs in the DOM
 
-      liveCard.parentNode.appendChild(cloneCard);
+        const inputRow = cloneCard.querySelector('.chat-input-row');
+        if (inputRow) inputRow.style.display = 'none';
 
-      // Give browser time to calculate the expanded clone's height
-      setTimeout(() => {
+        const copyBtns = cloneCard.querySelectorAll('.copy-btn');
+        copyBtns.forEach((btn) => (btn.style.display = 'none'));
+
+        const cloneElement = cloneCard.querySelector('#' + boxId) || cloneCard;
+        cloneElement.removeAttribute('id');
+
+        // Lock the exact width from the live layout
+        const exactWidth = liveCard.offsetWidth;
+
+        cloneCard.style.width = exactWidth + 'px';
+        cloneCard.style.position = 'fixed';
+        cloneCard.style.left = '0';
+        cloneCard.style.top = '0';
+        cloneCard.style.margin = '0';
+        cloneCard.style.transform = 'none';
+        cloneCard.style.zIndex = '-9999';
+        cloneCard.style.opacity = '0.001';
+        cloneCard.style.pointerEvents = 'none';
+
+        // Expand heights naturally without scrollbars
+        cloneCard.style.height = 'max-content';
+        cloneCard.style.maxHeight = 'none';
+        cloneCard.style.overflow = 'visible';
+
+        cloneElement.style.height = 'max-content';
+        cloneElement.style.maxHeight = 'none';
+        cloneElement.style.overflow = 'visible';
+        cloneElement.style.overflowY = 'visible';
+
+        liveCard.parentNode.appendChild(cloneCard);
+
+        // Give browser time to calculate the expanded clone's height
+        setTimeout(() => {
           const exactHeight = cloneCard.offsetHeight;
-          
-          domtoimage.toPng(cloneCard, { 
-              bgcolor: getComputedStyle(liveCard).backgroundColor, 
-              width: exactWidth, 
+
+          domtoimage
+            .toPng(cloneCard, {
+              bgcolor: getComputedStyle(liveCard).backgroundColor,
+              width: exactWidth,
               height: exactHeight,
               style: {
-                  opacity: '1', // Restore full opacity inside the generated SVG
-                  position: 'relative', // Remove fixed positioning inside the SVG
-                  zIndex: '1',
-                  left: '0',
-                  top: '0'
-              }
-          })
-              .then(function (dataUrl) {
-                  const { jsPDF } = window.jspdf;
-                  
-                  // Use precise pt-based coordinates to perfectly map 1:1 with the screenshot
-                  const orientation = exactWidth > exactHeight ? 'l' : 'p';
-                  const wPt = exactWidth * 0.75;
-                  const hPt = exactHeight * 0.75;
-                  
-                  const pdf = new jsPDF(orientation, 'pt', [wPt, hPt]);
-                  
-                  pdf.addImage(dataUrl, 'PNG', 0, 0, wPt, hPt);
-                  const dateStr = new Date().toISOString().split('T')[0];
-                  pdf.save(`AI_Money_Mentor_Chat_${dateStr}.pdf`);
-                  
-                  // Clean up the invisible clone instantly
-                  cloneCard.remove();
-              })
-              .catch(function (error) {
-                  console.error('PDF Generation failed!', error);
-                  cloneCard.remove(); // Clean up on error
-                  alert('Failed to generate PDF. Please try again.');
-              });
-      }, 100);
-    }
-  </script>
-  {% block scripts %}{% endblock %}
-</body>
+                opacity: '1', // Restore full opacity inside the generated SVG
+                position: 'relative', // Remove fixed positioning inside the SVG
+                zIndex: '1',
+                left: '0',
+                top: '0',
+              },
+            })
+            .then(function (dataUrl) {
+              const { jsPDF } = window.jspdf;
+
+              // Use precise pt-based coordinates to perfectly map 1:1 with the screenshot
+              const orientation = exactWidth > exactHeight ? 'l' : 'p';
+              const wPt = exactWidth * 0.75;
+              const hPt = exactHeight * 0.75;
+
+              const pdf = new jsPDF(orientation, 'pt', [wPt, hPt]);
+
+              pdf.addImage(dataUrl, 'PNG', 0, 0, wPt, hPt);
+              const dateStr = new Date().toISOString().split('T')[0];
+              pdf.save(`AI_Money_Mentor_Chat_${dateStr}.pdf`);
+
+              // Clean up the invisible clone instantly
+              cloneCard.remove();
+            })
+            .catch(function (error) {
+              console.error('PDF Generation failed!', error);
+              cloneCard.remove(); // Clean up on error
+              alert('Failed to generate PDF. Please try again.');
+            });
+        }, 100);
+      }
+    </script>
+    {% block scripts %}{% endblock %}
+  </body>
 </html>

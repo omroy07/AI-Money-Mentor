@@ -36,6 +36,7 @@ Prompt caching automatically reuses computation from recent requests when they s
 4. **Auto Expiration**: Cached data expires after 2 hours without use
 
 **Key points:**
+
 - Cached tokens don't count toward rate limits
 - Cache hits not guaranteed, but Groq maximizes them
 - Discount only applies on successful cache hits
@@ -44,12 +45,12 @@ Prompt caching automatically reuses computation from recent requests when they s
 
 ## Supported Models
 
-| Model ID | Model |
-|----------|-------|
-| `moonshotai/kimi-k2-instruct-0905` | Kimi K2 |
-| `openai/gpt-oss-20b` | GPT-OSS 20B |
-| `openai/gpt-oss-120b` | GPT-OSS 120B |
-| `openai/gpt-oss-safeguard-20b` | GPT-OSS-Safeguard 20B |
+| Model ID                           | Model                 |
+| ---------------------------------- | --------------------- |
+| `moonshotai/kimi-k2-instruct-0905` | Kimi K2               |
+| `openai/gpt-oss-20b`               | GPT-OSS 20B           |
+| `openai/gpt-oss-120b`              | GPT-OSS 120B          |
+| `openai/gpt-oss-safeguard-20b`     | GPT-OSS-Safeguard 20B |
 
 More models coming soon.
 
@@ -57,11 +58,11 @@ More models coming soon.
 
 ## Pricing
 
-| Token Type | Price |
-|------------|-------|
-| Cached input tokens | 50% discount |
+| Token Type              | Price         |
+| ----------------------- | ------------- |
+| Cached input tokens     | 50% discount  |
 | Non-cached input tokens | Standard rate |
-| Output tokens | Standard rate |
+| Output tokens           | Standard rate |
 
 ---
 
@@ -83,11 +84,13 @@ Monitor cache performance via the `usage` field in API responses:
 ```
 
 **Metrics:**
+
 - `prompt_tokens`: Total input tokens
 - `cached_tokens`: Tokens served from cache (50% discount applied)
 - **Cache hit rate**: `cached_tokens / prompt_tokens`
 
 **Python example:**
+
 ```python
 response = client.chat.completions.create(
     model="moonshotai/kimi-k2-instruct-0905",

@@ -1,9 +1,9 @@
 ---
 name: api-security-best-practices
-description: "Implement secure API design patterns including authentication, authorization, input validation, rate limiting, and protection against common API vulnerabilities"
+description: 'Implement secure API design patterns including authentication, authorization, input validation, rate limiting, and protection against common API vulnerabilities'
 risk: unknown
 source: community
-date_added: "2026-02-27"
+date_added: '2026-02-27'
 ---
 
 # API Security Best Practices
@@ -28,6 +28,7 @@ Guide developers in building secure APIs by implementing authentication, authori
 ### Step 1: Authentication & Authorization
 
 I'll help you implement secure authentication:
+
 - Choose authentication method (JWT, OAuth 2.0, API keys)
 - Implement token-based authentication
 - Set up role-based access control (RBAC)
@@ -37,6 +38,7 @@ I'll help you implement secure authentication:
 ### Step 2: Input Validation & Sanitization
 
 Protect against injection attacks:
+
 - Validate all input data
 - Sanitize user inputs
 - Use parameterized queries
@@ -46,6 +48,7 @@ Protect against injection attacks:
 ### Step 3: Rate Limiting & Throttling
 
 Prevent abuse and DDoS attacks:
+
 - Implement rate limiting per user/IP
 - Set up API throttling
 - Configure request quotas
@@ -55,6 +58,7 @@ Prevent abuse and DDoS attacks:
 ### Step 4: Data Protection
 
 Secure sensitive data:
+
 - Encrypt data in transit (HTTPS/TLS)
 - Encrypt sensitive data at rest
 - Implement proper error handling (no data leaks)
@@ -64,12 +68,12 @@ Secure sensitive data:
 ### Step 5: API Security Testing
 
 Verify security implementation:
+
 - Test authentication and authorization
 - Perform penetration testing
 - Check for common vulnerabilities (OWASP API Top 10)
 - Validate input handling
 - Test rate limiting
-
 
 ## Examples
 
@@ -98,62 +102,62 @@ const bcrypt = require('bcrypt');
 
 // Login endpoint
 app.post('/api/auth/login', async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    
+try {
+const { email, password } = req.body;
+
     // Validate input
     if (!email || !password) {
-      return res.status(400).json({ 
-        error: 'Email and password are required' 
+      return res.status(400).json({
+        error: 'Email and password are required'
       });
     }
-    
+
     // Find user
-    const user = await db.user.findUnique({ 
-      where: { email } 
+    const user = await db.user.findUnique({
+      where: { email }
     });
-    
+
     if (!user) {
       // Don't reveal if user exists
-      return res.status(401).json({ 
-        error: 'Invalid credentials' 
+      return res.status(401).json({
+        error: 'Invalid credentials'
       });
     }
-    
+
     // Verify password
     const validPassword = await bcrypt.compare(
-      password, 
+      password,
       user.passwordHash
     );
-    
+
     if (!validPassword) {
-      return res.status(401).json({ 
-        error: 'Invalid credentials' 
+      return res.status(401).json({
+        error: 'Invalid credentials'
       });
     }
-    
+
     // Generate JWT token
     const token = jwt.sign(
-      { 
+      {
         userId: user.id,
         email: user.email,
         role: user.role
       },
       process.env.JWT_SECRET,
-      { 
+      {
         expiresIn: '1h',
         issuer: 'your-app',
         audience: 'your-app-users'
       }
     );
-    
+
     // Generate refresh token
     const refreshToken = jwt.sign(
       { userId: user.id },
       process.env.JWT_REFRESH_SECRET,
       { expiresIn: '7d' }
     );
-    
+
     // Store refresh token in database
     await db.refreshToken.create({
       data: {
@@ -162,19 +166,19 @@ app.post('/api/auth/login', async (req, res) => {
         expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
       }
     });
-    
+
     res.json({
       token,
       refreshToken,
       expiresIn: 3600
     });
-    
-  } catch (error) {
-    console.error('Login error:', error);
-    res.status(500).json({ 
-      error: 'An error occurred during login' 
-    });
-  }
+
+} catch (error) {
+console.error('Login error:', error);
+res.status(500).json({
+error: 'An error occurred during login'
+});
+}
 });
 \`\`\`
 
@@ -185,41 +189,42 @@ app.post('/api/auth/login', async (req, res) => {
 const jwt = require('jsonwebtoken');
 
 function authenticateToken(req, res, next) {
-  // Get token from header
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
-  
-  if (!token) {
-    return res.status(401).json({ 
-      error: 'Access token required' 
-    });
-  }
-  
-  // Verify token
-  jwt.verify(
-    token, 
-    process.env.JWT_SECRET,
-    { 
-      issuer: 'your-app',
-      audience: 'your-app-users'
-    },
-    (err, user) => {
-      if (err) {
-        if (err.name === 'TokenExpiredError') {
-          return res.status(401).json({ 
-            error: 'Token expired' 
-          });
-        }
-        return res.status(403).json({ 
-          error: 'Invalid token' 
-        });
-      }
-      
+// Get token from header
+const authHeader = req.headers['authorization'];
+const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
+
+if (!token) {
+return res.status(401).json({
+error: 'Access token required'
+});
+}
+
+// Verify token
+jwt.verify(
+token,
+process.env.JWT_SECRET,
+{
+issuer: 'your-app',
+audience: 'your-app-users'
+},
+(err, user) => {
+if (err) {
+if (err.name === 'TokenExpiredError') {
+return res.status(401).json({
+error: 'Token expired'
+});
+}
+return res.status(403).json({
+error: 'Invalid token'
+});
+}
+
       // Attach user to request
       req.user = user;
       next();
     }
-  );
+
+);
 }
 
 module.exports = { authenticateToken };
@@ -232,21 +237,22 @@ const { authenticateToken } = require('./middleware/auth');
 
 // Protected route
 app.get('/api/user/profile', authenticateToken, async (req, res) => {
-  try {
-    const user = await db.user.findUnique({
-      where: { id: req.user.userId },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        // Don't return passwordHash
-      }
-    });
-    
+try {
+const user = await db.user.findUnique({
+where: { id: req.user.userId },
+select: {
+id: true,
+email: true,
+name: true,
+// Don't return passwordHash
+}
+});
+
     res.json(user);
-  } catch (error) {
-    res.status(500).json({ error: 'Server error' });
-  }
+
+} catch (error) {
+res.status(500).json({ error: 'Server error' });
+}
 });
 \`\`\`
 
@@ -254,21 +260,21 @@ app.get('/api/user/profile', authenticateToken, async (req, res) => {
 
 \`\`\`javascript
 app.post('/api/auth/refresh', async (req, res) => {
-  const { refreshToken } = req.body;
-  
-  if (!refreshToken) {
-    return res.status(401).json({ 
-      error: 'Refresh token required' 
-    });
-  }
-  
-  try {
-    // Verify refresh token
-    const decoded = jwt.verify(
-      refreshToken, 
-      process.env.JWT_REFRESH_SECRET
-    );
-    
+const { refreshToken } = req.body;
+
+if (!refreshToken) {
+return res.status(401).json({
+error: 'Refresh token required'
+});
+}
+
+try {
+// Verify refresh token
+const decoded = jwt.verify(
+refreshToken,
+process.env.JWT_REFRESH_SECRET
+);
+
     // Check if refresh token exists in database
     const storedToken = await db.refreshToken.findFirst({
       where: {
@@ -277,20 +283,20 @@ app.post('/api/auth/refresh', async (req, res) => {
         expiresAt: { gt: new Date() }
       }
     });
-    
+
     if (!storedToken) {
-      return res.status(403).json({ 
-        error: 'Invalid refresh token' 
+      return res.status(403).json({
+        error: 'Invalid refresh token'
       });
     }
-    
+
     // Generate new access token
     const user = await db.user.findUnique({
       where: { id: decoded.userId }
     });
-    
+
     const newToken = jwt.sign(
-      { 
+      {
         userId: user.id,
         email: user.email,
         role: user.role
@@ -298,17 +304,17 @@ app.post('/api/auth/refresh', async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: '1h' }
     );
-    
+
     res.json({
       token: newToken,
       expiresIn: 3600
     });
-    
-  } catch (error) {
-    res.status(403).json({ 
-      error: 'Invalid refresh token' 
-    });
-  }
+
+} catch (error) {
+res.status(403).json({
+error: 'Invalid refresh token'
+});
+}
 });
 \`\`\`
 
@@ -324,7 +330,6 @@ app.post('/api/auth/refresh', async (req, res) => {
 - ✅ Implement token blacklisting for logout
 ```
 
-
 ### Example 2: Input Validation and SQL Injection Prevention
 
 ```markdown
@@ -336,13 +341,13 @@ app.post('/api/auth/refresh', async (req, res) => {
 \`\`\`javascript
 // NEVER DO THIS - SQL Injection vulnerability
 app.get('/api/users/:id', async (req, res) => {
-  const userId = req.params.id;
-  
-  // Dangerous: User input directly in query
-  const query = \`SELECT * FROM users WHERE id = '\${userId}'\`;
-  const user = await db.query(query);
-  
-  res.json(user);
+const userId = req.params.id;
+
+// Dangerous: User input directly in query
+const query = \`SELECT * FROM users WHERE id = '\${userId}'\`;
+const user = await db.query(query);
+
+res.json(user);
 });
 
 // Attack example:
@@ -357,28 +362,28 @@ app.get('/api/users/:id', async (req, res) => {
 \`\`\`javascript
 // ✅ Safe: Parameterized query
 app.get('/api/users/:id', async (req, res) => {
-  const userId = req.params.id;
-  
-  // Validate input first
-  if (!userId || !/^\d+$/.test(userId)) {
-    return res.status(400).json({ 
-      error: 'Invalid user ID' 
-    });
-  }
-  
-  // Use parameterized query
-  const user = await db.query(
-    'SELECT id, email, name FROM users WHERE id = $1',
-    [userId]
-  );
-  
-  if (!user) {
-    return res.status(404).json({ 
-      error: 'User not found' 
-    });
-  }
-  
-  res.json(user);
+const userId = req.params.id;
+
+// Validate input first
+if (!userId || !/^\d+$/.test(userId)) {
+return res.status(400).json({
+error: 'Invalid user ID'
+});
+}
+
+// Use parameterized query
+const user = await db.query(
+'SELECT id, email, name FROM users WHERE id = $1',
+[userId]
+);
+
+if (!user) {
+return res.status(404).json({
+error: 'User not found'
+});
+}
+
+res.json(user);
 });
 \`\`\`
 
@@ -387,31 +392,31 @@ app.get('/api/users/:id', async (req, res) => {
 \`\`\`javascript
 // ✅ Safe: Using Prisma ORM
 app.get('/api/users/:id', async (req, res) => {
-  const userId = parseInt(req.params.id);
-  
-  if (isNaN(userId)) {
-    return res.status(400).json({ 
-      error: 'Invalid user ID' 
-    });
-  }
-  
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    select: {
-      id: true,
-      email: true,
-      name: true,
-      // Don't select sensitive fields
-    }
-  });
-  
-  if (!user) {
-    return res.status(404).json({ 
-      error: 'User not found' 
-    });
-  }
-  
-  res.json(user);
+const userId = parseInt(req.params.id);
+
+if (isNaN(userId)) {
+return res.status(400).json({
+error: 'Invalid user ID'
+});
+}
+
+const user = await prisma.user.findUnique({
+where: { id: userId },
+select: {
+id: true,
+email: true,
+name: true,
+// Don't select sensitive fields
+}
+});
+
+if (!user) {
+return res.status(404).json({
+error: 'User not found'
+});
+}
+
+res.json(user);
 });
 \`\`\`
 
@@ -422,47 +427,47 @@ const { z } = require('zod');
 
 // Define validation schema
 const createUserSchema = z.object({
-  email: z.string().email('Invalid email format'),
-  password: z.string()
-    .min(8, 'Password must be at least 8 characters')
-    .regex(/[A-Z]/, 'Password must contain uppercase letter')
-    .regex(/[a-z]/, 'Password must contain lowercase letter')
-    .regex(/[0-9]/, 'Password must contain number'),
-  name: z.string()
-    .min(2, 'Name must be at least 2 characters')
-    .max(100, 'Name too long'),
-  age: z.number()
-    .int('Age must be an integer')
-    .min(18, 'Must be 18 or older')
-    .max(120, 'Invalid age')
-    .optional()
+email: z.string().email('Invalid email format'),
+password: z.string()
+.min(8, 'Password must be at least 8 characters')
+.regex(/[A-Z]/, 'Password must contain uppercase letter')
+.regex(/[a-z]/, 'Password must contain lowercase letter')
+.regex(/[0-9]/, 'Password must contain number'),
+name: z.string()
+.min(2, 'Name must be at least 2 characters')
+.max(100, 'Name too long'),
+age: z.number()
+.int('Age must be an integer')
+.min(18, 'Must be 18 or older')
+.max(120, 'Invalid age')
+.optional()
 });
 
 // Validation middleware
 function validateRequest(schema) {
-  return (req, res, next) => {
-    try {
-      schema.parse(req.body);
-      next();
-    } catch (error) {
-      res.status(400).json({
-        error: 'Validation failed',
-        details: error.errors
-      });
-    }
-  };
+return (req, res, next) => {
+try {
+schema.parse(req.body);
+next();
+} catch (error) {
+res.status(400).json({
+error: 'Validation failed',
+details: error.errors
+});
+}
+};
 }
 
 // Use validation
-app.post('/api/users', 
-  validateRequest(createUserSchema),
-  async (req, res) => {
-    // Input is validated at this point
-    const { email, password, name, age } = req.body;
-    
+app.post('/api/users',
+validateRequest(createUserSchema),
+async (req, res) => {
+// Input is validated at this point
+const { email, password, name, age } = req.body;
+
     // Hash password
     const passwordHash = await bcrypt.hash(password, 10);
-    
+
     // Create user
     const user = await prisma.user.create({
       data: {
@@ -472,11 +477,12 @@ app.post('/api/users',
         age
       }
     });
-    
+
     // Don't return password hash
     const { passwordHash: _, ...userWithoutPassword } = user;
     res.status(201).json(userWithoutPassword);
-  }
+
+}
 );
 \`\`\`
 
@@ -486,29 +492,29 @@ app.post('/api/users',
 const DOMPurify = require('isomorphic-dompurify');
 
 app.post('/api/comments', authenticateToken, async (req, res) => {
-  const { content } = req.body;
-  
-  // Validate
-  if (!content || content.length > 1000) {
-    return res.status(400).json({ 
-      error: 'Invalid comment content' 
-    });
-  }
-  
-  // Sanitize HTML to prevent XSS
-  const sanitizedContent = DOMPurify.sanitize(content, {
-    ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'a'],
-    ALLOWED_ATTR: ['href']
-  });
-  
-  const comment = await prisma.comment.create({
-    data: {
-      content: sanitizedContent,
-      userId: req.user.userId
-    }
-  });
-  
-  res.status(201).json(comment);
+const { content } = req.body;
+
+// Validate
+if (!content || content.length > 1000) {
+return res.status(400).json({
+error: 'Invalid comment content'
+});
+}
+
+// Sanitize HTML to prevent XSS
+const sanitizedContent = DOMPurify.sanitize(content, {
+ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'a'],
+ALLOWED_ATTR: ['href']
+});
+
+const comment = await prisma.comment.create({
+data: {
+content: sanitizedContent,
+userId: req.user.userId
+}
+});
+
+res.status(201).json(comment);
 });
 \`\`\`
 
@@ -523,7 +529,6 @@ app.post('/api/comments', authenticateToken, async (req, res) => {
 - [ ] Validate file uploads (type, size, content)
 - [ ] Use allowlists, not blocklists
 ```
-
 
 ### Example 3: Rate Limiting and DDoS Protection
 
@@ -547,43 +552,43 @@ const Redis = require('ioredis');
 
 // Create Redis client
 const redis = new Redis({
-  host: process.env.REDIS_HOST,
-  port: process.env.REDIS_PORT
+host: process.env.REDIS_HOST,
+port: process.env.REDIS_PORT
 });
 
 // General API rate limit
 const apiLimiter = rateLimit({
-  store: new RedisStore({
-    client: redis,
-    prefix: 'rl:api:'
-  }),
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // 100 requests per window
-  message: {
-    error: 'Too many requests, please try again later',
-    retryAfter: 900 // seconds
-  },
-  standardHeaders: true, // Return rate limit info in headers
-  legacyHeaders: false,
-  // Custom key generator (by user ID or IP)
-  keyGenerator: (req) => {
-    return req.user?.userId || req.ip;
-  }
+store: new RedisStore({
+client: redis,
+prefix: 'rl:api:'
+}),
+windowMs: 15 * 60 * 1000, // 15 minutes
+max: 100, // 100 requests per window
+message: {
+error: 'Too many requests, please try again later',
+retryAfter: 900 // seconds
+},
+standardHeaders: true, // Return rate limit info in headers
+legacyHeaders: false,
+// Custom key generator (by user ID or IP)
+keyGenerator: (req) => {
+return req.user?.userId || req.ip;
+}
 });
 
 // Strict rate limit for authentication endpoints
 const authLimiter = rateLimit({
-  store: new RedisStore({
-    client: redis,
-    prefix: 'rl:auth:'
-  }),
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // Only 5 login attempts per 15 minutes
-  skipSuccessfulRequests: true, // Don't count successful logins
-  message: {
-    error: 'Too many login attempts, please try again later',
-    retryAfter: 900
-  }
+store: new RedisStore({
+client: redis,
+prefix: 'rl:auth:'
+}),
+windowMs: 15 * 60 * 1000, // 15 minutes
+max: 5, // Only 5 login attempts per 15 minutes
+skipSuccessfulRequests: true, // Don't count successful logins
+message: {
+error: 'Too many login attempts, please try again later',
+retryAfter: 900
+}
 });
 
 // Apply rate limiters
@@ -593,19 +598,19 @@ app.use('/api/auth/register', authLimiter);
 
 // Custom rate limiter for expensive operations
 const expensiveLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000, // 1 hour
-  max: 10, // 10 requests per hour
-  message: {
-    error: 'Rate limit exceeded for this operation'
-  }
+windowMs: 60 * 60 * 1000, // 1 hour
+max: 10, // 10 requests per hour
+message: {
+error: 'Rate limit exceeded for this operation'
+}
 });
 
-app.post('/api/reports/generate', 
-  authenticateToken,
-  expensiveLimiter,
-  async (req, res) => {
-    // Expensive operation
-  }
+app.post('/api/reports/generate',
+authenticateToken,
+expensiveLimiter,
+async (req, res) => {
+// Expensive operation
+}
 );
 \`\`\`
 
@@ -614,24 +619,24 @@ app.post('/api/reports/generate',
 \`\`\`javascript
 // Different limits based on user tier
 function createTieredRateLimiter() {
-  const limits = {
-    free: { windowMs: 60 * 60 * 1000, max: 100 },
-    pro: { windowMs: 60 * 60 * 1000, max: 1000 },
-    enterprise: { windowMs: 60 * 60 * 1000, max: 10000 }
-  };
-  
-  return async (req, res, next) => {
-    const user = req.user;
-    const tier = user?.tier || 'free';
-    const limit = limits[tier];
-    
+const limits = {
+free: { windowMs: 60 * 60 * 1000, max: 100 },
+pro: { windowMs: 60 * 60 * 1000, max: 1000 },
+enterprise: { windowMs: 60 * 60 * 1000, max: 10000 }
+};
+
+return async (req, res, next) => {
+const user = req.user;
+const tier = user?.tier || 'free';
+const limit = limits[tier];
+
     const key = \`rl:user:\${user.userId}\`;
     const current = await redis.incr(key);
-    
+
     if (current === 1) {
       await redis.expire(key, limit.windowMs / 1000);
     }
-    
+
     if (current > limit.max) {
       return res.status(429).json({
         error: 'Rate limit exceeded',
@@ -640,16 +645,17 @@ function createTieredRateLimiter() {
         reset: await redis.ttl(key)
       });
     }
-    
+
     // Set rate limit headers
     res.set({
       'X-RateLimit-Limit': limit.max,
       'X-RateLimit-Remaining': limit.max - current,
       'X-RateLimit-Reset': await redis.ttl(key)
     });
-    
+
     next();
-  };
+
+};
 }
 
 app.use('/api/', authenticateToken, createTieredRateLimiter());
@@ -661,27 +667,27 @@ app.use('/api/', authenticateToken, createTieredRateLimiter());
 const helmet = require('helmet');
 
 app.use(helmet({
-  // Content Security Policy
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      styleSrc: ["'self'", "'unsafe-inline'"],
-      scriptSrc: ["'self'"],
-      imgSrc: ["'self'", 'data:', 'https:']
-    }
-  },
-  // Prevent clickjacking
-  frameguard: { action: 'deny' },
-  // Hide X-Powered-By header
-  hidePoweredBy: true,
-  // Prevent MIME type sniffing
-  noSniff: true,
-  // Enable HSTS
-  hsts: {
-    maxAge: 31536000,
-    includeSubDomains: true,
-    preload: true
-  }
+// Content Security Policy
+contentSecurityPolicy: {
+directives: {
+defaultSrc: ["'self'"],
+styleSrc: ["'self'", "'unsafe-inline'"],
+scriptSrc: ["'self'"],
+imgSrc: ["'self'", 'data:', 'https:']
+}
+},
+// Prevent clickjacking
+frameguard: { action: 'deny' },
+// Hide X-Powered-By header
+hidePoweredBy: true,
+// Prevent MIME type sniffing
+noSniff: true,
+// Enable HSTS
+hsts: {
+maxAge: 31536000,
+includeSubDomains: true,
+preload: true
+}
 }));
 \`\`\`
 
@@ -728,6 +734,7 @@ Retry-After: 900
 ## Common Pitfalls
 
 ### Problem: JWT Secret Exposed in Code
+
 **Symptoms:** JWT secret hardcoded or committed to Git
 **Solution:**
 \`\`\`javascript
@@ -737,7 +744,7 @@ const JWT_SECRET = 'my-secret-key';
 // ✅ Good
 const JWT_SECRET = process.env.JWT_SECRET;
 if (!JWT_SECRET) {
-  throw new Error('JWT_SECRET environment variable is required');
+throw new Error('JWT_SECRET environment variable is required');
 }
 
 // Generate strong secret
@@ -745,98 +752,103 @@ if (!JWT_SECRET) {
 \`\`\`
 
 ### Problem: Weak Password Requirements
+
 **Symptoms:** Users can set weak passwords like "password123"
 **Solution:**
 \`\`\`javascript
 const passwordSchema = z.string()
-  .min(12, 'Password must be at least 12 characters')
-  .regex(/[A-Z]/, 'Must contain uppercase letter')
-  .regex(/[a-z]/, 'Must contain lowercase letter')
-  .regex(/[0-9]/, 'Must contain number')
-  .regex(/[^A-Za-z0-9]/, 'Must contain special character');
+.min(12, 'Password must be at least 12 characters')
+.regex(/[A-Z]/, 'Must contain uppercase letter')
+.regex(/[a-z]/, 'Must contain lowercase letter')
+.regex(/[0-9]/, 'Must contain number')
+.regex(/[^A-Za-z0-9]/, 'Must contain special character');
 
 // Or use a password strength library
 const zxcvbn = require('zxcvbn');
 const result = zxcvbn(password);
 if (result.score < 3) {
-  return res.status(400).json({
-    error: 'Password too weak',
-    suggestions: result.feedback.suggestions
-  });
+return res.status(400).json({
+error: 'Password too weak',
+suggestions: result.feedback.suggestions
+});
 }
 \`\`\`
 
 ### Problem: Missing Authorization Checks
+
 **Symptoms:** Users can access resources they shouldn't
 **Solution:**
 \`\`\`javascript
 // ❌ Bad: Only checks authentication
 app.delete('/api/posts/:id', authenticateToken, async (req, res) => {
-  await prisma.post.delete({ where: { id: req.params.id } });
-  res.json({ success: true });
+await prisma.post.delete({ where: { id: req.params.id } });
+res.json({ success: true });
 });
 
 // ✅ Good: Checks both authentication and authorization
 app.delete('/api/posts/:id', authenticateToken, async (req, res) => {
-  const post = await prisma.post.findUnique({
-    where: { id: req.params.id }
-  });
-  
-  if (!post) {
-    return res.status(404).json({ error: 'Post not found' });
-  }
-  
-  // Check if user owns the post or is admin
-  if (post.userId !== req.user.userId && req.user.role !== 'admin') {
-    return res.status(403).json({ 
-      error: 'Not authorized to delete this post' 
-    });
-  }
-  
-  await prisma.post.delete({ where: { id: req.params.id } });
-  res.json({ success: true });
+const post = await prisma.post.findUnique({
+where: { id: req.params.id }
+});
+
+if (!post) {
+return res.status(404).json({ error: 'Post not found' });
+}
+
+// Check if user owns the post or is admin
+if (post.userId !== req.user.userId && req.user.role !== 'admin') {
+return res.status(403).json({
+error: 'Not authorized to delete this post'
+});
+}
+
+await prisma.post.delete({ where: { id: req.params.id } });
+res.json({ success: true });
 });
 \`\`\`
 
 ### Problem: Verbose Error Messages
+
 **Symptoms:** Error messages reveal system details
 **Solution:**
 \`\`\`javascript
 // ❌ Bad: Exposes database details
 app.post('/api/users', async (req, res) => {
-  try {
-    const user = await prisma.user.create({ data: req.body });
-    res.json(user);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-    // Error: "Unique constraint failed on the fields: (`email`)"
-  }
+try {
+const user = await prisma.user.create({ data: req.body });
+res.json(user);
+} catch (error) {
+res.status(500).json({ error: error.message });
+// Error: "Unique constraint failed on the fields: (`email`)"
+}
 });
 
 // ✅ Good: Generic error message
 app.post('/api/users', async (req, res) => {
-  try {
-    const user = await prisma.user.create({ data: req.body });
-    res.json(user);
-  } catch (error) {
-    console.error('User creation error:', error); // Log full error
-    
+try {
+const user = await prisma.user.create({ data: req.body });
+res.json(user);
+} catch (error) {
+console.error('User creation error:', error); // Log full error
+
     if (error.code === 'P2002') {
-      return res.status(400).json({ 
-        error: 'Email already exists' 
+      return res.status(400).json({
+        error: 'Email already exists'
       });
     }
-    
-    res.status(500).json({ 
-      error: 'An error occurred while creating user' 
+
+    res.status(500).json({
+      error: 'An error occurred while creating user'
     });
-  }
+
+}
 });
 \`\`\`
 
 ## Security Checklist
 
 ### Authentication & Authorization
+
 - [ ] Implement strong authentication (JWT, OAuth 2.0)
 - [ ] Use HTTPS for all endpoints
 - [ ] Hash passwords with bcrypt (salt rounds >= 10)
@@ -846,6 +858,7 @@ app.post('/api/users', async (req, res) => {
 - [ ] Implement role-based access control (RBAC)
 
 ### Input Validation
+
 - [ ] Validate all user inputs
 - [ ] Use parameterized queries or ORM
 - [ ] Sanitize HTML content
@@ -854,6 +867,7 @@ app.post('/api/users', async (req, res) => {
 - [ ] Use allowlists, not blocklists
 
 ### Rate Limiting & DDoS Protection
+
 - [ ] Implement rate limiting per user/IP
 - [ ] Add stricter limits for auth endpoints
 - [ ] Use Redis for distributed rate limiting
@@ -861,6 +875,7 @@ app.post('/api/users', async (req, res) => {
 - [ ] Implement request throttling
 
 ### Data Protection
+
 - [ ] Use HTTPS/TLS for all traffic
 - [ ] Encrypt sensitive data at rest
 - [ ] Don't store sensitive data in JWT
@@ -869,6 +884,7 @@ app.post('/api/users', async (req, res) => {
 - [ ] Use security headers (Helmet.js)
 
 ### Monitoring & Logging
+
 - [ ] Log security events
 - [ ] Monitor for suspicious activity
 - [ ] Set up alerts for failed auth attempts
@@ -910,6 +926,7 @@ app.post('/api/users', async (req, res) => {
 **Pro Tip:** Security is not a one-time task - regularly audit your APIs, keep dependencies updated, and stay informed about new vulnerabilities!
 
 ## Limitations
+
 - Use this skill only when the task clearly matches the scope described above.
 - Do not treat the output as a substitute for environment-specific validation, testing, or expert review.
 - Stop and ask for clarification if required inputs, permissions, safety boundaries, or success criteria are missing.
