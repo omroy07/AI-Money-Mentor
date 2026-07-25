@@ -40,3 +40,4 @@ Pillow==12.3.0
 transformers==4.36.0
 torch==2.13.0
 langdetect==1.0.9
+Flask-WTF==1.2.1
