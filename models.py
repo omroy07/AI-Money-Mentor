@@ -1663,4 +1663,10 @@ class GroupSettlement(db.Model):
             'settled_at': self.settled_at.isoformat() if self.settled_at else None,
         }
 
-
+class UserSettings(db.Model):
+    __tablename__ = 'user_settings'
+    
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    weekly_email_enabled = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)

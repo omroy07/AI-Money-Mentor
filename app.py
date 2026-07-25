@@ -45,7 +45,7 @@ from models import (
     BankConnection, BankTransaction, FraudAlert, Notification,
     NotificationPreference, InvestmentGoal, GoalAllocation,
     GoalContribution, GoalRecommendation, Couple,
-    CoupleSubscription, User,
+    CoupleSubscription, User, UserSettings
 )
 
 
@@ -262,26 +262,11 @@ def load_user(user_id):
 
 # ---------------- EMAIL DB ----------------
 def init_email_db():
-    conn = sqlite3.connect('database.db')
-    c = conn.cursor()
-    c.execute('''
-        CREATE TABLE IF NOT EXISTS user_settings (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            email VARCHAR(120) UNIQUE,
-            weekly_email_enabled BOOLEAN DEFAULT 1,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-    ''')
-    conn.commit()
-    conn.close()
+    pass
 
 def get_user_email_settings():
-    conn = sqlite3.connect('database.db')
-    c = conn.cursor()
-    c.execute('SELECT email FROM user_settings WHERE weekly_email_enabled = 1')
-    users = c.fetchall()
-    conn.close()
-    return [user[0] for user in users]
+    users = UserSettings.query.filter_by(weekly_email_enabled=True).all()
+    return [user.email for user in users]
 
 init_email_db()
 
@@ -3530,11 +3515,15 @@ def update_email():
     enabled = data.get('enabled', True)
     if not email:
         return jsonify({'error': 'Email is required'}), 400
-    conn = sqlite3.connect('database.db')
-    c = conn.cursor()
-    c.execute('INSERT OR REPLACE INTO user_settings (email, weekly_email_enabled) VALUES (?, ?)', (email, 1 if enabled else 0))
-    conn.commit()
-    conn.close()
+    
+    setting = UserSettings.query.filter_by(email=email).first()
+    if setting:
+        setting.weekly_email_enabled = enabled
+    else:
+        setting = UserSettings(email=email, weekly_email_enabled=enabled)
+        db.session.add(setting)
+        
+    db.session.commit()
     return jsonify({'success': True, 'message': 'Settings updated successfully'})
 
 @app.route('/api/unsubscribe', methods=['POST'])
@@ -3543,11 +3532,12 @@ def unsubscribe():
     email = data.get('email')
     if not email:
         return jsonify({'error': 'Email is required'}), 400
-    conn = sqlite3.connect('database.db')
-    c = conn.cursor()
-    c.execute('UPDATE user_settings SET weekly_email_enabled = 0 WHERE email = ?', (email,))
-    conn.commit()
-    conn.close()
+        
+    setting = UserSettings.query.filter_by(email=email).first()
+    if setting:
+        setting.weekly_email_enabled = False
+        db.session.commit()
+        
     return jsonify({'success': True, 'message': 'Unsubscribed successfully'})
 
 # ---------------- TEST EMAIL ROUTES ----------------
