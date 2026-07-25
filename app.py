@@ -648,6 +648,9 @@ def register():
     if not username or not password or not email:
         return jsonify({"error": "Username, email, and password are required."}), 400
 
+    if not re.match(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', email):
+        return jsonify({"error": "Invalid email address format."}), 400
+
     password_error = validate_password_strength(password)
     if password_error:
         return jsonify({"error": password_error}), 400
@@ -1937,6 +1940,8 @@ def couple_invite():
         email = data.get('email')
         if not email:
             return jsonify({'error': 'Email is required'}), 400
+        if not re.match(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', email):
+            return jsonify({'error': 'Invalid email address format.'}), 400
         result = couple_manager.create_invitation(current_user.id, email)
         return jsonify(result)
     except Exception as e:
