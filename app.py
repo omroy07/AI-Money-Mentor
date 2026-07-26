@@ -4308,6 +4308,13 @@ def forbidden(error):
         return render_template("403.html", active_page=None), 403
     return jsonify({"error": "Forbidden", "message": "You do not have permission to access this resource.", "status_code": 403}), 403
 
+@app.errorhandler(401)
+def unauthorized(error):
+    logger.info("401 Unauthorized: %s %s", request.method, request.path)
+    if request.accept_mimetypes.accept_html and not request.accept_mimetypes.accept_json:
+        return render_template("401.html", active_page=None), 401
+    return jsonify({"error": "Unauthorized", "message": "You must be signed in to access this resource.", "status_code": 401}), 401
+
 @app.errorhandler(404)
 def not_found(error):
     logger.info("404 Not Found: %s %s", request.method, request.path)
