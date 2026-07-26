@@ -50,16 +50,16 @@ pytest tests/test_tax.py -v
 
 All configuration is in `.env`:
 
-| Variable | Required | Default | Description |
-|----------|----------|---------|-------------|
-| `GROQ_API_KEY` | Yes | — | API key for Groq LLM |
-| `SECRET_KEY` | No | auto-generated | Flask session key |
-| `DATABASE_URL` | No | sqlite:///money_mentor.db | Primary database |
-| `MAIL_SERVER` | No | localhost | SMTP server |
-| `MAIL_PORT` | No | 587 | SMTP port |
-| `MAIL_USE_TLS` | No | True | SMTP TLS |
-| `MAIL_USERNAME` | No | — | SMTP user |
-| `MAIL_PASSWORD` | No | — | SMTP password |
+| Variable        | Required | Default                   | Description          |
+| --------------- | -------- | ------------------------- | -------------------- |
+| `GROQ_API_KEY`  | Yes      | —                         | API key for Groq LLM |
+| `SECRET_KEY`    | No       | auto-generated            | Flask session key    |
+| `DATABASE_URL`  | No       | sqlite:///money_mentor.db | Primary database     |
+| `MAIL_SERVER`   | No       | localhost                 | SMTP server          |
+| `MAIL_PORT`     | No       | 587                       | SMTP port            |
+| `MAIL_USE_TLS`  | No       | True                      | SMTP TLS             |
+| `MAIL_USERNAME` | No       | —                         | SMTP user            |
+| `MAIL_PASSWORD` | No       | —                         | SMTP password        |
 
 ## Production Deployment
 
@@ -83,10 +83,10 @@ python app.py --production
 
 ## Troubleshooting
 
-| Symptom | Likely Cause | Fix |
-|---------|-------------|-----|
-| App exits immediately | Missing `GROQ_API_KEY` | Set it in `.env` |
-| Stock data fails | Unknown ticker | The app auto-tries `.NS` suffix for Indian stocks |
-| Login not working | Secret key changed | Delete the `.env` `SECRET_KEY` line to regenerate |
-| Tests fail | Missing test deps | Run `pip install -r requirements-dev.txt` |
-| CSS not loading | Static files cached | Hard refresh (Ctrl+Shift+R) |
+| Symptom               | Likely Cause           | Fix                                               |
+| --------------------- | ---------------------- | ------------------------------------------------- |
+| App exits immediately | Missing `GROQ_API_KEY` | Set it in `.env`                                  |
+| Stock data fails      | Unknown ticker         | The app auto-tries `.NS` suffix for Indian stocks |
+| Login not working     | Secret key changed     | Delete the `.env` `SECRET_KEY` line to regenerate |
+| Tests fail            | Missing test deps      | Run `pip install -r requirements-dev.txt`         |
+| CSS not loading       | Static files cached    | Hard refresh (Ctrl+Shift+R)                       |

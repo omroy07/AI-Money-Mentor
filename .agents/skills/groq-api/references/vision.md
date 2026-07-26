@@ -4,21 +4,21 @@ Process images with Llama 4 multimodal models for image understanding, OCR, and 
 
 ## Supported Models
 
-| Model ID | Context | Notes |
-|----------|---------|-------|
-| `meta-llama/llama-4-scout-17b-16e-instruct` | 128K | Faster, preview |
-| `meta-llama/llama-4-maverick-17b-128e-instruct` | 128K | Higher quality, preview |
+| Model ID                                        | Context | Notes                   |
+| ----------------------------------------------- | ------- | ----------------------- |
+| `meta-llama/llama-4-scout-17b-16e-instruct`     | 128K    | Faster, preview         |
+| `meta-llama/llama-4-maverick-17b-128e-instruct` | 128K    | Higher quality, preview |
 
 Both models support: multilingual, multi-turn conversations, tool use, and JSON mode with images.
 
 ## Limits
 
-| Limit | Value |
-|-------|-------|
-| Image URL request size | 20MB max |
-| Image resolution | 33 megapixels (33177600 pixels) max |
-| Base64 encoded request size | 4MB max |
-| Images per request | 5 max |
+| Limit                       | Value                               |
+| --------------------------- | ----------------------------------- |
+| Image URL request size      | 20MB max                            |
+| Image resolution            | 33 megapixels (33177600 pixels) max |
+| Base64 encoded request size | 4MB max                             |
+| Images per request          | 5 max                               |
 
 ## Image from URL
 
@@ -209,33 +209,43 @@ response = client.chat.completions.create(
 ## TypeScript
 
 ```typescript
-import Groq from "groq-sdk";
-import * as fs from "fs";
+import Groq from 'groq-sdk';
+import * as fs from 'fs';
 
 const client = new Groq();
 
 // From URL
 const response = await client.chat.completions.create({
-    model: "meta-llama/llama-4-scout-17b-16e-instruct",
-    messages: [{
-        role: "user",
-        content: [
-            { type: "text", text: "What's in this image?" },
-            { type: "image_url", image_url: { url: "https://example.com/image.jpg" } }
-        ]
-    }]
+  model: 'meta-llama/llama-4-scout-17b-16e-instruct',
+  messages: [
+    {
+      role: 'user',
+      content: [
+        { type: 'text', text: "What's in this image?" },
+        {
+          type: 'image_url',
+          image_url: { url: 'https://example.com/image.jpg' },
+        },
+      ],
+    },
+  ],
 });
 
 // From local file
-const base64Image = fs.readFileSync("photo.jpg").toString("base64");
+const base64Image = fs.readFileSync('photo.jpg').toString('base64');
 const localResponse = await client.chat.completions.create({
-    model: "meta-llama/llama-4-scout-17b-16e-instruct",
-    messages: [{
-        role: "user",
-        content: [
-            { type: "text", text: "Describe this image" },
-            { type: "image_url", image_url: { url: `data:image/jpeg;base64,${base64Image}` } }
-        ]
-    }]
+  model: 'meta-llama/llama-4-scout-17b-16e-instruct',
+  messages: [
+    {
+      role: 'user',
+      content: [
+        { type: 'text', text: 'Describe this image' },
+        {
+          type: 'image_url',
+          image_url: { url: `data:image/jpeg;base64,${base64Image}` },
+        },
+      ],
+    },
+  ],
 });
 ```

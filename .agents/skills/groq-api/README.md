@@ -10,29 +10,31 @@ Integration skill for building AI-powered applications with Groq's ultra-fast LL
 
 This skill provides guidance and patterns for working with Groq's API, covering:
 
-* Chat completions with production-optimized open-source models
-* Vision/image understanding with Llama 4 multimodal models
-* Audio transcription (Whisper) and text-to-speech
-* Tool use/function calling
-* Structured outputs and JSON mode
-* Reasoning models with configurable effort levels
-* Batch processing for high-volume workloads
+- Chat completions with production-optimized open-source models
+- Vision/image understanding with Llama 4 multimodal models
+- Audio transcription (Whisper) and text-to-speech
+- Tool use/function calling
+- Structured outputs and JSON mode
+- Reasoning models with configurable effort levels
+- Batch processing for high-volume workloads
 
 ---
 
 ## When to Use This Skill
 
 **Triggers:**
-* Mentions of Groq, GroqCloud, or fast LLM inference
-* Working with the Python SDK (`groq`) or TypeScript SDK (`groq-sdk`)
-* Tasks requiring high throughput or low latency inference
+
+- Mentions of Groq, GroqCloud, or fast LLM inference
+- Working with the Python SDK (`groq`) or TypeScript SDK (`groq-sdk`)
+- Tasks requiring high throughput or low latency inference
 
 **Use cases:**
-* Implementing chat completions with Llama, Qwen, or other supported models
-* Adding vision capabilities with Llama 4 multimodal models
-* Transcribing audio with Whisper
-* Building agents with tool use/function calling
-* Creating reasoning workflows with configurable effort levels
+
+- Implementing chat completions with Llama, Qwen, or other supported models
+- Adding vision capabilities with Llama 4 multimodal models
+- Transcribing audio with Whisper
+- Building agents with tool use/function calling
+- Creating reasoning workflows with configurable effort levels
 
 ---
 
@@ -57,6 +59,7 @@ export GROQ_API_KEY=<your-api-key>
 ### Basic Usage
 
 **Python:**
+
 ```python
 from groq import Groq
 
@@ -70,14 +73,15 @@ print(response.choices[0].message.content)
 ```
 
 **TypeScript:**
+
 ```typescript
-import Groq from "groq-sdk";
+import Groq from 'groq-sdk';
 
 const client = new Groq();
 
 const response = await client.chat.completions.create({
-    model: "llama-3.3-70b-versatile",
-    messages: [{ role: "user", content: "Hello" }],
+  model: 'llama-3.3-70b-versatile',
+  messages: [{ role: 'user', content: 'Hello' }],
 });
 console.log(response.choices[0].message.content);
 ```
@@ -86,16 +90,16 @@ console.log(response.choices[0].message.content);
 
 ## Model Selection Guide
 
-| Use Case | Model | Notes |
-|----------|-------|-------|
-| Fast + cheap | `llama-3.1-8b-instant` | Best for simple tasks |
-| Balanced | `llama-3.3-70b-versatile` | Quality/cost balance |
-| Highest quality | `openai/gpt-oss-120b` | Built-in tools + reasoning |
-| Agentic | `groq/compound` | Web search + code exec |
-| Reasoning | `openai/gpt-oss-20b` | Fast reasoning (low/med/high) |
-| Vision/OCR | `llama-4-scout-17b-16e-instruct` | Image understanding |
-| Audio STT | `whisper-large-v3-turbo` | Transcription |
-| TTS | `playai-tts` | Text-to-speech |
+| Use Case        | Model                            | Notes                         |
+| --------------- | -------------------------------- | ----------------------------- |
+| Fast + cheap    | `llama-3.1-8b-instant`           | Best for simple tasks         |
+| Balanced        | `llama-3.3-70b-versatile`        | Quality/cost balance          |
+| Highest quality | `openai/gpt-oss-120b`            | Built-in tools + reasoning    |
+| Agentic         | `groq/compound`                  | Web search + code exec        |
+| Reasoning       | `openai/gpt-oss-20b`             | Fast reasoning (low/med/high) |
+| Vision/OCR      | `llama-4-scout-17b-16e-instruct` | Image understanding           |
+| Audio STT       | `whisper-large-v3-turbo`         | Transcription                 |
+| TTS             | `playai-tts`                     | Text-to-speech                |
 
 ---
 
@@ -202,20 +206,20 @@ except APIStatusError as e:
 
 ## Resources
 
-* **Full skill reference**: [SKILL.md](SKILL.md)
-* **Models and pricing**: [references/models.md](references/models.md)
-* **Tool use guide**: [references/tool-use.md](references/tool-use.md)
-* **Vision guide**: [references/vision.md](references/vision.md)
-* **Audio guide**: [references/audio.md](references/audio.md)
-* **Reasoning guide**: [references/reasoning.md](references/reasoning.md)
-* **Structured outputs**: [references/structured-outputs.md](references/structured-outputs.md)
-* **Prompt caching**: [references/prompt-caching.md](references/prompt-caching.md)
-* **Moderation guide**: [references/moderation.md](references/moderation.md)
-* **SDK reference**: [references/sdk.md](references/sdk.md)
-* **Full API reference**: [references/api-reference.md](references/api-reference.md)
-* **Official docs**: https://console.groq.com/docs
-* **Python SDK**: https://github.com/groq/groq-python
-* **TypeScript SDK**: https://github.com/groq/groq-typescript
+- **Full skill reference**: [SKILL.md](SKILL.md)
+- **Models and pricing**: [references/models.md](references/models.md)
+- **Tool use guide**: [references/tool-use.md](references/tool-use.md)
+- **Vision guide**: [references/vision.md](references/vision.md)
+- **Audio guide**: [references/audio.md](references/audio.md)
+- **Reasoning guide**: [references/reasoning.md](references/reasoning.md)
+- **Structured outputs**: [references/structured-outputs.md](references/structured-outputs.md)
+- **Prompt caching**: [references/prompt-caching.md](references/prompt-caching.md)
+- **Moderation guide**: [references/moderation.md](references/moderation.md)
+- **SDK reference**: [references/sdk.md](references/sdk.md)
+- **Full API reference**: [references/api-reference.md](references/api-reference.md)
+- **Official docs**: https://console.groq.com/docs
+- **Python SDK**: https://github.com/groq/groq-python
+- **TypeScript SDK**: https://github.com/groq/groq-typescript
 
 ---
 

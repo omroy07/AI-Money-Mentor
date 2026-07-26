@@ -1,155 +1,231 @@
-{% extends 'base.html' %}
-
-{% block title %}Loan Planner{% endblock %}
-
-{% block content %}
+{% extends 'base.html' %} {% block title %}Loan Planner{% endblock %} {% block
+content %}
 <div id="loan" class="page active">
-  <div class="page-title">💰Loan <span>Planner</span></div>
+  <div class="page-title">
+    <i class="fa-solid fa-hand-holding-dollar"></i>Loan <span>Planner</span>
+  </div>
 
-  <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 20px; align-items: start; max-width: 900px;">
+  <div
+    style="
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 20px;
+      align-items: start;
+      max-width: 900px;
+    "
+  >
     <div class="card">
       <div class="card-title">Enter Information</div>
 
       <label>Principal (₹)</label>
-      <input type="number" required min="0" id="principal" placeholder="e.g. 10000">
+      <input
+        type="number"
+        required
+        min="0"
+        id="principal"
+        placeholder="e.g. 10000"
+      />
 
       <label>Annual Rate of Interest (%)</label>
-      <input type="number" required min="0" id="rate" placeholder="e.g. 12">
+      <input type="number" required min="0" id="rate" placeholder="e.g. 12" />
 
       <label>Time (Years)</label>
-      <input type="number" required min="0" id="time" placeholder="e.g. 10">
+      <input type="number" required min="0" id="time" placeholder="e.g. 10" />
 
       <label>Monthly Income (₹)</label>
-      <input type="number" min="0" id="income" placeholder="e.g. 60000" style="margin-bottom:12px;">
+      <input
+        type="number"
+        min="0"
+        id="income"
+        placeholder="e.g. 60000"
+        style="margin-bottom: 12px"
+      />
 
-      <div style="display:flex;gap:10px;margin-top:16px;">
-        <button class="btn btn-gold" style="flex:1" onclick="calcLoan()" id="Btn">Calculate</button>
-        <button class="btn btn-ghost" style="flex:1" onclick="resetLoan()" id="ResetBtn">Reset</button>
+      <div style="display: flex; gap: 10px; margin-top: 16px">
+        <button
+          class="btn btn-gold"
+          style="flex: 1"
+          onclick="calcLoan()"
+          id="Btn"
+        >
+          Calculate
+        </button>
+        <button
+          class="btn btn-ghost"
+          style="flex: 1"
+          onclick="resetLoan()"
+          id="ResetBtn"
+        >
+          Reset
+        </button>
       </div>
-      <div id="Msg" class="result-box" style="margin-top: 10px;"></div>
+      <div id="Msg" class="result-box" style="margin-top: 10px"></div>
     </div>
-  
-  
-  <div class="card" style="min-height: 380px;">
-    <div class="card-title">Loan Graph</div>
-      <div style="position: relative; height: 320px;">
+
+    <div class="card" style="min-height: 380px">
+      <div class="card-title">Loan Graph</div>
+      <div style="position: relative; height: 320px">
         <canvas id="Chart"></canvas>
       </div>
+    </div>
   </div>
-</div>
 
-<div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 20px; align-items: start; max-width: 900px;">
-    <div class="card" style="box-sizing: border-box;">
-      <div class="card-title" style="color: var(--gold); margin-bottom: 6px;">Loan & EMI Calculator</div>
+  <div
+    style="
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 20px;
+      align-items: start;
+      max-width: 900px;
+    "
+  >
+    <div class="card" style="box-sizing: border-box">
+      <div class="card-title" style="color: var(--gold); margin-bottom: 6px">
+        Loan & EMI Calculator
+      </div>
       <div id="LoanEmicalc">
-        <p style="color: var(--muted); font-size: 13px; margin: 0; padding-top: 4px;">
+        <p
+          style="
+            color: var(--muted);
+            font-size: 13px;
+            margin: 0;
+            padding-top: 4px;
+          "
+        >
           Enter the info above to view the results
         </p>
       </div>
     </div>
-  
-  <div class="card" style=" box-sizing: border-box;">
-      <div class="card-title" style="color: var(--gold); margin-bottom: 6px;">Related Statistics</div>
-      <div id="Reliability">
-        <p style="color: var(--muted); font-size: 13px; margin: 0; padding-top: 4px;">
-          Enter the info above to view the results
-        </p>
-      </div>
-    </div>
-</div>
 
-<div style="margin-top: 20px; max-width: 900px;">
-    <div class="card" style="width: 100%; box-sizing: border-box;">
-      <div class="card-title" style="color: var(--gold); margin-bottom: 6px;">AI Analysis</div>
+    <div class="card" style="box-sizing: border-box">
+      <div class="card-title" style="color: var(--gold); margin-bottom: 6px">
+        Related Statistics
+      </div>
+      <div id="Reliability">
+        <p
+          style="
+            color: var(--muted);
+            font-size: 13px;
+            margin: 0;
+            padding-top: 4px;
+          "
+        >
+          Enter the info above to view the results
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top: 20px; max-width: 900px">
+    <div class="card" style="width: 100%; box-sizing: border-box">
+      <div class="card-title" style="color: var(--gold); margin-bottom: 6px">
+        AI Analysis
+      </div>
       <div id="aiPredictionResult">
-        <p style="color: var(--muted); font-size: 13px; margin: 0; padding-top: 4px;">
+        <p
+          style="
+            color: var(--muted);
+            font-size: 13px;
+            margin: 0;
+            padding-top: 4px;
+          "
+        >
           Enter the info above to view the AI analysis.
         </p>
       </div>
-     </div>
-   </div>
+    </div>
+  </div>
 </div>
-{% endblock %}
-
-{% block scripts %}
+{% endblock %} {% block scripts %}
 <script>
-let loanChart = null;
-console.log("Loan Planner Script Loaded successfully!");
-  
-async function calcLoan(){
-    console.log("Calculate button clicked!");
-    const principal_front=document.getElementById("principal").value;
-    const rate_front=document.getElementById("rate").value;
-    const time_front=document.getElementById("time").value;
-    const income_front=document.getElementById("income").value;
-    if (!principal_front||!rate_front||!time_front||!income_front) {
-      showResult("Msg","⚠ Fill in all fields.");
+  let loanChart = null;
+  console.log('Loan Planner Script Loaded successfully!');
+
+  async function calcLoan() {
+    console.log('Calculate button clicked!');
+    const principal_front = document.getElementById('principal').value;
+    const rate_front = document.getElementById('rate').value;
+    const time_front = document.getElementById('time').value;
+    const income_front = document.getElementById('income').value;
+    if (!principal_front || !rate_front || !time_front || !income_front) {
+      showResult('Msg', '⚠ Fill in all fields.');
       return;
     }
-    if (parseFloat(principal_front)<0||parseFloat(rate_front)<0||parseFloat(time_front)<0||parseFloat(income_front)<=0){
-      showResult("Msg","⚠ Inputs should be greater than zero.");
+    if (
+      parseFloat(principal_front) < 0 ||
+      parseFloat(rate_front) < 0 ||
+      parseFloat(time_front) < 0 ||
+      parseFloat(income_front) <= 0
+    ) {
+      showResult('Msg', '⚠ Inputs should be greater than zero.');
       return;
     }
     setLoading('Btn', true);
-    try{
+    try {
       const res = await fetch('/loan_info', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-        principal: parseFloat(principal_front),
-        rate: parseFloat(rate_front),
-        time: parseFloat(time_front),
-        income: parseFloat(income_front)
-      })
+          principal: parseFloat(principal_front),
+          rate: parseFloat(rate_front),
+          time: parseFloat(time_front),
+          income: parseFloat(income_front),
+        }),
       });
       const data = await res.json();
       if (data.error) {
-        showResult("Msg",`⚠ ${data.error}`);
+        showResult('Msg', `⚠ ${esc(data.error)}`);
         setLoading('Btn', false);
         return;
       }
-  
-    const loan_amt=data.Loan_Amount;
-    const loan_int=data.Loan_Interest;
-    const emi=data.EMI;
-    const net_income=data.Net_take_income;
-    const ratio=data.Ratio;
-    const zone=data.Zone;
-    const advice=data.Advice;
-    let formattedAdvice = advice
-      .replace(/\n/g, '<br>') 
-      .replace(/\d\.\s\*\*(.*?)\*\*(:?)/g, '<br><br><strong style="color:var(--gold); font-size:13px;">📌 $1$2</strong><br>') 
-      .replace(/\*\*(.*?)\*\*/g, '<strong style="color:var(--text);">$1</strong>');
-    
-    let aiHtml=`<div style="color: var(--muted); font-size: 14px; margin: 0;">
+
+      const loan_amt = data.Loan_Amount;
+      const loan_int = data.Loan_Interest;
+      const emi = data.EMI;
+      const net_income = data.Net_take_income;
+      const ratio = data.Ratio;
+      const zone = data.Zone;
+      const advice = data.Advice;
+      let formattedAdvice = advice
+        .replace(/\n/g, '<br>')
+        .replace(
+          /\d\.\s\*\*(.*?)\*\*(:?)/g,
+          '<br><br><strong style="color:var(--gold); font-size:13px;">📌 $1$2</strong><br>',
+        )
+        .replace(
+          /\*\*(.*?)\*\*/g,
+          '<strong style="color:var(--text);">$1</strong>',
+        );
+
+      let aiHtml = `<div style="color: var(--muted); font-size: 14px; margin: 0;">
      ${formattedAdvice}
     </div>`;
-    document.getElementById("aiPredictionResult").innerHTML=aiHtml;
+      document.getElementById('aiPredictionResult').innerHTML = aiHtml;
 
-    document.getElementById("LoanEmicalc").innerHTML = `
+      document.getElementById('LoanEmicalc').innerHTML = `
     <p style="margin: 8px 0;"><strong>Amount:</strong> ₹${loan_amt}</p>
     <p style="margin: 8px 0;"><strong>Interest:</strong> ₹${loan_int}</p>
     <p style="margin: 8px 0;"><strong>Monthly EMI:</strong> ₹${emi}</p>`;
 
-    let bg_color = "";
-    let text_color = "";
-    let zone_text ="";
+      let bg_color = '';
+      let text_color = '';
+      let zone_text = '';
 
-    if (zone === 1) {
-     bg_color = "rgba(46, 196, 182, 0.15)";  
-     text_color = "#2ec4b6";
-     zone_text = "Safe Choice";
-    } else if (zone === 0) {
-     bg_color = "rgba(255, 183, 3, 0.15)";   
-     text_color = "#ffb703"; 
-     zone_text = "Consider Better Terms and Conditions";
-    } else if (zone === -1) {
-     bg_color = "rgba(230, 57, 70, 0.15)";   
-     text_color = "#e63946";
-     zone_text = "Risky";
+      if (zone === 1) {
+        bg_color = 'rgba(46, 196, 182, 0.15)';
+        text_color = '#2ec4b6';
+        zone_text = 'Safe Choice';
+      } else if (zone === 0) {
+        bg_color = 'rgba(255, 183, 3, 0.15)';
+        text_color = '#ffb703';
+        zone_text = 'Consider Better Terms and Conditions';
+      } else if (zone === -1) {
+        bg_color = 'rgba(230, 57, 70, 0.15)';
+        text_color = '#e63946';
+        zone_text = 'Risky';
       }
 
-    document.getElementById("Reliability").innerHTML = `
+      document.getElementById('Reliability').innerHTML = `
     <p style="margin: 8px 0;"><strong>Net Income:</strong> ₹${net_income}</p>
     <p style="margin: 8px 0;"><strong>EMI to Income Ratio:</strong> ${ratio}</p>
     <p style="margin: 8px 0;">
@@ -160,59 +236,61 @@ async function calcLoan(){
     </p>
     `;
 
-    let years=[];
-    let balances=[];
-    let P = parseFloat(principal_front);                  
-    let R = parseFloat(rate_front) / 100;    
-    let N = parseInt(time_front); 
-    let currentBalance = P;
+      let years = [];
+      let balances = [];
+      let P = parseFloat(principal_front);
+      let R = parseFloat(rate_front) / 100;
+      let N = parseInt(time_front);
+      let currentBalance = P;
 
-    for (let i = 1; i <= N; i++) {
-     years.push(`Year ${i}`);
-  
-    let accumulatedBalance = P * Math.pow(1 + R, i);
+      for (let i = 1; i <= N; i++) {
+        years.push(`Year ${i}`);
 
-     balances.push(Math.round(accumulatedBalance));
+        let accumulatedBalance = P * Math.pow(1 + R, i);
+
+        balances.push(Math.round(accumulatedBalance));
+      }
+
+      if (loanChart) {
+        loanChart.destroy();
+      }
+      const ctx = document.getElementById('Chart').getContext('2d');
+      loanChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: years,
+          datasets: [
+            {
+              label: 'Amount',
+              data: balances,
+              borderColor: '#d4af37',
+            },
+          ],
+        },
+      });
+    } catch (error) {
+      console.error('API Error:', error);
+      alert('JS Error caught: ' + error.message);
+      showResult('Msg', '⚠ Could not connect to server.');
     }
+    setLoading('Btn', false);
+  }
 
+  function resetLoan() {
+    document.getElementById('principal').value = '';
+    document.getElementById('rate').value = '';
+    document.getElementById('time').value = '';
+    document.getElementById('income').value = '';
+    document.getElementById('LoanEmicalc').innerHTML =
+      '<p style="color: var(--muted); font-size: 13px; margin: 0; padding-top: 4px;">Enter the info above to view the results</p>';
+    document.getElementById('Reliability').innerHTML =
+      '<p style="color: var(--muted); font-size: 13px; margin: 0; padding-top: 4px;">Enter the info above to view the results</p>';
+    document.getElementById('aiPredictionResult').innerHTML =
+      '<p style="color: var(--muted); font-size: 13px; margin: 0; padding-top: 4px;">Enter the info above to view the AI analysis.</p>';
     if (loanChart) {
-    loanChart.destroy();
+      loanChart.destroy();
+      loanChart = null;
     }
-    const ctx = document.getElementById('Chart').getContext('2d');
-    loanChart = new Chart(ctx, {
-    type: 'line',
-    data: {
-    labels: years,     
-    datasets: [{
-      label: 'Amount',
-      data: balances,  
-      borderColor: '#d4af37'
-    }]
   }
-});
-} catch (error) {
-    console.error("API Error:", error);
-    alert("JS Error caught: " + error.message);
-    showResult("Msg", "⚠ Could not connect to server.");
-    }
-    setLoading('Btn', false);      
-}
-  
-function resetLoan() {
-  document.getElementById("principal").value = "";
-  document.getElementById("rate").value = "";
-  document.getElementById("time").value = "";
-  document.getElementById("income").value = "";
-  document.getElementById("LoanEmicalc").innerHTML = '<p style="color: var(--muted); font-size: 13px; margin: 0; padding-top: 4px;">Enter the info above to view the results</p>';
-  document.getElementById("Reliability").innerHTML = '<p style="color: var(--muted); font-size: 13px; margin: 0; padding-top: 4px;">Enter the info above to view the results</p>';
-  document.getElementById("aiPredictionResult").innerHTML = '<p style="color: var(--muted); font-size: 13px; margin: 0; padding-top: 4px;">Enter the info above to view the AI analysis.</p>';
-  if (loanChart) {
-    loanChart.destroy();
-    loanChart = null;
-  }
-}
-  </script>
+</script>
 {% endblock %}
-
-
-    

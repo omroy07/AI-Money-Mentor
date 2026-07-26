@@ -1,116 +1,136 @@
-{% extends 'base.html' %}
-
-{% block title %}Custom Dashboard{% endblock %}
-
-{% block extra_css %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
-{% endblock %}
-
-{% block content %}
+{% extends 'base.html' %} {% block title %}Custom Dashboard{% endblock %} {%
+block extra_css %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/dashboard.css') }}"
+/>
+{% endblock %} {% block content %}
 <div id="dashboard" class="page active">
-    <div class="page-title">📊 Custom <span>Dashboard</span></div>
+  <div class="page-title">
+    <i class="fa-solid fa-gauge-high"></i> Custom <span>Dashboard</span>
+  </div>
 
-    <!-- Toolbar -->
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px;">
-        <div style="display:flex;gap:10px;flex-wrap:wrap;">
-            <button class="btn btn-gold" onclick="dashboardManager.saveLayouts()">💾 Save Layout</button>
-            <button class="btn btn-ghost" onclick="resetLayout()">🔄 Reset Default</button>
-            <button class="btn btn-ghost" onclick="exportLayout()">📤 Export</button>
-            <button class="btn btn-ghost" onclick="importLayout()">📥 Import</button>
-        </div>
-        <div style="display:flex;gap:6px;align-items:center;">
-            <span style="font-size:12px;color:#5a6a82;">Drag widgets to rearrange</span>
-            <span style="font-size:16px;">⠿</span>
-        </div>
+  <!-- Toolbar -->
+  <div
+    style="
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 10px;
+    "
+  >
+    <div style="display: flex; gap: 10px; flex-wrap: wrap">
+      <button class="btn btn-gold" onclick="dashboardManager.saveLayouts()">
+        <i class="fa-solid fa-floppy-disk"></i> Save Layout
+      </button>
+      <button class="btn btn-ghost" onclick="resetLayout()">
+        <i class="fa-solid fa-rotate-left"></i> Reset Default
+      </button>
+      <button class="btn btn-ghost" onclick="exportLayout()">
+        <i class="fa-solid fa-file-export"></i> Export
+      </button>
+      <button class="btn btn-ghost" onclick="importLayout()">
+        <i class="fa-solid fa-file-import"></i> Import
+      </button>
     </div>
+    <div style="display: flex; gap: 6px; align-items: center">
+      <span style="font-size: 12px; color: #5a6a82"
+        >Drag widgets to rearrange</span
+      >
+      <span style="font-size: 16px">⠿</span>
+    </div>
+  </div>
 
-    <!-- Dashboard Grid -->
-    <div class="dashboard-grid" id="dashboardGrid">
-        <!-- Widgets will be rendered here -->
-    </div>
+  <!-- Dashboard Grid -->
+  <div class="dashboard-grid" id="dashboardGrid">
+    <!-- Widgets will be rendered here -->
+  </div>
 
-    <!-- Quick Stats Bar -->
-    <div class="stats-row" style="margin-top:20px;">
-        <div class="stat-card">
-            <div class="stat-label">Total Net Worth</div>
-            <div class="stat-val" id="quickNetWorth">₹0</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-label">Monthly Income</div>
-            <div class="stat-val" id="quickIncome">₹0</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-label">Monthly Expenses</div>
-            <div class="stat-val" id="quickExpenses">₹0</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-label">Savings Rate</div>
-            <div class="stat-val" id="quickSavings">0%</div>
-        </div>
+  <!-- Quick Stats Bar -->
+  <div class="stats-row" style="margin-top: 20px">
+    <div class="stat-card">
+      <div class="stat-label">Total Net Worth</div>
+      <div class="stat-val" id="quickNetWorth">₹0</div>
     </div>
+    <div class="stat-card">
+      <div class="stat-label">Monthly Income</div>
+      <div class="stat-val" id="quickIncome">₹0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Monthly Expenses</div>
+      <div class="stat-val" id="quickExpenses">₹0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Savings Rate</div>
+      <div class="stat-val" id="quickSavings">0%</div>
+    </div>
+  </div>
 </div>
 
 <script>
-    function resetLayout() {
-        if (!confirm('Reset to default layout? All customizations will be lost.')) return;
-        localStorage.removeItem('dashboard_layouts');
-        location.reload();
-    }
+  function resetLayout() {
+    if (!confirm('Reset to default layout? All customizations will be lost.'))
+      return;
+    localStorage.removeItem('dashboard_layouts');
+    location.reload();
+  }
 
-    function exportLayout() {
-        const data = localStorage.getItem('dashboard_layouts');
-        if (!data) return alert('No layout to export');
-        const blob = new Blob([data], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `dashboard_layout_${new Date().toISOString().split('T')[0]}.json`;
-        a.click();
-        URL.revokeObjectURL(url);
-    }
+  function exportLayout() {
+    const data = localStorage.getItem('dashboard_layouts');
+    if (!data) return alert('No layout to export');
+    const blob = new Blob([data], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `dashboard_layout_${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
 
-    function importLayout() {
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = '.json';
-        input.onchange = function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(ev) {
-                try {
-                    const data = JSON.parse(ev.target.result);
-                    localStorage.setItem('dashboard_layouts', JSON.stringify(data));
-                    location.reload();
-                } catch (err) {
-                    alert('Invalid layout file');
-                }
-            };
-            reader.readAsText(file);
-        };
-        input.click();
-    }
-
-    // Load quick stats
-    async function loadQuickStats() {
+  function importLayout() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = function (e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function (ev) {
         try {
-            const response = await fetch('/dashboard-data');
-            const data = await response.json();
-            if (data.net_worth) {
-                document.getElementById('quickNetWorth').textContent = '₹' + new Intl.NumberFormat('en-IN').format(Math.round(data.net_worth));
-            }
-        } catch (e) {}
-    }
-    loadQuickStats();
+          const data = JSON.parse(ev.target.result);
+          localStorage.setItem('dashboard_layouts', JSON.stringify(data));
+          location.reload();
+        } catch (err) {
+          alert('Invalid layout file');
+        }
+      };
+      reader.readAsText(file);
+    };
+    input.click();
+  }
 
-    // Reset function for dashboard manager (override if needed)
-    window.resetLayout = resetLayout;
-    window.exportLayout = exportLayout;
-    window.importLayout = importLayout;
+  // Load quick stats
+  async function loadQuickStats() {
+    try {
+      const response = await fetch('/dashboard-data');
+      const data = await response.json();
+      if (data.net_worth) {
+        document.getElementById('quickNetWorth').textContent =
+          '₹' +
+          new Intl.NumberFormat('en-IN').format(Math.round(data.net_worth));
+      }
+    } catch (e) {}
+  }
+  loadQuickStats();
+
+  // Reset function for dashboard manager (override if needed)
+  window.resetLayout = resetLayout;
+  window.exportLayout = exportLayout;
+  window.importLayout = importLayout;
 </script>
-{% endblock %}
-
-{% block extra_js %}
+{% endblock %} {% block extra_js %}
 <script src="https://cdn.socket.io/4.5.0/socket.io.min.js"></script>
 <script src="{{ url_for('static', filename='scripts/dashboard.js') }}"></script>
 {% endblock %}

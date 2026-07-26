@@ -15,6 +15,7 @@ Run with:  pytest tests/test_money_score.py -v
 
 import pytest
 from utils.money_score import calculate_money_score
+from app import calcScore
 
 
 class TestCalculateMoneyScore:
@@ -93,3 +94,16 @@ class TestCalculateMoneyScore:
         # Savings component alone should provide at least expected points
         # (score = savings_component + min points from other dims)
         assert score >= expected_min_addition
+
+
+def test_money_score_normal():
+    result = calcScore(income=80000, expenses=40000, savings=20000, invest=500000, debt=100000, emergency=240000)
+    assert "score" in result
+
+def test_money_score_zero_income():
+    result = calcScore(income=0, expenses=0, savings=0, invest=0, debt=0, emergency=0)
+    assert result["score"] == 0
+
+def test_money_score_high_debt():
+    result = calcScore(income=100000, expenses=50000, savings=10000, invest=200000, debt=1000000, emergency=50000)
+    assert result["score"] < 50

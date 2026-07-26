@@ -1,91 +1,156 @@
-{% extends 'base.html' %}
-
-{% block title %}Portfolio Rebalancer{% endblock %}
-
-{% block content %}
+{% extends 'base.html' %} {% block title %}Portfolio Rebalancer{% endblock %} {%
+block content %}
 <div id="rebalancer" class="page active">
-  <div class="page-title">🔄 Automated Portfolio <span>Rebalancer</span></div>
+  <div class="page-title">
+    <i class="fa-solid fa-robot"></i> Automated Portfolio
+    <span>Rebalancer</span>
+  </div>
 
-  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 1200px;">
-    
+  <div
+    style="
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      max-width: 1200px;
+    "
+  >
     <!-- Left Panel: Input -->
     <div>
       <div class="card">
-        <div class="card-title">📊 Portfolio Holdings</div>
+        <div class="card-title">
+          <i class="fa-solid fa-briefcase"></i> Portfolio Holdings
+        </div>
         <div id="holdingsList">
-          <div style="text-align:center;padding:20px;color:var(--muted);">No holdings added</div>
+          <div style="text-align: center; padding: 20px; color: var(--muted)">
+            No holdings added
+          </div>
         </div>
-        
-        <div style="margin-top:12px;display:grid;grid-template-columns:2fr 1fr 1fr;gap:8px;">
-          <input type="text" id="stockSymbol" placeholder="Symbol (e.g. AAPL)" style="width:100%;">
-          <input type="number" id="stockQty" placeholder="Qty" style="width:100%;">
-          <input type="number" id="stockPrice" placeholder="Price" style="width:100%;">
+
+        <div
+          style="
+            margin-top: 12px;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 8px;
+          "
+        >
+          <input
+            type="text"
+            id="stockSymbol"
+            placeholder="Symbol (e.g. AAPL)"
+            style="width: 100%"
+          />
+          <input
+            type="number"
+            id="stockQty"
+            placeholder="Qty"
+            style="width: 100%"
+          />
+          <input
+            type="number"
+            id="stockPrice"
+            placeholder="Price"
+            style="width: 100%"
+          />
         </div>
-        <button class="btn btn-gold" style="width:100%;margin-top:8px;" onclick="addHolding()">➕ Add Holding</button>
+        <button
+          class="btn btn-gold"
+          style="width: 100%; margin-top: 8px"
+          onclick="addHolding()"
+        >
+          ➕ Add Holding
+        </button>
       </div>
 
       <div class="card">
-        <div class="card-title">🎯 Target Allocation</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <div class="card-title">
+          <i class="fa-solid fa-bullseye"></i> Target Allocation
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px">
           <div>
             <label>Equity (%)</label>
-            <input type="number" id="targetEquity" value="60" min="0" max="100">
+            <input
+              type="number"
+              id="targetEquity"
+              value="60"
+              min="0"
+              max="100"
+            />
           </div>
           <div>
             <label>Debt (%)</label>
-            <input type="number" id="targetDebt" value="25" min="0" max="100">
+            <input type="number" id="targetDebt" value="25" min="0" max="100" />
           </div>
           <div>
             <label>Gold (%)</label>
-            <input type="number" id="targetGold" value="10" min="0" max="100">
+            <input type="number" id="targetGold" value="10" min="0" max="100" />
           </div>
           <div>
             <label>Cash (%)</label>
-            <input type="number" id="targetCash" value="5" min="0" max="100">
+            <input type="number" id="targetCash" value="5" min="0" max="100" />
           </div>
         </div>
-        <button class="btn btn-gold" style="width:100%;margin-top:12px;" onclick="analyzePortfolio()">🔍 Analyze & Rebalance</button>
+        <button
+          class="btn btn-gold"
+          style="width: 100%; margin-top: 12px"
+          onclick="analyzePortfolio()"
+        >
+          🔍 Analyze & Rebalance
+        </button>
       </div>
     </div>
 
     <!-- Right Panel: Results -->
     <div>
       <div class="card">
-        <div class="card-title">📈 Current Allocation</div>
-        <div style="height:250px;">
+        <div class="card-title">
+          <i class="fa-solid fa-chart-pie"></i> Current Allocation
+        </div>
+        <div style="height: 250px">
           <canvas id="allocationChart"></canvas>
         </div>
       </div>
 
       <div class="card">
-        <div class="card-title">📊 Market Signals</div>
-        <div id="marketSignals" style="font-size:13px;color:var(--muted);">
+        <div class="card-title">
+          <i class="fa-solid fa-signal"></i> Market Signals
+        </div>
+        <div id="marketSignals" style="font-size: 13px; color: var(--muted)">
           Click "Analyze" to get market signals
         </div>
       </div>
 
       <div class="card">
-        <div class="card-title">🔄 Rebalancing Trades</div>
-        <div id="rebalanceTrades" style="font-size:13px;color:var(--muted);">
+        <div class="card-title">
+          <i class="fa-solid fa-scale-balanced"></i> Rebalancing Trades
+        </div>
+        <div id="rebalanceTrades" style="font-size: 13px; color: var(--muted)">
           No trades generated yet
         </div>
       </div>
 
       <div class="card">
-        <div class="card-title">💰 Tax-Loss Harvesting</div>
-        <div id="taxHarvesting" style="font-size:13px;color:var(--muted);">
+        <div class="card-title">
+          <i class="fa-solid fa-file-invoice-dollar"></i> Tax-Loss Harvesting
+        </div>
+        <div id="taxHarvesting" style="font-size: 13px; color: var(--muted)">
           No opportunities identified
         </div>
       </div>
     </div>
-
   </div>
 </div>
 
 <style>
-  .trade-buy { color: #2ecc8a; }
-  .trade-sell { color: #e05252; }
-  .trade-hold { color: #f39c12; }
+  .trade-buy {
+    color: #2ecc8a;
+  }
+  .trade-sell {
+    color: #e05252;
+  }
+  .trade-hold {
+    color: #f39c12;
+  }
 </style>
 
 <script>
@@ -96,15 +161,15 @@
     const symbol = document.getElementById('stockSymbol').value.toUpperCase();
     const qty = parseFloat(document.getElementById('stockQty').value);
     const price = parseFloat(document.getElementById('stockPrice').value);
-    
+
     if (!symbol || !qty || !price) {
       alert('Please fill all fields');
       return;
     }
-    
+
     holdings.push({ symbol, quantity: qty, current_price: price });
     renderHoldings();
-    
+
     document.getElementById('stockSymbol').value = '';
     document.getElementById('stockQty').value = '';
     document.getElementById('stockPrice').value = '';
@@ -113,10 +178,11 @@
   function renderHoldings() {
     const container = document.getElementById('holdingsList');
     if (holdings.length === 0) {
-      container.innerHTML = '<div style="text-align:center;padding:20px;color:var(--muted);">No holdings added</div>';
+      container.innerHTML =
+        '<div style="text-align:center;padding:20px;color:var(--muted);">No holdings added</div>';
       return;
     }
-    
+
     let html = '<div style="max-height:200px;overflow-y:auto;">';
     holdings.forEach((h, i) => {
       const value = h.quantity * h.current_price;
@@ -147,7 +213,7 @@
       Equity: parseFloat(document.getElementById('targetEquity').value) / 100,
       Debt: parseFloat(document.getElementById('targetDebt').value) / 100,
       Gold: parseFloat(document.getElementById('targetGold').value) / 100,
-      Cash: parseFloat(document.getElementById('targetCash').value) / 100
+      Cash: parseFloat(document.getElementById('targetCash').value) / 100,
     };
 
     const total = Object.values(target).reduce((a, b) => a + b, 0);
@@ -157,14 +223,16 @@
     }
 
     // Show loading
-    document.getElementById('rebalanceTrades').innerHTML = '<div style="color:var(--muted);">Analyzing...</div>';
-    document.getElementById('marketSignals').innerHTML = '<div style="color:var(--muted);">Getting market signals...</div>';
+    document.getElementById('rebalanceTrades').innerHTML =
+      '<div style="color:var(--muted);">Analyzing...</div>';
+    document.getElementById('marketSignals').innerHTML =
+      '<div style="color:var(--muted);">Getting market signals...</div>';
 
     try {
       const response = await fetch('/api/rebalance/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ holdings, target })
+        body: JSON.stringify({ holdings, target }),
       });
 
       const data = await response.json();
@@ -174,9 +242,15 @@
         renderAllocationChart(data.current_allocation, target);
 
         // Market Signals
-        let signalsHtml = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">';
+        let signalsHtml =
+          '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">';
         for (const [symbol, signal] of Object.entries(data.market_signals)) {
-          const signalClass = signal.signal === 'BUY' ? 'trade-buy' : signal.signal === 'SELL' ? 'trade-sell' : 'trade-hold';
+          const signalClass =
+            signal.signal === 'BUY'
+              ? 'trade-buy'
+              : signal.signal === 'SELL'
+                ? 'trade-sell'
+                : 'trade-hold';
           signalsHtml += `
             <div style="background:rgba(255,255,255,0.02);padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);">
               <div style="font-weight:700;">${symbol}</div>
@@ -196,10 +270,12 @@
               Portfolio Value: ₹${data.rebalance.portfolio_value.toFixed(2)}
             </div>
             <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">
-              Drift: ${Object.entries(data.rebalance.drift).map(([k,v]) => `${k}: ${v}%`).join(', ')}
+              Drift: ${Object.entries(data.rebalance.drift)
+                .map(([k, v]) => `${k}: ${v}%`)
+                .join(', ')}
             </div>
           `;
-          data.rebalance.trades.forEach(t => {
+          data.rebalance.trades.forEach((t) => {
             const actionClass = t.action === 'BUY' ? 'trade-buy' : 'trade-sell';
             tradesHtml += `
               <div style="display:flex;justify-content:space-between;padding:6px 10px;background:rgba(255,255,255,0.02);border-radius:6px;margin-bottom:4px;">
@@ -211,13 +287,14 @@
           });
           document.getElementById('rebalanceTrades').innerHTML = tradesHtml;
         } else {
-          document.getElementById('rebalanceTrades').innerHTML = '<div style="color:#2ecc8a;">✅ Portfolio is within target allocation</div>';
+          document.getElementById('rebalanceTrades').innerHTML =
+            '<div style="color:#2ecc8a;">✅ Portfolio is within target allocation</div>';
         }
 
         // Tax Harvesting
         if (data.tax_harvesting && data.tax_harvesting.length > 0) {
           let taxHtml = '';
-          data.tax_harvesting.forEach(t => {
+          data.tax_harvesting.forEach((t) => {
             taxHtml += `
               <div style="display:flex;justify-content:space-between;padding:6px 10px;background:rgba(255,255,255,0.02);border-radius:6px;margin-bottom:4px;">
                 <span><strong>${t.symbol}</strong></span>
@@ -228,9 +305,9 @@
           });
           document.getElementById('taxHarvesting').innerHTML = taxHtml;
         } else {
-          document.getElementById('taxHarvesting').innerHTML = '<div style="color:#2ecc8a;">✅ No tax-loss harvesting opportunities</div>';
+          document.getElementById('taxHarvesting').innerHTML =
+            '<div style="color:#2ecc8a;">✅ No tax-loss harvesting opportunities</div>';
         }
-
       } else {
         alert('Error: ' + data.error);
       }
@@ -244,33 +321,43 @@
     if (allocationChart) allocationChart.destroy();
 
     const labels = Object.keys(current);
-    const currentData = Object.values(current).map(v => v * 100);
-    const targetData = Object.values(target).map(v => v * 100);
+    const currentData = Object.values(current).map((v) => v * 100);
+    const targetData = Object.values(target).map((v) => v * 100);
 
     allocationChart = new Chart(ctx, {
       type: 'bar',
       data: {
         labels: labels,
         datasets: [
-          { label: 'Current', data: currentData, backgroundColor: 'rgba(212,168,67,0.6)', borderRadius: 4 },
-          { label: 'Target', data: targetData, backgroundColor: 'rgba(20,200,191,0.6)', borderRadius: 4 }
-        ]
+          {
+            label: 'Current',
+            data: currentData,
+            backgroundColor: 'rgba(212,168,67,0.6)',
+            borderRadius: 4,
+          },
+          {
+            label: 'Target',
+            data: targetData,
+            backgroundColor: 'rgba(20,200,191,0.6)',
+            borderRadius: 4,
+          },
+        ],
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-          legend: { labels: { color: '#eef0f5' } }
+          legend: { labels: { color: '#eef0f5' } },
         },
         scales: {
-          y: { 
+          y: {
             max: 100,
-            ticks: { color: '#5a6a82', callback: v => v + '%' },
-            grid: { color: 'rgba(255,255,255,0.05)' }
+            ticks: { color: '#5a6a82', callback: (v) => v + '%' },
+            grid: { color: 'rgba(255,255,255,0.05)' },
           },
-          x: { ticks: { color: '#5a6a82' }, grid: { display: false } }
-        }
-      }
+          x: { ticks: { color: '#5a6a82' }, grid: { display: false } },
+        },
+      },
     });
   }
 </script>

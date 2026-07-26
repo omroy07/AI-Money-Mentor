@@ -17,6 +17,18 @@ __pycache__/
 .pytest_cache/
 htmlcov/
 .coverage
+*.egg-info/
+dist/
+build/
+
+# Jupyter / ML artefacts
+*.ipynb
+*.joblib
+*.pkl
+
+# OS metadata
+Thumbs.db
+Desktop.ini
 
 # Local database (runtime artifact)
 *.db

@@ -1,18 +1,25 @@
-{% extends 'base.html' %}
-
-{% block title %}Security Settings{% endblock %}
-
-{% block content %}
+{% extends 'base.html' %} {% block title %}Security Settings{% endblock %} {%
+block content %}
 <div id="security_settings" class="page active">
-  <div class="page-title">🔐 Security <span>Settings</span></div>
+  <div class="page-title">
+    <i class="fa-solid fa-lock"></i> Security <span>Settings</span>
+  </div>
 
-  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 1200px;">
-    
+  <div
+    style="
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      max-width: 1200px;
+    "
+  >
     <!-- Left Panel -->
     <div>
       <!-- MFA Status -->
       <div class="card">
-        <div class="card-title">🛡️ MFA Status</div>
+        <div class="card-title">
+          <i class="fa-solid fa-shield-halved"></i>MFA Status
+        </div>
         <div id="mfaStatus">
           <div class="text-muted">Loading...</div>
         </div>
@@ -20,18 +27,30 @@
 
       <!-- TOTP Setup -->
       <div class="card" id="totpSection">
-        <div class="card-title">📱 TOTP Authenticator</div>
-        <p style="font-size:13px;color:var(--muted);">Set up Google Authenticator for 2FA</p>
-        <button class="btn btn-gold" onclick="setupTOTP()" id="totpSetupBtn">📱 Setup TOTP</button>
-        <div id="totpSetupArea" style="display:none;margin-top:16px;"></div>
+        <div class="card-title">
+          <i class="fa-solid fa-user-shield"></i> TOTP Authenticator
+        </div>
+        <p style="font-size: 13px; color: var(--muted)">
+          Set up Google Authenticator for 2FA
+        </p>
+        <button class="btn btn-gold" onclick="setupTOTP()" id="totpSetupBtn">
+          📱 Setup TOTP
+        </button>
+        <div id="totpSetupArea" style="display: none; margin-top: 16px"></div>
       </div>
 
       <!-- Biometrics -->
       <div class="card" id="biometricSection">
-        <div class="card-title">🔑 Biometric Authentication</div>
-        <p style="font-size:13px;color:var(--muted);">Use fingerprint or Face ID for quick access</p>
-        <button class="btn btn-gold" onclick="setupWebAuthn()" id="webauthnBtn">🖐️ Setup Biometrics</button>
-        <div id="webauthnArea" style="display:none;margin-top:16px;"></div>
+        <div class="card-title">
+          <i class="fa-solid fa-fingerprint"></i> Biometric Authentication
+        </div>
+        <p style="font-size: 13px; color: var(--muted)">
+          Use fingerprint or Face ID for quick access
+        </p>
+        <button class="btn btn-gold" onclick="setupWebAuthn()" id="webauthnBtn">
+          <i class="fa-solid fa-face-smile"></i> Setup Biometrics
+        </button>
+        <div id="webauthnArea" style="display: none; margin-top: 16px"></div>
       </div>
     </div>
 
@@ -39,73 +58,108 @@
     <div>
       <!-- Trusted Devices -->
       <div class="card">
-        <div class="card-title">💻 Trusted Devices</div>
-        <div id="trustedDevices">
-          <div class="text-muted" style="text-align:center;padding:20px;">No trusted devices</div>
+        <div class="card-title">
+          <i class="fa-solid fa-mobile-screen-button"></i> Trusted Devices
         </div>
-        <button class="btn btn-gold" style="width:100%;margin-top:12px;" onclick="addDevice()">➕ Add Current Device</button>
+        <div id="trustedDevices">
+          <div class="text-muted" style="text-align: center; padding: 20px">
+            No trusted devices
+          </div>
+        </div>
+        <button
+          class="btn btn-gold"
+          style="width: 100%; margin-top: 12px"
+          onclick="addDevice()"
+        >
+          ➕ Add Current Device
+        </button>
       </div>
 
       <!-- Backup Codes -->
       <div class="card">
-        <div class="card-title">📋 Backup Codes</div>
-        <p style="font-size:13px;color:var(--muted);">One-time use codes for account recovery</p>
-        <button class="btn btn-gold" onclick="generateBackupCodes()">🔄 Generate New Codes</button>
-        <div id="backupCodesArea" style="display:none;margin-top:12px;"></div>
+        <div class="card-title">
+          <i class="fa-solid fa-cloud-arrow-up"></i> Backup Codes
+        </div>
+        <p style="font-size: 13px; color: var(--muted)">
+          One-time use codes for account recovery
+        </p>
+        <button class="btn btn-gold" onclick="generateBackupCodes()">
+          <i class="fa-solid fa-rotate-left"></i> Generate New Codes
+        </button>
+        <div id="backupCodesArea" style="display: none; margin-top: 12px"></div>
       </div>
 
       <!-- Security Events -->
       <div class="card">
-        <div class="card-title">📜 Security Events</div>
-        <div id="securityEvents">
-          <div class="text-muted" style="text-align:center;padding:20px;">No security events</div>
+        <div class="card-title">
+          <i class="fa-solid fa-user-lock"></i> Security Events
         </div>
-        <button class="btn btn-ghost" style="width:100%;margin-top:12px;" onclick="loadSecurityEvents()">🔄 Refresh</button>
+        <div id="securityEvents">
+          <div class="text-muted" style="text-align: center; padding: 20px">
+            No security events
+          </div>
+        </div>
+        <button
+          class="btn btn-ghost"
+          style="width: 100%; margin-top: 12px"
+          onclick="loadSecurityEvents()"
+        >
+          🔄 Refresh
+        </button>
       </div>
     </div>
-
   </div>
 </div>
 
 <style>
   .device-item {
-    display:flex;
-    justify-content:space-between;
-    padding:10px 0;
-    border-bottom:1px solid rgba(255,255,255,0.04);
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
   }
-  .device-item:last-child { border-bottom:none; }
+  .device-item:last-child {
+    border-bottom: none;
+  }
   .backup-code {
-    display:inline-block;
-    padding:4px 12px;
-    background:rgba(255,255,255,0.03);
-    border-radius:6px;
-    font-family:monospace;
-    font-size:14px;
-    margin:2px;
-    letter-spacing:1px;
+    display: inline-block;
+    padding: 4px 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 6px;
+    font-family: monospace;
+    font-size: 14px;
+    margin: 2px;
+    letter-spacing: 1px;
   }
   .event-item {
-    padding:6px 0;
-    border-bottom:1px solid rgba(255,255,255,0.02);
-    font-size:13px;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+    font-size: 13px;
   }
-  .event-item .severity-critical { color:#e05252; }
-  .event-item .severity-warning { color:#f39c12; }
-  .event-item .severity-info { color:#14c8bf; }
+  .event-item .severity-critical {
+    color: #e05252;
+  }
+  .event-item .severity-warning {
+    color: #f39c12;
+  }
+  .event-item .severity-info {
+    color: #14c8bf;
+  }
   .totp-verify {
-    display:flex;
-    gap:10px;
-    margin-top:10px;
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
   }
-  .totp-verify input { flex:1; }
+  .totp-verify input {
+    flex: 1;
+  }
 </style>
 
 <script>
   let totpSecret = '';
 
   // Load MFA status on page load
-  document.addEventListener('DOMContentLoaded', function() {
+  document.addEventListener('DOMContentLoaded', function () {
     loadMFStatus();
     loadTrustedDevices();
     loadSecurityEvents();
@@ -115,7 +169,7 @@
     try {
       const response = await fetch('/api/mfa/status');
       const data = await response.json();
-      
+
       if (data.success) {
         const s = data.status;
         document.getElementById('mfaStatus').innerHTML = `
@@ -148,11 +202,11 @@
     const btn = document.getElementById('totpSetupBtn');
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner"></span> Setting up...';
-    
+
     try {
       const response = await fetch('/api/mfa/totp/setup');
       const data = await response.json();
-      
+
       if (data.success) {
         totpSecret = data.secret;
         const area = document.getElementById('totpSetupArea');
@@ -175,7 +229,7 @@
     } catch (error) {
       alert('Error: ' + error.message);
     }
-    
+
     btn.disabled = false;
     btn.innerHTML = '📱 Setup TOTP';
   }
@@ -183,50 +237,56 @@
   async function verifyTOTP() {
     const code = document.getElementById('totpCode').value.trim();
     if (!code || code.length !== 6) {
-      document.getElementById('totpVerifyResult').innerHTML = '<div style="color:var(--red);">⚠ Please enter a valid 6-digit code</div>';
+      document.getElementById('totpVerifyResult').innerHTML =
+        '<div style="color:var(--red);">⚠ Please enter a valid 6-digit code</div>';
       return;
     }
-    
+
     try {
       const response = await fetch('/api/mfa/totp/verify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code })
+        body: JSON.stringify({ code }),
       });
-      
+
       const data = await response.json();
-      
+
       if (data.success) {
-        document.getElementById('totpVerifyResult').innerHTML = '<div style="color:var(--green);">✅ TOTP verified and enabled!</div>';
+        document.getElementById('totpVerifyResult').innerHTML =
+          '<div style="color:var(--green);">✅ TOTP verified and enabled!</div>';
         loadMFStatus();
         setTimeout(() => {
           document.getElementById('totpSetupArea').style.display = 'none';
         }, 2000);
       } else {
-        document.getElementById('totpVerifyResult').innerHTML = `<div style="color:var(--red);">❌ ${data.error}</div>`;
+        document.getElementById('totpVerifyResult').innerHTML =
+          `<div style="color:var(--red);">❌ ${data.error}</div>`;
       }
     } catch (error) {
-      document.getElementById('totpVerifyResult').innerHTML = `<div style="color:var(--red);">❌ ${error.message}</div>`;
+      document.getElementById('totpVerifyResult').innerHTML =
+        `<div style="color:var(--red);">❌ ${error.message}</div>`;
     }
   }
 
   async function setupWebAuthn() {
     if (!window.PublicKeyCredential) {
-      alert('WebAuthn is not supported in this browser. Use Chrome, Edge, or Firefox.');
+      alert(
+        'WebAuthn is not supported in this browser. Use Chrome, Edge, or Firefox.',
+      );
       return;
     }
-    
+
     try {
       const response = await fetch('/api/mfa/webauthn/setup');
       const data = await response.json();
-      
+
       if (data.success) {
         const options = data.options;
         // Create credential
         const credential = await navigator.credentials.create({
-          publicKey: options
+          publicKey: options,
         });
-        
+
         // Send credential to server
         const verifyResponse = await fetch('/api/mfa/webauthn/verify', {
           method: 'POST',
@@ -236,13 +296,19 @@
             rawId: Array.from(new Uint8Array(credential.rawId)),
             type: credential.type,
             response: {
-              authenticatorData: Array.from(new Uint8Array(credential.response.authenticatorData)),
-              clientDataJSON: Array.from(new Uint8Array(credential.response.clientDataJSON)),
-              attestationObject: Array.from(new Uint8Array(credential.response.attestationObject))
-            }
-          })
+              authenticatorData: Array.from(
+                new Uint8Array(credential.response.authenticatorData),
+              ),
+              clientDataJSON: Array.from(
+                new Uint8Array(credential.response.clientDataJSON),
+              ),
+              attestationObject: Array.from(
+                new Uint8Array(credential.response.attestationObject),
+              ),
+            },
+          }),
         });
-        
+
         const verifyData = await verifyResponse.json();
         if (verifyData.success) {
           alert('✅ Biometric authentication enabled successfully!');
@@ -258,10 +324,10 @@
     try {
       const response = await fetch('/api/mfa/devices');
       const data = await response.json();
-      
+
       if (data.success && data.devices.length > 0) {
         let html = '';
-        data.devices.forEach(d => {
+        data.devices.forEach((d) => {
           html += `
             <div class="device-item">
               <div>
@@ -274,7 +340,8 @@
         });
         document.getElementById('trustedDevices').innerHTML = html;
       } else {
-        document.getElementById('trustedDevices').innerHTML = '<div class="text-muted" style="text-align:center;padding:20px;">No trusted devices</div>';
+        document.getElementById('trustedDevices').innerHTML =
+          '<div class="text-muted" style="text-align:center;padding:20px;">No trusted devices</div>';
       }
     } catch (error) {
       console.error('Error loading devices:', error);
@@ -284,14 +351,14 @@
   async function addDevice() {
     const name = prompt('Enter a name for this device:');
     if (!name) return;
-    
+
     try {
       const response = await fetch('/api/mfa/devices/add', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ device_name: name })
+        body: JSON.stringify({ device_name: name }),
       });
-      
+
       const data = await response.json();
       if (data.success) {
         loadTrustedDevices();
@@ -305,12 +372,12 @@
 
   async function removeDevice(deviceId) {
     if (!confirm('Remove this trusted device?')) return;
-    
+
     try {
       const response = await fetch(`/api/mfa/devices/remove/${deviceId}`, {
-        method: 'DELETE'
+        method: 'DELETE',
       });
-      
+
       const data = await response.json();
       if (data.success) {
         loadTrustedDevices();
@@ -323,15 +390,16 @@
   }
 
   async function generateBackupCodes() {
-    if (!confirm('Generate new backup codes? Old codes will be invalidated.')) return;
-    
+    if (!confirm('Generate new backup codes? Old codes will be invalidated.'))
+      return;
+
     try {
       const response = await fetch('/api/mfa/backup-codes', {
-        method: 'POST'
+        method: 'POST',
       });
-      
+
       const data = await response.json();
-      
+
       if (data.success) {
         const area = document.getElementById('backupCodesArea');
         area.style.display = 'block';
@@ -339,7 +407,7 @@
           <div style="background:rgba(255,255,255,0.02);border-radius:12px;padding:16px;text-align:center;">
             <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Save these codes securely. Each code can be used once.</div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;max-width:400px;margin:0 auto;">
-              ${data.codes.map(c => `<span class="backup-code">${c}</span>`).join('')}
+              ${data.codes.map((c) => `<span class="backup-code">${c}</span>`).join('')}
             </div>
             <div style="margin-top:8px;font-size:11px;color:var(--muted);">These codes won't be shown again</div>
           </div>
@@ -355,12 +423,16 @@
     try {
       const response = await fetch('/api/mfa/security-events');
       const data = await response.json();
-      
+
       if (data.success && data.events.length > 0) {
         let html = '';
-        data.events.forEach(e => {
-          const severityClass = e.severity === 'critical' ? 'severity-critical' : 
-                               e.severity === 'warning' ? 'severity-warning' : 'severity-info';
+        data.events.forEach((e) => {
+          const severityClass =
+            e.severity === 'critical'
+              ? 'severity-critical'
+              : e.severity === 'warning'
+                ? 'severity-warning'
+                : 'severity-info';
           html += `
             <div class="event-item">
               <div style="display:flex;justify-content:space-between;">
@@ -374,7 +446,8 @@
         });
         document.getElementById('securityEvents').innerHTML = html;
       } else {
-        document.getElementById('securityEvents').innerHTML = '<div class="text-muted" style="text-align:center;padding:20px;">No security events</div>';
+        document.getElementById('securityEvents').innerHTML =
+          '<div class="text-muted" style="text-align:center;padding:20px;">No security events</div>';
       }
     } catch (error) {
       console.error('Error loading events:', error);

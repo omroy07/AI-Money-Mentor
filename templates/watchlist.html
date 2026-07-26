@@ -1,14 +1,20 @@
-{% extends 'base.html' %}
-
-{% block title %}Watchlist{% endblock %}
-
-{% block content %}
+{% extends 'base.html' %} {% block title %}Watchlist{% endblock %} {% block
+content %}
 <div class="page active">
   <div class="page-title">⭐ Stock & Mutual Fund Watchlist</div>
 
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
-    <div style="font-size:13px;color:var(--muted);">Track stocks and mutual funds with live prices and custom alerts</div>
-    <div style="display:flex;gap:8px;">
+  <div
+    style="
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    "
+  >
+    <div style="font-size: 13px; color: var(--muted)">
+      Track stocks and mutual funds with live prices and custom alerts
+    </div>
+    <div style="display: flex; gap: 8px">
       <button class="btn btn-ghost" onclick="refreshPrices()">↻ Refresh</button>
       <button class="btn btn-primary" onclick="showAddModal()">+ Add</button>
     </div>
@@ -17,35 +23,115 @@
   <!-- WATCHLIST TABLE -->
   <div class="card">
     <div id="watchlistContent">
-      <div style="text-align:center;padding:40px;color:var(--muted);">
-        <div style="font-size:36px;margin-bottom:12px;">⭐</div>
+      <div style="text-align: center; padding: 40px; color: var(--muted)">
+        <div style="font-size: 36px; margin-bottom: 12px">⭐</div>
         <div>Loading watchlist...</div>
       </div>
     </div>
   </div>
 
   <!-- ADD ITEM MODAL -->
-  <div id="addModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:1000;align-items:center;justify-content:center;">
-    <div class="card" style="width:400px;max-width:90vw;">
+  <div
+    id="addModal"
+    style="
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    "
+  >
+    <div class="card" style="width: 400px; max-width: 90vw">
       <div class="card-title">Add to Watchlist</div>
-      <form id="addForm" style="display:flex;flex-direction:column;gap:12px;">
+      <form
+        id="addForm"
+        style="display: flex; flex-direction: column; gap: 12px"
+      >
         <div>
-          <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">Symbol *</label>
-          <input type="text" id="addSymbol" required placeholder="e.g. RELIANCE, TCS, HDFCBANK" style="width:100%;padding:10px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);text-transform:uppercase;">
+          <label
+            style="
+              font-size: 12px;
+              color: var(--muted);
+              display: block;
+              margin-bottom: 4px;
+            "
+            >Symbol *</label
+          >
+          <input
+            type="text"
+            id="addSymbol"
+            required
+            placeholder="e.g. RELIANCE, TCS, HDFCBANK"
+            style="
+              width: 100%;
+              padding: 10px;
+              background: var(--bg);
+              border: 1px solid var(--border);
+              border-radius: 8px;
+              color: var(--text);
+              text-transform: uppercase;
+            "
+          />
         </div>
         <div>
-          <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">Name</label>
-          <input type="text" id="addName" placeholder="Optional display name" style="width:100%;padding:10px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);">
+          <label
+            style="
+              font-size: 12px;
+              color: var(--muted);
+              display: block;
+              margin-bottom: 4px;
+            "
+            >Name</label
+          >
+          <input
+            type="text"
+            id="addName"
+            placeholder="Optional display name"
+            style="
+              width: 100%;
+              padding: 10px;
+              background: var(--bg);
+              border: 1px solid var(--border);
+              border-radius: 8px;
+              color: var(--text);
+            "
+          />
         </div>
         <div>
-          <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">Type</label>
-          <select id="addType" style="width:100%;padding:10px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);">
+          <label
+            style="
+              font-size: 12px;
+              color: var(--muted);
+              display: block;
+              margin-bottom: 4px;
+            "
+            >Type</label
+          >
+          <select
+            id="addType"
+            style="
+              width: 100%;
+              padding: 10px;
+              background: var(--bg);
+              border: 1px solid var(--border);
+              border-radius: 8px;
+              color: var(--text);
+            "
+          >
             <option value="stock">Stock</option>
             <option value="mutual_fund">Mutual Fund</option>
           </select>
         </div>
-        <div style="display:flex;gap:8px;justify-content:flex-end;">
-          <button type="button" class="btn btn-ghost" onclick="closeModal('addModal')">Cancel</button>
+        <div style="display: flex; gap: 8px; justify-content: flex-end">
+          <button
+            type="button"
+            class="btn btn-ghost"
+            onclick="closeModal('addModal')"
+          >
+            Cancel
+          </button>
           <button type="submit" class="btn btn-primary">Add Symbol</button>
         </div>
       </form>
@@ -53,25 +139,88 @@
   </div>
 
   <!-- ALERT MODAL -->
-  <div id="alertModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:1000;align-items:center;justify-content:center;">
-    <div class="card" style="width:400px;max-width:90vw;">
-      <div class="card-title">Set Price Alert — <span id="alertSymbol"></span></div>
-      <form id="alertForm" style="display:flex;flex-direction:column;gap:12px;">
-        <input type="hidden" id="alertItemId">
+  <div
+    id="alertModal"
+    style="
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    "
+  >
+    <div class="card" style="width: 400px; max-width: 90vw">
+      <div class="card-title">
+        Set Price Alert — <span id="alertSymbol"></span>
+      </div>
+      <form
+        id="alertForm"
+        style="display: flex; flex-direction: column; gap: 12px"
+      >
+        <input type="hidden" id="alertItemId" />
         <div>
-          <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">Condition *</label>
-          <select id="alertCondition" style="width:100%;padding:10px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);">
+          <label
+            style="
+              font-size: 12px;
+              color: var(--muted);
+              display: block;
+              margin-bottom: 4px;
+            "
+            >Condition *</label
+          >
+          <select
+            id="alertCondition"
+            style="
+              width: 100%;
+              padding: 10px;
+              background: var(--bg);
+              border: 1px solid var(--border);
+              border-radius: 8px;
+              color: var(--text);
+            "
+          >
             <option value="above">Price goes above</option>
             <option value="below">Price goes below</option>
             <option value="cross">Price crosses</option>
           </select>
         </div>
         <div>
-          <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">Target Price (₹) *</label>
-          <input type="number" id="alertTarget" required min="0.01" step="0.01" placeholder="0.00" style="width:100%;padding:10px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);">
+          <label
+            style="
+              font-size: 12px;
+              color: var(--muted);
+              display: block;
+              margin-bottom: 4px;
+            "
+            >Target Price (₹) *</label
+          >
+          <input
+            type="number"
+            id="alertTarget"
+            required
+            min="0.01"
+            step="0.01"
+            placeholder="0.00"
+            style="
+              width: 100%;
+              padding: 10px;
+              background: var(--bg);
+              border: 1px solid var(--border);
+              border-radius: 8px;
+              color: var(--text);
+            "
+          />
         </div>
-        <div style="display:flex;gap:8px;justify-content:flex-end;">
-          <button type="button" class="btn btn-ghost" onclick="closeModal('alertModal')">Cancel</button>
+        <div style="display: flex; gap: 8px; justify-content: flex-end">
+          <button
+            type="button"
+            class="btn btn-ghost"
+            onclick="closeModal('alertModal')"
+          >
+            Cancel
+          </button>
           <button type="submit" class="btn btn-primary">Create Alert</button>
         </div>
       </form>
@@ -79,62 +228,89 @@
   </div>
 
   <!-- TOAST -->
-  <div id="toast" style="display:none;position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:var(--primary);color:#fff;padding:12px 24px;border-radius:8px;z-index:2000;font-size:14px;"></div>
+  <div
+    id="toast"
+    style="
+      display: none;
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--primary);
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: 8px;
+      z-index: 2000;
+      font-size: 14px;
+    "
+  ></div>
 </div>
 
 <script>
-let watchlistData = null;
+  let watchlistData = null;
 
-document.addEventListener('DOMContentLoaded', loadWatchlist);
+  document.addEventListener('DOMContentLoaded', loadWatchlist);
 
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.style.display = 'block';
-  setTimeout(() => { t.style.display = 'none'; }, 3000);
-}
-
-function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-
-async function api(url, opts = {}) {
-  const res = await fetch(url, { headers: { 'Content-Type': 'application/json', ...opts.headers }, ...opts });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.error || 'Request failed');
-  return data;
-}
-
-// SocketIO for real-time alerts
-const socket = io();
-socket.on('connect', () => console.log('Connected for watchlist alerts'));
-socket.on('watchlist_alert', (data) => {
-  showToast(`🔔 ${data.symbol}: Price ${data.condition} ₹${data.target_price} (now ₹${data.current_price})`);
-  loadWatchlist();
-});
-
-async function loadWatchlist() {
-  try {
-    const data = await api('/api/watchlist');
-    watchlistData = data;
-    renderWatchlist(data.items);
-  } catch (e) {
-    document.getElementById('watchlistContent').innerHTML = '<div style="text-align:center;padding:40px;color:var(--muted);">Failed to load watchlist</div>';
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.style.display = 'block';
+    setTimeout(() => {
+      t.style.display = 'none';
+    }, 3000);
   }
-}
 
-function renderWatchlist(items) {
-  const container = document.getElementById('watchlistContent');
-  if (!items.length) {
-    container.innerHTML = `
+  function closeModal(id) {
+    document.getElementById(id).style.display = 'none';
+  }
+  function openModal(id) {
+    document.getElementById(id).style.display = 'flex';
+  }
+
+  async function api(url, opts = {}) {
+    const res = await fetch(url, {
+      headers: { 'Content-Type': 'application/json', ...opts.headers },
+      ...opts,
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Request failed');
+    return data;
+  }
+
+  // SocketIO for real-time alerts
+  const socket = io();
+  socket.on('connect', () => console.log('Connected for watchlist alerts'));
+  socket.on('watchlist_alert', (data) => {
+    showToast(
+      `🔔 ${data.symbol}: Price ${data.condition} ₹${data.target_price} (now ₹${data.current_price})`,
+    );
+    loadWatchlist();
+  });
+
+  async function loadWatchlist() {
+    try {
+      const data = await api('/api/watchlist');
+      watchlistData = data;
+      renderWatchlist(data.items);
+    } catch (e) {
+      document.getElementById('watchlistContent').innerHTML =
+        '<div style="text-align:center;padding:40px;color:var(--muted);">Failed to load watchlist</div>';
+    }
+  }
+
+  function renderWatchlist(items) {
+    const container = document.getElementById('watchlistContent');
+    if (!items.length) {
+      container.innerHTML = `
       <div style="text-align:center;padding:50px;color:var(--muted);">
         <div style="font-size:40px;margin-bottom:12px;">⭐</div>
         <div style="font-size:16px;margin-bottom:8px;">Your watchlist is empty</div>
         <div style="font-size:13px;">Click "+ Add" to track stocks or mutual funds</div>
       </div>`;
-    return;
-  }
+      return;
+    }
 
-  container.innerHTML = `
+    container.innerHTML = `
     <div style="overflow-x:auto;">
       <table style="width:100%;border-collapse:collapse;font-size:13px;">
         <thead>
@@ -148,7 +324,9 @@ function renderWatchlist(items) {
           </tr>
         </thead>
         <tbody>
-          ${items.map(item => `
+          ${items
+            .map(
+              (item) => `
             <tr style="border-bottom:1px solid var(--border);">
               <td style="padding:12px;">
                 <div style="font-weight:600;">${esc(item.symbol)}</div>
@@ -160,110 +338,120 @@ function renderWatchlist(items) {
                 </span>
               </td>
               <td style="padding:12px;text-align:right;font-weight:600;">
-                ${item.current_price != null ? '₹' + Number(item.current_price).toLocaleString('en-IN', {minimumFractionDigits: 2}) : '—'}
+                ${item.current_price != null ? '₹' + Number(item.current_price).toLocaleString('en-IN', { minimumFractionDigits: 2 }) : '—'}
               </td>
               <td style="padding:12px;text-align:right;">
-                ${item.change_pct != null
-                  ? `<span style="color:${item.change_pct >= 0 ? 'var(--green, #4caf50)' : 'var(--red, #f44336)'};">${item.change_pct >= 0 ? '+' : ''}${item.change_pct.toFixed(2)}%</span>`
-                  : '—'}
+                ${
+                  item.change_pct != null
+                    ? `<span style="color:${item.change_pct >= 0 ? 'var(--green, #4caf50)' : 'var(--red, #f44336)'};">${item.change_pct >= 0 ? '+' : ''}${item.change_pct.toFixed(2)}%</span>`
+                    : '—'
+                }
               </td>
               <td style="padding:12px;">
-                ${(item.alerts || []).map(a => `
+                ${(item.alerts || [])
+                  .map(
+                    (a) => `
                   <span style="display:inline-block;padding:2px 6px;margin:2px;border-radius:4px;font-size:10px;background:${a.is_triggered ? 'var(--green, #4caf50)' : 'var(--surface)'};color:${a.is_triggered ? '#fff' : 'var(--muted)'};">
                     ${a.condition} ₹${a.target_price}${a.is_triggered ? ' ✓' : ''}
                   </span>
-                `).join('')}
+                `,
+                  )
+                  .join('')}
               </td>
               <td style="padding:12px;text-align:right;">
                 <button class="btn btn-ghost" style="font-size:11px;padding:4px 8px;" data-item-id="${item.id}" data-symbol="${esc(item.symbol)}" onclick="showAlertModal(this.dataset.itemId, this.dataset.symbol)">🔔 Alert</button>
                 <button class="btn btn-ghost" style="font-size:11px;padding:4px 8px;color:var(--red, #f44336);" onclick="removeItem(${item.id})">✕</button>
               </td>
             </tr>
-          `).join('')}
+          `,
+            )
+            .join('')}
         </tbody>
       </table>
     </div>
   `;
-}
-
-function showAddModal() {
-  document.getElementById('addSymbol').value = '';
-  document.getElementById('addName').value = '';
-  document.getElementById('addType').value = 'stock';
-  openModal('addModal');
-}
-
-function showAlertModal(itemId, symbol) {
-  document.getElementById('alertItemId').value = itemId;
-  document.getElementById('alertSymbol').textContent = symbol;
-  document.getElementById('alertCondition').value = 'above';
-  document.getElementById('alertTarget').value = '';
-  openModal('alertModal');
-}
-
-async function refreshPrices() {
-  try {
-    await api('/api/watchlist/refresh', { method: 'POST' });
-    showToast('Prices refreshed!');
-    loadWatchlist();
-  } catch (e) {
-    showToast('Refresh failed');
   }
-}
 
-document.getElementById('addForm').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  try {
-    await api('/api/watchlist/items', {
-      method: 'POST',
-      body: JSON.stringify({
-        symbol: document.getElementById('addSymbol').value,
-        name: document.getElementById('addName').value || undefined,
-        asset_type: document.getElementById('addType').value,
-      }),
-    });
-    closeModal('addModal');
-    showToast('Added to watchlist!');
-    loadWatchlist();
-  } catch (err) {
-    showToast(err.message);
+  function showAddModal() {
+    document.getElementById('addSymbol').value = '';
+    document.getElementById('addName').value = '';
+    document.getElementById('addType').value = 'stock';
+    openModal('addModal');
   }
-});
 
-document.getElementById('alertForm').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  try {
-    await api('/api/watchlist/alerts', {
-      method: 'POST',
-      body: JSON.stringify({
-        item_id: parseInt(document.getElementById('alertItemId').value),
-        condition: document.getElementById('alertCondition').value,
-        target_price: parseFloat(document.getElementById('alertTarget').value),
-      }),
-    });
-    closeModal('alertModal');
-    showToast('Alert created!');
-    loadWatchlist();
-  } catch (err) {
-    showToast(err.message);
+  function showAlertModal(itemId, symbol) {
+    document.getElementById('alertItemId').value = itemId;
+    document.getElementById('alertSymbol').textContent = symbol;
+    document.getElementById('alertCondition').value = 'above';
+    document.getElementById('alertTarget').value = '';
+    openModal('alertModal');
   }
-});
 
-async function removeItem(itemId) {
-  if (!confirm('Remove this item from watchlist?')) return;
-  try {
-    await api(`/api/watchlist/items/${itemId}`, { method: 'DELETE' });
-    showToast('Item removed');
-    loadWatchlist();
-  } catch (e) {
-    showToast('Failed to remove');
+  async function refreshPrices() {
+    try {
+      await api('/api/watchlist/refresh', { method: 'POST' });
+      showToast('Prices refreshed!');
+      loadWatchlist();
+    } catch (e) {
+      showToast('Refresh failed');
+    }
   }
-}
 
-function esc(s) {
-  const d = document.createElement('div');
-  d.textContent = s || '';
-  return d.innerHTML;
-}
+  document.getElementById('addForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    try {
+      await api('/api/watchlist/items', {
+        method: 'POST',
+        body: JSON.stringify({
+          symbol: document.getElementById('addSymbol').value,
+          name: document.getElementById('addName').value || undefined,
+          asset_type: document.getElementById('addType').value,
+        }),
+      });
+      closeModal('addModal');
+      showToast('Added to watchlist!');
+      loadWatchlist();
+    } catch (err) {
+      showToast(err.message);
+    }
+  });
+
+  document.getElementById('alertForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    try {
+      await api('/api/watchlist/alerts', {
+        method: 'POST',
+        body: JSON.stringify({
+          item_id: parseInt(document.getElementById('alertItemId').value),
+          condition: document.getElementById('alertCondition').value,
+          target_price: parseFloat(
+            document.getElementById('alertTarget').value,
+          ),
+        }),
+      });
+      closeModal('alertModal');
+      showToast('Alert created!');
+      loadWatchlist();
+    } catch (err) {
+      showToast(err.message);
+    }
+  });
+
+  async function removeItem(itemId) {
+    if (!confirm('Remove this item from watchlist?')) return;
+    try {
+      await api(`/api/watchlist/items/${itemId}`, { method: 'DELETE' });
+      showToast('Item removed');
+      loadWatchlist();
+    } catch (e) {
+      showToast('Failed to remove');
+    }
+  }
+
+  function esc(s) {
+    const d = document.createElement('div');
+    d.textContent = s || '';
+    return d.innerHTML;
+  }
 </script>
 {% endblock %}

@@ -1,8 +1,5 @@
-{% extends 'base.html' %}
-
-{% block title %}Collaborative Multi-Agent Plan{% endblock %}
-
-{% block head %}
+{% extends 'base.html' %} {% block title %}Collaborative Multi-Agent Plan{%
+endblock %} {% block head %}
 <style>
   /* Glassmorphism & Timeline Styles */
   .agent-card-header {
@@ -11,7 +8,7 @@
     align-items: center;
     margin-bottom: 16px;
   }
-  
+
   .agent-status-badges {
     display: flex;
     flex-wrap: wrap;
@@ -26,7 +23,9 @@
     margin-top: 24px;
     opacity: 0;
     transform: translateY(20px);
-    transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1), transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    transition:
+      opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+      transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .collaboration-container.visible {
@@ -189,8 +188,14 @@
   }
 
   @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
   .agent-badge {
@@ -239,14 +244,17 @@
   }
 
   /* Custom markdown styling for details */
-  .markdown-body h1, .markdown-body h2, .markdown-body h3 {
+  .markdown-body h1,
+  .markdown-body h2,
+  .markdown-body h3 {
     color: var(--gold2);
     margin-top: 20px;
     margin-bottom: 10px;
     font-family: 'Syne', sans-serif;
   }
 
-  .markdown-body ul, .markdown-body ol {
+  .markdown-body ul,
+  .markdown-body ol {
     padding-left: 20px;
     margin-bottom: 16px;
   }
@@ -270,94 +278,176 @@
     }
   }
 </style>
-{% endblock %}
+{% endblock %} {% block content %}
+<div
+  id="agent"
+  class="page center-page active"
+  style="max-width: 1200px; margin: 0 auto; padding: 20px"
+>
+  <div class="page-title">
+    <i class="fa-solid fa-brain"></i> Collaborative <span>Planner</span>
+  </div>
 
-{% block content %}
-<div id="agent" class="page center-page active" style="max-width: 1200px; margin: 0 auto; padding: 20px;">
-  <div class="page-title">🧠 Collaborative <span>Planner</span></div>
-  
   <!-- Query input card -->
-  <div class="card" style="width: 100%; max-width: 900px; margin: 0 auto;">
+  <div class="card" style="width: 100%; max-width: 900px; margin: 0 auto">
     <div class="agent-card-header">
-      <div class="card-title" style="margin: 0;">Multi-Agent Financial Planner</div>
+      <div class="card-title" style="margin: 0">
+        Multi-Agent Financial Planner
+      </div>
     </div>
-    <p class="text-muted" style="font-size: 14px; margin-top: -8px; margin-bottom: 16px;">
-      The Chief Planner routes your goal to specialized agents who collaborate sequentially, passing context step-by-step to build a customized plan.
+    <p
+      class="text-muted"
+      style="font-size: 14px; margin-top: -8px; margin-bottom: 16px"
+    >
+      The Chief Planner routes your goal to specialized agents who collaborate
+      sequentially, passing context step-by-step to build a customized plan.
     </p>
-    
+
     <div class="agent-status-badges">
-      <div class="agent-tag-premium"><div class="dot"></div> Investment Agent</div>
-      <div class="agent-tag-premium"><div class="dot"></div> Debt Agent</div>
-      <div class="agent-tag-premium"><div class="dot"></div> Tax Agent</div>
-      <div class="agent-tag-premium"><div class="dot"></div> Retirement Agent</div>
-      <div class="agent-tag-premium"><div class="dot"></div> Insurance Agent</div>
-      <div class="agent-tag-premium"><div class="dot"></div> Portfolio Manager</div>
+      <div class="agent-tag-premium">
+        <div class="dot"></div>
+        Investment Agent
+      </div>
+      <div class="agent-tag-premium">
+        <div class="dot"></div>
+        Debt Agent
+      </div>
+      <div class="agent-tag-premium">
+        <div class="dot"></div>
+        Tax Agent
+      </div>
+      <div class="agent-tag-premium">
+        <div class="dot"></div>
+        Retirement Agent
+      </div>
+      <div class="agent-tag-premium">
+        <div class="dot"></div>
+        Insurance Agent
+      </div>
+      <div class="agent-tag-premium">
+        <div class="dot"></div>
+        Portfolio Manager
+      </div>
     </div>
 
-    <div style="margin-top: 20px;">
-      <label style="font-weight: 600;">Describe Your Financial Goal</label>
-      <textarea id="agentQuery" rows="3" placeholder="e.g. Help me buy a house in 5 years. I earn ₹15L/year, have ₹5L in savings, and need to know how much to save and what mortgage is affordable."
-        style="resize:vertical;margin-top:8px"></textarea>
+    <div style="margin-top: 20px">
+      <label style="font-weight: 600">Describe Your Financial Goal</label>
+      <textarea
+        id="agentQuery"
+        rows="3"
+        placeholder="e.g. Help me buy a house in 5 years. I earn ₹15L/year, have ₹5L in savings, and need to know how much to save and what mortgage is affordable."
+        style="resize: vertical; margin-top: 8px"
+      ></textarea>
     </div>
 
-    <button class="btn btn-gold" style="margin-top: 20px; width: 100%; font-size: 15px; font-weight: 700; padding: 14px;" onclick="runAgent()" id="agentBtn">
-      🚀 Generate Collaborative Financial Plan
+    <button
+      class="btn btn-gold"
+      style="
+        margin-top: 20px;
+        width: 100%;
+        font-size: 15px;
+        font-weight: 700;
+        padding: 14px;
+      "
+      onclick="runAgent()"
+      id="agentBtn"
+    >
+      <i class="fa-solid fa-rocket"></i> Generate Collaborative Financial Plan
     </button>
-    
-    <div id="agentResult" class="result-box" style="display: none; margin-top: 16px;"></div>
+
+    <div
+      id="agentResult"
+      class="result-box"
+      style="display: none; margin-top: 16px"
+    ></div>
   </div>
 
   <!-- Interactive step-by-step plan output container -->
-  <div id="collabContainer" class="collaboration-container" style="display: none;">
-    
+  <div
+    id="collabContainer"
+    class="collaboration-container"
+    style="display: none"
+  >
     <!-- Left Column: Sequential Timeline -->
     <div class="timeline-column">
-      <h3 style="font-family: 'Syne', sans-serif; font-size: 18px; margin-bottom: 8px; color: var(--gold);">Collaboration Timeline</h3>
+      <h3
+        style="
+          font-family: 'Syne', sans-serif;
+          font-size: 18px;
+          margin-bottom: 8px;
+          color: var(--gold);
+        "
+      >
+        Collaboration Timeline
+      </h3>
       <div id="timelineList"></div>
     </div>
-    
+
     <!-- Right Column: Plan Detailed View -->
     <div class="detail-column">
       <div class="tabs-header">
-        <button id="masterTabBtn" class="tab-btn active" onclick="switchTab('master')">📋 Synthesized Master Plan</button>
-        <button id="agentTabBtn" class="tab-btn" onclick="switchTab('agent')">🤖 Agent Breakdown</button>
+        <button
+          id="masterTabBtn"
+          class="tab-btn active"
+          onclick="switchTab('master')"
+        >
+          <i class="fa-solid fa-calendar-check"></i> Synthesized Master Plan
+        </button>
+        <button id="agentTabBtn" class="tab-btn" onclick="switchTab('agent')">
+          <i class="fa-solid fa-robot"></i> Agent Breakdown
+        </button>
       </div>
-      
+
       <!-- Synthesized Master Plan Tab -->
-      <div id="masterPlanContent" class="tab-content active markdown-body"></div>
-      
+      <div
+        id="masterPlanContent"
+        class="tab-content active markdown-body"
+      ></div>
+
       <!-- Agent Details Tab -->
       <div id="agentDetailContent" class="tab-content markdown-body">
-        <div style="text-align: center; color: var(--text-muted); padding: 40px 0;">
-          <span style="font-size: 32px;">👈</span>
-          <p style="margin-top: 12px;">Click a step on the timeline to view that agent's individual detailed response</p>
+        <div
+          style="text-align: center; color: var(--text-muted); padding: 40px 0"
+        >
+          <span style="font-size: 32px"
+            ><i class="fa-solid fa-arrow-left"></i
+          ></span>
+          <p style="margin-top: 12px">
+            Click a step on the timeline to view that agent's individual
+            detailed response
+          </p>
         </div>
       </div>
-      
+
       <!-- Disclaimer section inside the card -->
-      <div id="disclaimerCard" class="disclaimer-card" style="display: none;">
-        <div style="display: flex; gap: 10px; align-items: flex-start;">
-          <span style="font-size: 16px;">⚠️</span>
-          <div id="disclaimerContent" style="color: var(--text-dim); line-height: 1.5;"></div>
+      <div id="disclaimerCard" class="disclaimer-card" style="display: none">
+        <div style="display: flex; gap: 10px; align-items: flex-start">
+          <span style="font-size: 16px"
+            ><i class="fa-solid fa-triangle-exclamation"></i
+          ></span>
+          <div
+            id="disclaimerContent"
+            style="color: var(--text-dim); line-height: 1.5"
+          ></div>
         </div>
       </div>
     </div>
-    
   </div>
 </div>
-{% endblock %}
-
-{% block scripts %}
+{% endblock %} {% block scripts %}
 <script>
   let planData = null;
 
   async function runAgent() {
     const query = document.getElementById('agentQuery').value.trim();
-    if (!query) { showResult('agentResult', '⚠ Enter a query.'); return; }
+    if (!query) {
+      showResult('agentResult', '⚠ Enter a query.');
+      return;
+    }
 
     const agentResult = document.getElementById('agentResult');
     const collabContainer = document.getElementById('collabContainer');
-    
+
     // Reset/Hide previous result
     agentResult.innerHTML = '';
     agentResult.style.display = 'none';
@@ -365,20 +455,27 @@
     collabContainer.style.display = 'none';
 
     setLoading('agentBtn', true);
-    
+
     try {
       const data = await apiFetch('/agent', { query });
       if (data.error) {
         agentResult.style.display = 'block';
-        showResult('agentResult', `⚠ ${data.error}`);
-      } else if (data.success && data.plan_steps && data.plan_steps.length > 0) {
+        showResult('agentResult', `⚠ ${esc(data.error)}`);
+      } else if (
+        data.success &&
+        data.plan_steps &&
+        data.plan_steps.length > 0
+      ) {
         planData = data;
         renderCollaboration(data);
       } else {
         // Fallback if data is not structured or success = false
         agentResult.style.display = 'block';
         const resp = data.response || JSON.stringify(data);
-        showResult('agentResult', `<div style="white-space:pre-wrap;font-size:13px;line-height:1.7">${resp}</div>`);
+        showResult(
+          'agentResult',
+          `<div style="white-space:pre-wrap;font-size:13px;line-height:1.7">${resp}</div>`,
+        );
       }
     } catch (e) {
       agentResult.style.display = 'block';
@@ -391,20 +488,20 @@
   function renderCollaboration(data) {
     const timelineList = document.getElementById('timelineList');
     const collabContainer = document.getElementById('collabContainer');
-    
+
     // Clear previous timeline
     timelineList.innerHTML = '';
-    
+
     // Render timeline steps
     data.plan_steps.forEach((step, idx) => {
       const stepWrapper = document.createElement('div');
       stepWrapper.className = 'timeline-step-wrapper';
-      
+
       const stepCard = document.createElement('div');
       stepCard.className = `timeline-step-card ${idx === 0 ? 'active' : ''}`;
       stepCard.id = `step-card-${idx}`;
       stepCard.onclick = () => selectStep(idx);
-      
+
       stepCard.innerHTML = `
         <div class="step-header">
           <span class="step-num">Step ${idx + 1}</span>
@@ -413,16 +510,16 @@
         <div class="step-timeline-point">📍 ${step.timeline_point}</div>
         <div class="step-subtask">${step.sub_task}</div>
       `;
-      
+
       stepWrapper.appendChild(stepCard);
       timelineList.appendChild(stepWrapper);
     });
-    
+
     // Show synthesized master plan in the viewer
     const masterPlanContent = document.getElementById('masterPlanContent');
     const sanitizedHTML = DOMPurify.sanitize(marked.parse(data.response));
     masterPlanContent.innerHTML = sanitizedHTML;
-    
+
     // Set up disclaimer
     const disclaimerContent = document.getElementById('disclaimerContent');
     if (data.disclaimer) {
@@ -431,10 +528,10 @@
     } else {
       document.getElementById('disclaimerCard').style.display = 'none';
     }
-    
+
     // Set active tab to master plan
     switchTab('master');
-    
+
     // Reset agent detail panel
     document.getElementById('agentDetailContent').innerHTML = `
       <div style="text-align: center; color: var(--text-muted); padding: 40px 0;">
@@ -442,7 +539,7 @@
         <p style="margin-top: 12px;">Click a step on the timeline to view that agent's individual detailed response</p>
       </div>
     `;
-    
+
     // Show the container with animation
     collabContainer.style.display = 'grid';
     // Small timeout for browser to register block display before applying transition class
@@ -453,7 +550,7 @@
 
   function selectStep(idx) {
     if (!planData || !planData.plan_steps || !planData.plan_steps[idx]) return;
-    
+
     // Highlight step card
     document.querySelectorAll('.timeline-step-card').forEach((card, i) => {
       if (i === idx) {
@@ -464,10 +561,10 @@
         card.parentElement.classList.remove('active');
       }
     });
-    
+
     const step = planData.plan_steps[idx];
     const agentDetailContent = document.getElementById('agentDetailContent');
-    
+
     // Render agent details
     const sanitizedHTML = DOMPurify.sanitize(marked.parse(step.response));
     agentDetailContent.innerHTML = `
@@ -484,7 +581,7 @@
       </div>
       <div class="markdown-body">${sanitizedHTML}</div>
     `;
-    
+
     switchTab('agent');
   }
 
@@ -493,7 +590,7 @@
     const agentTabBtn = document.getElementById('agentTabBtn');
     const masterPlanContent = document.getElementById('masterPlanContent');
     const agentDetailContent = document.getElementById('agentDetailContent');
-    
+
     if (tab === 'master') {
       masterTabBtn.classList.add('active');
       agentTabBtn.classList.remove('active');
@@ -504,10 +601,17 @@
       agentTabBtn.classList.add('active');
       masterPlanContent.classList.remove('active');
       agentDetailContent.classList.add('active');
-      
+
       // If agent detail is in default state, select the first step
-      const isDefaultState = agentDetailContent.innerHTML.includes('Click a step on the timeline');
-      if (isDefaultState && planData && planData.plan_steps && planData.plan_steps.length > 0) {
+      const isDefaultState = agentDetailContent.innerHTML.includes(
+        'Click a step on the timeline',
+      );
+      if (
+        isDefaultState &&
+        planData &&
+        planData.plan_steps &&
+        planData.plan_steps.length > 0
+      ) {
         selectStep(0);
       }
     }

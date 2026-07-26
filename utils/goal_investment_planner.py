@@ -144,15 +144,22 @@ class GoalInvestmentPlanner:
         if not goals:
             return {'success': False, 'error': 'No active goals found'}
         
-        # Calculate total priority weight
-        total_priority = sum(g.priority for g in goals)
-        if total_priority == 0:
-            total_priority = 1
+      # Calculate total priority weight. Goals use a 1-5 scale where 1 is
+        # the highest priority (see create_goal()'s default and
+        # get_recommendations_ai()'s "Priority: {goal.priority}/5" label), so
+        # we invert priority here to give lower-numbered (higher-priority)
+        # goals a bigger weight. This keeps weight consistent with
+        # adjusted_amount below, which already treats priority=1 as most
+        # urgent.
+        total_inverted_priority = sum(6 - g.priority for g in goals)
+        if total_inverted_priority == 0:
+            total_inverted_priority = 1
         
         # Calculate recommended allocation
         allocations = {}
         for goal in goals:
-            weight = goal.priority / total_priority
+            inverted_priority = 6 - goal.priority  # 1 -> 5, 5 -> 1 on a 1-5 scale
+            weight = inverted_priority / total_inverted_priority
             monthly_recommended = goal.calculate_monthly_required()
             
             # Adjust based on priority

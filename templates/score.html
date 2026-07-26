@@ -1,8 +1,5 @@
-{% extends 'base.html' %}
-
-{% block title %}Money Score{% endblock %}
-
-{% block content %}
+{% extends 'base.html' %} {% block title %}Money Score{% endblock %} {% block
+content %}
 <style>
   .form-grid label {
     cursor: default;
@@ -13,54 +10,156 @@
 </style>
 <div id="score" class="page active">
   <div class="page-title">Money <span>Score</span></div>
-  <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 20px; align-items: start; max-width: 900px;">
+  <div
+    style="
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 20px;
+      align-items: start;
+      max-width: 900px;
+    "
+  >
     <div class="card">
       <div class="card-title">Enter your financial details</div>
       <div class="form-grid">
-        <div><label>Monthly Income (₹)</label><input type="number" required min="0" id="s_income" placeholder="e.g. 80000"></div>
-        <div><label>Monthly Expenses (₹)</label><input type="number" required min="0" id="s_expenses" placeholder="e.g. 40000"></div>
-        <div><label>Monthly Savings (₹)</label><input type="number" required min="0" id="s_savings" placeholder="e.g. 20000"></div>
-        <div><label>Investments (₹)</label><input type="number" required min="0" id="s_invest" placeholder="e.g. 500000"></div>
-        <div><label>Total Debt (₹)</label><input type="number" required min="0" id="s_debt" placeholder="e.g. 100000"></div>
-        <div><label>Emergency Fund (₹)</label><input type="number" required min="0" id="s_emergency" placeholder="e.g. 240000"></div>
         <div>
-<label>Credit Utilization (%)</label>
-<input type="number" min="0" max="100" id="s_utilization"
-placeholder="e.g. 25">
-</div>
+          <label>Monthly Income (₹)</label
+          ><input
+            type="number"
+            required
+            min="0"
+            id="s_income"
+            placeholder="e.g. 80000"
+          />
+        </div>
+        <div>
+          <label>Monthly Expenses (₹)</label
+          ><input
+            type="number"
+            required
+            min="0"
+            id="s_expenses"
+            placeholder="e.g. 40000"
+          />
+        </div>
+        <div>
+          <label>Monthly Savings (₹)</label
+          ><input
+            type="number"
+            required
+            min="0"
+            id="s_savings"
+            placeholder="e.g. 20000"
+          />
+        </div>
+        <div>
+          <label>Investments (₹)</label
+          ><input
+            type="number"
+            required
+            min="0"
+            id="s_invest"
+            placeholder="e.g. 500000"
+          />
+        </div>
+        <div>
+          <label>Total Debt (₹)</label
+          ><input
+            type="number"
+            required
+            min="0"
+            id="s_debt"
+            placeholder="e.g. 100000"
+          />
+        </div>
+        <div>
+          <label>Emergency Fund (₹)</label
+          ><input
+            type="number"
+            required
+            min="0"
+            id="s_emergency"
+            placeholder="e.g. 240000"
+          />
+        </div>
+        <div>
+          <label>Credit Utilization (%)</label>
+          <input
+            type="number"
+            min="0"
+            max="100"
+            id="s_utilization"
+            placeholder="e.g. 25"
+          />
+        </div>
 
-<div>
-<label>Payment Timeliness (%)</label>
-<input type="number" min="0" max="100" id="s_payment"
-placeholder="e.g. 95">
-</div>
+        <div>
+          <label>Payment Timeliness (%)</label>
+          <input
+            type="number"
+            min="0"
+            max="100"
+            id="s_payment"
+            placeholder="e.g. 95"
+          />
+        </div>
       </div>
-      <div style="display:flex;gap:10px;margin-top:16px;">
-        <button class="btn btn-gold" style="flex:1" onclick="calcScore()" id="scoreBtn">Calculate Money Score</button>
-        <button class="btn btn-ghost" style="flex:1" onclick="resetScore()" id="scoreResetBtn">Reset</button>
+      <div style="display: flex; gap: 10px; margin-top: 16px">
+        <button
+          class="btn btn-gold"
+          style="flex: 1"
+          onclick="calcScore()"
+          id="scoreBtn"
+        >
+          Calculate Money Score
+        </button>
+        <button
+          class="btn btn-ghost"
+          style="flex: 1"
+          onclick="resetScore()"
+          id="scoreResetBtn"
+        >
+          Reset
+        </button>
       </div>
       <div id="scoreResult" class="result-box"></div>
-      <div id="creditFeedback"
-class="result-box"
-style="margin-top:15px">
-</div>
-      <div id="export-section" style="display:none; gap:10px; margin-top:14px;">
-        <button class="btn btn-ghost" style="flex:1" onclick="exportReport('csv')" id="exportCsvBtn">⬇️ Download CSV</button>
-        <button class="btn btn-ghost" style="flex:1" onclick="exportReport('pdf')" id="exportPdfBtn">📄 Download PDF</button>
+      <div
+        id="creditFeedback"
+        class="result-box"
+        style="margin-top: 15px"
+      ></div>
+      <div
+        id="export-section"
+        style="display: none; gap: 10px; margin-top: 14px"
+      >
+        <button
+          class="btn btn-ghost"
+          style="flex: 1"
+          onclick="exportReport('csv')"
+          id="exportCsvBtn"
+        >
+          ⬇<i class="fa-solid fa-download"></i> Download CSV
+        </button>
+        <button
+          class="btn btn-ghost"
+          style="flex: 1"
+          onclick="exportReport('pdf')"
+          id="exportPdfBtn"
+        >
+          <i class="fa-solid fa-download"></i> Download PDF
+        </button>
       </div>
     </div>
-    <div class="card" style="grid-column: 2 / span 1; min-height: 380px;">
+    <div class="card" style="grid-column: 2 / span 1; min-height: 380px">
       <div class="card-title">Financial Health Dashboard</div>
-      <link rel="stylesheet" href="/static/styles/financial-health.css">
-      <div style="margin-top: 10px;">
+      <link rel="stylesheet" href="/static/styles/financial-health.css" />
+      <div style="margin-top: 10px">
         <div class="fin-health-grid" id="finHealthGrid"></div>
       </div>
     </div>
   </div>
 </div>
-{% endblock %}
-
-{% block scripts %}
+{% endblock %} {% block scripts %}
 <script>
   let scoreChartInstance = null;
 
@@ -78,9 +177,11 @@ style="margin-top:15px">
       const scorePct = Math.round((comp.score / comp.max_score) * 100);
 
       const peerText = comp.peer_benchmark_text || '';
-      const peerVal = (comp.peer_benchmark_value !== null && comp.peer_benchmark_value !== undefined)
-        ? comp.peer_benchmark_value
-        : null;
+      const peerVal =
+        comp.peer_benchmark_value !== null &&
+        comp.peer_benchmark_value !== undefined
+          ? comp.peer_benchmark_value
+          : null;
 
       const peerBlock = peerText
         ? `<div class="small-row">${peerText}</div>`
@@ -88,7 +189,7 @@ style="margin-top:15px">
 
       const tipsHtml = (Array.isArray(comp.tips) ? comp.tips : [])
         .slice(0, 5)
-        .map(t => `<li>${t}</li>`)
+        .map((t) => `<li>${t}</li>`)
         .join('');
 
       const collapseId = `finHealthCollapse_${idx}`;
@@ -140,23 +241,20 @@ style="margin-top:15px">
     const investRaw = document.getElementById('s_invest').value;
     const debtRaw = document.getElementById('s_debt').value;
     const emergencyRaw = document.getElementById('s_emergency').value;
-    const utilizationRaw =
-document.getElementById('s_utilization').value;
+    const utilizationRaw = document.getElementById('s_utilization').value;
 
-const paymentRaw =
-document.getElementById('s_payment').value;
-
+    const paymentRaw = document.getElementById('s_payment').value;
 
     if (
-!incomeRaw ||
-!expensesRaw ||
-!savingsRaw ||
-!investRaw ||
-!debtRaw ||
-!emergencyRaw ||
-!utilizationRaw ||
-!paymentRaw
-){
+      !incomeRaw ||
+      !expensesRaw ||
+      !savingsRaw ||
+      !investRaw ||
+      !debtRaw ||
+      !emergencyRaw ||
+      !utilizationRaw ||
+      !paymentRaw
+    ) {
       showResult('scoreResult', '⚠ Please fill in all fields.');
       return;
     }
@@ -166,68 +264,67 @@ document.getElementById('s_payment').value;
     const invest = parseFloat(investRaw);
     const debt = parseFloat(debtRaw);
     const emergency = parseFloat(emergencyRaw);
-const utilization = parseFloat(utilizationRaw);
-const payment = parseFloat(paymentRaw);
-    const dti =
-income > 0 ? (debt / income) * 100 : 0;
+    const utilization = parseFloat(utilizationRaw);
+    const payment = parseFloat(paymentRaw);
+    const dti = income > 0 ? (debt / income) * 100 : 0;
 
+    let creditScore = 300;
 
-let creditScore = 300;
+    // Payment history (35%)
+    if (payment >= 95) {
+      creditScore += 200;
+    } else if (payment >= 80) {
+      creditScore += 120;
+    }
 
+    // Credit utilization (30%)
+    if (utilization <= 30) {
+      creditScore += 150;
+    } else if (utilization <= 50) {
+      creditScore += 80;
+    }
 
-// Payment history (35%)
-if(payment >= 95){
- creditScore += 200;
-}
-else if(payment >=80){
- creditScore += 120;
-}
+    // DTI
+    if (dti <= 40) {
+      creditScore += 100;
+    }
 
+    creditScore = Math.min(850, creditScore);
+    const feedback = await apiFetch('/credit-feedback', {
+      score: creditScore,
+      dti: dti,
+      utilization: utilization,
+      payment: payment,
+    });
 
-// Credit utilization (30%)
-if(utilization <=30){
- creditScore +=150;
-}
-else if(utilization <=50){
- creditScore +=80;
-}
-
-
-// DTI
-if(dti <=40){
- creditScore +=100;
-}
-
-
-creditScore =
-Math.min(850, creditScore);
-const feedback = await apiFetch('/credit-feedback',{
-    score: creditScore,
-    dti: dti,
-    utilization: utilization,
-    payment: payment
-});
-
-document.getElementById("creditFeedback").innerHTML =
-`
+    document.getElementById('creditFeedback').innerHTML = `
 <b>AI Credit Advice</b>
 <br>
 ${feedback.message}
 `;
-   
-    
-    if ([income, expenses, savings, invest, debt, emergency].some(val=>val<0)){
-      showResult('scoreResult','Inputs cannot be negative.');
+
+    if (
+      [income, expenses, savings, invest, debt, emergency].some(
+        (val) => val < 0,
+      )
+    ) {
+      showResult('scoreResult', 'Inputs cannot be negative.');
       return;
     }
-    if (expenses>=income){
-      if (savings>0){
-        showResult('scoreResult','Savings cannot be there when expenses equal or exceed income.');
+    if (expenses >= income) {
+      if (savings > 0) {
+        showResult(
+          'scoreResult',
+          'Savings cannot be there when expenses equal or exceed income.',
+        );
         return;
       }
-    }else{
-      if ((savings+expenses)>income){
-        showResult('scoreResult','The sum of Savings and Expenses could not exceed the income.');
+    } else {
+      if (savings + expenses > income) {
+        showResult(
+          'scoreResult',
+          'The sum of Savings and Expenses could not exceed the income.',
+        );
         return;
       }
     }
@@ -240,16 +337,23 @@ ${feedback.message}
         savings: parseFloat(savings),
         investments: parseFloat(invest),
         debt: parseFloat(debt),
-        emergency: parseFloat(emergency)
+        emergency: parseFloat(emergency),
       });
 
       if (data.error) {
         showResult('scoreResult', `⚠ ${data.error}`);
       } else {
-        const color = data.score >= 80 ? '#2ecc8a' : data.score >= 60 ? '#d4a843' : '#e05252';
+        const color =
+          data.score >= 80
+            ? '#2ecc8a'
+            : data.score >= 60
+              ? '#d4a843'
+              : '#e05252';
         const circumference = 2 * Math.PI * 54;
         const offset = circumference - (data.score / 100) * circumference;
-        showResult('scoreResult', `
+        showResult(
+          'scoreResult',
+          `
           <div style="text-align:center;margin-bottom:10px">
             <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:12px">Your Money Score</div>
             <div class="score-container">
@@ -280,13 +384,17 @@ ${feedback.message}
               </div>
             </div>
           </div>
-        `);
+        `,
+        );
 
         updateReportData({
-          income, expenses, savings,
+          income,
+          expenses,
+          savings,
           investments: invest,
-          debt, emergency,
-          money_score: `${data.score} (${data.status})`
+          debt,
+          emergency,
+          money_score: `${data.score} (${data.status})`,
         });
         showExportSection();
 

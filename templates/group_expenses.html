@@ -1,83 +1,217 @@
-{% extends 'base.html' %}
-
-{% block title %}Group Expenses{% endblock %}
-
-{% block content %}
+{% extends 'base.html' %} {% block title %}Group Expenses{% endblock %} {% block
+content %}
 <div class="page active">
   <div class="page-title">👥 Group Expenses</div>
 
   <!-- GROUP LIST VIEW -->
   <div id="groupListView">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
-      <div style="font-size:14px;color:var(--muted);">Manage shared expenses with roommates, trips, or groups</div>
-      <button class="btn btn-primary" onclick="showCreateGroupModal()">+ New Group</button>
+    <div
+      style="
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      "
+    >
+      <div style="font-size: 14px; color: var(--muted)">
+        Manage shared expenses with roommates, trips, or groups
+      </div>
+      <button class="btn btn-primary" onclick="showCreateGroupModal()">
+        + New Group
+      </button>
     </div>
 
-    <div id="groupsGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;">
+    <div
+      id="groupsGrid"
+      style="
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 16px;
+      "
+    >
       <!-- Groups populated by JS -->
     </div>
-    <div id="noGroups" style="display:none;text-align:center;padding:60px 20px;color:var(--muted);">
-      <div style="font-size:48px;margin-bottom:16px;">👥</div>
-      <div style="font-size:18px;margin-bottom:8px;">No groups yet</div>
-      <div style="font-size:14px;">Create a group to start splitting expenses</div>
+    <div
+      id="noGroups"
+      style="
+        display: none;
+        text-align: center;
+        padding: 60px 20px;
+        color: var(--muted);
+      "
+    >
+      <div style="font-size: 48px; margin-bottom: 16px">👥</div>
+      <div style="font-size: 18px; margin-bottom: 8px">No groups yet</div>
+      <div style="font-size: 14px">
+        Create a group to start splitting expenses
+      </div>
     </div>
   </div>
 
   <!-- GROUP DETAIL VIEW -->
-  <div id="groupDetailView" style="display:none;">
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
-      <button class="btn btn-ghost" onclick="showGroupList()" style="font-size:18px;">←</button>
+  <div id="groupDetailView" style="display: none">
+    <div
+      style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px"
+    >
+      <button
+        class="btn btn-ghost"
+        onclick="showGroupList()"
+        style="font-size: 18px"
+      >
+        ←
+      </button>
       <div>
-        <div style="font-size:20px;font-weight:700;" id="groupDetailName"></div>
-        <div style="font-size:13px;color:var(--muted);" id="groupDetailDesc"></div>
+        <div
+          style="font-size: 20px; font-weight: 700"
+          id="groupDetailName"
+        ></div>
+        <div
+          style="font-size: 13px; color: var(--muted)"
+          id="groupDetailDesc"
+        ></div>
       </div>
-      <div style="margin-left:auto;display:flex;gap:8px;">
-        <button class="btn btn-ghost" onclick="showAddMemberModal()">+ Member</button>
-        <button class="btn btn-primary" onclick="showAddExpenseModal()">+ Expense</button>
+      <div style="margin-left: auto; display: flex; gap: 8px">
+        <button class="btn btn-ghost" onclick="showAddMemberModal()">
+          + Member
+        </button>
+        <button class="btn btn-primary" onclick="showAddExpenseModal()">
+          + Expense
+        </button>
       </div>
     </div>
 
     <!-- BALANCE SUMMARY -->
-    <div class="card" style="margin-bottom:20px;">
+    <div class="card" style="margin-bottom: 20px">
       <div class="card-title">Balance Summary</div>
-      <div id="balanceSummary" style="display:flex;flex-wrap:wrap;gap:12px;"></div>
-      <div id="transfersSummary" style="margin-top:16px;"></div>
+      <div
+        id="balanceSummary"
+        style="display: flex; flex-wrap: wrap; gap: 12px"
+      ></div>
+      <div id="transfersSummary" style="margin-top: 16px"></div>
     </div>
 
     <!-- EXPENSE LIST -->
     <div class="card">
       <div class="card-title">Expenses</div>
       <div id="groupExpensesList"></div>
-      <div id="noExpenses" style="text-align:center;padding:30px;color:var(--muted);display:none;">
+      <div
+        id="noExpenses"
+        style="
+          text-align: center;
+          padding: 30px;
+          color: var(--muted);
+          display: none;
+        "
+      >
         No expenses yet. Add one to get started!
       </div>
     </div>
   </div>
 
   <!-- CREATE GROUP MODAL -->
-  <div id="createGroupModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:1000;display:none;align-items:center;justify-content:center;">
-    <div class="card" style="width:400px;max-width:90vw;">
+  <div
+    id="createGroupModal"
+    style="
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    "
+  >
+    <div class="card" style="width: 400px; max-width: 90vw">
       <div class="card-title">Create New Group</div>
-      <form id="createGroupForm" style="display:flex;flex-direction:column;gap:12px;">
+      <form
+        id="createGroupForm"
+        style="display: flex; flex-direction: column; gap: 12px"
+      >
         <div>
-          <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">Group Name *</label>
-          <input type="text" id="groupName" required placeholder="e.g. Roommates, Goa Trip" style="width:100%;padding:10px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);">
+          <label
+            style="
+              font-size: 12px;
+              color: var(--muted);
+              display: block;
+              margin-bottom: 4px;
+            "
+            >Group Name *</label
+          >
+          <input
+            type="text"
+            id="groupName"
+            required
+            placeholder="e.g. Roommates, Goa Trip"
+            style="
+              width: 100%;
+              padding: 10px;
+              background: var(--bg);
+              border: 1px solid var(--border);
+              border-radius: 8px;
+              color: var(--text);
+            "
+          />
         </div>
         <div>
-          <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">Description</label>
-          <input type="text" id="groupDesc" placeholder="Optional description" style="width:100%;padding:10px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);">
+          <label
+            style="
+              font-size: 12px;
+              color: var(--muted);
+              display: block;
+              margin-bottom: 4px;
+            "
+            >Description</label
+          >
+          <input
+            type="text"
+            id="groupDesc"
+            placeholder="Optional description"
+            style="
+              width: 100%;
+              padding: 10px;
+              background: var(--bg);
+              border: 1px solid var(--border);
+              border-radius: 8px;
+              color: var(--text);
+            "
+          />
         </div>
         <div>
-          <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">Currency</label>
-          <select id="groupCurrency" style="width:100%;padding:10px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);">
+          <label
+            style="
+              font-size: 12px;
+              color: var(--muted);
+              display: block;
+              margin-bottom: 4px;
+            "
+            >Currency</label
+          >
+          <select
+            id="groupCurrency"
+            style="
+              width: 100%;
+              padding: 10px;
+              background: var(--bg);
+              border: 1px solid var(--border);
+              border-radius: 8px;
+              color: var(--text);
+            "
+          >
             <option value="INR">INR (₹)</option>
             <option value="USD">USD ($)</option>
             <option value="EUR">EUR (€)</option>
             <option value="GBP">GBP (£)</option>
           </select>
         </div>
-        <div style="display:flex;gap:8px;justify-content:flex-end;">
-          <button type="button" class="btn btn-ghost" onclick="closeModal('createGroupModal')">Cancel</button>
+        <div style="display: flex; gap: 8px; justify-content: flex-end">
+          <button
+            type="button"
+            class="btn btn-ghost"
+            onclick="closeModal('createGroupModal')"
+          >
+            Cancel
+          </button>
           <button type="submit" class="btn btn-primary">Create Group</button>
         </div>
       </form>
@@ -85,28 +219,125 @@
   </div>
 
   <!-- ADD EXPENSE MODAL -->
-  <div id="addExpenseModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:1000;display:none;align-items:center;justify-content:center;">
-    <div class="card" style="width:450px;max-width:90vw;">
+  <div
+    id="addExpenseModal"
+    style="
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    "
+  >
+    <div class="card" style="width: 450px; max-width: 90vw">
       <div class="card-title">Add Group Expense</div>
-      <form id="addExpenseForm" style="display:flex;flex-direction:column;gap:12px;">
+      <form
+        id="addExpenseForm"
+        style="display: flex; flex-direction: column; gap: 12px"
+      >
         <div>
-          <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">Description *</label>
-          <input type="text" id="expDescription" required placeholder="What was it for?" style="width:100%;padding:10px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);">
+          <label
+            style="
+              font-size: 12px;
+              color: var(--muted);
+              display: block;
+              margin-bottom: 4px;
+            "
+            >Description *</label
+          >
+          <input
+            type="text"
+            id="expDescription"
+            required
+            placeholder="What was it for?"
+            style="
+              width: 100%;
+              padding: 10px;
+              background: var(--bg);
+              border: 1px solid var(--border);
+              border-radius: 8px;
+              color: var(--text);
+            "
+          />
         </div>
-        <div style="display:flex;gap:12px;">
-          <div style="flex:2;">
-            <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">Amount *</label>
-            <input type="number" id="expAmount" required min="0.01" step="0.01" placeholder="0.00" style="width:100%;padding:10px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);">
+        <div style="display: flex; gap: 12px">
+          <div style="flex: 2">
+            <label
+              style="
+                font-size: 12px;
+                color: var(--muted);
+                display: block;
+                margin-bottom: 4px;
+              "
+              >Amount *</label
+            >
+            <input
+              type="number"
+              id="expAmount"
+              required
+              min="0.01"
+              step="0.01"
+              placeholder="0.00"
+              style="
+                width: 100%;
+                padding: 10px;
+                background: var(--bg);
+                border: 1px solid var(--border);
+                border-radius: 8px;
+                color: var(--text);
+              "
+            />
           </div>
-          <div style="flex:1;">
-            <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">Date *</label>
-            <input type="date" id="expDate" required style="width:100%;padding:10px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);">
+          <div style="flex: 1">
+            <label
+              style="
+                font-size: 12px;
+                color: var(--muted);
+                display: block;
+                margin-bottom: 4px;
+              "
+              >Date *</label
+            >
+            <input
+              type="date"
+              id="expDate"
+              required
+              style="
+                width: 100%;
+                padding: 10px;
+                background: var(--bg);
+                border: 1px solid var(--border);
+                border-radius: 8px;
+                color: var(--text);
+              "
+            />
           </div>
         </div>
-        <div style="display:flex;gap:12px;">
-          <div style="flex:1;">
-            <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">Category</label>
-            <select id="expCategory" style="width:100%;padding:10px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);">
+        <div style="display: flex; gap: 12px">
+          <div style="flex: 1">
+            <label
+              style="
+                font-size: 12px;
+                color: var(--muted);
+                display: block;
+                margin-bottom: 4px;
+              "
+              >Category</label
+            >
+            <select
+              id="expCategory"
+              style="
+                width: 100%;
+                padding: 10px;
+                background: var(--bg);
+                border: 1px solid var(--border);
+                border-radius: 8px;
+                color: var(--text);
+              "
+            >
               <option value="Food">Food</option>
               <option value="Rent">Rent</option>
               <option value="Travel">Travel</option>
@@ -116,32 +347,106 @@
               <option value="Other">Other</option>
             </select>
           </div>
-          <div style="flex:1;">
-            <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">Paid By</label>
-            <select id="expPaidBy" style="width:100%;padding:10px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);"></select>
+          <div style="flex: 1">
+            <label
+              style="
+                font-size: 12px;
+                color: var(--muted);
+                display: block;
+                margin-bottom: 4px;
+              "
+              >Paid By</label
+            >
+            <select
+              id="expPaidBy"
+              style="
+                width: 100%;
+                padding: 10px;
+                background: var(--bg);
+                border: 1px solid var(--border);
+                border-radius: 8px;
+                color: var(--text);
+              "
+            ></select>
           </div>
         </div>
         <div>
-          <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">Split Type</label>
-          <div style="display:flex;gap:8px;">
-            <button type="button" class="btn btn-ghost split-type-btn active" data-type="EQUAL" onclick="selectSplitType('EQUAL')">Equal</button>
-            <button type="button" class="btn btn-ghost split-type-btn" data-type="PERCENTAGE" onclick="selectSplitType('PERCENTAGE')">Percentage</button>
-            <button type="button" class="btn btn-ghost split-type-btn" data-type="EXACT" onclick="selectSplitType('EXACT')">Exact</button>
+          <label
+            style="
+              font-size: 12px;
+              color: var(--muted);
+              display: block;
+              margin-bottom: 4px;
+            "
+            >Split Type</label
+          >
+          <div style="display: flex; gap: 8px">
+            <button
+              type="button"
+              class="btn btn-ghost split-type-btn active"
+              data-type="EQUAL"
+              onclick="selectSplitType('EQUAL')"
+            >
+              Equal
+            </button>
+            <button
+              type="button"
+              class="btn btn-ghost split-type-btn"
+              data-type="PERCENTAGE"
+              onclick="selectSplitType('PERCENTAGE')"
+            >
+              Percentage
+            </button>
+            <button
+              type="button"
+              class="btn btn-ghost split-type-btn"
+              data-type="EXACT"
+              onclick="selectSplitType('EXACT')"
+            >
+              Exact
+            </button>
           </div>
         </div>
 
         <!-- PERCENTAGE INPUTS -->
-        <div id="percentageInputs" style="display:none;"></div>
+        <div id="percentageInputs" style="display: none"></div>
 
         <!-- EXACT AMOUNT INPUTS -->
-        <div id="exactInputs" style="display:none;"></div>
+        <div id="exactInputs" style="display: none"></div>
 
         <div>
-          <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">Notes</label>
-          <textarea id="expNotes" rows="2" placeholder="Optional notes" style="width:100%;padding:10px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);resize:vertical;"></textarea>
+          <label
+            style="
+              font-size: 12px;
+              color: var(--muted);
+              display: block;
+              margin-bottom: 4px;
+            "
+            >Notes</label
+          >
+          <textarea
+            id="expNotes"
+            rows="2"
+            placeholder="Optional notes"
+            style="
+              width: 100%;
+              padding: 10px;
+              background: var(--bg);
+              border: 1px solid var(--border);
+              border-radius: 8px;
+              color: var(--text);
+              resize: vertical;
+            "
+          ></textarea>
         </div>
-        <div style="display:flex;gap:8px;justify-content:flex-end;">
-          <button type="button" class="btn btn-ghost" onclick="closeModal('addExpenseModal')">Cancel</button>
+        <div style="display: flex; gap: 8px; justify-content: flex-end">
+          <button
+            type="button"
+            class="btn btn-ghost"
+            onclick="closeModal('addExpenseModal')"
+          >
+            Cancel
+          </button>
           <button type="submit" class="btn btn-primary">Add Expense</button>
         </div>
       </form>
@@ -149,20 +454,83 @@
   </div>
 
   <!-- ADD MEMBER MODAL -->
-  <div id="addMemberModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:1000;display:none;align-items:center;justify-content:center;">
-    <div class="card" style="width:380px;max-width:90vw;">
+  <div
+    id="addMemberModal"
+    style="
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    "
+  >
+    <div class="card" style="width: 380px; max-width: 90vw">
       <div class="card-title">Add Group Member</div>
-      <form id="addMemberForm" style="display:flex;flex-direction:column;gap:12px;">
+      <form
+        id="addMemberForm"
+        style="display: flex; flex-direction: column; gap: 12px"
+      >
         <div>
-          <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">User ID *</label>
-          <input type="number" id="memberUserId" required min="1" placeholder="Enter user ID" style="width:100%;padding:10px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);">
+          <label
+            style="
+              font-size: 12px;
+              color: var(--muted);
+              display: block;
+              margin-bottom: 4px;
+            "
+            >User ID *</label
+          >
+          <input
+            type="number"
+            id="memberUserId"
+            required
+            min="1"
+            placeholder="Enter user ID"
+            style="
+              width: 100%;
+              padding: 10px;
+              background: var(--bg);
+              border: 1px solid var(--border);
+              border-radius: 8px;
+              color: var(--text);
+            "
+          />
         </div>
         <div>
-          <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">Nickname</label>
-          <input type="text" id="memberNickname" placeholder="Optional nickname" style="width:100%;padding:10px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);">
+          <label
+            style="
+              font-size: 12px;
+              color: var(--muted);
+              display: block;
+              margin-bottom: 4px;
+            "
+            >Nickname</label
+          >
+          <input
+            type="text"
+            id="memberNickname"
+            placeholder="Optional nickname"
+            style="
+              width: 100%;
+              padding: 10px;
+              background: var(--bg);
+              border: 1px solid var(--border);
+              border-radius: 8px;
+              color: var(--text);
+            "
+          />
         </div>
-        <div style="display:flex;gap:8px;justify-content:flex-end;">
-          <button type="button" class="btn btn-ghost" onclick="closeModal('addMemberModal')">Cancel</button>
+        <div style="display: flex; gap: 8px; justify-content: flex-end">
+          <button
+            type="button"
+            class="btn btn-ghost"
+            onclick="closeModal('addMemberModal')"
+          >
+            Cancel
+          </button>
           <button type="submit" class="btn btn-primary">Add Member</button>
         </div>
       </form>
@@ -170,24 +538,106 @@
   </div>
 
   <!-- SETTLE DEBT MODAL -->
-  <div id="settleModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:1000;display:none;align-items:center;justify-content:center;">
-    <div class="card" style="width:380px;max-width:90vw;">
+  <div
+    id="settleModal"
+    style="
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    "
+  >
+    <div class="card" style="width: 380px; max-width: 90vw">
       <div class="card-title">Record Settlement</div>
-      <form id="settleForm" style="display:flex;flex-direction:column;gap:12px;">
+      <form
+        id="settleForm"
+        style="display: flex; flex-direction: column; gap: 12px"
+      >
         <div>
-          <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">Pay To</label>
-          <select id="settleTo" style="width:100%;padding:10px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);"></select>
+          <label
+            style="
+              font-size: 12px;
+              color: var(--muted);
+              display: block;
+              margin-bottom: 4px;
+            "
+            >Pay To</label
+          >
+          <select
+            id="settleTo"
+            style="
+              width: 100%;
+              padding: 10px;
+              background: var(--bg);
+              border: 1px solid var(--border);
+              border-radius: 8px;
+              color: var(--text);
+            "
+          ></select>
         </div>
         <div>
-          <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">Amount *</label>
-          <input type="number" id="settleAmount" required min="0.01" step="0.01" placeholder="0.00" style="width:100%;padding:10px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);">
+          <label
+            style="
+              font-size: 12px;
+              color: var(--muted);
+              display: block;
+              margin-bottom: 4px;
+            "
+            >Amount *</label
+          >
+          <input
+            type="number"
+            id="settleAmount"
+            required
+            min="0.01"
+            step="0.01"
+            placeholder="0.00"
+            style="
+              width: 100%;
+              padding: 10px;
+              background: var(--bg);
+              border: 1px solid var(--border);
+              border-radius: 8px;
+              color: var(--text);
+            "
+          />
         </div>
         <div>
-          <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">Note</label>
-          <input type="text" id="settleNote" placeholder="Optional note" style="width:100%;padding:10px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);">
+          <label
+            style="
+              font-size: 12px;
+              color: var(--muted);
+              display: block;
+              margin-bottom: 4px;
+            "
+            >Note</label
+          >
+          <input
+            type="text"
+            id="settleNote"
+            placeholder="Optional note"
+            style="
+              width: 100%;
+              padding: 10px;
+              background: var(--bg);
+              border: 1px solid var(--border);
+              border-radius: 8px;
+              color: var(--text);
+            "
+          />
         </div>
-        <div style="display:flex;gap:8px;justify-content:flex-end;">
-          <button type="button" class="btn btn-ghost" onclick="closeModal('settleModal')">Cancel</button>
+        <div style="display: flex; gap: 8px; justify-content: flex-end">
+          <button
+            type="button"
+            class="btn btn-ghost"
+            onclick="closeModal('settleModal')"
+          >
+            Cancel
+          </button>
           <button type="submit" class="btn btn-primary">Record Payment</button>
         </div>
       </form>
@@ -195,7 +645,22 @@
   </div>
 
   <!-- TOAST -->
-  <div id="toast" style="display:none;position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:var(--primary);color:#fff;padding:12px 24px;border-radius:8px;z-index:2000;font-size:14px;"></div>
+  <div
+    id="toast"
+    style="
+      display: none;
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--primary);
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: 8px;
+      z-index: 2000;
+      font-size: 14px;
+    "
+  ></div>
 </div>
 
 <script src="{{ url_for('static', filename='scripts/group_expenses.js') }}"></script>

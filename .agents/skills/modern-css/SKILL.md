@@ -12,6 +12,7 @@ This skill provides a reference for writing modern, robust, and efficient CSS.
 ## Layout & Responsive Design
 
 ### Container Queries
+
 ```css
 .card {
   container: --my-card / inline-size;
@@ -29,6 +30,7 @@ This skill provides a reference for writing modern, robust, and efficient CSS.
 **Container units:** `cqi`, `cqb`, `cqw`, `cqh` - size relative to container dimensions
 
 **Anchored container queries:** Style positioned elements based on anchor fallback state
+
 ```css
 .tooltip {
   container-type: anchored;
@@ -40,13 +42,16 @@ This skill provides a reference for writing modern, robust, and efficient CSS.
 ```
 
 ### Media Query Range Syntax
+
 ```css
-@media (width <= 1024px) { }
-@media (360px < width < 1024px) { }
+@media (width <= 1024px) {
+}
+@media (360px < width < 1024px) {
+}
 ```
 
-
 ### Grid Enhancements
+
 - **Subgrid:** Inherit parent grid lines for nested layouts
 - **Masonry:** `display: grid-lanes` for Pinterest-style layouts with logical tab order. (Previously proposed as `grid-template-rows: masonry`).
 
@@ -55,6 +60,7 @@ This skill provides a reference for writing modern, robust, and efficient CSS.
 ## Color & Theming
 
 ### Color Scheme & Light-Dark Function
+
 ```css
 :root {
   color-scheme: light dark;
@@ -64,6 +70,7 @@ This skill provides a reference for writing modern, robust, and efficient CSS.
 ```
 
 ### Modern Color Spaces
+
 ```css
 /* OKLCH: uniform brightness, P3+ colors */
 .vibrant {
@@ -81,13 +88,14 @@ This skill provides a reference for writing modern, robust, and efficient CSS.
 .gradient {
   background: linear-gradient(
     to right in oklch,
-    color(display-p3 1 0 .5),
+    color(display-p3 1 0 0.5),
     color(display-p3 0 1 1)
   );
 }
 ```
 
 ### Color Manipulation
+
 ```css
 /* color-mix() */
 .lighten {
@@ -96,7 +104,7 @@ This skill provides a reference for writing modern, robust, and efficient CSS.
 
 /* Relative color syntax */
 .lighter {
-  background: oklch(from blue calc(l + .25) c h);
+  background: oklch(from blue calc(l + 0.25) c h);
   background: oklch(from blue 75% c h); /* Set to specific lightness */
 }
 
@@ -110,6 +118,7 @@ This skill provides a reference for writing modern, robust, and efficient CSS.
 ```
 
 ### Accent Color
+
 ```css
 :root {
   accent-color: hotpink; /* Tints checkboxes, radios, range inputs */
@@ -121,6 +130,7 @@ This skill provides a reference for writing modern, robust, and efficient CSS.
 ## Typography
 
 ### Text Wrapping
+
 ```css
 h1 {
   text-wrap: balance; /* Balanced multi-line headings */
@@ -134,13 +144,17 @@ p {
 ```
 
 ### Text Box Trim
+
 ```css
-h1, p, button {
+h1,
+p,
+button {
   text-box: trim-both cap alphabetic; /* Optical vertical centering */
 }
 ```
 
 ### Fluid Typography
+
 ```css
 .heading {
   font-size: clamp(1rem, 1rem + 0.5vw, 2rem); /* Respects user preferences */
@@ -148,6 +162,7 @@ h1, p, button {
 ```
 
 ### Dynamic Viewport Units
+
 - `dvh` / `dvw` - Dynamic (accounts for mobile browser UI)
 - `svh` / `svw` - Small (smallest possible viewport)
 - `lvh` / `lvw` - Large (largest possible viewport)
@@ -157,6 +172,7 @@ h1, p, button {
 ## Animations & Motion
 
 ### Scroll-Driven Animation
+
 ```css
 /* Animate on scroll position */
 .parallax {
@@ -173,6 +189,7 @@ h1, p, button {
 ```
 
 ### View Transitions
+
 **Status:** Baseline Newly Available (Same-document).
 Cross-document transitions are in Limited Availability (Chrome/Safari 18.2+).
 
@@ -195,19 +212,30 @@ html:active-view-transition {
 **Nested View Transition Groups:** Preserve 3D transforms and clipping during transitions.
 
 ### Advanced Easing with linear()
+
 ```css
 .springy {
   --spring: linear(
-    0, 0.14 4%, 0.94 17%, 1.15 24% 30%, 1.02 43%, 0.98 51%, 1 77%, 1
+    0,
+    0.14 4%,
+    0.94 17%,
+    1.15 24% 30%,
+    1.02 43%,
+    0.98 51%,
+    1 77%,
+    1
   );
   transition: transform 1s var(--spring);
 }
 ```
 
 ### @starting-style
+
 ```css
 .dialog {
-  transition: opacity .5s, scale .5s;
+  transition:
+    opacity 0.5s,
+    scale 0.5s;
 
   @starting-style {
     opacity: 0;
@@ -221,10 +249,12 @@ html:active-view-transition {
 ## Custom Properties & Advanced Features
 
 ### @property
+
 Type-safe, animatable custom properties:
+
 ```css
 @property --gradient-angle {
-  syntax: "<angle>";
+  syntax: '<angle>';
   inherits: false;
   initial-value: 0deg;
 }
@@ -239,6 +269,7 @@ Type-safe, animatable custom properties:
 ```
 
 ### Math Functions & calc-size()
+
 **Newly Available:** `calc-size()` allows calculations and transitions on intrinsic sizes (auto, min-content).
 
 ```css
@@ -255,28 +286,25 @@ Type-safe, animatable custom properties:
 
 .radial-layout {
   --_angle: calc(var(--sibling-index) * var(--_offset));
-  translate:
-    calc(cos(var(--_angle)) * var(--_circle-size))
+  translate: calc(cos(var(--_angle)) * var(--_circle-size))
     calc(sin(var(--_angle)) * var(--_circle-size));
 }
 ```
 
 ### Tree Counting Functions (Coming Soon)
+
 ```css
 .staggered {
-  animation-delay: calc(sibling-index() * .1s);
+  animation-delay: calc(sibling-index() * 0.1s);
   background-color: hsl(sibling-count() 50% 50%);
 }
 ```
 
 ### Conditional CSS with if() (Coming Soon)
+
 ```css
 .dynamic {
-  color: if(
-    style(--theme: dark),
-    white,
-    black
-  );
+  color: if(style(--theme: dark), white, black);
 }
 ```
 
@@ -285,11 +313,12 @@ Type-safe, animatable custom properties:
 ## Architecture & Organization
 
 ### Cascade Layers
+
 ```css
 @layer reset, design-system, components, utilities;
 
-@import "open-props/colors" layer(design-system);
-@import "components/nav/base.css" layer(components.nav);
+@import 'open-props/colors' layer(design-system);
+@import 'components/nav/base.css' layer(components.nav);
 
 @layer components.nav.primary {
   nav {
@@ -300,6 +329,7 @@ Type-safe, animatable custom properties:
 ```
 
 Benefits:
+
 - Import third-party CSS with lower specificity
 - Organize styles by concern, not selector weight
 - Nested layers create clear hierarchies
@@ -309,6 +339,7 @@ Benefits:
 ## Interactive Components
 
 ### Dialog
+
 ```html
 <dialog id="modal">
   <form method="dialog">
@@ -324,6 +355,7 @@ Benefits:
 **New:** `closedby` attribute enables light-dismiss behavior
 
 ### Popover
+
 ```html
 <button popovertarget="menu">Show Menu</button>
 <div popover id="menu">...</div>
@@ -334,9 +366,9 @@ Benefits:
 ```css
 [popover] {
   transition:
-    display .5s allow-discrete,
-    overlay .5s allow-discrete,
-    opacity .5s;
+    display 0.5s allow-discrete,
+    overlay 0.5s allow-discrete,
+    opacity 0.5s;
 
   @starting-style {
     &:popover-open {
@@ -347,6 +379,7 @@ Benefits:
 ```
 
 ### Anchor Positioning
+
 ```css
 .tooltip-anchor {
   anchor-name: --tooltip;
@@ -363,6 +396,7 @@ Benefits:
 **Pseudo-elements:** `anchor()`, `::scroll-button()`, `::scroll-marker()`
 
 ### Exclusive Accordion
+
 ```html
 <details name="accordion">...</details>
 <details name="accordion">...</details>
@@ -370,6 +404,7 @@ Benefits:
 ```
 
 ### Customizable Select
+
 ```css
 select {
   appearance: base-select; /* Full CSS control */
@@ -377,15 +412,16 @@ select {
 
 /* Style options with rich HTML */
 select option::before {
-  content: ""; /* Can include images, icons */
+  content: ''; /* Can include images, icons */
 }
 ```
 
 ### Search Element
+
 ```html
 <search>
   <form>
-    <input type="search" name="q">
+    <input type="search" name="q" />
     <button type="submit">Search</button>
   </form>
 </search>
@@ -396,8 +432,11 @@ select option::before {
 ## Form Enhancements
 
 ### Field Sizing
+
 ```css
-textarea, select, input {
+textarea,
+select,
+input {
   field-sizing: content; /* Auto-grow to content */
 }
 
@@ -408,6 +447,7 @@ textarea {
 ```
 
 ### Better Validation Pseudo-Classes
+
 ```css
 /* Wait for user interaction before showing errors */
 :user-invalid {
@@ -424,10 +464,11 @@ label:has(+ input:user-invalid) {
 ```
 
 ### HR in Select
+
 ```html
 <select>
   <option>Option 1</option>
-  <hr>
+  <hr />
   <option>Option 2</option>
 </select>
 ```
@@ -437,6 +478,7 @@ label:has(+ input:user-invalid) {
 ## Visual Effects
 
 ### Scrollbar Styling
+
 ```css
 .custom-scrollbar {
   scrollbar-color: hotpink transparent;
@@ -445,17 +487,15 @@ label:has(+ input:user-invalid) {
 ```
 
 ### Shape Function
+
 ```css
 .complex-clip {
-  clip-path: shape(
-    from 0% 0%,
-    curve by 50% 25% via 25% 50%,
-    line to 100% 100%
-  );
+  clip-path: shape(from 0% 0%, curve by 50% 25% via 25% 50%, line to 100% 100%);
 }
 ```
 
 ### Corner Shapes
+
 ```css
 .fancy-corners {
   corner-shape: squircle;
@@ -470,6 +510,7 @@ label:has(+ input:user-invalid) {
 ## Progressive Enhancement Patterns
 
 ### Feature Detection
+
 ```css
 @supports (animation-timeline: view()) {
   .fade-in {
@@ -486,6 +527,7 @@ label:has(+ input:user-invalid) {
 ```
 
 ### Respect User Preferences
+
 ```css
 @media (prefers-reduced-motion: no-preference) {
   .animated {
@@ -523,9 +565,7 @@ label:has(+ input:user-invalid) {
 2. **MDN:** Look for the Baseline badge in the browser compatibility table
 3. **web.dev:** Feature articles include Baseline status
 
-
 **Remember:** Always check Baseline status, use `@supports` for cutting-edge features, and respect user preferences with media queries. Modern CSS is about progressive enhancement and building resilient interfaces that work for everyone.
-
 
 ---
 
@@ -536,10 +576,9 @@ Here's a card component using many modern CSS features:
 ```css
 /* Cascade layer for organization */
 @layer components.card {
-
   /* Custom properties with @property */
   @property --card-hue {
-    syntax: "<number>";
+    syntax: '<number>';
     inherits: false;
     initial-value: 200;
   }
@@ -704,12 +743,7 @@ Here's a card component using many modern CSS features:
 
 ```html
 <article class="card">
-  <img
-    class="card__image"
-    src="image.jpg"
-    alt="Description"
-    loading="lazy"
-  >
+  <img class="card__image" src="image.jpg" alt="Description" loading="lazy" />
 
   <h2 class="card__title">Card Title</h2>
 
@@ -717,23 +751,13 @@ Here's a card component using many modern CSS features:
     Card description with pretty text wrapping that avoids orphans.
   </p>
 
-  <button
-    class="card__cta"
-    popovertarget="card-tooltip"
-  >
-    Learn More
-  </button>
+  <button class="card__cta" popovertarget="card-tooltip">Learn More</button>
 
-  <div
-    class="card__tooltip"
-    popover="hint"
-    id="card-tooltip"
-  >
+  <div class="card__tooltip" popover="hint" id="card-tooltip">
     Additional information appears here
   </div>
 </article>
 ```
-
 
 ## Canonical Resources
 
@@ -742,15 +766,14 @@ Here's a card component using many modern CSS features:
 - [Adam Argyle's CascadiaJS 2025 Deck](https://cascadiajs-2025.netlify.app/) - (markdownified locally in ./argyle-cacadia-2025-deck.md)
 - [Modern CSS in Real Life](https://chriscoyier.net/2023/06/06/modern-css-in-real-life/) - Practical applications
 
-
 ## Usage Guidelines
 
 1.  **Prioritize Stability:**
-    *   Recommend **Newly Available** or **Widely Available** features for production code.
-    *   Use **Limited Availability** features with progressive enhancement, graceful degredation, or `@supports`. Or ask the user how they want to handle it.
+    - Recommend **Newly Available** or **Widely Available** features for production code.
+    - Use **Limited Availability** features with progressive enhancement, graceful degredation, or `@supports`. Or ask the user how they want to handle it.
 
 2.  **Use the web platform:**
-    *   Always prefer standard CSS solutions over JavaScript libraries for layout, animation, and interaction (e.g., use CSS Masonry instead of Masonry.js, Popover API instead of custom tooltip scripts).
+    - Always prefer standard CSS solutions over JavaScript libraries for layout, animation, and interaction (e.g., use CSS Masonry instead of Masonry.js, Popover API instead of custom tooltip scripts).
 
 3.  **Code Style:**
-    *   Use modern color spaces (`oklch`) for new palettes.
+    - Use modern color spaces (`oklch`) for new palettes.

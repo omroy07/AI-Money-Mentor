@@ -80,7 +80,7 @@ print(f"With cache (1000 runs): {fast_time:.4f}s")
 print(f"Cache info: {fibonacci_fast.cache_info()}")
 ```
 
-### Pattern 13: Using __slots__ for Memory
+### Pattern 13: Using **slots** for Memory
 
 ```python
 import sys

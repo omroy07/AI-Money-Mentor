@@ -1,8 +1,5 @@
-{% extends 'base.html' %}
-
-{% block title %}Insurance Planning & Optimization{% endblock %}
-
-{% block head %}
+{% extends 'base.html' %} {% block title %}Insurance Planning & Optimization{%
+endblock %} {% block head %}
 <style>
   .insurance-grid {
     display: grid;
@@ -25,14 +22,19 @@
     color: var(--text);
   }
 
-  .calc-form input, .calc-form select {
+  .calc-form input,
+  .calc-form select {
     width: 100%;
     margin-top: 6px;
     margin-bottom: 4px;
   }
 
   .results-card {
-    background: linear-gradient(135deg, rgba(20, 200, 191, 0.08) 0%, rgba(212, 168, 67, 0.03) 100%);
+    background: linear-gradient(
+      135deg,
+      rgba(20, 200, 191, 0.08) 0%,
+      rgba(212, 168, 67, 0.03) 100%
+    );
     border: 1px solid var(--border);
   }
 
@@ -85,7 +87,11 @@
   }
 
   .advisor-box {
-    background: linear-gradient(135deg, rgba(212, 168, 67, 0.08) 0%, rgba(7, 11, 18, 0.05) 100%);
+    background: linear-gradient(
+      135deg,
+      rgba(212, 168, 67, 0.08) 0%,
+      rgba(7, 11, 18, 0.05) 100%
+    );
     border: 1px solid rgba(212, 168, 67, 0.2);
     border-radius: 14px;
     padding: 20px;
@@ -114,7 +120,8 @@
     font-size: 13px;
   }
 
-  .policy-table th, .policy-table td {
+  .policy-table th,
+  .policy-table td {
     padding: 12px;
     text-align: left;
     border-bottom: 1px solid var(--border);
@@ -175,7 +182,7 @@
     width: 100%;
     max-width: 500px;
     padding: 24px;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
     transform: scale(0.95);
     transition: transform 0.3s ease;
   }
@@ -220,53 +227,101 @@
     gap: 12px;
   }
 </style>
-{% endblock %}
-
-{% block content %}
+{% endblock %} {% block content %}
 <div id="insurance" class="page active">
-  <div class="page-title">🛡️ Insurance <span>Planner & Optimization</span></div>
+  <div class="page-title">
+    <i class="fa-solid fa-shield-halved"></i> Insurance
+    <span>Planner & Optimization</span>
+  </div>
 
   <div class="insurance-grid">
     <!-- LEFT COLUMN: Needs Analysis Form -->
     <div class="card">
-      <div class="card-title">🔍 Needs Analysis</div>
-      <p style="font-size: 12px; color: var(--muted); margin-bottom: 16px;">Calculate your ideal Life Insurance Cover (Human Life Value) and Health Insurance sum insured.</p>
-      
-      <form id="recommendationForm" class="calc-form" onsubmit="calculateNeeds(event)">
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+      <div class="card-title">
+        <i class="fa-solid fa-magnifying-glass"></i> Needs Analysis
+      </div>
+      <p style="font-size: 12px; color: var(--muted); margin-bottom: 16px">
+        Calculate your ideal Life Insurance Cover (Human Life Value) and Health
+        Insurance sum insured.
+      </p>
+
+      <form
+        id="recommendationForm"
+        class="calc-form"
+        onsubmit="calculateNeeds(event)"
+      >
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px">
           <div>
             <label>Current Age (Years)</label>
-            <input type="number" id="age" required min="1" max="100" placeholder="e.g. 30">
+            <input
+              type="number"
+              id="age"
+              required
+              min="1"
+              max="100"
+              placeholder="e.g. 30"
+            />
           </div>
           <div>
             <label>Retirement Age (Years)</label>
-            <input type="number" id="retirement_age" required min="1" max="100" placeholder="e.g. 60">
+            <input
+              type="number"
+              id="retirement_age"
+              required
+              min="1"
+              max="100"
+              placeholder="e.g. 60"
+            />
           </div>
         </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px">
           <div>
             <label>Annual Income (₹)</label>
-            <input type="number" id="annual_income" required min="0" placeholder="e.g. 1200000">
+            <input
+              type="number"
+              id="annual_income"
+              required
+              min="0"
+              placeholder="e.g. 1200000"
+            />
           </div>
           <div>
             <label>Personal Annual Expenses (₹)</label>
-            <input type="number" id="personal_expenses" required min="0" placeholder="e.g. 300000">
+            <input
+              type="number"
+              id="personal_expenses"
+              required
+              min="0"
+              placeholder="e.g. 300000"
+            />
           </div>
         </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px">
           <div>
             <label>Total Liabilities/Loans (₹)</label>
-            <input type="number" id="liabilities" required min="0" placeholder="e.g. 2000000">
+            <input
+              type="number"
+              id="liabilities"
+              required
+              min="0"
+              placeholder="e.g. 2000000"
+            />
           </div>
           <div>
             <label>Current Savings & Invest (₹)</label>
-            <input type="number" id="savings" required min="0" placeholder="e.g. 500000">
+            <input
+              type="number"
+              id="savings"
+              required
+              min="0"
+              placeholder="e.g. 500000"
+            />
           </div>
         </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px">
           <div>
             <label>Family Size / Coverage Type</label>
             <select id="family_size" required>
@@ -285,28 +340,62 @@
           </div>
         </div>
 
-        <div style="margin-top: 16px; display: flex; align-items: center; gap: 8px;">
-          <input type="checkbox" id="pre_existing" style="width: auto; margin: 0;">
-          <label for="pre_existing" style="margin: 0; cursor: pointer;">Pre-existing medical conditions present?</label>
+        <div
+          style="margin-top: 16px; display: flex; align-items: center; gap: 8px"
+        >
+          <input
+            type="checkbox"
+            id="pre_existing"
+            style="width: auto; margin: 0"
+          />
+          <label for="pre_existing" style="margin: 0; cursor: pointer"
+            >Pre-existing medical conditions present?</label
+          >
         </div>
 
-        <button type="submit" class="btn btn-gold" style="width: 100%; margin-top: 20px;" id="btnCalc">Calculate & Save Recommendation</button>
+        <button
+          type="submit"
+          class="btn btn-gold"
+          style="width: 100%; margin-top: 20px"
+          id="btnCalc"
+        >
+          Calculate & Save Recommendation
+        </button>
       </form>
     </div>
 
     <!-- RIGHT COLUMN: Output Dashboard -->
     <div>
       <!-- Analysis Results -->
-      <div class="card results-card" id="resultsCard" style="display: none;">
-        <div class="card-title">📊 Ideal Coverage Requirements</div>
-        
+      <div class="card results-card" id="resultsCard" style="display: none">
+        <div class="card-title">
+          <i class="fa-solid fa-lightbulb"></i> Ideal Coverage Requirements
+        </div>
+
         <!-- Life Insurance -->
-        <div style="margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid var(--border);">
-          <div style="font-weight: 700; color: var(--gold2); font-size: 15px; margin-bottom: 12px; display: flex; align-items: center; gap: 6px;">
-            <span>💼</span> Life Insurance Cover (HLV)
+        <div
+          style="
+            margin-bottom: 24px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+          "
+        >
+          <div
+            style="
+              font-weight: 700;
+              color: var(--gold2);
+              font-size: 15px;
+              margin-bottom: 12px;
+              display: flex;
+              align-items: center;
+              gap: 6px;
+            "
+          >
+            <span><i class="fa-solid fa-briefcase"></i></span> Life Insurance
+            Cover (HLV)
           </div>
-          
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px">
             <div class="metric-box">
               <div>
                 <div class="metric-label">Recommended Cover</div>
@@ -320,9 +409,21 @@
               </div>
             </div>
           </div>
-          
-          <div style="font-size: 12px; color: var(--muted); display: flex; justify-content: space-between;">
-            <span>Existing: <strong id="existLifeValue" style="color: var(--text)">₹0</strong></span>
+
+          <div
+            style="
+              font-size: 12px;
+              color: var(--muted);
+              display: flex;
+              justify-content: space-between;
+            "
+          >
+            <span
+              >Existing:
+              <strong id="existLifeValue" style="color: var(--text)"
+                >₹0</strong
+              ></span
+            >
             <span id="lifeAdequacyLabel">0% Covered</span>
           </div>
           <div class="progress-bar-container">
@@ -332,11 +433,22 @@
 
         <!-- Health Insurance -->
         <div>
-          <div style="font-weight: 700; color: var(--teal); font-size: 15px; margin-bottom: 12px; display: flex; align-items: center; gap: 6px;">
-            <span>🏥</span> Health Insurance Cover
+          <div
+            style="
+              font-weight: 700;
+              color: var(--teal);
+              font-size: 15px;
+              margin-bottom: 12px;
+              display: flex;
+              align-items: center;
+              gap: 6px;
+            "
+          >
+            <span><i class="fa-solid fa-heart-pulse"></i></span> Health
+            Insurance Cover
           </div>
-          
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px">
             <div class="metric-box">
               <div>
                 <div class="metric-label">Recommended Cover</div>
@@ -350,9 +462,21 @@
               </div>
             </div>
           </div>
-          
-          <div style="font-size: 12px; color: var(--muted); display: flex; justify-content: space-between;">
-            <span>Existing: <strong id="existHealthValue" style="color: var(--text)">₹0</strong></span>
+
+          <div
+            style="
+              font-size: 12px;
+              color: var(--muted);
+              display: flex;
+              justify-content: space-between;
+            "
+          >
+            <span
+              >Existing:
+              <strong id="existHealthValue" style="color: var(--text)"
+                >₹0</strong
+              ></span
+            >
             <span id="healthAdequacyLabel">0% Covered</span>
           </div>
           <div class="progress-bar-container">
@@ -362,33 +486,67 @@
       </div>
 
       <!-- AI Advisor Panel -->
-      <div class="advisor-box" id="aiAdvisorCard" style="display: none;">
+      <div class="advisor-box" id="aiAdvisorCard" style="display: none">
         <div class="advisor-badge">AI Insurance Advisor</div>
-        <div id="aiAdvisorOutput" style="font-size: 13px; line-height: 1.6; color: var(--text);">
+        <div
+          id="aiAdvisorOutput"
+          style="font-size: 13px; line-height: 1.6; color: var(--text)"
+        >
           Analyzing details to provide expert insights...
         </div>
       </div>
-      
+
       <!-- Placeholder card when no needs analysis saved -->
-      <div class="card" id="placeholderCard" style="text-align: center; padding: 40px 20px;">
-        <div style="font-size: 48px; margin-bottom: 12px;">🛡️</div>
+      <div
+        class="card"
+        id="placeholderCard"
+        style="text-align: center; padding: 40px 20px"
+      >
+        <div style="font-size: 48px; margin-bottom: 12px">
+          <i class="fa-solid fa-shield-halved"></i>
+        </div>
         <div class="card-title">No Needs Analysis Yet</div>
-        <p style="font-size: 13px; color: var(--muted); max-width: 320px; margin: 8px auto 0;">Complete the Needs Analysis form on the left to calculate your gap and unlock personalized AI suggestions.</p>
+        <p
+          style="
+            font-size: 13px;
+            color: var(--muted);
+            max-width: 320px;
+            margin: 8px auto 0;
+          "
+        >
+          Complete the Needs Analysis form on the left to calculate your gap and
+          unlock personalized AI suggestions.
+        </p>
       </div>
     </div>
   </div>
 
   <!-- POLICY TRACKER SECTION -->
-  <div class="card" style="margin-top: 24px;">
-    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+  <div class="card" style="margin-top: 24px">
+    <div
+      style="
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+      "
+    >
       <div>
-        <div class="card-title">📝 My Policies</div>
-        <p style="font-size: 12px; color: var(--muted);">Track your active life and health policies below to check coverage gaps.</p>
+        <div class="card-title">
+          <i class="fa-solid fa-file-contract"></i> My Policies
+        </div>
+        <p style="font-size: 12px; color: var(--muted)">
+          Track your active life and health policies below to check coverage
+          gaps.
+        </p>
       </div>
-      <button class="btn btn-gold" onclick="openAddPolicyModal()">➕ Log Policy</button>
+      <button class="btn btn-gold" onclick="openAddPolicyModal()">
+        ➕ Log Policy
+      </button>
     </div>
 
-    <div style="overflow-x: auto; margin-top: 16px;">
+    <div style="overflow-x: auto; margin-top: 16px">
       <table class="policy-table">
         <thead>
           <tr>
@@ -404,7 +562,13 @@
         <tbody id="policyTableBody">
           <!-- Loaded dynamically -->
           <tr>
-            <td colspan="7" class="text-muted" style="text-align: center; padding: 20px;">No policies logged yet. Click "Log Policy" to get started.</td>
+            <td
+              colspan="7"
+              class="text-muted"
+              style="text-align: center; padding: 20px"
+            >
+              No policies logged yet. Click "Log Policy" to get started.
+            </td>
           </tr>
         </tbody>
       </table>
@@ -420,31 +584,76 @@
       <button class="modal-close" onclick="closePolicyModal()">&times;</button>
     </div>
     <form id="policyForm" onsubmit="savePolicy(event)">
-      <input type="hidden" id="policyId">
-      
-      <label style="display:block; margin-top:8px; font-size:12px;">Policy Type</label>
-      <select id="policy_type" required style="width:100%; margin-top:4px;">
+      <input type="hidden" id="policyId" />
+
+      <label style="display: block; margin-top: 8px; font-size: 12px"
+        >Policy Type</label
+      >
+      <select id="policy_type" required style="width: 100%; margin-top: 4px">
         <option value="life">Life Insurance</option>
         <option value="health">Health Insurance</option>
       </select>
 
-      <label style="display:block; margin-top:12px; font-size:12px;">Policy Name</label>
-      <input type="text" id="policy_name" required placeholder="e.g. Life Protect Term Plan" style="width:100%; margin-top:4px;">
+      <label style="display: block; margin-top: 12px; font-size: 12px"
+        >Policy Name</label
+      >
+      <input
+        type="text"
+        id="policy_name"
+        required
+        placeholder="e.g. Life Protect Term Plan"
+        style="width: 100%; margin-top: 4px"
+      />
 
-      <label style="display:block; margin-top:12px; font-size:12px;">Insurance Provider</label>
-      <input type="text" id="provider" required placeholder="e.g. HDFC Life" style="width:100%; margin-top:4px;">
+      <label style="display: block; margin-top: 12px; font-size: 12px"
+        >Insurance Provider</label
+      >
+      <input
+        type="text"
+        id="provider"
+        required
+        placeholder="e.g. HDFC Life"
+        style="width: 100%; margin-top: 4px"
+      />
 
-      <label style="display:block; margin-top:12px; font-size:12px;">Sum Insured / Cover Amount (₹)</label>
-      <input type="number" id="sum_insured" required min="0" placeholder="e.g. 5000000" style="width:100%; margin-top:4px;">
+      <label style="display: block; margin-top: 12px; font-size: 12px"
+        >Sum Insured / Cover Amount (₹)</label
+      >
+      <input
+        type="number"
+        id="sum_insured"
+        required
+        min="0"
+        placeholder="e.g. 5000000"
+        style="width: 100%; margin-top: 4px"
+      />
 
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px;">
+      <div
+        style="
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 12px;
+          margin-top: 12px;
+        "
+      >
         <div>
-          <label style="font-size:12px;">Premium Amount (₹)</label>
-          <input type="number" id="premium_amount" required min="0" placeholder="e.g. 15000" style="width:100%; margin-top:4px;">
+          <label style="font-size: 12px">Premium Amount (₹)</label>
+          <input
+            type="number"
+            id="premium_amount"
+            required
+            min="0"
+            placeholder="e.g. 15000"
+            style="width: 100%; margin-top: 4px"
+          />
         </div>
         <div>
-          <label style="font-size:12px;">Premium Frequency</label>
-          <select id="premium_frequency" required style="width:100%; margin-top:4px;">
+          <label style="font-size: 12px">Premium Frequency</label>
+          <select
+            id="premium_frequency"
+            required
+            style="width: 100%; margin-top: 4px"
+          >
             <option value="annual">Annual</option>
             <option value="monthly">Monthly</option>
             <option value="quarterly">Quarterly</option>
@@ -454,12 +663,26 @@
         </div>
       </div>
 
-      <label style="display:block; margin-top:12px; font-size:12px;">Policy Expiry Date</label>
-      <input type="date" id="expiry_date" style="width:100%; margin-top:4px;">
+      <label style="display: block; margin-top: 12px; font-size: 12px"
+        >Policy Expiry Date</label
+      >
+      <input
+        type="date"
+        id="expiry_date"
+        style="width: 100%; margin-top: 4px"
+      />
 
       <div class="modal-footer">
-        <button type="button" class="btn btn-ghost" onclick="closePolicyModal()">Cancel</button>
-        <button type="submit" class="btn btn-gold" id="btnSavePolicy">Save Policy</button>
+        <button
+          type="button"
+          class="btn btn-ghost"
+          onclick="closePolicyModal()"
+        >
+          Cancel
+        </button>
+        <button type="submit" class="btn btn-gold" id="btnSavePolicy">
+          Save Policy
+        </button>
       </div>
     </form>
   </div>
@@ -468,86 +691,114 @@
 <script>
   let existingRecommendation = null;
 
-  document.addEventListener("DOMContentLoaded", async () => {
+  document.addEventListener('DOMContentLoaded', async () => {
     await loadRecommendation();
     await loadPolicies();
   });
 
   async function loadRecommendation() {
     try {
-      const response = await fetch("/api/insurance/recommendation");
+      const response = await fetch('/api/insurance/recommendation');
       const data = await response.json();
-      
-      const resCard = document.getElementById("resultsCard");
-      const placeholder = document.getElementById("placeholderCard");
-      const advisor = document.getElementById("aiAdvisorCard");
-      
+
+      const resCard = document.getElementById('resultsCard');
+      const placeholder = document.getElementById('placeholderCard');
+      const advisor = document.getElementById('aiAdvisorCard');
+
       if (data.recommendation) {
         existingRecommendation = data.recommendation;
-        resCard.style.display = "block";
-        placeholder.style.display = "none";
-        advisor.style.display = "block";
-        
+        resCard.style.display = 'block';
+        placeholder.style.display = 'none';
+        advisor.style.display = 'block';
+
         // Populate inputs
-        document.getElementById("age").value = existingRecommendation.age;
-        document.getElementById("retirement_age").value = existingRecommendation.retirement_age;
-        document.getElementById("annual_income").value = existingRecommendation.annual_income;
-        document.getElementById("personal_expenses").value = existingRecommendation.personal_expenses;
-        document.getElementById("liabilities").value = existingRecommendation.liabilities;
-        document.getElementById("savings").value = existingRecommendation.savings;
-        document.getElementById("family_size").value = existingRecommendation.family_size;
-        document.getElementById("tier").value = existingRecommendation.tier;
-        document.getElementById("pre_existing").checked = existingRecommendation.pre_existing;
-        
+        document.getElementById('age').value = existingRecommendation.age;
+        document.getElementById('retirement_age').value =
+          existingRecommendation.retirement_age;
+        document.getElementById('annual_income').value =
+          existingRecommendation.annual_income;
+        document.getElementById('personal_expenses').value =
+          existingRecommendation.personal_expenses;
+        document.getElementById('liabilities').value =
+          existingRecommendation.liabilities;
+        document.getElementById('savings').value =
+          existingRecommendation.savings;
+        document.getElementById('family_size').value =
+          existingRecommendation.family_size;
+        document.getElementById('tier').value = existingRecommendation.tier;
+        document.getElementById('pre_existing').checked =
+          existingRecommendation.pre_existing;
+
         updateRecommendationUI(existingRecommendation);
       } else {
-        resCard.style.display = "none";
-        placeholder.style.display = "block";
-        advisor.style.display = "none";
-        
+        resCard.style.display = 'none';
+        placeholder.style.display = 'block';
+        advisor.style.display = 'none';
+
         // Update sidebar/totals even if no needs saved
         updateExistingTotalsUI(data.existing_life, data.existing_health);
       }
     } catch (e) {
-      console.error("Failed to load recommendation:", e);
+      console.error('Failed to load recommendation:', e);
     }
   }
 
   function updateRecommendationUI(rec) {
-    document.getElementById("recLifeValue").innerText = `₹ ${fmtNum(rec.recommended_life)}`;
-    document.getElementById("lifeGapValue").innerText = `₹ ${fmtNum(rec.life_gap)}`;
-    document.getElementById("existLifeValue").innerText = `₹ ${fmtNum(rec.existing_life)}`;
-    
-    const lifePct = rec.recommended_life > 0 ? Math.min(100, Math.round((rec.existing_life / rec.recommended_life) * 100)) : 100;
-    document.getElementById("lifeAdequacyLabel").innerText = `${lifePct}% Covered`;
-    document.getElementById("lifeProgressFill").style.width = `${lifePct}%`;
-    
+    document.getElementById('recLifeValue').innerText =
+      `₹ ${fmtNum(rec.recommended_life)}`;
+    document.getElementById('lifeGapValue').innerText =
+      `₹ ${fmtNum(rec.life_gap)}`;
+    document.getElementById('existLifeValue').innerText =
+      `₹ ${fmtNum(rec.existing_life)}`;
+
+    const lifePct =
+      rec.recommended_life > 0
+        ? Math.min(
+            100,
+            Math.round((rec.existing_life / rec.recommended_life) * 100),
+          )
+        : 100;
+    document.getElementById('lifeAdequacyLabel').innerText =
+      `${lifePct}% Covered`;
+    document.getElementById('lifeProgressFill').style.width = `${lifePct}%`;
+
     // Color gap based on status
-    const lifeGapEl = document.getElementById("lifeGapValue");
+    const lifeGapEl = document.getElementById('lifeGapValue');
     if (rec.life_gap === 0) {
-      lifeGapEl.className = "metric-value sufficient";
-      lifeGapEl.innerText = "Sufficient Cover ✅";
+      lifeGapEl.className = 'metric-value sufficient';
+      lifeGapEl.innerText = 'Sufficient Cover ✅';
     } else {
-      lifeGapEl.className = "metric-value gap";
+      lifeGapEl.className = 'metric-value gap';
     }
 
-    document.getElementById("recHealthValue").innerText = `₹ ${fmtNum(rec.recommended_health)}`;
-    document.getElementById("healthGapValue").innerText = `₹ ${fmtNum(rec.health_gap)}`;
-    document.getElementById("existHealthValue").innerText = `₹ ${fmtNum(rec.existing_health)}`;
-    
-    const healthPct = rec.recommended_health > 0 ? Math.min(100, Math.round((rec.existing_health / rec.recommended_health) * 100)) : 100;
-    document.getElementById("healthAdequacyLabel").innerText = `${healthPct}% Covered`;
-    document.getElementById("healthProgressFill").style.width = `${healthPct}%`;
-    
-    const healthGapEl = document.getElementById("healthGapValue");
+    document.getElementById('recHealthValue').innerText =
+      `₹ ${fmtNum(rec.recommended_health)}`;
+    document.getElementById('healthGapValue').innerText =
+      `₹ ${fmtNum(rec.health_gap)}`;
+    document.getElementById('existHealthValue').innerText =
+      `₹ ${fmtNum(rec.existing_health)}`;
+
+    const healthPct =
+      rec.recommended_health > 0
+        ? Math.min(
+            100,
+            Math.round((rec.existing_health / rec.recommended_health) * 100),
+          )
+        : 100;
+    document.getElementById('healthAdequacyLabel').innerText =
+      `${healthPct}% Covered`;
+    document.getElementById('healthProgressFill').style.width = `${healthPct}%`;
+
+    const healthGapEl = document.getElementById('healthGapValue');
     if (rec.health_gap === 0) {
-      healthGapEl.className = "metric-value sufficient";
-      healthGapEl.innerText = "Sufficient Cover ✅";
+      healthGapEl.className = 'metric-value sufficient';
+      healthGapEl.innerText = 'Sufficient Cover ✅';
     } else {
-      healthGapEl.className = "metric-value gap";
+      healthGapEl.className = 'metric-value gap';
     }
-    
-    document.getElementById("aiAdvisorOutput").innerText = rec.ai_suggestions || "No suggestions available.";
+
+    document.getElementById('aiAdvisorOutput').innerText =
+      rec.ai_suggestions || 'No suggestions available.';
   }
 
   function updateExistingTotalsUI(lifeTotal, healthTotal) {
@@ -556,49 +807,51 @@
 
   async function calculateNeeds(e) {
     e.preventDefault();
-    setLoading("btnCalc", true);
-    
+    setLoading('btnCalc', true);
+
     const payload = {
-      age: parseInt(document.getElementById("age").value),
-      retirement_age: parseInt(document.getElementById("retirement_age").value),
-      annual_income: parseFloat(document.getElementById("annual_income").value),
-      personal_expenses: parseFloat(document.getElementById("personal_expenses").value),
-      liabilities: parseFloat(document.getElementById("liabilities").value),
-      savings: parseFloat(document.getElementById("savings").value),
-      family_size: document.getElementById("family_size").value,
-      tier: document.getElementById("tier").value,
-      pre_existing: document.getElementById("pre_existing").checked
+      age: parseInt(document.getElementById('age').value),
+      retirement_age: parseInt(document.getElementById('retirement_age').value),
+      annual_income: parseFloat(document.getElementById('annual_income').value),
+      personal_expenses: parseFloat(
+        document.getElementById('personal_expenses').value,
+      ),
+      liabilities: parseFloat(document.getElementById('liabilities').value),
+      savings: parseFloat(document.getElementById('savings').value),
+      family_size: document.getElementById('family_size').value,
+      tier: document.getElementById('tier').value,
+      pre_existing: document.getElementById('pre_existing').checked,
     };
-    
+
     try {
-      const response = await fetch("/api/insurance/recommendation", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
+      const response = await fetch('/api/insurance/recommendation', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
       });
       const data = await response.json();
-      
-      if (data.status === "success") {
+
+      if (data.status === 'success') {
         await loadRecommendation();
       } else {
-        alert(`Error: ${data.error}`);
+        alert(`Error: ${esc(data.error)}`);
       }
     } catch (err) {
-      console.error("Calculation failed:", err);
-      alert("Failed to submit needs analysis.");
+      console.error('Calculation failed:', err);
+      alert('Failed to submit needs analysis.');
     } finally {
-      setLoading("btnCalc", false);
+      setLoading('btnCalc', false);
     }
   }
 
   // ==================== POLICY LIST LOGIC ====================
   async function loadPolicies() {
     try {
-      const response = await fetch("/api/insurance/policies");
+      const response = await fetch('/api/insurance/policies');
       const data = await response.json();
-      
-      const tbody = document.getElementById("policyTableBody");
-      
+
+      const tbody = document.getElementById('policyTableBody');
+
       if (!data.policies || data.policies.length === 0) {
         tbody.innerHTML = `
           <tr>
@@ -607,8 +860,10 @@
         `;
         return;
       }
-      
-      tbody.innerHTML = data.policies.map(p => `
+
+      tbody.innerHTML = data.policies
+        .map(
+          (p) => `
         <tr>
           <td><span class="policy-type-badge ${p.policy_type}">${p.policy_type}</span></td>
           <td><strong>${p.policy_name}</strong></td>
@@ -623,100 +878,108 @@
             </div>
           </td>
         </tr>
-      `).join('');
+      `,
+        )
+        .join('');
     } catch (e) {
-      console.error("Failed to load policies:", e);
+      console.error('Failed to load policies:', e);
     }
   }
 
   // ==================== LOG POLICY ACTIONS ====================
   function openAddPolicyModal() {
-    document.getElementById("policyId").value = "";
-    document.getElementById("policyForm").reset();
-    document.getElementById("modalTitle").innerText = "Log Insurance Policy";
-    document.getElementById("btnSavePolicy").innerText = "Save Policy";
-    
-    document.getElementById("policyModal").classList.add("active");
+    document.getElementById('policyId').value = '';
+    document.getElementById('policyForm').reset();
+    document.getElementById('modalTitle').innerText = 'Log Insurance Policy';
+    document.getElementById('btnSavePolicy').innerText = 'Save Policy';
+
+    document.getElementById('policyModal').classList.add('active');
   }
 
   function editPolicy(p) {
-    document.getElementById("policyId").value = p.id;
-    document.getElementById("policy_type").value = p.policy_type;
-    document.getElementById("policy_name").value = p.policy_name;
-    document.getElementById("provider").value = p.provider;
-    document.getElementById("sum_insured").value = p.sum_insured;
-    document.getElementById("premium_amount").value = p.premium_amount;
-    document.getElementById("premium_frequency").value = p.premium_frequency;
-    document.getElementById("expiry_date").value = p.expiry_date || "";
-    
-    document.getElementById("modalTitle").innerText = "Edit Insurance Policy";
-    document.getElementById("btnSavePolicy").innerText = "Update Policy";
-    
-    document.getElementById("policyModal").classList.add("active");
+    document.getElementById('policyId').value = p.id;
+    document.getElementById('policy_type').value = p.policy_type;
+    document.getElementById('policy_name').value = p.policy_name;
+    document.getElementById('provider').value = p.provider;
+    document.getElementById('sum_insured').value = p.sum_insured;
+    document.getElementById('premium_amount').value = p.premium_amount;
+    document.getElementById('premium_frequency').value = p.premium_frequency;
+    document.getElementById('expiry_date').value = p.expiry_date || '';
+
+    document.getElementById('modalTitle').innerText = 'Edit Insurance Policy';
+    document.getElementById('btnSavePolicy').innerText = 'Update Policy';
+
+    document.getElementById('policyModal').classList.add('active');
   }
 
   function closePolicyModal() {
-    document.getElementById("policyModal").classList.remove("active");
+    document.getElementById('policyModal').classList.remove('active');
   }
 
   async function savePolicy(e) {
     e.preventDefault();
-    setLoading("btnSavePolicy", true);
-    
-    const policyId = document.getElementById("policyId").value;
-    const isEdit = policyId !== "";
-    
+    setLoading('btnSavePolicy', true);
+
+    const policyId = document.getElementById('policyId').value;
+    const isEdit = policyId !== '';
+
     const payload = {
-      policy_type: document.getElementById("policy_type").value,
-      policy_name: document.getElementById("policy_name").value,
-      provider: document.getElementById("provider").value,
-      sum_insured: parseFloat(document.getElementById("sum_insured").value),
-      premium_amount: parseFloat(document.getElementById("premium_amount").value),
-      premium_frequency: document.getElementById("premium_frequency").value,
-      expiry_date: document.getElementById("expiry_date").value || null
+      policy_type: document.getElementById('policy_type').value,
+      policy_name: document.getElementById('policy_name').value,
+      provider: document.getElementById('provider').value,
+      sum_insured: parseFloat(document.getElementById('sum_insured').value),
+      premium_amount: parseFloat(
+        document.getElementById('premium_amount').value,
+      ),
+      premium_frequency: document.getElementById('premium_frequency').value,
+      expiry_date: document.getElementById('expiry_date').value || null,
     };
-    
-    const url = isEdit ? `/api/insurance/policies/${policyId}` : "/api/insurance/policies";
-    const method = isEdit ? "PUT" : "POST";
-    
+
+    const url = isEdit
+      ? `/api/insurance/policies/${policyId}`
+      : '/api/insurance/policies';
+    const method = isEdit ? 'PUT' : 'POST';
+
     try {
       const response = await fetch(url, {
         method: method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
       });
       const data = await response.json();
-      
-      if (data.status === "success") {
+
+      if (data.status === 'success') {
         closePolicyModal();
         await loadPolicies();
         await loadRecommendation(); // Gaps will update
       } else {
-        alert(`Error: ${data.error}`);
+        alert(`Error: ${esc(data.error)}`);
       }
     } catch (err) {
-      console.error("Failed to save policy:", err);
-      alert("Error occurred while saving policy.");
+      console.error('Failed to save policy:', err);
+      alert('Error occurred while saving policy.');
     } finally {
-      setLoading("btnSavePolicy", false);
+      setLoading('btnSavePolicy', false);
     }
   }
 
   async function deletePolicy(policyId) {
-    if (!confirm("Are you sure you want to delete this policy?")) return;
-    
+    if (!confirm('Are you sure you want to delete this policy?')) return;
+
     try {
-      const response = await fetch(`/api/insurance/policies/${policyId}`, { method: "DELETE" });
+      const response = await fetch(`/api/insurance/policies/${policyId}`, {
+        method: 'DELETE',
+      });
       const data = await response.json();
-      
-      if (data.status === "success") {
+
+      if (data.status === 'success') {
         await loadPolicies();
         await loadRecommendation();
       } else {
-        alert(`Error: ${data.error}`);
+        alert(`Error: ${esc(data.error)}`);
       }
     } catch (err) {
-      console.error("Failed to delete policy:", err);
+      console.error('Failed to delete policy:', err);
     }
   }
 </script>

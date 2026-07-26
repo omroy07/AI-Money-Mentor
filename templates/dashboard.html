@@ -1,14 +1,17 @@
-{% extends 'base.html' %}
-
-{% block title %}Dashboard{% endblock %}
-
-{% block content %}
+{% extends 'base.html' %} {% block title %}Dashboard{% endblock %} {% block
+content %}
 <div id="dashboard" class="page active">
-  <div class="page-title"><span style="font-size: 1.5em; font-weight: bold;">Smart</span> <span>Dashboard</span></div>
+  <div class="page-title">
+    <span style="font-size: 1.5em; font-weight: bold">Smart</span>
+    <span>Dashboard</span>
+  </div>
   <div class="dashboard-header">
     <div>
       <h2>AI Financial Advisor</h2>
-      <p>Get fast recommendations for investments, SIP planning, tax savings and portfolio health in one place.</p>
+      <p>
+        Get fast recommendations for investments, SIP planning, tax savings and
+        portfolio health in one place.
+      </p>
     </div>
   </div>
 
@@ -36,69 +39,165 @@
 
   <div class="dash-grid fade-up stagger-2">
     <!-- LEFT SIDE: QUICK ADVISORY -->
-    <div style="display:flex;flex-direction:column;gap:20px">
-      <div class="card" style="flex:1">
-        <div class="card-title">💡 Instant Advisory Chat</div>
-        <div class="chat-messages" id="dashChat" style="height:220px">
+    <div style="display: flex; flex-direction: column; gap: 20px">
+      <div class="card" style="flex: 1">
+        <div class="card-title">
+          <i class="fa-solid fa-lightbulb"></i> Instant Advisory Chat
+        </div>
+        <div class="chat-messages" id="dashChat" style="height: 220px">
           <div class="chat-welcome" id="chatWelcome">
-            <div class="chat-welcome-icon">💬</div>
+            <div class="chat-welcome-icon">
+              <i class="fa-solid fa-comments"></i>
+            </div>
             <h3>Quick Mentor Chat</h3>
-            <p>Select a quick scenario or type below to consult your AI advisor.</p>
-            <div class="chat-features" style="margin-top:10px">
-              <div class="chat-feature-item" onclick="dashQuick('How to save 30% income?')">💡 Save 30%</div>
-              <div class="chat-feature-item" onclick="dashQuick('Explain mutual fund tax')">💸 MF Tax</div>
-              <div class="chat-feature-item" onclick="dashQuick('Risk assessment')">⚠️ Risk</div>
+            <p>
+              Select a quick scenario or type below to consult your AI advisor.
+            </p>
+            <div class="chat-features" style="margin-top: 10px">
+              <div
+                class="chat-feature-item"
+                onclick="dashQuick('How to save 30% income?')"
+              >
+                <i class="fa-solid fa-lightbulb"></i> Save 30%
+              </div>
+              <div
+                class="chat-feature-item"
+                onclick="dashQuick('Explain mutual fund tax')"
+              >
+                <i class="fa-solid fa-money-bill-wave"></i> MF Tax
+              </div>
+              <div
+                class="chat-feature-item"
+                onclick="dashQuick('Risk assessment')"
+              >
+                <i class="fa-solid fa-triangle-exclamation"></i> Risk
+              </div>
             </div>
           </div>
         </div>
         <div class="chat-input-row">
-          <input type="text" id="dashMsg" placeholder="Ask anything about your finances…"
-            onkeypress="if(event.key==='Enter') dashSend()">
-          <button class="btn btn-gold" onclick="dashSend()" id="dashBtn">➤</button>
+          <input
+            type="text"
+            id="dashMsg"
+            placeholder="Ask anything about your finances…"
+            onkeypress="if (event.key === 'Enter') dashSend();"
+          />
+          <button class="btn btn-gold" onclick="dashSend()" id="dashBtn">
+            <i class="fa-solid fa-paper-plane"></i>
+          </button>
         </div>
       </div>
     </div>
 
     <!-- RIGHT SIDE -->
-    <div style="display:flex;flex-direction:column;gap:14px">
+    <div style="display: flex; flex-direction: column; gap: 14px">
       <div class="card">
-        <div class="card-title">⚡ Core AI Agents</div>
-        <div class="agent-tag">
-          <div class="dot"></div> Financial Planning Agent
+        <div class="card-title">
+          <i class="fa-solid fa-bolt"></i> Core AI Agents
         </div>
         <div class="agent-tag">
-          <div class="dot"></div> Tax Optimization Agent
+          <div class="dot"></div>
+          Financial Planning Agent
         </div>
         <div class="agent-tag">
-          <div class="dot"></div> Investment Advisor Agent
+          <div class="dot"></div>
+          Tax Optimization Agent
         </div>
         <div class="agent-tag">
-          <div class="dot"></div> Insurance Advisor Agent
+          <div class="dot"></div>
+          Investment Advisor Agent
+        </div>
+        <div class="agent-tag">
+          <div class="dot"></div>
+          Insurance Advisor Agent
         </div>
       </div>
 
       <div class="card">
         <div class="card-title">
-          <svg class="icon-svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-            stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21.21 15.89A10 10 0 1 1 8 2.83M22 12A10 10 0 0 0 12 2v10z" />
+          <svg
+            class="icon-svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path
+              d="M21.21 15.89A10 10 0 1 1 8 2.83M22 12A10 10 0 0 0 12 2v10z"
+            />
           </svg>
           <span>Portfolio Allocation</span>
         </div>
-        <div style="position:relative;height:220px;width:100%;max-width:320px;margin:0 auto;">
+        <div
+          style="
+            position: relative;
+            height: 220px;
+            width: 100%;
+            max-width: 320px;
+            margin: 0 auto;
+          "
+        >
           <div class="chart-wrap">
             <canvas id="portfolioChart"></canvas>
           </div>
         </div>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 11px; margin-top: 10px;">
-          <div style="display:flex; align-items:center; gap:6px;"><span
-              style="width:8px;height:8px;border-radius:50%;background:#d4a843"></span> Equity (40%)</div>
-          <div style="display:flex; align-items:center; gap:6px;"><span
-              style="width:8px;height:8px;border-radius:50%;background:#14c8bf"></span> ELSS (27%)</div>
-          <div style="display:flex; align-items:center; gap:6px;"><span
-              style="width:8px;height:8px;border-radius:50%;background:#5a6a82"></span> Debt (18%)</div>
-          <div style="display:flex; align-items:center; gap:6px;"><span
-              style="width:8px;height:8px;border-radius:50%;background:#2ecc8a"></span> Insurance (15%)</div>
+        <div
+          style="
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            font-size: 11px;
+            margin-top: 10px;
+          "
+        >
+          <div style="display: flex; align-items: center; gap: 6px">
+            <span
+              style="
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                background: #d4a843;
+              "
+            ></span>
+            Equity (40%)
+          </div>
+          <div style="display: flex; align-items: center; gap: 6px">
+            <span
+              style="
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                background: #14c8bf;
+              "
+            ></span>
+            ELSS (27%)
+          </div>
+          <div style="display: flex; align-items: center; gap: 6px">
+            <span
+              style="
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                background: #5a6a82;
+              "
+            ></span>
+            Debt (18%)
+          </div>
+          <div style="display: flex; align-items: center; gap: 6px">
+            <span
+              style="
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                background: #2ecc8a;
+              "
+            ></span>
+            Insurance (15%)
+          </div>
         </div>
       </div>
     </div>
@@ -108,87 +207,185 @@
   <div class="bottom-grid fade-up stagger-3">
     <!-- SIP SLIDER -->
     <div class="card">
-      <div class="card-title">📈 SIP Quick Calc</div>
+      <div class="card-title">
+        <i class="fa-solid fa-chart-line"></i> SIP Quick Calc
+      </div>
       <label>Monthly ₹ <strong id="sipAmtLbl">10,000</strong></label>
-      <input type="range" min="1000" max="50000" step="500" value="10000" id="sipAmt" oninput="updateSIP()">
+      <input
+        type="range"
+        min="1000"
+        max="50000"
+        step="500"
+        value="10000"
+        id="sipAmt"
+        oninput="updateSIP()"
+      />
       <label>Years: <strong id="sipYrLbl">10</strong></label>
-      <input type="range" min="1" max="30" value="10" id="sipYrs" oninput="updateSIP()">
+      <input
+        type="range"
+        min="1"
+        max="30"
+        value="10"
+        id="sipYrs"
+        oninput="updateSIP()"
+      />
       <label>Return %: <strong id="sipRtLbl">12</strong>%</label>
-      <input type="range" min="5" max="20" value="12" id="sipRt" oninput="updateSIP()">
-      <div style="margin-top:14px;font-size:11px;color:var(--muted)">Estimated Corpus</div>
+      <input
+        type="range"
+        min="5"
+        max="20"
+        value="12"
+        id="sipRt"
+        oninput="updateSIP()"
+      />
+      <div style="margin-top: 14px; font-size: 11px; color: var(--muted)">
+        Estimated Corpus
+      </div>
       <div class="result-big" id="sipOut">₹23.2L</div>
     </div>
 
     <!-- TAX INSIGHTS -->
     <div class="card">
-      <div class="card-title">💡 Tax Insights</div>
-      <div class="tax-row"><span>80C Used</span><span>₹1.2L / ₹1.5L <span class="badge badge-gold">80%</span></span></div>
-      <div class="tax-row"><span>Health Insurance</span><span>₹18K / ₹25K</span></div>
-      <div class="tax-row"><span>HRA Benefit</span><span>₹60K / ₹72K</span></div>
-      <div style="margin-top:12px;padding:10px 12px;background:rgba(20,200,191,0.08);border:1px solid rgba(20,200,191,0.2);border-radius:8px;font-size:12px;color:var(--teal)">
-        💡 Save ₹38,500 more via NPS + ELSS contributions
+      <div class="card-title">
+        <i class="fa-solid fa-file-invoice-dollar"></i> Tax Insights
+      </div>
+      <div class="tax-row">
+        <span>80C Used</span
+        ><span>₹1.2L / ₹1.5L <span class="badge badge-gold">80%</span></span>
+      </div>
+      <div class="tax-row">
+        <span>Health Insurance</span><span>₹18K / ₹25K</span>
+      </div>
+      <div class="tax-row">
+        <span>HRA Benefit</span><span>₹60K / ₹72K</span>
+      </div>
+      <div
+        style="
+          margin-top: 12px;
+          padding: 10px 12px;
+          background: rgba(20, 200, 191, 0.08);
+          border: 1px solid rgba(20, 200, 191, 0.2);
+          border-radius: 8px;
+          font-size: 12px;
+          color: var(--teal);
+        "
+      >
+        <i class="fa-solid fa-lightbulb"></i> Save ₹38,500 more via NPS + ELSS
+        contributions
       </div>
     </div>
 
     <div class="card">
-    <div class="card-title">🕒 Recent Activity</div>
+      <div class="card-title">
+        <i class="fa-solid fa-clock"></i> Recent Activity
+      </div>
 
-    <div id="recentActivity">
-        Loading...
+      <div id="recentActivity">Loading...</div>
     </div>
   </div>
-</div>
 
   <!-- TROPHY ROOM -->
-  <div class="fade-up stagger-4" style="margin-top:20px;">
-    <div class="card premium-glow-hover" style="border: 1px solid rgba(212, 168, 67, 0.3);">
-      <div class="card-title" style="color:var(--gold2); display:flex; align-items:center; gap:8px;">
-        <span style="font-size:18px;">🏆</span> The Trophy Room
+  <div class="fade-up stagger-4" style="margin-top: 20px">
+    <div
+      class="card premium-glow-hover"
+      style="border: 1px solid rgba(212, 168, 67, 0.3)"
+    >
+      <div
+        class="card-title"
+        style="
+          color: var(--gold2);
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        "
+      >
+        <span style="font-size: 18px"><i class="fa-solid fa-trophy"></i></span>
+        The Trophy Room
       </div>
-      <p style="font-size:13px; color:var(--muted); margin-bottom: 16px;">Complete financial actions to unlock badges and level up your Money Mentor status.</p>
-      <div id="trophyContainer" style="display:flex; gap:16px; flex-wrap:wrap;">
-        <div class="text-muted" style="font-size:13px;"><div class="spinner-border spinner-border-sm" role="status"></div> Loading achievements...</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- CASHFLOW FORECAST -->
-  <div class="card fade-up stagger-4" style="margin-top: 20px;">
-    <div class="card-title">📊 Cashflow Forecast & Runway Projection (Next 6 Months)</div>
-    <div id="runwayAlert" style="display: none; padding: 12px; border-radius: 8px; font-size: 13px; font-weight: bold; margin-bottom: 15px;"></div>
-    
-    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px; align-items: start; flex-wrap: wrap;">
-      <div style="position: relative; height: 260px; min-width: 250px;">
-        <canvas id="cashflowChart"></canvas>
-      </div>
-      <div style="min-width: 200px;">
-        <h4 style="font-size: 14px; margin-bottom: 12px; color: var(--muted);">Projected Monthly Breakdown</h4>
-        <div id="cashflowDetails" style="display: flex; flex-direction: column; gap: 10px; max-height: 220px; overflow-y: auto;">
-          <p style="color: var(--muted); font-style: italic; font-size: 13px;">Loading cashflow forecast...</p>
+      <p style="font-size: 13px; color: var(--muted); margin-bottom: 16px">
+        Complete financial actions to unlock badges and level up your Money
+        Mentor status.
+      </p>
+      <div
+        id="trophyContainer"
+        style="display: flex; gap: 16px; flex-wrap: wrap"
+      >
+        <div class="text-muted" style="font-size: 13px">
+          <div class="spinner-border spinner-border-sm" role="status"></div>
+          Loading achievements...
         </div>
       </div>
     </div>
   </div>
 
+  <!-- CASHFLOW FORECAST -->
+  <div class="card fade-up stagger-4" style="margin-top: 20px">
+    <div class="card-title">
+      <i class="fa-solid fa-chart-pie"></i> Cashflow Forecast & Runway
+      Projection (Next 6 Months)
+    </div>
+    <div
+      id="runwayAlert"
+      style="
+        display: none;
+        padding: 12px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: bold;
+        margin-bottom: 15px;
+      "
+    ></div>
+
+    <div
+      style="
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 20px;
+        align-items: start;
+        flex-wrap: wrap;
+      "
+    >
+      <div style="position: relative; height: 260px; min-width: 250px">
+        <canvas id="cashflowChart"></canvas>
+      </div>
+      <div style="min-width: 200px">
+        <h4 style="font-size: 14px; margin-bottom: 12px; color: var(--muted)">
+          Projected Monthly Breakdown
+        </h4>
+        <div
+          id="cashflowDetails"
+          style="
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 220px;
+            overflow-y: auto;
+          "
+        >
+          <p style="color: var(--muted); font-style: italic; font-size: 13px">
+            Loading cashflow forecast...
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
-{% endblock %}
-
-{% block scripts %}
+{% endblock %} {% block scripts %}
 <script>
-  window.addEventListener("DOMContentLoaded", async () => {
-    const data = await apiFetch("/dashboard-data");
+  window.addEventListener('DOMContentLoaded', async () => {
+    const data = await apiFetch('/dashboard-data');
 
-    document.getElementById("netWorth").textContent =
-        formatCurrency(data.net_worth);
+    document.getElementById('netWorth').textContent = formatCurrency(
+      data.net_worth,
+    );
 
-    document.getElementById("goalCount").textContent =
-        data.goal_count;
+    document.getElementById('goalCount').textContent = data.goal_count;
 
-    document.getElementById("alertCount").textContent =
-        data.alert_count;
-    
-    document.getElementById("monthlyExpenses").textContent =
-        formatCurrency(data.monthly_expenses);
+    document.getElementById('alertCount').textContent = data.alert_count;
+
+    document.getElementById('monthlyExpenses').textContent = formatCurrency(
+      data.monthly_expenses,
+    );
 
     initPortfolioChart();
     updateSIP();
@@ -204,7 +401,8 @@
       const res = await fetch('/cashflow?months=6');
       const data = await res.json();
       if (!data.success) {
-        document.getElementById('cashflowDetails').innerHTML = `<p style="color: var(--red); font-style: italic;">Could not load forecast.</p>`;
+        document.getElementById('cashflowDetails').innerHTML =
+          `<p style="color: var(--red); font-style: italic;">Could not load forecast.</p>`;
         return;
       }
 
@@ -215,26 +413,31 @@
         alertEl.style.background = 'rgba(224, 82, 82, 0.1)';
         alertEl.style.border = '1px solid rgba(224, 82, 82, 0.3)';
         alertEl.style.color = '#ff5e5e';
-        alertEl.innerHTML = `⚠️ <strong>${data.runway_message}</strong>`;
+        alertEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> <strong>${esc(data.runway_message)}</strong>`;
       } else {
         alertEl.style.display = 'block';
         alertEl.style.background = 'rgba(46, 204, 138, 0.1)';
         alertEl.style.border = '1px solid rgba(46, 204, 138, 0.3)';
         alertEl.style.color = '#2ecc8a';
-        alertEl.innerHTML = `✅ <strong>${data.runway_message}</strong> Current Net Worth covers all projected expenses.`;
+        alertEl.innerHTML = `<i class="fa-solid fa-circle-check"></i> <strong>${esc(data.runway_message)}</strong> Current Net Worth covers all projected expenses.`;
       }
 
       // 2. Render details list
       const detailsEl = document.getElementById('cashflowDetails');
       detailsEl.innerHTML = '';
-      
+
       const labels = [];
       const incomes = [];
       const expenses = [];
       const balances = [];
 
-      data.forecast.forEach(item => {
-        labels.push(new Date(item.month + '-02').toLocaleDateString("en-IN", { month: 'short', year: 'numeric' }));
+      data.forecast.forEach((item) => {
+        labels.push(
+          new Date(item.month + '-02').toLocaleDateString('en-IN', {
+            month: 'short',
+            year: 'numeric',
+          }),
+        );
         incomes.push(item.projected_income);
         expenses.push(item.projected_expense);
         balances.push(item.cumulative_balance);
@@ -245,7 +448,7 @@
         detailsEl.innerHTML += `
           <div style="background: rgba(255, 255, 255, 0.02); padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 11px; display: flex; justify-content: space-between;">
             <div>
-              <strong>${new Date(item.month + '-02').toLocaleDateString("en-IN", { month: 'short', year: 'numeric' })}</strong><br/>
+              <strong>${new Date(item.month + '-02').toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })}</strong><br/>
               <span style="color: var(--muted); font-size: 9px;">Cum. Bal: ₹${fmtNum(item.cumulative_balance)}</span>
             </div>
             <div style="text-align: right;">
@@ -272,14 +475,14 @@
               data: incomes,
               backgroundColor: 'rgba(46, 204, 138, 0.75)',
               borderColor: '#2ecc8a',
-              borderWidth: 1
+              borderWidth: 1,
             },
             {
               label: 'Projected Expense',
               data: expenses,
               backgroundColor: 'rgba(224, 82, 82, 0.75)',
               borderColor: '#ff5e5e',
-              borderWidth: 1
+              borderWidth: 1,
             },
             {
               label: 'Cumulative Balance',
@@ -289,9 +492,9 @@
               backgroundColor: 'rgba(212, 168, 67, 0.1)',
               borderWidth: 2,
               tension: 0.3,
-              fill: false
-            }
-          ]
+              fill: false,
+            },
+          ],
         },
         options: {
           responsive: true,
@@ -299,27 +502,33 @@
           scales: {
             x: {
               grid: { display: false },
-              ticks: { color: '#a0aec0', font: { family: 'Instrument Sans', size: 10 } }
+              ticks: {
+                color: '#a0aec0',
+                font: { family: 'Instrument Sans', size: 10 },
+              },
             },
             y: {
               grid: { color: 'rgba(255, 255, 255, 0.05)' },
-              ticks: { color: '#a0aec0', font: { family: 'Instrument Sans', size: 10 } }
-            }
+              ticks: {
+                color: '#a0aec0',
+                font: { family: 'Instrument Sans', size: 10 },
+              },
+            },
           },
           plugins: {
             legend: {
               labels: {
                 color: '#a0aec0',
-                font: { family: 'Instrument Sans', size: 10 }
-              }
-            }
-          }
-        }
+                font: { family: 'Instrument Sans', size: 10 },
+              },
+            },
+          },
+        },
       });
-
     } catch (e) {
       console.error(e);
-      document.getElementById('cashflowDetails').innerHTML = `<p style="color: var(--red); font-style: italic;">Failed to parse forecast.</p>`;
+      document.getElementById('cashflowDetails').innerHTML =
+        `<p style="color: var(--red); font-style: italic;">Failed to parse forecast.</p>`;
     }
   }
 
@@ -331,65 +540,77 @@
       type: 'doughnut',
       data: {
         labels: ['Equity', 'ELSS', 'Debt', 'Insurance'],
-        datasets: [{
-          data: [40, 27, 18, 15],
-          backgroundColor: ['#d4a843', '#14c8bf', '#5a6a82', '#2ecc8a'],
-          borderWidth: 0
-        }]
+        datasets: [
+          {
+            data: [40, 27, 18, 15],
+            backgroundColor: ['#d4a843', '#14c8bf', '#5a6a82', '#2ecc8a'],
+            borderWidth: 0,
+          },
+        ],
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-          legend: { display: false }
+          legend: { display: false },
         },
-        cutout: '70%'
-      }
+        cutout: '70%',
+      },
     });
   }
 
   async function loadRecentActivity() {
     try {
-        const data = await apiFetch('/dashboard/recent-activity');
+      const data = await apiFetch('/dashboard/recent-activity');
 
-        const container = document.getElementById('recentActivity');
+      const container = document.getElementById('recentActivity');
 
-        if (!data.length) {
-            container.innerHTML = '<p>No activity yet</p>';
-            return;
-        }
+      if (!data.length) {
+        container.innerHTML = '<p>No activity yet</p>';
+        return;
+      }
 
-        container.innerHTML = data.map(item => `
+      container.innerHTML = data
+        .map(
+          (item) => `
             <div style="padding:8px 0;border-bottom:1px solid rgba(255,255,255,.08)">
                 ${item.message}
             </div>
-        `).join('');
+        `,
+        )
+        .join('');
     } catch (err) {
-        document.getElementById('recentActivity').innerHTML =
-            '<p>Unable to load activity</p>';
+      document.getElementById('recentActivity').innerHTML =
+        '<p>Unable to load activity</p>';
     }
   }
 
   async function loadAchievements() {
     try {
-        const data = await apiFetch('/api/achievements');
-        const container = document.getElementById('trophyContainer');
-        if (!data || !data.achievements || data.achievements.length === 0) {
-            container.innerHTML = '<p class="text-muted" style="font-size:13px;">No achievements unlocked yet. Keep tracking!</p>';
-            return;
-        }
-        
-        container.innerHTML = data.achievements.map((ach, i) => `
-            <div class="fade-up" style="animation-delay: ${0.5 + (i * 0.1)}s; background: rgba(212, 168, 67, 0.08); border: 1px solid rgba(212, 168, 67, 0.2); padding: 12px 16px; border-radius: 12px; display: flex; align-items: center; gap: 12px; min-width: 200px; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 20px rgba(212,168,67,0.15)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';">
+      const data = await apiFetch('/api/achievements');
+      const container = document.getElementById('trophyContainer');
+      if (!data || !data.achievements || data.achievements.length === 0) {
+        container.innerHTML =
+          '<p class="text-muted" style="font-size:13px;">No achievements unlocked yet. Keep tracking!</p>';
+        return;
+      }
+
+      container.innerHTML = data.achievements
+        .map(
+          (ach, i) => `
+            <div class="fade-up" style="animation-delay: ${0.5 + i * 0.1}s; background: rgba(212, 168, 67, 0.08); border: 1px solid rgba(212, 168, 67, 0.2); padding: 12px 16px; border-radius: 12px; display: flex; align-items: center; gap: 12px; min-width: 200px; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 20px rgba(212,168,67,0.15)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';">
                 <div style="font-size: 28px; filter: drop-shadow(0 0 8px rgba(212,168,67,0.4));">${ach.icon}</div>
                 <div>
                     <div style="font-weight: 700; color: var(--gold2); font-size: 14px;">${ach.title}</div>
                     <div style="font-size: 11px; color: var(--muted);">${ach.desc}</div>
                 </div>
             </div>
-        `).join('');
+        `,
+        )
+        .join('');
     } catch (err) {
-        document.getElementById('trophyContainer').innerHTML = '<p class="text-muted" style="font-size:13px;">Unable to load achievements.</p>';
+      document.getElementById('trophyContainer').innerHTML =
+        '<p class="text-muted" style="font-size:13px;">Unable to load achievements.</p>';
     }
   }
 
@@ -402,10 +623,12 @@
 
     document.getElementById('sipAmtLbl').textContent = fmtNum(m);
     document.getElementById('sipYrLbl').textContent = y;
-    document.getElementById('sipRtLbl').textContent = document.getElementById('sipRt').value;
-    document.getElementById('sipOut').textContent = fv >= 1e7
-      ? '₹' + (fv / 1e7).toFixed(2) + 'Cr'
-      : '₹' + (fv / 1e5).toFixed(1) + 'L';
+    document.getElementById('sipRtLbl').textContent =
+      document.getElementById('sipRt').value;
+    document.getElementById('sipOut').textContent =
+      fv >= 1e7
+        ? '₹' + (fv / 1e7).toFixed(2) + 'Cr'
+        : '₹' + (fv / 1e5).toFixed(1) + 'L';
   }
 
   function appendMsg(boxId, role, text) {
@@ -420,11 +643,9 @@
     let content;
 
     if (role === 'bot') {
-        content = DOMPurify.sanitize(
-            marked.parse(text || '')
-        );
+      content = DOMPurify.sanitize(marked.parse(text || ''));
     } else {
-        content = text;
+      content = text;
     }
 
     d.innerHTML = `
@@ -436,16 +657,16 @@
     `;
 
     if (role === 'bot') {
-        const btn = d.querySelector('.copy-btn');
-        if (btn) {
-            btn.onclick = () => {
-                navigator.clipboard.writeText(text).then(() => {
-                    const original = btn.innerHTML;
-                    btn.innerHTML = '✓ Copied!';
-                    setTimeout(() => btn.innerHTML = original, 2000);
-                });
-            };
-        }
+      const btn = d.querySelector('.copy-btn');
+      if (btn) {
+        btn.onclick = () => {
+          navigator.clipboard.writeText(text).then(() => {
+            const original = btn.innerHTML;
+            btn.innerHTML = '✓ Copied!';
+            setTimeout(() => (btn.innerHTML = original), 2000);
+          });
+        };
+      }
     }
 
     box.appendChild(d);
@@ -463,7 +684,11 @@
       const data = await apiFetch('/chat', { message: msg });
       appendMsg('dashChat', 'bot', data.reply || data.error || 'No response');
     } catch (e) {
-      appendMsg('dashChat', 'bot', '⚠ Could not reach server. Is Flask running?');
+      appendMsg(
+        'dashChat',
+        'bot',
+        '⚠ Could not reach server. Is Flask running?',
+      );
     }
     setLoading('dashBtn', false);
   }

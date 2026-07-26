@@ -70,11 +70,13 @@ class CoupleFinanceManager:
         db.session.commit()
         
         # Create alert for partner
+        inviter = User.query.get(user1_id)
+        inviter_name = inviter.username if inviter else "a user"
         alert = CoupleAlert(
             couple_id=couple.id,
             user_id=partner.id,
             type='INVITATION',
-            message=f'You have been invited to join a couple by {current_user.username}'
+            message=f'You have been invited to join a couple by {inviter_name}'
         )
         db.session.add(alert)
         db.session.commit()

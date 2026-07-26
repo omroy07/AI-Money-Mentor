@@ -1,206 +1,379 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Voice Assistant - AI Money Mentor</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
     <style>
-        body { background: #070b12; color: #eef0f5; font-family: 'Instrument Sans', sans-serif; }
-        .container { max-width: 900px; margin: 0 auto; padding: 20px; }
-        .card { background: rgba(15,22,38,0.96); border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; padding: 24px; margin-bottom: 20px; }
-        .btn-gold { background: linear-gradient(135deg, #f3d687, #d4a843); color: #0a0e18; border: none; padding: 12px 24px; border-radius: 999px; font-weight: 700; }
-        .btn-gold:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(212,168,67,0.3); }
-        .btn-danger { background: linear-gradient(135deg, #e05252, #c0392b); color: white; border: none; }
-        .btn-success { background: linear-gradient(135deg, #2ecc8a, #27ae60); color: white; border: none; }
-        .text-gold { color: #d4a843; }
-        .text-muted { color: #5a6a82; }
-        .voice-button { width: 120px; height: 120px; border-radius: 50%; font-size: 48px; transition: all 0.3s ease; margin: 20px auto; display: flex; align-items: center; justify-content: center; }
-        .voice-button.recording { animation: pulse 1.5s infinite; }
-        .voice-button:disabled { opacity: 0.5; cursor: not-allowed; }
-        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(212,168,67,0.7); } 70% { box-shadow: 0 0 0 20px rgba(212,168,67,0); } 100% { box-shadow: 0 0 0 0 rgba(212,168,67,0); } }
-        .transcript-box { min-height: 60px; padding: 16px; background: rgba(17,26,46,0.9); border-radius: 14px; border: 1px solid rgba(255,255,255,0.06); font-size: 16px; }
-        .language-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; background: rgba(212,168,67,0.15); color: #d4a843; }
-        .command-result { padding: 16px; background: rgba(46,204,138,0.08); border-radius: 12px; border-left: 4px solid #2ecc8a; }
-        .command-result.error { background: rgba(224,82,82,0.08); border-left-color: #e05252; }
-        .example-command { display: inline-block; padding: 6px 14px; background: rgba(255,255,255,0.04); border-radius: 20px; font-size: 13px; cursor: pointer; margin: 4px; border: 1px solid rgba(255,255,255,0.06); transition: all 0.2s; }
-        .example-command:hover { background: rgba(255,255,255,0.08); border-color: rgba(212,168,67,0.3); }
-        .visualizer { height: 40px; display: flex; align-items: center; justify-content: center; gap: 4px; }
-        .visualizer .bar { width: 4px; background: #d4a843; border-radius: 2px; transition: height 0.1s; }
-        .visualizer .bar.active { animation: wave 0.5s ease-in-out infinite alternate; }
-        @keyframes wave { from { height: 10px; } to { height: 30px; } }
-        .form-control { background: rgba(17,26,46,0.9); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; color: #eef0f5; }
-        .form-control:focus { background: rgba(17,26,46,0.95); border-color: #d4a843; color: #eef0f5; box-shadow: 0 0 0 3px rgba(212,168,67,0.1); }
+      body {
+        background: #070b12;
+        color: #eef0f5;
+        font-family: 'Instrument Sans', sans-serif;
+      }
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .card {
+        background: rgba(15, 22, 38, 0.96);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 18px;
+        padding: 24px;
+        margin-bottom: 20px;
+      }
+      .btn-gold {
+        background: linear-gradient(135deg, #f3d687, #d4a843);
+        color: #0a0e18;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 999px;
+        font-weight: 700;
+      }
+      .btn-gold:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(212, 168, 67, 0.3);
+      }
+      .btn-danger {
+        background: linear-gradient(135deg, #e05252, #c0392b);
+        color: white;
+        border: none;
+      }
+      .btn-success {
+        background: linear-gradient(135deg, #2ecc8a, #27ae60);
+        color: white;
+        border: none;
+      }
+      .text-gold {
+        color: #d4a843;
+      }
+      .text-muted {
+        color: #5a6a82;
+      }
+      .voice-button {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        font-size: 48px;
+        transition: all 0.3s ease;
+        margin: 20px auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .voice-button.recording {
+        animation: pulse 1.5s infinite;
+      }
+      .voice-button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      @keyframes pulse {
+        0% {
+          box-shadow: 0 0 0 0 rgba(212, 168, 67, 0.7);
+        }
+        70% {
+          box-shadow: 0 0 0 20px rgba(212, 168, 67, 0);
+        }
+        100% {
+          box-shadow: 0 0 0 0 rgba(212, 168, 67, 0);
+        }
+      }
+      .transcript-box {
+        min-height: 60px;
+        padding: 16px;
+        background: rgba(17, 26, 46, 0.9);
+        border-radius: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        font-size: 16px;
+      }
+      .language-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        background: rgba(212, 168, 67, 0.15);
+        color: #d4a843;
+      }
+      .command-result {
+        padding: 16px;
+        background: rgba(46, 204, 138, 0.08);
+        border-radius: 12px;
+        border-left: 4px solid #2ecc8a;
+      }
+      .command-result.error {
+        background: rgba(224, 82, 82, 0.08);
+        border-left-color: #e05252;
+      }
+      .example-command {
+        display: inline-block;
+        padding: 6px 14px;
+        background: rgba(255, 255, 255, 0.04);
+        border-radius: 20px;
+        font-size: 13px;
+        cursor: pointer;
+        margin: 4px;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        transition: all 0.2s;
+      }
+      .example-command:hover {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(212, 168, 67, 0.3);
+      }
+      .visualizer {
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+      }
+      .visualizer .bar {
+        width: 4px;
+        background: #d4a843;
+        border-radius: 2px;
+        transition: height 0.1s;
+      }
+      .visualizer .bar.active {
+        animation: wave 0.5s ease-in-out infinite alternate;
+      }
+      @keyframes wave {
+        from {
+          height: 10px;
+        }
+        to {
+          height: 30px;
+        }
+      }
+      .form-control {
+        background: rgba(17, 26, 46, 0.9);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 14px;
+        color: #eef0f5;
+      }
+      .form-control:focus {
+        background: rgba(17, 26, 46, 0.95);
+        border-color: #d4a843;
+        color: #eef0f5;
+        box-shadow: 0 0 0 3px rgba(212, 168, 67, 0.1);
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <div>
-                <h1 class="text-gold">🗣️ Voice Assistant</h1>
-                <p class="text-muted">Speak to manage your finances in your language</p>
-            </div>
-            <a href="/" class="btn btn-gold">← Back to Dashboard</a>
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h1 class="text-gold">
+            <i class="fa-solid fa-volume-high"></i> Voice Assistant
+          </h1>
+          <p class="text-muted">
+            Speak to manage your finances in your language
+          </p>
+        </div>
+        <a href="/" class="btn btn-gold">← Back to Dashboard</a>
+      </div>
+
+      <div class="card text-center">
+        <!-- Language Display -->
+        <div id="languageDisplay" class="mb-3">
+          <span class="language-badge">🇬🇧 English</span>
         </div>
 
-        <div class="card text-center">
-            <!-- Language Display -->
-            <div id="languageDisplay" class="mb-3">
-                <span class="language-badge">🇬🇧 English</span>
-            </div>
+        <!-- Voice Button -->
+        <button
+          id="voiceButton"
+          class="voice-button btn btn-gold"
+          onclick="toggleRecording()"
+        >
+          <i class="fa-solid fa-microphone"></i>
+        </button>
+        <p class="text-muted" id="voiceStatus">Click to start speaking</p>
 
-            <!-- Voice Button -->
-            <button id="voiceButton" class="voice-button btn btn-gold" onclick="toggleRecording()">
-                🎤
-            </button>
-            <p class="text-muted" id="voiceStatus">Click to start speaking</p>
-
-            <!-- Visualizer -->
-            <div class="visualizer" id="visualizer">
-                <div class="bar"></div>
-                <div class="bar"></div>
-                <div class="bar"></div>
-                <div class="bar"></div>
-                <div class="bar"></div>
-                <div class="bar"></div>
-                <div class="bar"></div>
-                <div class="bar"></div>
-                <div class="bar"></div>
-                <div class="bar"></div>
-            </div>
+        <!-- Visualizer -->
+        <div class="visualizer" id="visualizer">
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
         </div>
+      </div>
 
-        <!-- Transcript -->
-        <div class="card">
-            <h5>📝 Transcript</h5>
-            <div class="transcript-box" id="transcript">
-                <span class="text-muted">Your spoken command will appear here...</span>
-            </div>
+      <!-- Transcript -->
+      <div class="card">
+        <h5><i class="fa-solid fa-file-lines"></i> Transcript</h5>
+        <div class="transcript-box" id="transcript">
+          <span class="text-muted"
+            >Your spoken command will appear here...</span
+          >
         </div>
+      </div>
 
-        <!-- Result -->
-        <div class="card" id="resultCard" style="display:none;">
-            <h5>📊 Result</h5>
-            <div id="resultContent"></div>
-        </div>
+      <!-- Result -->
+      <div class="card" id="resultCard" style="display: none">
+        <h5><i class="fa-solid fa-square-poll-horizontal"></i> Result</h5>
+        <div id="resultContent"></div>
+      </div>
 
-        <!-- Example Commands -->
-        <div class="card">
-            <h5>💡 Try These Commands</h5>
-            <div class="d-flex flex-wrap">
-                <span class="example-command" onclick="setExample('Transfer 500 to savings')">💰 Transfer 500 to savings</span>
-                <span class="example-command" onclick="setExample('What is my balance?')">💳 What is my balance?</span>
-                <span class="example-command" onclick="setExample('Show my spending this month')">📊 Show my spending</span>
-                <span class="example-command" onclick="setExample('Add expense 200 for food')">🍔 Add expense 200 for food</span>
-                <span class="example-command" onclick="setExample('What is my net worth?')">💎 What is my net worth?</span>
-                <span class="example-command" onclick="setExample('मेरा बैलेंस क्या है?')">🇮🇳 मेरा बैलेंस क्या है?</span>
-                <span class="example-command" onclick="setExample('எனது இருப்பு என்ன?')">🇮🇳 எனது இருப்பு என்ன?</span>
-            </div>
+      <!-- Example Commands -->
+      <div class="card">
+        <h5><i class="fa-solid fa-lightbulb"></i> Try These Commands</h5>
+        <div class="d-flex flex-wrap">
+          <span
+            class="example-command"
+            onclick="setExample('Transfer 500 to savings')"
+            >💰 Transfer 500 to savings</span
+          >
+          <span
+            class="example-command"
+            onclick="setExample('What is my balance?')"
+            >💳 What is my balance?</span
+          >
+          <span
+            class="example-command"
+            onclick="setExample('Show my spending this month')"
+            >📊 Show my spending</span
+          >
+          <span
+            class="example-command"
+            onclick="setExample('Add expense 200 for food')"
+            >🍔 Add expense 200 for food</span
+          >
+          <span
+            class="example-command"
+            onclick="setExample('What is my net worth?')"
+            >💎 What is my net worth?</span
+          >
+          <span
+            class="example-command"
+            onclick="setExample('मेरा बैलेंस क्या है?')"
+            >🇮🇳 मेरा बैलेंस क्या है?</span
+          >
+          <span
+            class="example-command"
+            onclick="setExample('எனது இருப்பு என்ன?')"
+            >🇮🇳 எனது இருப்பு என்ன?</span
+          >
         </div>
+      </div>
 
-        <!-- Languages Supported -->
-        <div class="card">
-            <h5>🌍 Supported Languages</h5>
-            <div class="d-flex flex-wrap gap-2">
-                <span class="language-badge">🇬🇧 English</span>
-                <span class="language-badge">🇮🇳 Hindi</span>
-                <span class="language-badge">🇮🇳 Tamil</span>
-                <span class="language-badge">🇮🇳 Telugu</span>
-                <span class="language-badge">🇮🇳 Bengali</span>
-                <span class="language-badge">🇮🇳 Marathi</span>
-                <span class="language-badge">🇮🇳 Gujarati</span>
-                <span class="language-badge">🇮🇳 Kannada</span>
-                <span class="language-badge">🇮🇳 Malayalam</span>
-                <span class="language-badge">🇮🇳 Punjabi</span>
-            </div>
+      <!-- Languages Supported -->
+      <div class="card">
+        <h5><i class="fa-solid fa-globe"></i> Supported Languages</h5>
+        <div class="d-flex flex-wrap gap-2">
+          <span class="language-badge">🇬🇧 English</span>
+          <span class="language-badge">🇮🇳 Hindi</span>
+          <span class="language-badge">🇮🇳 Tamil</span>
+          <span class="language-badge">🇮🇳 Telugu</span>
+          <span class="language-badge">🇮🇳 Bengali</span>
+          <span class="language-badge">🇮🇳 Marathi</span>
+          <span class="language-badge">🇮🇳 Gujarati</span>
+          <span class="language-badge">🇮🇳 Kannada</span>
+          <span class="language-badge">🇮🇳 Malayalam</span>
+          <span class="language-badge">🇮🇳 Punjabi</span>
         </div>
+      </div>
     </div>
 
     <script>
-        let isRecording = false;
-        let mediaRecorder = null;
-        let audioChunks = [];
+      let isRecording = false;
+      let mediaRecorder = null;
+      let audioChunks = [];
 
-        async function toggleRecording() {
-            if (isRecording) {
-                stopRecording();
-            } else {
-                await startRecording();
-            }
+      async function toggleRecording() {
+        if (isRecording) {
+          stopRecording();
+        } else {
+          await startRecording();
         }
+      }
 
-        async function startRecording() {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                mediaRecorder = new MediaRecorder(stream);
-                audioChunks = [];
+      async function startRecording() {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({
+            audio: true,
+          });
+          mediaRecorder = new MediaRecorder(stream);
+          audioChunks = [];
 
-                mediaRecorder.ondataavailable = event => {
-                    audioChunks.push(event.data);
-                };
+          mediaRecorder.ondataavailable = (event) => {
+            audioChunks.push(event.data);
+          };
 
-                mediaRecorder.onstop = async () => {
-                    const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
-                    await sendAudio(audioBlob);
-                };
+          mediaRecorder.onstop = async () => {
+            const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+            await sendAudio(audioBlob);
+          };
 
-                mediaRecorder.start();
-                isRecording = true;
+          mediaRecorder.start();
+          isRecording = true;
 
-                const btn = document.getElementById('voiceButton');
-                btn.classList.add('recording');
-                btn.innerHTML = '⏹️';
-                document.getElementById('voiceStatus').textContent = 'Recording... Click to stop';
-                document.getElementById('transcript').innerHTML = '<span class="text-muted">🎤 Listening...</span>';
+          const btn = document.getElementById('voiceButton');
+          btn.classList.add('recording');
+          btn.innerHTML = '⏹️';
+          document.getElementById('voiceStatus').textContent =
+            'Recording... Click to stop';
+          document.getElementById('transcript').innerHTML =
+            '<span class="text-muted"><i class="fa-solid fa-microphone"></i> Listening...</span>';
 
-                // Start visualizer
-                document.querySelectorAll('.bar').forEach((bar, i) => {
-                    setTimeout(() => bar.classList.add('active'), i * 100);
-                });
-
-            } catch (error) {
-                alert('Microphone access denied. Please allow microphone access.');
-                console.error('Error:', error);
-            }
+          // Start visualizer
+          document.querySelectorAll('.bar').forEach((bar, i) => {
+            setTimeout(() => bar.classList.add('active'), i * 100);
+          });
+        } catch (error) {
+          alert('Microphone access denied. Please allow microphone access.');
+          console.error('Error:', error);
         }
+      }
 
-        function stopRecording() {
-            if (mediaRecorder && isRecording) {
-                mediaRecorder.stop();
-                isRecording = false;
+      function stopRecording() {
+        if (mediaRecorder && isRecording) {
+          mediaRecorder.stop();
+          isRecording = false;
 
-                const btn = document.getElementById('voiceButton');
-                btn.classList.remove('recording');
-                btn.innerHTML = '🎤';
-                document.getElementById('voiceStatus').textContent = 'Processing...';
+          const btn = document.getElementById('voiceButton');
+          btn.classList.remove('recording');
+          btn.innerHTML = '🎤';
+          document.getElementById('voiceStatus').textContent = 'Processing...';
 
-                document.querySelectorAll('.bar').forEach(bar => bar.classList.remove('active'));
+          document
+            .querySelectorAll('.bar')
+            .forEach((bar) => bar.classList.remove('active'));
 
-                // Stop all tracks
-                mediaRecorder.stream.getTracks().forEach(track => track.stop());
-            }
+          // Stop all tracks
+          mediaRecorder.stream.getTracks().forEach((track) => track.stop());
         }
+      }
 
-        async function sendAudio(audioBlob) {
-            const formData = new FormData();
-            formData.append('audio', audioBlob, 'recording.wav');
+      async function sendAudio(audioBlob) {
+        const formData = new FormData();
+        formData.append('audio', audioBlob, 'recording.wav');
 
-            try {
-                const response = await fetch('/api/voice/transcribe', {
-                    method: 'POST',
-                    body: formData
-                });
+        try {
+          const response = await fetch('/api/voice/transcribe', {
+            method: 'POST',
+            body: formData,
+          });
 
-                const result = await response.json();
+          const result = await response.json();
 
-                if (result.error) {
-                    document.getElementById('transcript').innerHTML = `<span style="color: #e05252;">❌ Error: ${result.error}</span>`;
-                    return;
-                }
+          if (result.error) {
+            document.getElementById('transcript').innerHTML =
+              `<span style="color: #e05252;">❌ Error: ${result.error}</span>`;
+            return;
+          }
 
-                if (result.success) {
-                    // Update transcript
-                    document.getElementById('transcript').innerHTML = `
+          if (result.success) {
+            // Update transcript
+            document.getElementById('transcript').innerHTML = `
                         <div>
                             <div><strong>🗣️ "${result.text}"</strong></div>
                             <div class="mt-2">
@@ -211,54 +384,61 @@
                         </div>
                     `;
 
-                    // Show result
-                    if (result.execution && result.execution.success) {
-                        document.getElementById('resultCard').style.display = 'block';
-                        document.getElementById('resultContent').innerHTML = `
+            // Show result
+            if (result.execution && result.execution.success) {
+              document.getElementById('resultCard').style.display = 'block';
+              document.getElementById('resultContent').innerHTML = `
                             <div class="command-result">
                                 <div style="font-size: 18px; font-weight: 700; color: #2ecc8a;">✅ ${result.execution.response}</div>
                                 ${result.execution.data ? `<pre style="margin-top: 10px; font-size: 12px; color: #5a6a82;">${JSON.stringify(result.execution.data, null, 2)}</pre>` : ''}
                             </div>
                         `;
 
-                        // If audio response available, play it
-                        if (result.audio_response) {
-                            const audio = new Audio(result.audio_response);
-                            audio.play();
-                        }
-                    } else if (result.execution) {
-                        document.getElementById('resultCard').style.display = 'block';
-                        document.getElementById('resultContent').innerHTML = `
+              // If audio response available, play it
+              if (result.audio_response) {
+                const audio = new Audio(result.audio_response);
+                audio.play();
+              }
+            } else if (result.execution) {
+              document.getElementById('resultCard').style.display = 'block';
+              document.getElementById('resultContent').innerHTML = `
                             <div class="command-result error">
-                                <div style="font-size: 16px; color: #e05252;">❌ ${result.execution.response || 'Command failed'}</div>
+                                <div style="font-size: 16px; color: #e05252;"><i class="fa-solid fa-circle-xmark"></i> ${result.execution.response || 'Command failed'}</div>
                             </div>
                         `;
-                    }
-
-                    document.getElementById('voiceStatus').textContent = 'Click to speak again';
-                } else {
-                    document.getElementById('transcript').innerHTML = `<span style="color: #e05252;">❌ ${result.error}</span>`;
-                    document.getElementById('voiceStatus').textContent = 'Click to try again';
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                document.getElementById('transcript').innerHTML = `<span style="color: #e05252;">❌ Network error: ${error.message}</span>`;
-                document.getElementById('voiceStatus').textContent = 'Click to try again';
             }
-        }
 
-        function setExample(text) {
-            document.getElementById('transcript').innerHTML = `<div><strong>💬 "${text}"</strong></div>`;
-            // Simulate sending
-            document.getElementById('voiceStatus').textContent = 'Processing example...';
-            
-            // For demo, we'll just show what would happen
-            // In production, you'd send this to the backend
-            fetch('/api/voice/transcribe', {
-                method: 'POST',
-                body: new FormData() // Empty for demo
-            }).catch(() => {});
+            document.getElementById('voiceStatus').textContent =
+              'Click to speak again';
+          } else {
+            document.getElementById('transcript').innerHTML =
+              `<span style="color: #e05252;"><i class="fa-solid fa-circle-xmark"></i> ${result.error}</span>`;
+            document.getElementById('voiceStatus').textContent =
+              'Click to try again';
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          document.getElementById('transcript').innerHTML =
+            `<span style="color: #e05252;"><i class="fa-solid fa-circle-xmark"></i> Network error: ${error.message}</span>`;
+          document.getElementById('voiceStatus').textContent =
+            'Click to try again';
         }
+      }
+
+      function setExample(text) {
+        document.getElementById('transcript').innerHTML =
+          `<div><strong><i class="fa-solid fa-comments"></i> "${text}"</strong></div>`;
+        // Simulate sending
+        document.getElementById('voiceStatus').textContent =
+          'Processing example...';
+
+        // For demo, we'll just show what would happen
+        // In production, you'd send this to the backend
+        fetch('/api/voice/transcribe', {
+          method: 'POST',
+          body: new FormData(), // Empty for demo
+        }).catch(() => {});
+      }
     </script>
-</body>
+  </body>
 </html>

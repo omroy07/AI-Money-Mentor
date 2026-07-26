@@ -4,7 +4,7 @@
 
 {% block content %}
 <div id="notifications" class="page active">
-  <div class="page-title">🔔 Notifications</div>
+  <div class="page-title"><i class="fa-solid fa-bell"></i> Notifications</div>
 
   <!-- Notification Bell -->
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
@@ -12,8 +12,8 @@
       <span id="unreadCount" style="font-size:14px;color:var(--muted);">Unread: 0</span>
     </div>
     <div style="display:flex;gap:10px;">
-      <button class="btn btn-ghost" onclick="markAllRead()">✅ Mark All Read</button>
-      <button class="btn btn-ghost" onclick="refreshNotifications()">🔄 Refresh</button>
+      <button class="btn btn-ghost" onclick="markAllRead()"><i class="fa-solid fa-circle-check"></i> Mark All Read</button>
+      <button class="btn btn-ghost" onclick="refreshNotifications()"><i class="fa-solid fa-arrows-rotate"></i> Refresh</button>
     </div>
   </div>
 
@@ -21,15 +21,15 @@
   <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;">
     <button class="btn btn-ghost" onclick="filterNotifications('all')" id="filterAll" style="background:rgba(212,168,67,0.15);">All</button>
     <button class="btn btn-ghost" onclick="filterNotifications('unread')" id="filterUnread">Unread</button>
-    <button class="btn btn-ghost" onclick="filterNotifications('high')" id="filterHigh">🔴 High</button>
-    <button class="btn btn-ghost" onclick="filterNotifications('medium')" id="filterMedium">🟡 Medium</button>
-    <button class="btn btn-ghost" onclick="filterNotifications('low')" id="filterLow">🟢 Low</button>
+    <button class="btn btn-ghost" onclick="filterNotifications('high')" id="filterHigh"><i class="fa-solid fa-arrow-up"></i> High</button>
+    <button class="btn btn-ghost" onclick="filterNotifications('medium')" id="filterMedium"><i class="fa-solid fa-minus"></i> Medium</button>
+    <button class="btn btn-ghost" onclick="filterNotifications('low')" id="filterLow"><i class="fa-solid fa-arrow-down"></i> Low</button>
   </div>
 
   <!-- Notifications List -->
   <div id="notificationsList">
     <div style="text-align:center;padding:40px;color:var(--muted);">
-      <div style="font-size:48px;margin-bottom:16px;">📭</div>
+      <div style="font-size:48px;margin-bottom:16px;"><i class="fa-solid fa-message"></i></div>
       <div>Loading notifications...</div>
     </div>
   </div>

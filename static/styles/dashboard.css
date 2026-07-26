@@ -1,169 +1,185 @@
 /* Dashboard Custom CSS */
 .dashboard-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
-    padding: 16px 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  padding: 16px 0;
 }
 
 .widget-container {
-    background: rgba(15, 22, 38, 0.96);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 18px;
-    padding: 20px;
-    transition: all 0.2s ease;
-    cursor: grab;
-    min-height: 100px;
+  background: rgba(15, 22, 38, 0.96);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  padding: 20px;
+  transition: all 0.2s ease;
+  cursor: grab;
+  min-height: 100px;
 }
 
 .widget-container.dragging {
-    opacity: 0.5;
-    transform: scale(0.95);
+  opacity: 0.5;
+  transform: scale(0.95);
 }
 
 .widget-container:hover {
-    border-color: rgba(212, 168, 67, 0.3);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+  border-color: rgba(212, 168, 67, 0.3);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
 }
 
 .widget-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 12px;
-    cursor: grab;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  cursor: grab;
 }
 
 .widget-header .drag-handle {
-    cursor: grab;
-    color: #5a6a82;
-    font-size: 14px;
+  cursor: grab;
+  color: #5a6a82;
+  font-size: 14px;
 }
 
 .widget-header .widget-title {
-    font-size: 14px;
-    font-weight: 600;
-    color: #eef0f5;
+  font-size: 14px;
+  font-weight: 600;
+  color: #eef0f5;
 }
 
 .widget-header .widget-actions {
-    display: flex;
-    gap: 6px;
+  display: flex;
+  gap: 6px;
 }
 
 .widget-header .widget-actions button {
-    background: none;
-    border: none;
-    color: #5a6a82;
-    cursor: pointer;
-    padding: 2px 6px;
-    border-radius: 4px;
+  background: none;
+  border: none;
+  color: #5a6a82;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
 }
 
 .widget-header .widget-actions button:hover {
-    background: rgba(255,255,255,0.05);
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .widget-content {
-    font-size: 13px;
+  font-size: 13px;
 }
 
-.widget-size-small { grid-column: span 1; }
-.widget-size-medium { grid-column: span 2; }
-.widget-size-large { grid-column: span 4; }
+.widget-size-small {
+  grid-column: span 1;
+}
+.widget-size-medium {
+  grid-column: span 2;
+}
+.widget-size-large {
+  grid-column: span 4;
+}
 
 @media (max-width: 1200px) {
-    .dashboard-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
-    .widget-size-large { grid-column: span 3; }
+  .dashboard-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .widget-size-large {
+    grid-column: span 3;
+  }
 }
 
 @media (max-width: 768px) {
-    .dashboard-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    .widget-size-large { grid-column: span 2; }
-    .widget-size-medium { grid-column: span 2; }
+  .dashboard-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .widget-size-large {
+    grid-column: span 2;
+  }
+  .widget-size-medium {
+    grid-column: span 2;
+  }
 }
 
 @media (max-width: 480px) {
-    .dashboard-grid {
-        grid-template-columns: 1fr;
-    }
-    .widget-size-large { grid-column: span 1; }
-    .widget-size-medium { grid-column: span 1; }
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+  .widget-size-large {
+    grid-column: span 1;
+  }
+  .widget-size-medium {
+    grid-column: span 1;
+  }
 }
 
 /* Widget specific styles */
 .widget-net-worth .value {
-    font-size: 28px;
-    font-weight: 800;
-    color: #d4a843;
+  font-size: 28px;
+  font-weight: 800;
+  color: #d4a843;
 }
 
 .widget-net-worth .change {
-    font-size: 13px;
+  font-size: 13px;
 }
 
 .widget-spending-trend .chart-container {
-    height: 120px;
+  height: 120px;
 }
 
 .widget-budget-health .budget-bar {
-    height: 6px;
-    background: rgba(255,255,255,0.06);
-    border-radius: 4px;
-    overflow: hidden;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 4px;
+  overflow: hidden;
 }
 
 .widget-budget-health .budget-bar .fill {
-    height: 100%;
-    border-radius: 4px;
-    transition: width 0.5s ease;
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.5s ease;
 }
 
 .widget-recent-transactions .transaction-item {
-    display: flex;
-    justify-content: space-between;
-    padding: 6px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.04);
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
 }
 
 .widget-recent-transactions .transaction-item:last-child {
-    border-bottom: none;
+  border-bottom: none;
 }
 
 .widget-goals-progress .goal-item {
-    margin-bottom: 10px;
+  margin-bottom: 10px;
 }
 
 .widget-goals-progress .goal-progress-bar {
-    height: 4px;
-    background: rgba(255,255,255,0.06);
-    border-radius: 4px;
-    overflow: hidden;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 4px;
+  overflow: hidden;
 }
 
 .widget-goals-progress .goal-progress-bar .fill {
-    height: 100%;
-    border-radius: 4px;
-    background: linear-gradient(90deg, #d4a843, #14c8bf);
-    transition: width 0.5s ease;
+  height: 100%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #d4a843, #14c8bf);
+  transition: width 0.5s ease;
 }
 
 .widget-add .add-widget-btn {
-    width: 100%;
-    padding: 12px;
-    border: 2px dashed rgba(255,255,255,0.1);
-    border-radius: 12px;
-    background: transparent;
-    color: #5a6a82;
-    cursor: pointer;
-    transition: all 0.2s ease;
+  width: 100%;
+  padding: 12px;
+  border: 2px dashed rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  background: transparent;
+  color: #5a6a82;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .widget-add .add-widget-btn:hover {
-    border-color: rgba(212,168,67,0.3);
-    color: #d4a843;
+  border-color: rgba(212, 168, 67, 0.3);
+  color: #d4a843;
 }

@@ -5,10 +5,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AI Money Mentor</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
   <link
     href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600&display=swap"
     rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    function esc(s){ const d=document.createElement('div'); d.textContent=String(s==null?'':s); return d.innerHTML; }
+    function escAttr(s){ return String(s==null?'':s).replace(/"/g,'"').replace(/'/g,'&#39;'); }
+  </script>
 
   <style>
     :root {
@@ -1377,6 +1382,12 @@
 
     }
 
+
+    .empty-state {
+  font-style: italic;
+  color: var(--muted);
+}
+
     /* ===== SAFETY INDICATOR ===== */
     .safety-indicator {
       font-size: 11px;
@@ -1434,6 +1445,1446 @@
   </div>
 
   <!-- ══════════ SIDEBAR ══════════ -->
+<div class="sidebar">
+  <div class="logo">₹ Money Mentor</div>
+  <button class="btn btn-ghost" id="themeToggle" onclick="toggleTheme()" style="margin-bottom:15px;width:100%;">
+    <i class="fa-solid fa-sun"></i> Light Mode
+  </button>
+
+  <div class="nav-item active" data-page="dashboard"><span class="icon"><i class="fa-solid fa-house"></i></span> Dashboard</div>
+  <div class="nav-item" data-page="chat"><span class="icon"><i class="fa-solid fa-robot"></i></span> AI Chat</div>
+  <div class="nav-item" data-page="score"><span class="icon"><i class="fa-solid fa-money-bill-wave"></i></span> Money Score</div>
+  <div class="nav-item" data-page="sip"><span class="icon"><i class="fa-solid fa-chart-line"></i></span> SIP Calc</div>
+  <div class="nav-item" data-page="retirement"><span class="icon"><i class="fa-solid fa-chart-line"></i></span> Retirement Simulator</div>
+  <div class="nav-item" data-page="stock"><span class="icon"><i class="fa-solid fa-chart-column"></i></span> Stock Check</div>
+  <div class="nav-item" data-page="tax"><span class="icon"><i class="fa-solid fa-file-invoice-dollar"></i></span> Tax Planner</div>
+  <div class="nav-item" data-page="pdf"><span class="icon"><i class="fa-solid fa-file-pdf"></i></span> PDF Parser</div>
+  <div class="nav-item" data-page="agent"><span class="icon"><i class="fa-solid fa-brain"></i></span> Multi Agent</div>
+  <div class="nav-item" data-page="expense"><span class="icon"><i class="fa-solid fa-wallet"></i></span> Expense Track</div>
+  <div class="nav-item" data-page="networth"><span class="icon"><i class="fa-solid fa-gem"></i></span> Net Worth</div>
+  <div class="nav-item" data-page="settings"><span class="icon"><i class="fa-solid fa-gear"></i></span> Settings</div>
+  <div class="nav-item" data-page="recurring"><span class="icon"><i class="fa-solid fa-arrows-rotate"></i></span> Recurring</div>
+
+  <div class="nav-item" data-page="ledger"><span class="icon"><i class="fa-solid fa-building-columns"></i></span> Ledger</div>
+  <div class="nav-item" data-page="portfolio-optimizer"><span class="icon"><i class="fa-solid fa-chart-line"></i></span> Portfolio Optimizer</div>
+  <div class="nav-item" data-page="voice-assistant"><span class="icon"><i class="fa-solid fa-microphone"></i></span> Voice Assistant</div>
+
+  <div class="nav-item" data-page="predictive-alerts"><span class="icon"><i class="fa-solid fa-wand-magic-sparkles"></i></span> Predictive Alerts</div>
+
+  <div class="nav-item" data-page="ledger"><span class="icon"><i class="fa-solid fa-building-columns"></i></span> Ledger</div>
+  <div class="nav-item" data-page="portfolio-optimizer"><span class="icon"><i class="fa-solid fa-chart-line"></i></span> Portfolio Optimizer</div>
+
+  <div class="nav-item" data-page="ledger"><span class="icon"><i class="fa-solid fa-building-columns"></i></span> Ledger</div>
+  <div class="nav-item" data-page="portfolio-optimizer"><span class="icon"><i class="fa-solid fa-chart-line"></i></span> Portfolio Optimizer</div>
+
+  <div class="nav-item" data-page="voice-assistant"><span class="icon"><i class="fa-solid fa-microphone"></i></span> Voice Assistant</div>
+
+  <div class="nav-item" data-page="predictive-alerts"><span class="icon"><i class="fa-solid fa-wand-magic-sparkles"></i></span> Predictive Alerts</div>
+  <div class="nav-item" data-page="fire-planner"><span class="icon"><i class="fa-solid fa-fire"></i></span> FIRE Planner</div>
+
+  <div class="nav-item" data-page="bank-integration"><span class="icon"><i class="fa-solid fa-building-columns"></i></span> Bank Integration</div>
+
+  <div class="nav-item" data-page="goal-planner"><span class="icon"><i class="fa-solid fa-bullseye"></i></span> Goal Planner</div>
+  <div class="nav-item" data-page="rebalancer"><span class="icon"><i class="fa-solid fa-arrows-rotate"></i></span> Rebalancer</div>
+
+  <div class="nav-item" data-page="notifications"><span class="icon"><i class="fa-solid fa-bell"></i></span> Notifications</div>
+
+  <div class="nav-item" data-page="dashboard-new"><span class="icon"><i class="fa-solid fa-chart-pie"></i></span> Custom Dashboard</div>
+  <div class="nav-item" data-page="document-parser"><span class="icon"><i class="fa-solid fa-file-lines"></i></span> Doc Parser</div>
+
+  <div class="nav-item" data-page="document-parser"><span class="icon"><i class="fa-solid fa-file-lines"></i></span> Doc Parser</div>
+  <div class="nav-item" data-page="security-settings"><span class="icon"><i class="fa-solid fa-lock"></i></span> Security</div>
+
+  <div class="nav-item" data-page="tax-filing"><span class="icon"><i class="fa-solid fa-file-invoice"></i></span> Tax Filing</div>
+
+  <div class="nav-item" data-page="rag-assistant"><span class="icon"><i class="fa-solid fa-brain"></i></span> RAG Assistant</div>
+
+  <div class="nav-item" data-page="retirement"><span class="icon"><i class="fa-solid fa-chart-line"></i></span> Retirement Simulator</div>
+
+  </div>
+
+  <!-- ══════════ MAIN ══════════ -->
+  <div class="main">
+
+    <!-- ── DASHBOARD ─────────────── -->
+    <div id="dashboard" class="page active">
+      <div class="page-title">Smart <span>Dashboard</span></div>
+      <div class="dashboard-header">
+        <div>
+          <h2>AI Financial Advisor</h2>
+          <p>Get fast recommendations for investments, SIP planning, tax savings and portfolio health in one place.</p>
+        </div>
+        <div class="header-actions">
+          <button class="btn btn-gold" onclick="showPage('score', event)">Start Planning</button>
+          <button class="btn btn-ghost" onclick="showPage('chat', event)">Review Reports</button>
+          <button class="btn btn-ghost" onclick="window.print()">🖨️ Print Dashboard</button>
+        </div>
+      </div>
+
+      <!-- STATS -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-label">Total Portfolio</div>
+          <div class="stat-val">₹18.4L</div>
+          <div class="stat-sub">▲ +12.4% growth</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Monthly Income</div>
+          <div class="stat-val">₹1.24L</div>
+          <div class="stat-sub">▲ +3.1%</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Tax Saved</div>
+          <div class="stat-val">₹62.5K</div>
+          <div class="stat-sub">▲ Saved this year</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Expenses</div>
+          <div class="stat-val">₹41.2K</div>
+          <div class="stat-sub neg">▼ -5.2%</div>
+        </div>
+      </div>
+
+      <!-- DASH GRID -->
+      <div class="dash-grid">
+
+        <!-- AI CHAT PANEL -->
+        <div class="card">
+          <div class="card-title">we are fixing a ui issue in various  files by replacing emojis with icons from <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+That's a good approach. Instead of emojis like 🔥, ⭐, 🛒, ❤️, etc., use Font Awesome icons.
+
+First, include the CDN in your index.html:
+
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+/>
+
+Then replace emojis with their Font Awesome equivalents.
+
+Examples:
+
+Emoji	Font Awesome
+🔥	<i class="fa-solid fa-fire"></i>
+⭐	<i class="fa-solid fa-star"></i>
+❤️	<i class="fa-solid fa-heart"></i>
+🛒	<i class="fa-solid fa-cart-shopping"></i>
+👤	<i class="fa-solid fa-user"></i>
+📦	<i class="fa-solid fa-box"></i>
+💰	<i class="fa-solid fa-indian-rupee-sign"></i>
+🎁	<i class="fa-solid fa-gift"></i>
+🚚	<i class="fa-solid fa-truck"></i>
+📞	<i class="fa-solid fa-phone"></i>
+📧	<i class="fa-solid fa-envelope"></i>
+🔍	<i class="fa-solid fa-magnifying-glass"></i>
+⚙️	<i class="fa-solid fa-gear"></i>
+🏠	<i class="fa-solid fa-house"></i>
+➜	<i class="fa-solid fa-arrow-right"></i>
+
+Example:
+
+// Before
+<button>🛒 Add to Cart</button>
+
+// After
+<button>
+  <i className="fa-solid fa-cart-shopping"></i> Add to Cart
+</button>
+// Before
+<h3>🔥 Hot Deals</h3>
+
+// After
+<h3>
+  <i className="fa-solid fa-fire"></i> Hot Deals
+</h3>
+
+If you're using React, remember to use className instead of class.
+
+we have base file btw and other content extends from this block so do we need to use this icon link in base file only
+
+Yes. If all your pages extend from a common base/layout file, include the Font Awesome <link> only once in that base file (or in index.html if it's a React app).
+
+For example:
+
+<!-- Base template -->
+<head>
+  ...
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+  />
+</head>
+
+Then every component/page can use icons like:
+
+<i className="fa-solid fa-cart-shopping"></i>
+<i className="fa-solid fa-heart"></i>
+<i className="fa-solid fa-star"></i>
+
+There's no need to add the CDN link to every individual component or page. Loading it once globally is the correct approach.
+
+give me icon for trophy and light mode
+// Trophy
+<i className="fa-solid fa-trophy"></i>
+
+// Light Mode (Sun)
+<i className="fa-solid fa-sun"></i>
+
+Other good light mode alternatives:
+
+// Sun with rays (recommended)
+<i className="fa-regular fa-sun"></i>
+
+// Brightness
+<i className="fa-solid fa-lightbulb"></i>
+
+// Circle half (theme toggle)
+<i className="fa-solid fa-circle-half-stroke"></i>
+
+For a dark/light mode toggle, the most common pair is:
+
+<i className="fa-solid fa-sun"></i>   // Light Mode
+<i className="fa-solid fa-moon"></i>  // Dark Mode
+home, learn, milestone, ai chat
+
+Here are good Font Awesome icons for each:
+
+// Home
+<i className="fa-solid fa-house"></i>
+
+// Learn
+<i className="fa-solid fa-book-open"></i>
+
+// Milestone
+<i className="fa-solid fa-trophy"></i>
+
+// AI Chat
+<i className="fa-solid fa-robot"></i>
+
+Other good alternatives:
+
+Section	Recommended	Alternatives
+Home	fa-house	fa-home (older)
+Learn	fa-book-open	fa-graduation-cap, fa-book, fa-school
+Milestone	fa-trophy	fa-medal, fa-award, fa-flag-checkered
+AI Chat	fa-robot	fa-comments, fa-comment-dots, fa-brain, fa-message
+
+For an educational AI app, I'd recommend:
+
+<i className="fa-solid fa-house"></i>          // Home
+<i className="fa-solid fa-book-open"></i>      // Learn
+<i className="fa-solid fa-trophy"></i>         // Milestones
+<i className="fa-solid fa-robot"></i>          // AI Chat
+
+These are clean, modern, and commonly used.
+
+
+    <a href="/" class="nav-item {% if active_page == 'dashboard' %}active{% endif %}"><span class="icon"><i className="fa-solid fa-house"></i></span> Dashboard</a>
+    <a href="/learn" class="nav-item {% if active_page == 'learn' %}active{% endif %}"><span class="icon"><i className="fa-solid fa-book-open"></i></span> Learn & Earn</a>
+    <a href="/milestones" class="nav-item {% if active_page == 'milestones' %}active{% endif %}"><span class="icon"><i className="fa-solid fa-trophy"></i></span> Milestones</a>
+    <a href="/chat" class="nav-item {% if active_page == 'chat' %}active{% endif %}"><span class="icon"><i className="fa-solid fa-robot"></i></span> AI Chat</a>
+    <a href="/money-score" class="nav-item {% if active_page == 'score' %}active{% endif %}"><span class="icon">💰</span> Money Score</a>
+    <a href="/sip" class="nav-item {% if active_page == 'sip' %}active{% endif %}"><span class="icon">📈</span> SIP Calc</a>
+    <a href="/goal-planner" class="nav-item {% if active_page == 'goal_planner' %}active{% endif %}"><span class="icon">🎯</span> Goal Planner</a>
+    <a href="/stock" class="nav-item {% if active_page == 'stock' %}active{% endif %}"><span class="icon">📊</span> Stock Check</a>
+    <a href="/tax" class="nav-item {% if active_page == 'tax' %}active{% endif %}"><span class="icon">💸</span> Tax Planner</a>
+    <a href="/insurance" class="nav-item {% if active_page == 'insurance' %}active{% endif %}"><span class="icon">🛡️</span> Insurance Plan</a>
+    <a href="/pdf-parser" class="nav-item {% if active_page == 'pdf' %}active{% endif %}"><span class="icon">📄</span> PDF Parser</a>
+    <a href="/agent-page" class="nav-item {% if active_page == 'agent' %}active{% endif %}"><span class="icon">🧠</span> Multi Agent</a>
+    <a href="/expense" class="nav-item {% if active_page == 'expense' %}active{% endif %}"><span class="icon">💲</span>Expense Track</a>
+    <a href="/group-expenses" class="nav-item {% if active_page == 'group-expenses' %}active{% endif %}"><span class="icon">👥</span>Group Expenses</a>
+    <a href="/networth" class="nav-item {% if active_page == 'networth' %}active{% endif %}"><span class="icon">💎</span> Net Worth</a>
+    <a href="/portfolio-page" class="nav-item {% if active_page == 'portfolio' %}active{% endif %}"><span class="icon">💼</span> Portfolio</a>
+    <a href="/crypto-page" class="nav-item {% if active_page == 'crypto' %}active{% endif %}"><span class="icon">🪙</span> Crypto & DeFi</a>
+    <a href="/goals" class="nav-item {% if active_page == 'goals' %}active{% endif %}"><span class="icon">🎯</span> Financial Goals</a>
+    <a href="/risk-advisor" class="nav-item {% if active_page == 'risk-advisor' %}active{% endif %}"><span class="icon">📋</span> Risk Advisor</a>
+    <a href="/budget" class="nav-item {% if active_page == 'budget' %}active{% endif %}"><span class="icon">📊</span> Smart Budget</a>
+    <a href="/recurring" class="nav-item {% if active_page == 'recurring' %}active{% endif %}"><span class="icon">📅</span> Recurring Expenses</a>
+    <a href="/recurring-income-page" class="nav-item {% if active_page == 'recurring_income' %}active{% endif %}"><span class="icon">💵</span> Recurring Incomes</a>
+    <a href="/loan_planner" class="nav-item {% if active_page == 'loan' %}active{% endif %}"><span class="icon">💰</span> Loan Planner</a>
+  </div>
+
+
+keep all the code untouched and just replace the emojis with corrosponding icons
+
+Just replace the emoji inside each <span class="icon"> with the corresponding Font Awesome icon. Everything else remains unchanged.
+
+<a href="/" class="nav-item {% if active_page == 'dashboard' %}active{% endif %}"><span class="icon"><i class="fa-solid fa-house"></i></span> Dashboard</a>
+<a href="/learn" class="nav-item {% if active_page == 'learn' %}active{% endif %}"><span class="icon"><i class="fa-solid fa-book-open"></i></span> Learn & Earn</a>
+<a href="/milestones" class="nav-item {% if active_page == 'milestones' %}active{% endif %}"><span class="icon"><i class="fa-solid fa-trophy"></i></span> Milestones</a>
+<a href="/chat" class="nav-item {% if active_page == 'chat' %}active{% endif %}"><span class="icon"><i class="fa-solid fa-robot"></i></span> AI Chat</a>
+<a href="/money-score" class="nav-item {% if active_page == 'score' %}active{% endif %}"><span class="icon"><i class="fa-solid fa-money-bill-wave"></i></span> Money Score</a>
+<a href="/sip" class="nav-item {% if active_page == 'sip' %}active{% endif %}"><span class="icon"><i class="fa-solid fa-chart-line"></i></span> SIP Calc</a>
+<a href="/goal-planner" class="nav-item {% if active_page == 'goal_planner' %}active{% endif %}"><span class="icon"><i class="fa-solid fa-bullseye"></i></span> Goal Planner</a>
+<a href="/stock" class="nav-item {% if active_page == 'stock' %}active{% endif %}"><span class="icon"><i class="fa-solid fa-chart-column"></i></span> Stock Check</a>
+<a href="/tax" class="nav-item {% if active_page == 'tax' %}active{% endif %}"><span class="icon"><i class="fa-solid fa-receipt"></i></span> Tax Planner</a>
+<a href="/insurance" class="nav-item {% if active_page == 'insurance' %}active{% endif %}"><span class="icon"><i class="fa-solid fa-shield-halved"></i></span> Insurance Plan</a>
+<a href="/pdf-parser" class="nav-item {% if active_page == 'pdf' %}active{% endif %}"><span class="icon"><i class="fa-solid fa-file-pdf"></i></span> PDF Parser</a>
+<a href="/agent-page" class="nav-item {% if active_page == 'agent' %}active{% endif %}"><span class="icon"><i class="fa-solid fa-brain"></i></span> Multi Agent</a>
+<a href="/expense" class="nav-item {% if active_page == 'expense' %}active{% endif %}"><span class="icon"><i class="fa-solid fa-wallet"></i></span>Expense Track</a>
+<a href="/group-expenses" class="nav-item {% if active_page == 'group-expenses' %}active{% endif %}"><span class="icon"><i class="fa-solid fa-users"></i></span>Group Expenses</a>
+<a href="/networth" class="nav-item {% if active_page == 'networth' %}active{% endif %}"><span class="icon"><i class="fa-solid fa-gem"></i></span> Net Worth</a>
+<a href="/portfolio-page" class="nav-item {% if active_page == 'portfolio' %}active{% endif %}"><span class="icon"><i class="fa-solid fa-briefcase"></i></span> Portfolio</a>
+<a href="/crypto-page" class="nav-item {% if active_page == 'crypto' %}active{% endif %}"><span class="icon"><i class="fa-brands fa-bitcoin"></i></span> Crypto & DeFi</a>
+<a href="/goals" class="nav-item {% if active_page == 'goals' %}active{% endif %}"><span class="icon"><i class="fa-solid fa-bullseye"></i></span> Financial Goals</a>
+<a href="/risk-advisor" class="nav-item {% if active_page == 'risk-advisor' %}active{% endif %}"><span class="icon"><i class="fa-solid fa-clipboard-list"></i></span> Risk Advisor</a>
+<a href="/budget" class="nav-item {% if active_page == 'budget' %}active{% endif %}"><span class="icon"><i class="fa-solid fa-chart-pie"></i></span> Smart Budget</a>
+<a href="/recurring" class="nav-item {% if active_page == 'recurring' %}active{% endif %}"><span class="icon"><i class="fa-solid fa-calendar-days"></i></span> Recurring Expenses</a>
+<a href="/recurring-income-page" class="nav-item {% if active_page == 'recurring_income' %}active{% endif %}"><span class="icon"><i class="fa-solid fa-money-bill-trend-up"></i></span> Recurring Incomes</a>
+<a href="/loan_planner" class="nav-item {% if active_page == 'loan' %}active{% endif %}"><span class="icon"><i class="fa-solid fa-hand-holding-dollar"></i></span> Loan Planner</a>
+
+Note: Since this is an HTML/Jinja template (not React), use class, not className.
+
+brain, rocket , planning, ai agent
+
+Here are the corresponding Font Awesome icons:
+
+<!-- Brain -->
+<i class="fa-solid fa-brain"></i>
+
+<!-- Rocket -->
+<i class="fa-solid fa-rocket"></i>
+
+<!-- Planning -->
+<i class="fa-solid fa-calendar-check"></i>
+
+For AI Agent, any of these work well depending on the meaning:
+
+<!-- AI Agent (Recommended) -->
+<i class="fa-solid fa-robot"></i>
+
+<!-- AI / Intelligence -->
+<i class="fa-solid fa-brain"></i>
+
+<!-- Bot / Assistant -->
+<i class="fa-solid fa-microchip"></i>
+
+<!-- Network of Agents -->
+<i class="fa-solid fa-diagram-project"></i>
+
+Recommended choices:
+
+🧠 Brain → <i class="fa-solid fa-brain"></i>
+🚀 Rocket → <i class="fa-solid fa-rocket"></i>
+📅 Planning → <i class="fa-solid fa-calendar-check"></i>
+🤖 AI Agent → <i class="fa-solid fa-robot"></i>
+arrow pointing left , danger
+
+Here are the Font Awesome icons:
+
+<!-- Left Arrow -->
+<i class="fa-solid fa-arrow-left"></i>
+
+Other left arrow options:
+
+<i class="fa-solid fa-chevron-left"></i>      <!-- Small -->
+<i class="fa-solid fa-angle-left"></i>        <!-- Thin -->
+<i class="fa-solid fa-circle-arrow-left"></i> <!-- Inside circle -->
+<i class="fa-solid fa-arrow-left-long"></i>   <!-- Long arrow -->
+
+For Danger / Warning:
+
+<!-- Recommended -->
+<i class="fa-solid fa-triangle-exclamation"></i>
+
+Other options:
+
+<i class="fa-solid fa-circle-exclamation"></i> <!-- Error -->
+<i class="fa-solid fa-skull-crossbones"></i>   <!-- Critical -->
+<i class="fa-solid fa-ban"></i>                <!-- Prohibited -->
+<i class="fa-solid fa-bug"></i>                <!-- Bug -->
+<i class="fa-solid fa-radiation"></i>          <!-- Hazard -->
+
+Most commonly used:
+
+Left Arrow → <i class="fa-solid fa-arrow-left"></i>
+Danger → <i class="fa-solid fa-triangle-exclamation"></i>
+bank, link, sync, connect, anomolies
+
+Here are good Font Awesome icons for each:
+
+<!-- Bank -->
+<i class="fa-solid fa-building-columns"></i>
+
+<!-- Link -->
+<i class="fa-solid fa-link"></i>
+
+<!-- Sync -->
+<i class="fa-solid fa-rotate"></i>
+
+<!-- Connect -->
+<i class="fa-solid fa-plug"></i>
+
+<!-- Anomalies -->
+<i class="fa-solid fa-triangle-exclamation"></i>
+
+Other good alternatives:
+
+Purpose	Recommended	Alternatives
+Bank	fa-building-columns	fa-landmark, fa-building
+Link	fa-link	fa-paperclip, fa-share-nodes
+Sync	fa-rotate	fa-arrows-rotate, fa-rotate-right
+Connect	fa-plug	fa-network-wired, fa-diagram-project, fa-circle-nodes
+Anomalies	fa-triangle-exclamation	fa-circle-exclamation, fa-bug, fa-magnifying-glass-chart
+
+For a finance/dashboard UI, I'd recommend:
+
+<i class="fa-solid fa-building-columns"></i>  <!-- Bank -->
+<i class="fa-solid fa-link"></i>              <!-- Link -->
+<i class="fa-solid fa-arrows-rotate"></i>     <!-- Sync -->
+<i class="fa-solid fa-plug"></i>              <!-- Connect -->
+<i class="fa-solid fa-triangle-exclamation"></i> <!-- Anomalies -->
+budget
+
+For Budget, these are the best Font Awesome icons:
+
+<!-- Recommended -->
+<i class="fa-solid fa-wallet"></i>
+
+Other good options:
+
+<i class="fa-solid fa-money-bill-wave"></i>   <!-- Money -->
+<i class="fa-solid fa-sack-dollar"></i>       <!-- Savings/Budget -->
+<i class="fa-solid fa-piggy-bank"></i>        <!-- Saving -->
+<i class="fa-solid fa-scale-balanced"></i>    <!-- Balance -->
+<i class="fa-solid fa-coins"></i>             <!-- Funds -->
+<i class="fa-solid fa-file-invoice-dollar"></i> <!-- Budget Report -->
+
+Recommended for a Budget page:
+
+<i class="fa-solid fa-wallet"></i>
+ai chat
+
+For an AI Chat page, these are the best Font Awesome icons:
+
+<!-- Recommended -->
+<i class="fa-solid fa-robot"></i>
+
+Other good alternatives:
+
+<i class="fa-solid fa-comments"></i>        <!-- Chat -->
+<i class="fa-solid fa-comment-dots"></i>    <!-- Messaging -->
+<i class="fa-solid fa-message"></i>         <!-- Chat bubble -->
+<i class="fa-solid fa-brain"></i>           <!-- AI/Intelligence -->
+<i class="fa-solid fa-microchip"></i>       <!-- AI/Chip -->
+<i class="fa-solid fa-wand-magic-sparkles"></i> <!-- AI Magic -->
+
+Best choice for an AI assistant:
+
+<i class="fa-solid fa-robot"></i>
+welcome icon
+
+For a Welcome section, these are great Font Awesome icons:
+
+<!-- Recommended -->
+<i class="fa-solid fa-hand"></i>
+
+Other good options:
+
+<i class="fa-solid fa-handshake"></i>        <!-- Welcome / Greeting -->
+<i class="fa-solid fa-door-open"></i>        <!-- Enter / Welcome -->
+<i class="fa-solid fa-house"></i>            <!-- Welcome Home -->
+<i class="fa-solid fa-face-smile"></i>       <!-- Friendly Welcome -->
+<i class="fa-solid fa-heart"></i>            <!-- Warm Welcome -->
+<i class="fa-solid fa-sparkles"></i>         <!-- New / Welcome -->
+Best choices:
+👋 Welcome greeting → <i class="fa-solid fa-hand"></i>
+🤝 Professional welcome → <i class="fa-solid fa-handshake"></i>
+✨ Modern welcome → <i class="fa-solid fa-sparkles"></i>
+portfolio, strategy, investment, emerguncy
+
+Here are good Font Awesome icons for each:
+
+<!-- Portfolio -->
+<i class="fa-solid fa-briefcase"></i>
+
+<!-- Strategy -->
+<i class="fa-solid fa-chess"></i>
+
+<!-- Investment -->
+<i class="fa-solid fa-chart-line"></i>
+
+<!-- Emergency -->
+<i class="fa-solid fa-triangle-exclamation"></i>
+
+Other good alternatives:
+
+Purpose	Recommended	Alternatives
+Portfolio	fa-briefcase	fa-folder-open, fa-chart-pie
+Strategy	fa-chess	fa-chess-king, fa-bullseye, fa-lightbulb
+Investment	fa-chart-line	fa-sack-dollar, fa-coins, fa-arrow-trend-up
+Emergency	fa-triangle-exclamation	fa-circle-exclamation, fa-kit-medical, fa-bell
+
+Recommended set:
+
+<i class="fa-solid fa-briefcase"></i>        <!-- Portfolio -->
+<i class="fa-solid fa-chess"></i>            <!-- Strategy -->
+<i class="fa-solid fa-chart-line"></i>       <!-- Investment -->
+<i class="fa-solid fa-triangle-exclamation"></i> <!-- Emergency -->
+couple, networth, activity, goal, expenses, budget, optimization, home, plane, wedding, car, education, savings, goals,send, correct mark, cross mark, split
+<!-- Couple -->
+<i class="fa-solid fa-user-group"></i>
+
+<!-- Net Worth -->
+<i class="fa-solid fa-gem"></i>
+
+<!-- Activity -->
+<i class="fa-solid fa-chart-line"></i>
+
+<!-- Goal -->
+<i class="fa-solid fa-bullseye"></i>
+
+<!-- Expenses -->
+<i class="fa-solid fa-wallet"></i>
+
+<!-- Budget -->
+<i class="fa-solid fa-piggy-bank"></i>
+
+<!-- Optimization -->
+<i class="fa-solid fa-sliders"></i>
+
+<!-- Home -->
+<i class="fa-solid fa-house"></i>
+
+<!-- Plane / Travel -->
+<i class="fa-solid fa-plane"></i>
+
+<!-- Wedding -->
+<i class="fa-solid fa-ring"></i>
+
+<!-- Car -->
+<i class="fa-solid fa-car"></i>
+
+<!-- Education -->
+<i class="fa-solid fa-graduation-cap"></i>
+
+<!-- Savings -->
+<i class="fa-solid fa-sack-dollar"></i>
+
+<!-- Goals -->
+<i class="fa-solid fa-bullseye"></i>
+
+<!-- Send -->
+<i class="fa-solid fa-paper-plane"></i>
+
+<!-- Correct Mark -->
+<i class="fa-solid fa-circle-check"></i>
+
+<!-- Cross Mark -->
+<i class="fa-solid fa-circle-xmark"></i>
+
+<!-- Split -->
+<i class="fa-solid fa-code-branch"></i>
+
+Better alternatives for a finance app:
+
+Activity → fa-chart-simple
+Optimization → fa-chart-line or fa-gears
+Split (expense splitting) → fa-scale-balanced
+Net Worth → fa-coins or fa-sack-dollar
+Expenses → fa-money-bill-wave or fa-receipt
+partner
+
+For Partner, these are the best Font Awesome icons:
+
+<!-- Recommended -->
+<i class="fa-solid fa-user-group"></i>
+
+Other good options:
+
+<i class="fa-solid fa-handshake"></i>      <!-- Partnership / Collaboration -->
+<i class="fa-solid fa-users"></i>          <!-- Team -->
+<i class="fa-solid fa-user-plus"></i>      <!-- Add Partner -->
+<i class="fa-solid fa-heart"></i>          <!-- Relationship -->
+<i class="fa-solid fa-ring"></i>           <!-- Spouse / Marriage -->
+Recommended based on context:
+Business partner → <i class="fa-solid fa-handshake"></i>
+Expense-sharing partner / Couple → <i class="fa-solid fa-user-group"></i>
+Spouse → <i class="fa-solid fa-ring"></i>
+crypto , lighting
+
+For Crypto and Lightning, use these Font Awesome icons:
+
+<!-- Crypto -->
+<i class="fa-brands fa-bitcoin"></i>
+
+<!-- Lightning -->
+<i class="fa-solid fa-bolt"></i>
+
+Other good crypto alternatives:
+
+<i class="fa-solid fa-coins"></i>          <!-- Generic cryptocurrency -->
+<i class="fa-solid fa-circle-dollar-to-slot"></i> <!-- Digital payments -->
+<i class="fa-solid fa-money-bill-trend-up"></i>   <!-- Crypto growth -->
+
+Recommended:
+
+Crypto → <i class="fa-brands fa-bitcoin"></i>
+Lightning → <i class="fa-solid fa-bolt"></i> ⚡
+dashboard, save, reset, export , import
+
+Here are the recommended Font Awesome icons:
+
+<!-- Dashboard -->
+<i class="fa-solid fa-gauge-high"></i>
+
+<!-- Save -->
+<i class="fa-solid fa-floppy-disk"></i>
+
+<!-- Reset -->
+<i class="fa-solid fa-rotate-left"></i>
+
+<!-- Export -->
+<i class="fa-solid fa-file-export"></i>
+
+<!-- Import -->
+<i class="fa-solid fa-file-import"></i>
+
+Other good alternatives:
+
+Purpose	Recommended	Alternatives
+Dashboard	fa-gauge-high	fa-table-columns, fa-chart-pie
+Save	fa-floppy-disk	fa-download, fa-bookmark
+Reset	fa-rotate-left	fa-arrow-rotate-left, fa-rotate
+Export	fa-file-export	fa-arrow-up-from-bracket, fa-share-from-square
+Import	fa-file-import	fa-arrow-down-to-bracket, fa-upload
+
+For a modern dashboard UI, I'd use:
+
+<i class="fa-solid fa-gauge-high"></i>      <!-- Dashboard -->
+<i class="fa-solid fa-floppy-disk"></i>     <!-- Save -->
+<i class="fa-solid fa-rotate-left"></i>     <!-- Reset -->
+<i class="fa-solid fa-file-export"></i>     <!-- Export -->
+<i class="fa-solid fa-file-import"></i>     <!-- Import -->
+bulb ,chat, money, risk, send, SIP, tax insights,  time, trophy,analysis, correct mark,
+<!-- Bulb -->
+<i class="fa-solid fa-lightbulb"></i>
+
+<!-- Chat -->
+<i class="fa-solid fa-comments"></i>
+
+<!-- Money -->
+<i class="fa-solid fa-money-bill-wave"></i>
+
+<!-- Risk -->
+<i class="fa-solid fa-triangle-exclamation"></i>
+
+<!-- Send -->
+<i class="fa-solid fa-paper-plane"></i>
+
+<!-- SIP -->
+<i class="fa-solid fa-chart-line"></i>
+
+<!-- Tax Insights -->
+<i class="fa-solid fa-file-invoice-dollar"></i>
+
+<!-- Time -->
+<i class="fa-solid fa-clock"></i>
+
+<!-- Trophy -->
+<i class="fa-solid fa-trophy"></i>
+
+<!-- Analysis -->
+<i class="fa-solid fa-chart-pie"></i>
+
+<!-- Correct Mark -->
+<i class="fa-solid fa-circle-check"></i>
+
+Other good alternatives:
+
+Chat → fa-comment-dots, fa-message
+Money → fa-sack-dollar, fa-wallet, fa-coins
+Risk → fa-shield-halved, fa-circle-exclamation
+Analysis → fa-magnifying-glass-chart, fa-chart-column
+Tax Insights → fa-receipt, fa-scale-balanced
+Time → fa-hourglass-half, fa-stopwatch
+document, upload, file, data, text, transaction, track, info, processing, cross , corret mark, search
+<!-- Document -->
+<i class="fa-solid fa-file-lines"></i>
+
+<!-- Upload -->
+<i class="fa-solid fa-upload"></i>
+
+<!-- File -->
+<i class="fa-solid fa-file"></i>
+
+<!-- Data -->
+<i class="fa-solid fa-database"></i>
+
+<!-- Text -->
+<i class="fa-solid fa-font"></i>
+
+<!-- Transaction -->
+<i class="fa-solid fa-money-bill-transfer"></i>
+
+<!-- Track -->
+<i class="fa-solid fa-location-crosshairs"></i>
+
+<!-- Info -->
+<i class="fa-solid fa-circle-info"></i>
+
+<!-- Processing -->
+<i class="fa-solid fa-spinner"></i>
+
+<!-- Cross Mark -->
+<i class="fa-solid fa-circle-xmark"></i>
+
+<!-- Correct Mark -->
+<i class="fa-solid fa-circle-check"></i>
+
+<!-- Search -->
+<i class="fa-solid fa-magnifying-glass"></i>
+
+Recommended alternatives:
+
+Document → fa-file-pdf, fa-file-contract
+Upload → fa-arrow-up-from-bracket
+Data → fa-server, fa-table
+Transaction → fa-arrow-right-arrow-left, fa-money-check-dollar
+Track → fa-route, fa-chart-line
+Processing → fa-gear, fa-arrows-rotate
+Search → fa-magnifying-glass-chart (for analytics/searching data)
+Pasted code(3).html
+File
+only replace emojis with icon and dont touch anything else
+
+In this file, only these emojis need to be replaced.
+
+<!-- Expense Track -->
+<div class="page-title">
+  <i class="fa-solid fa-wallet"></i> Expense Track & Insights
+</div>
+<!-- Voice Button -->
+<button type="button" id="voiceBtn" class="btn btn-gold" style="padding: 10px 14px; min-width: 50px; border-radius: 8px;" title="Speak expense">
+  <i class="fa-solid fa-microphone"></i>
+</button>
+// Delete button
+<button class="btn btn-ghost" style="padding: 4px 8px; font-size: 10px; color: var(--red);" onclick="deleteExpense(${exp.id})">
+  <i class="fa-solid fa-circle-xmark"></i>
+</button>
+// Voice button while listening
+voiceBtn.innerHTML = '<i class="fa-solid fa-stop"></i>';
+// Transcript placeholder
+amountInput.placeholder = `<i class="fa-solid fa-microphone-lines"></i> "${transcript}"`;
+
+⚠️ Don't replace this one:
+
+amountInput.placeholder = '✅ Voice input processed!';
+
+placeholder displays plain text, not HTML. If you replace it with <i class="..."></i>, the user will literally see the HTML string instead of an icon. Keep the check mark there or change it to plain text like:
+
+amountInput.placeholder = 'Voice input processed!';
+
+Similarly, avoid replacing any emojis used inside JavaScript string placeholders or alerts, since HTML icons won't render there.
+
+fianance, total, net worth, budget, category, list, bulb, analytics,
+<!-- Finance -->
+<i class="fa-solid fa-money-bill-wave"></i>
+
+<!-- Total -->
+<i class="fa-solid fa-calculator"></i>
+
+<!-- Net Worth -->
+<i class="fa-solid fa-gem"></i>
+
+<!-- Budget -->
+<i class="fa-solid fa-wallet"></i>
+
+<!-- Category -->
+<i class="fa-solid fa-tags"></i>
+
+<!-- List -->
+<i class="fa-solid fa-list"></i>
+
+<!-- Bulb -->
+<i class="fa-solid fa-lightbulb"></i>
+
+<!-- Analytics -->
+<i class="fa-solid fa-chart-pie"></i>
+
+Good alternatives:
+
+Finance → fa-coins, fa-sack-dollar
+Total → fa-square-poll-horizontal, fa-sigma
+Net Worth → fa-coins, fa-sack-dollar
+Budget → fa-piggy-bank
+Category → fa-folder, fa-layer-group
+List → fa-list-check, fa-table-list
+Analytics → fa-chart-line, fa-chart-column, fa-magnifying-glass-chart
+speak, mic, transcript, result, bulb,globe, cross, correct mark, chat
+<!-- Speak -->
+<i class="fa-solid fa-volume-high"></i>
+
+<!-- Microphone -->
+<i class="fa-solid fa-microphone"></i>
+
+<!-- Transcript -->
+<i class="fa-solid fa-file-lines"></i>
+
+<!-- Result -->
+<i class="fa-solid fa-square-poll-horizontal"></i>
+
+<!-- Bulb -->
+<i class="fa-solid fa-lightbulb"></i>
+
+<!-- Globe -->
+<i class="fa-solid fa-globe"></i>
+
+<!-- Cross -->
+<i class="fa-solid fa-circle-xmark"></i>
+
+<!-- Correct Mark -->
+<i class="fa-solid fa-circle-check"></i>
+
+<!-- Chat -->
+<i class="fa-solid fa-comments"></i>
+
+Better alternatives:
+
+Speak → fa-volume-high, fa-volume-up
+Transcript → fa-scroll, fa-file-alt
+Result → fa-chart-line, fa-check-to-slot
+Chat → fa-comment-dots, fa-message
+plan, bulb, lghtbolt, settings, risk
+<!-- Plan -->
+<i class="fa-solid fa-calendar-check"></i>
+
+<!-- Bulb -->
+<i class="fa-solid fa-lightbulb"></i>
+
+<!-- Lightning Bolt -->
+<i class="fa-solid fa-bolt"></i>
+
+<!-- Settings -->
+<i class="fa-solid fa-gear"></i>
+
+<!-- Risk -->
+<i class="fa-solid fa-triangle-exclamation"></i>
+
+Other good alternatives:
+
+Plan → fa-list-check, fa-clipboard-list, fa-route
+Settings → fa-gears, fa-sliders
+Risk → fa-shield-halved, fa-circle-exclamation
+automatic, summary, calculation, generate, detect,bulb,doc,status, correct mark, download, cross
+<!-- Automatic -->
+<i class="fa-solid fa-wand-magic-sparkles"></i>
+
+<!-- Summary -->
+<i class="fa-solid fa-file-lines"></i>
+
+<!-- Calculation -->
+<i class="fa-solid fa-calculator"></i>
+
+<!-- Generate -->
+<i class="fa-solid fa-gears"></i>
+
+<!-- Detect -->
+<i class="fa-solid fa-magnifying-glass"></i>
+
+<!-- Bulb -->
+<i class="fa-solid fa-lightbulb"></i>
+
+<!-- Document -->
+<i class="fa-solid fa-file-lines"></i>
+
+<!-- Status -->
+<i class="fa-solid fa-circle-info"></i>
+
+<!-- Correct Mark -->
+<i class="fa-solid fa-circle-check"></i>
+
+<!-- Download -->
+<i class="fa-solid fa-download"></i>
+
+<!-- Cross -->
+<i class="fa-solid fa-circle-xmark"></i>
+
+Good alternatives:
+
+Automatic → fa-robot, fa-bolt
+Generate → fa-wand-magic-sparkles, fa-play
+Detect → fa-binoculars, fa-magnifying-glass-chart
+Status → fa-signal, fa-circle-check (success), fa-circle-exclamation (warning)
+search
+<!-- Search -->
+<i class="fa-solid fa-magnifying-glass"></i>
+
+Other good alternatives:
+
+<i class="fa-solid fa-magnifying-glass-chart"></i>  <!-- Search analytics -->
+<i class="fa-solid fa-binoculars"></i>              <!-- Explore/Search -->
+<i class="fa-solid fa-filter"></i>                  <!-- Search + Filter -->
+link
+<!-- Link -->
+<i class="fa-solid fa-link"></i>
+
+Other good alternatives:
+
+<i class="fa-solid fa-paperclip"></i>         <!-- Attachment -->
+<i class="fa-solid fa-share-nodes"></i>       <!-- Connected links -->
+<i class="fa-solid fa-arrow-up-right-from-square"></i> <!-- External link -->
+<i class="fa-solid fa-chain"></i>             <!-- Link (older alias) -->
+
+Recommended:
+
+<i class="fa-solid fa-link"></i>
+bell, processing, check mark
+<!-- Bell -->
+<i class="fa-solid fa-bell"></i>
+
+<!-- Processing -->
+<i class="fa-solid fa-spinner"></i>
+
+<!-- Check Mark -->
+<i class="fa-solid fa-circle-check"></i>
+
+Alternatives:
+
+Processing → <i class="fa-solid fa-arrows-rotate"></i>, <i class="fa-solid fa-gear"></i>
+Check Mark → <i class="fa-solid fa-check"></i>, <i class="fa-solid fa-check-double"></i>
+calculator, download, bulb,step up,
+<!-- Calculator -->
+<i class="fa-solid fa-calculator"></i>
+
+<!-- Download -->
+<i class="fa-solid fa-download"></i>
+
+<!-- Bulb -->
+<i class="fa-solid fa-lightbulb"></i>
+
+<!-- Step Up -->
+<i class="fa-solid fa-stairs"></i>
+
+Good alternatives for "Step Up":
+
+<i class="fa-solid fa-arrow-trend-up"></i>   <!-- Growth -->
+<i class="fa-solid fa-arrow-up"></i>         <!-- Move up -->
+<i class="fa-solid fa-angles-up"></i>        <!-- Level up -->
+<i class="fa-solid fa-chart-line"></i>       <!-- Progress -->
+
+For a progress/upgrade feature, fa-arrow-trend-up is usually the best choice.
+
+settings, email, report, total, networth, budget, rank, bulb
+<!-- Settings -->
+<i class="fa-solid fa-gear"></i>
+
+<!-- Email -->
+<i class="fa-solid fa-envelope"></i>
+
+<!-- Report -->
+<i class="fa-solid fa-file-lines"></i>
+
+<!-- Total -->
+<i class="fa-solid fa-calculator"></i>
+
+<!-- Net Worth -->
+<i class="fa-solid fa-gem"></i>
+
+<!-- Budget -->
+<i class="fa-solid fa-wallet"></i>
+
+<!-- Rank -->
+<i class="fa-solid fa-ranking-star"></i>
+
+<!-- Bulb -->
+<i class="fa-solid fa-lightbulb"></i>
+
+Good alternatives:
+
+Report → fa-file-chart-column, fa-chart-pie
+Total → fa-square-poll-horizontal, fa-sigma
+Net Worth → fa-sack-dollar, fa-coins
+Budget → fa-piggy-bank
+Rank → fa-trophy, fa-medal, fa-award
+lock, shield, authentication, fingerprint, face, device, backup, reset, security
+<!-- Lock -->
+<i class="fa-solid fa-lock"></i>
+
+<!-- Shield -->
+<i class="fa-solid fa-shield-halved"></i>
+
+<!-- Authentication -->
+<i class="fa-solid fa-user-shield"></i>
+
+<!-- Fingerprint -->
+<i class="fa-solid fa-fingerprint"></i>
+
+<!-- Face ID -->
+<i class="fa-solid fa-face-smile"></i>
+
+<!-- Device -->
+<i class="fa-solid fa-mobile-screen-button"></i>
+
+<!-- Backup -->
+<i class="fa-solid fa-cloud-arrow-up"></i>
+
+<!-- Reset -->
+<i class="fa-solid fa-rotate-left"></i>
+
+<!-- Security -->
+<i class="fa-solid fa-user-lock"></i>
+
+Good alternatives:
+
+Authentication → fa-key, fa-id-card
+Face ID → fa-user-check, fa-camera
+Device → fa-laptop, fa-desktop, fa-tablet-screen-button
+Backup → fa-hard-drive, fa-database
+Security → fa-lock, fa-shield-virus, fa-user-shield
+download
+<!-- Download -->
+<i class="fa-solid fa-download"></i>
+
+Other good alternatives:
+
+<i class="fa-solid fa-cloud-arrow-down"></i>     <!-- Cloud Download -->
+<i class="fa-solid fa-file-arrow-down"></i>      <!-- Download File -->
+<i class="fa-solid fa-arrow-down-to-line"></i>   <!-- Save/Download -->
+
+Recommended:
+
+<i class="fa-solid fa-download"></i>
+profile,
+<!-- Profile -->
+<i class="fa-solid fa-user"></i>
+
+Other good alternatives:
+
+<i class="fa-solid fa-user-circle"></i>      <!-- User Profile -->
+<i class="fa-solid fa-circle-user"></i>      <!-- Modern Profile -->
+<i class="fa-solid fa-id-card"></i>          <!-- Profile Details -->
+<i class="fa-solid fa-address-card"></i>     <!-- Personal Info -->
+<i class="fa-solid fa-user-gear"></i>        <!-- Profile Settings -->
+
+Recommended:
+
+<i class="fa-solid fa-circle-user"></i>
+growth, bulb, pin
+<!-- Growth -->
+<i class="fa-solid fa-arrow-trend-up"></i>
+
+<!-- Bulb -->
+<i class="fa-solid fa-lightbulb"></i>
+
+<!-- Pin -->
+<i class="fa-solid fa-location-pin"></i>
+
+Other good alternatives:
+
+Growth → <i class="fa-solid fa-chart-line"></i>, <i class="fa-solid fa-seedling"></i>
+Pin → <i class="fa-solid fa-thumbtack"></i>, <i class="fa-solid fa-map-pin"></i>
+expenses, scisor, search, pencil, list
+<!-- Expenses -->
+<i class="fa-solid fa-wallet"></i>
+
+<!-- Scissors -->
+<i class="fa-solid fa-scissors"></i>
+
+<!-- Search -->
+<i class="fa-solid fa-magnifying-glass"></i>
+
+<!-- Pencil -->
+<i class="fa-solid fa-pen"></i>
+
+<!-- List -->
+<i class="fa-solid fa-list"></i>
+
+Good alternatives:
+
+Expenses → <i class="fa-solid fa-money-bill-wave"></i>, <i class="fa-solid fa-receipt"></i>
+Pencil → <i class="fa-solid fa-pencil"></i>, <i class="fa-solid fa-pen-to-square"></i>
+List → <i class="fa-solid fa-list-check"></i>, <i class="fa-solid fa-table-list"></i>
+income,
+<!-- Income -->
+<i class="fa-solid fa-money-bill-trend-up"></i>
+
+Other good alternatives:
+
+<i class="fa-solid fa-sack-dollar"></i>      <!-- Income -->
+<i class="fa-solid fa-coins"></i>            <!-- Earnings -->
+<i class="fa-solid fa-hand-holding-dollar"></i> <!-- Received Money -->
+<i class="fa-solid fa-wallet"></i>           <!-- Income/Balance -->
+
+Recommended:
+
+<i class="fa-solid fa-money-bill-trend-up"></i>
+automate, portfolio, target, corrent alloacation, signal, rebalance, tax loss
+<!-- Automate -->
+<i class="fa-solid fa-robot"></i>
+
+<!-- Portfolio -->
+<i class="fa-solid fa-briefcase"></i>
+
+<!-- Target -->
+<i class="fa-solid fa-bullseye"></i>
+
+<!-- Current Allocation -->
+<i class="fa-solid fa-chart-pie"></i>
+
+<!-- Signal -->
+<i class="fa-solid fa-signal"></i>
+
+<!-- Rebalance -->
+<i class="fa-solid fa-scale-balanced"></i>
+
+<!-- Tax Loss -->
+<i class="fa-solid fa-file-invoice-dollar"></i>
+
+Good alternatives:
+
+Automate → <i class="fa-solid fa-gears"></i>, <i class="fa-solid fa-wand-magic-sparkles"></i>
+Signal → <i class="fa-solid fa-tower-broadcast"></i>, <i class="fa-solid fa-chart-line"></i>
+Rebalance → <i class="fa-solid fa-arrows-rotate"></i>, <i class="fa-solid fa-scale-balanced"></i>
+Tax Loss → <i class="fa-solid fa-receipt"></i>, <i class="fa-solid fa-arrow-trend-down"></i>
+ratio, form, search, liquidity, solvecy ratio. bolt,profit, peers, bulb
+<!-- Ratio -->
+<i class="fa-solid fa-scale-balanced"></i>
+
+<!-- Form -->
+<i class="fa-solid fa-file-lines"></i>
+
+<!-- Search -->
+<i class="fa-solid fa-magnifying-glass"></i>
+
+<!-- Liquidity -->
+<i class="fa-solid fa-droplet"></i>
+
+<!-- Solvency Ratio -->
+<i class="fa-solid fa-building-columns"></i>
+
+<!-- Bolt -->
+<i class="fa-solid fa-bolt"></i>
+
+<!-- Profit -->
+<i class="fa-solid fa-arrow-trend-up"></i>
+
+<!-- Peers -->
+<i class="fa-solid fa-users"></i>
+
+<!-- Bulb -->
+<i class="fa-solid fa-lightbulb"></i>
+
+Good alternatives:
+
+Ratio → <i class="fa-solid fa-percent"></i>, <i class="fa-solid fa-divide"></i>
+Liquidity → <i class="fa-solid fa-coins"></i>, <i class="fa-solid fa-money-bill-wave"></i>
+Solvency Ratio → <i class="fa-solid fa-scale-balanced"></i>
+Profit → <i class="fa-solid fa-sack-dollar"></i>, <i class="fa-solid fa-chart-line"></i>
+Peers → <i class="fa-solid fa-user-group"></i>
+brain, upload, delete, chat, doc,
+<!-- Brain -->
+<i class="fa-solid fa-brain"></i>
+
+<!-- Upload -->
+<i class="fa-solid fa-upload"></i>
+
+<!-- Delete -->
+<i class="fa-solid fa-trash"></i>
+
+<!-- Chat -->
+<i class="fa-solid fa-comments"></i>
+
+<!-- Document -->
+<i class="fa-solid fa-file-lines"></i>
+
+Alternatives:
+
+Delete → <i class="fa-solid fa-trash-can"></i>
+Chat → <i class="fa-solid fa-comment-dots"></i>, <i class="fa-solid fa-message"></i>
+Document → <i class="fa-solid fa-file"></i>, <i class="fa-solid fa-file-pdf"></i>
+brain, rocket, cash,  cross, balance , summary, alert, analysis, bulb, anomoly
+<!-- Brain -->
+<i class="fa-solid fa-brain"></i>
+
+<!-- Rocket -->
+<i class="fa-solid fa-rocket"></i>
+
+<!-- Cash -->
+<i class="fa-solid fa-money-bill-wave"></i>
+
+<!-- Cross -->
+<i class="fa-solid fa-circle-xmark"></i>
+
+<!-- Balance -->
+<i class="fa-solid fa-scale-balanced"></i>
+
+<!-- Summary -->
+<i class="fa-solid fa-file-lines"></i>
+
+<!-- Alert -->
+<i class="fa-solid fa-triangle-exclamation"></i>
+
+<!-- Analysis -->
+<i class="fa-solid fa-chart-pie"></i>
+
+<!-- Bulb -->
+<i class="fa-solid fa-lightbulb"></i>
+
+<!-- Anomaly -->
+<i class="fa-solid fa-circle-exclamation"></i>
+
+Good alternatives:
+
+Cash → <i class="fa-solid fa-sack-dollar"></i>, <i class="fa-solid fa-coins"></i>
+Summary → <i class="fa-solid fa-clipboard-list"></i>
+Analysis → <i class="fa-solid fa-chart-line"></i>, <i class="fa-solid fa-magnifying-glass-chart"></i>
+Anomaly → <i class="fa-solid fa-bug"></i>, <i class="fa-solid fa-triangle-exclamation"></i>
+portfolio,  time, 
+<!-- Portfolio -->
+<i class="fa-solid fa-briefcase"></i>
+
+<!-- Time -->
+<i class="fa-solid fa-clock"></i>
+
+Alternatives:
+
+Portfolio → <i class="fa-solid fa-chart-pie"></i>, <i class="fa-solid fa-folder-open"></i>
+Time → <i class="fa-solid fa-hourglass-half"></i>, <i class="fa-solid fa-stopwatch"></i>, <i class="fa-solid fa-calendar-days"></i>
+pdf,
+<!-- PDF -->
+<i class="fa-solid fa-file-pdf"></i>
+
+Other alternatives:
+
+<i class="fa-solid fa-file"></i>         <!-- Generic File -->
+<i class="fa-solid fa-file-lines"></i>   <!-- Document -->
+<i class="fa-solid fa-file-arrow-down"></i> <!-- Download PDF -->
+
+Recommended:
+
+<i class="fa-solid fa-file-pdf"></i>
+optimize, portfolio,  test, efficient, sugesstions, correlation matrix, 
+<!-- Optimize -->
+<i class="fa-solid fa-sliders"></i>
+
+<!-- Portfolio -->
+<i class="fa-solid fa-briefcase"></i>
+
+<!-- Test -->
+<i class="fa-solid fa-flask"></i>
+
+<!-- Efficient -->
+<i class="fa-solid fa-gauge-high"></i>
+
+<!-- Suggestions -->
+<i class="fa-solid fa-lightbulb"></i>
+
+<!-- Correlation Matrix -->
+<i class="fa-solid fa-table-cells"></i>
+
+Good alternatives:
+
+Optimize → <i class="fa-solid fa-gears"></i>, <i class="fa-solid fa-wand-magic-sparkles"></i>
+Test → <i class="fa-solid fa-vial"></i>
+Efficient → <i class="fa-solid fa-bolt"></i>, <i class="fa-solid fa-chart-line"></i>
+Suggestions → <i class="fa-solid fa-comment-dots"></i>
+Correlation Matrix → <i class="fa-solid fa-table"></i>, <i class="fa-solid fa-diagram-project"></i>
+notification, check mark,  refresh,  high ,medium, low,notifiation box,
+<!-- Notification -->
+<i class="fa-solid fa-bell"></i>
+
+<!-- Check Mark -->
+<i class="fa-solid fa-circle-check"></i>
+
+<!-- Refresh -->
+<i class="fa-solid fa-arrows-rotate"></i>
+
+<!-- High -->
+<i class="fa-solid fa-arrow-up"></i>
+
+<!-- Medium -->
+<i class="fa-solid fa-minus"></i>
+
+<!-- Low -->
+<i class="fa-solid fa-arrow-down"></i>
+
+<!-- Notification Box -->
+<i class="fa-solid fa-message"></i>
+
+Better alternatives:
+
+High → <i class="fa-solid fa-circle-up"></i>
+Medium → <i class="fa-solid fa-circle-minus"></i>
+Low → <i class="fa-solid fa-circle-down"></i>
+Notification Box → <i class="fa-solid fa-envelope-open-text"></i>, <i class="fa-solid fa-inbox"></i>, <i class="fa-solid fa-bell"></i>
+diamond,
+<!-- Diamond -->
+<i class="fa-solid fa-gem"></i>
+
+Other alternatives:
+
+<i class="fa-regular fa-gem"></i>   <!-- Outlined Diamond -->
+<i class="fa-solid fa-diamond"></i> <!-- If available in your FA version -->
+
+Recommended:
+
+<i class="fa-solid fa-gem"></i>
+brain, ai agent,  chat, respose, bulb,
+<!-- Brain -->
+<i class="fa-solid fa-brain"></i>
+
+<!-- AI Agent -->
+<i class="fa-solid fa-robot"></i>
+
+<!-- Chat -->
+<i class="fa-solid fa-comments"></i>
+
+<!-- Response -->
+<i class="fa-solid fa-reply"></i>
+
+<!-- Bulb -->
+<i class="fa-solid fa-lightbulb"></i>
+
+Good alternatives:
+
+AI Agent → <i class="fa-solid fa-microchip"></i>, <i class="fa-solid fa-diagram-project"></i>
+Chat → <i class="fa-solid fa-comment-dots"></i>
+Response → <i class="fa-solid fa-paper-plane"></i>, <i class="fa-solid fa-message"></i>
+rocket
+<!-- Rocket -->
+<i class="fa-solid fa-rocket"></i>
+
+Alternatives:
+
+<i class="fa-solid fa-arrow-trend-up"></i>   <!-- Growth -->
+<i class="fa-solid fa-jet-fighter"></i>      <!-- Fast/Launch -->
+<i class="fa-solid fa-plane-up"></i>         <!-- Takeoff -->
+
+Recommended:
+
+<i class="fa-solid fa-rocket"></i>
+cash, portfolio, debt, shield, planning
+<!-- Cash -->
+<i class="fa-solid fa-money-bill-wave"></i>
+
+<!-- Portfolio -->
+<i class="fa-solid fa-briefcase"></i>
+
+<!-- Debt -->
+<i class="fa-solid fa-hand-holding-dollar"></i>
+
+<!-- Shield -->
+<i class="fa-solid fa-shield-halved"></i>
+
+<!-- Planning -->
+<i class="fa-solid fa-calendar-check"></i>
+
+Good alternatives:
+
+Cash → <i class="fa-solid fa-sack-dollar"></i>, <i class="fa-solid fa-coins"></i>
+Debt → <i class="fa-solid fa-credit-card"></i>, <i class="fa-solid fa-file-invoice-dollar"></i>
+Planning → <i class="fa-solid fa-list-check"></i>, <i class="fa-solid fa-clipboard-list"></i>
+milestone,
+<!-- Milestone -->
+<i class="fa-solid fa-trophy"></i>
+
+Other good alternatives:
+
+<i class="fa-solid fa-flag-checkered"></i>  <!-- Milestone/Finish -->
+<i class="fa-solid fa-medal"></i>           <!-- Achievement -->
+<i class="fa-solid fa-award"></i>           <!-- Award -->
+<i class="fa-solid fa-flag"></i>            <!-- Goal reached -->
+<i class="fa-solid fa-star"></i>            <!-- Achievement -->
+
+Recommended:
+
+<i class="fa-solid fa-trophy"></i>
+loan,
+<!-- Loan -->
+<i class="fa-solid fa-hand-holding-dollar"></i>
+
+Other good alternatives:
+
+<i class="fa-solid fa-money-check-dollar"></i>   <!-- Loan Payment -->
+<i class="fa-solid fa-credit-card"></i>          <!-- Credit/Loan -->
+<i class="fa-solid fa-file-invoice-dollar"></i>  <!-- Loan Document -->
+<i class="fa-solid fa-building-columns"></i>     <!-- Bank Loan -->
+
+Recommended:
+
+<i class="fa-solid fa-hand-holding-dollar"></i>
+bank, check mark, account, transfer, bolt, deposit, withdraw, search, history
+<!-- Bank -->
+<i class="fa-solid fa-building-columns"></i>
+
+<!-- Check Mark -->
+<i class="fa-solid fa-circle-check"></i>
+
+<!-- Account -->
+<i class="fa-solid fa-user"></i>
+
+<!-- Transfer -->
+<i class="fa-solid fa-money-bill-transfer"></i>
+
+<!-- Bolt -->
+<i class="fa-solid fa-bolt"></i>
+
+<!-- Deposit -->
+<i class="fa-solid fa-arrow-down"></i>
+
+<!-- Withdraw -->
+<i class="fa-solid fa-arrow-up"></i>
+
+<!-- Search -->
+<i class="fa-solid fa-magnifying-glass"></i>
+
+<!-- History -->
+<i class="fa-solid fa-clock-rotate-left"></i>
+
+Good alternatives:
+
+Account → <i class="fa-solid fa-circle-user"></i>
+Deposit → <i class="fa-solid fa-arrow-down-to-line"></i>
+Withdraw → <i class="fa-solid fa-arrow-up-from-bracket"></i>
+History → <i class="fa-solid fa-timeline"></i>, <i class="fa-solid fa-clock"></i>
+trophy, tutorial, quizz, challenge, celibrate
+<!-- Trophy -->
+<i class="fa-solid fa-trophy"></i>
+
+<!-- Tutorial -->
+<i class="fa-solid fa-book-open"></i>
+
+<!-- Quiz -->
+<i class="fa-solid fa-circle-question"></i>
+
+<!-- Challenge -->
+<i class="fa-solid fa-fire"></i>
+
+<!-- Celebrate -->
+<i class="fa-solid fa-party-horn"></i>
+
+Good alternatives:
+
+Tutorial → <i class="fa-solid fa-graduation-cap"></i>, <i class="fa-solid fa-chalkboard-user"></i>
+Quiz → <i class="fa-solid fa-list-check"></i>, <i class="fa-solid fa-clipboard-question"></i>
+Challenge → <i class="fa-solid fa-bullseye"></i>, <i class="fa-solid fa-dumbbell"></i>
+Celebrate → <i class="fa-solid fa-champagne-glasses"></i>, <i class="fa-solid fa-star"></i>, <i class="fa-solid fa-award"></i>
+shield, search, idea, breif case, health, poliesy,
+<!-- Shield -->
+<i class="fa-solid fa-shield-halved"></i>
+
+<!-- Search -->
+<i class="fa-solid fa-magnifying-glass"></i>
+
+<!-- Idea -->
+<i class="fa-solid fa-lightbulb"></i>
+
+<!-- Briefcase -->
+<i class="fa-solid fa-briefcase"></i>
+
+<!-- Health -->
+<i class="fa-solid fa-heart-pulse"></i>
+
+<!-- Policy -->
+<i class="fa-solid fa-file-contract"></i>
+
+Good alternatives:
+
+Health → <i class="fa-solid fa-kit-medical"></i>, <i class="fa-solid fa-hospital"></i>
+Policy → <i class="fa-solid fa-file-shield"></i>, <i class="fa-solid fa-file-lines"></i>
+Idea → <i class="fa-solid fa-brain"></i>
   <div class="sidebar">
     <div class="logo">₹ Money Mentor</div>
 
@@ -1498,67 +2949,78 @@
     <div class="nav-item" data-page="retirement"><span class="icon">📈</span> Retirement Simulator</div>
 
 
+replace emojis
+<div class="sidebar">
+  <div class="logo">₹ Money Mentor</div>
+  <button class="btn btn-ghost" id="themeToggle" onclick="toggleTheme()" style="margin-bottom:15px;width:100%;">
+    <i class="fa-solid fa-sun"></i> Light Mode
+  </button>
 
-  </div>
+  <div class="nav-item active" data-page="dashboard"><span class="icon"><i class="fa-solid fa-house"></i></span> Dashboard</div>
+  <div class="nav-item" data-page="chat"><span class="icon"><i class="fa-solid fa-robot"></i></span> AI Chat</div>
+  <div class="nav-item" data-page="score"><span class="icon"><i class="fa-solid fa-money-bill-wave"></i></span> Money Score</div>
+  <div class="nav-item" data-page="sip"><span class="icon"><i class="fa-solid fa-chart-line"></i></span> SIP Calc</div>
+  <div class="nav-item" data-page="retirement"><span class="icon"><i class="fa-solid fa-chart-line"></i></span> Retirement Simulator</div>
+  <div class="nav-item" data-page="stock"><span class="icon"><i class="fa-solid fa-chart-column"></i></span> Stock Check</div>
+  <div class="nav-item" data-page="tax"><span class="icon"><i class="fa-solid fa-file-invoice-dollar"></i></span> Tax Planner</div>
+  <div class="nav-item" data-page="pdf"><span class="icon"><i class="fa-solid fa-file-pdf"></i></span> PDF Parser</div>
+  <div class="nav-item" data-page="agent"><span class="icon"><i class="fa-solid fa-brain"></i></span> Multi Agent</div>
+  <div class="nav-item" data-page="expense"><span class="icon"><i class="fa-solid fa-wallet"></i></span> Expense Track</div>
+  <div class="nav-item" data-page="networth"><span class="icon"><i class="fa-solid fa-gem"></i></span> Net Worth</div>
+  <div class="nav-item" data-page="settings"><span class="icon"><i class="fa-solid fa-gear"></i></span> Settings</div>
+  <div class="nav-item" data-page="recurring"><span class="icon"><i class="fa-solid fa-arrows-rotate"></i></span> Recurring</div>
 
-  <!-- ══════════ MAIN ══════════ -->
-  <div class="main">
+  <div class="nav-item" data-page="ledger"><span class="icon"><i class="fa-solid fa-building-columns"></i></span> Ledger</div>
+  <div class="nav-item" data-page="portfolio-optimizer"><span class="icon"><i class="fa-solid fa-chart-line"></i></span> Portfolio Optimizer</div>
+  <div class="nav-item" data-page="voice-assistant"><span class="icon"><i class="fa-solid fa-microphone"></i></span> Voice Assistant</div>
 
-    <!-- ── DASHBOARD ─────────────── -->
-    <div id="dashboard" class="page active">
-      <div class="page-title">Smart <span>Dashboard</span></div>
-      <div class="dashboard-header">
-        <div>
-          <h2>AI Financial Advisor</h2>
-          <p>Get fast recommendations for investments, SIP planning, tax savings and portfolio health in one place.</p>
-        </div>
-        <div class="header-actions">
-          <button class="btn btn-gold" onclick="showPage('score', event)">Start Planning</button>
-          <button class="btn btn-ghost" onclick="showPage('chat', event)">Review Reports</button>
-          <button class="btn btn-ghost" onclick="window.print()">🖨️ Print Dashboard</button>
-        </div>
-      </div>
+  <div class="nav-item" data-page="predictive-alerts"><span class="icon"><i class="fa-solid fa-wand-magic-sparkles"></i></span> Predictive Alerts</div>
 
-      <!-- STATS -->
-      <div class="stats-row">
-        <div class="stat-card">
-          <div class="stat-label">Total Portfolio</div>
-          <div class="stat-val">₹18.4L</div>
-          <div class="stat-sub">▲ +12.4% growth</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Monthly Income</div>
-          <div class="stat-val">₹1.24L</div>
-          <div class="stat-sub">▲ +3.1%</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Tax Saved</div>
-          <div class="stat-val">₹62.5K</div>
-          <div class="stat-sub">▲ Saved this year</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Expenses</div>
-          <div class="stat-val">₹41.2K</div>
-          <div class="stat-sub neg">▼ -5.2%</div>
-        </div>
-      </div>
+  <div class="nav-item" data-page="ledger"><span class="icon"><i class="fa-solid fa-building-columns"></i></span> Ledger</div>
+  <div class="nav-item" data-page="portfolio-optimizer"><span class="icon"><i class="fa-solid fa-chart-line"></i></span> Portfolio Optimizer</div>
 
-      <!-- DASH GRID -->
-      <div class="dash-grid">
+  <div class="nav-item" data-page="ledger"><span class="icon"><i class="fa-solid fa-building-columns"></i></span> Ledger</div>
+  <div class="nav-item" data-page="portfolio-optimizer"><span class="icon"><i class="fa-solid fa-chart-line"></i></span> Portfolio Optimizer</div>
 
-        <!-- AI CHAT PANEL -->
-        <div class="card">
-          <div class="card-title">🤖 AI Financial Advisor</div>
+  <div class="nav-item" data-page="voice-assistant"><span class="icon"><i class="fa-solid fa-microphone"></i></span> Voice Assistant</div>
+
+  <div class="nav-item" data-page="predictive-alerts"><span class="icon"><i class="fa-solid fa-wand-magic-sparkles"></i></span> Predictive Alerts</div>
+  <div class="nav-item" data-page="fire-planner"><span class="icon"><i class="fa-solid fa-fire"></i></span> FIRE Planner</div>
+
+  <div class="nav-item" data-page="bank-integration"><span class="icon"><i class="fa-solid fa-building-columns"></i></span> Bank Integration</div>
+
+  <div class="nav-item" data-page="goal-planner"><span class="icon"><i class="fa-solid fa-bullseye"></i></span> Goal Planner</div>
+  <div class="nav-item" data-page="rebalancer"><span class="icon"><i class="fa-solid fa-arrows-rotate"></i></span> Rebalancer</div>
+
+  <div class="nav-item" data-page="notifications"><span class="icon"><i class="fa-solid fa-bell"></i></span> Notifications</div>
+
+  <div class="nav-item" data-page="dashboard-new"><span class="icon"><i class="fa-solid fa-chart-pie"></i></span> Custom Dashboard</div>
+  <div class="nav-item" data-page="document-parser"><span class="icon"><i class="fa-solid fa-file-lines"></i></span> Doc Parser</div>
+
+  <div class="nav-item" data-page="document-parser"><span class="icon"><i class="fa-solid fa-file-lines"></i></span> Doc Parser</div>
+  <div class="nav-item" data-page="security-settings"><span class="icon"><i class="fa-solid fa-lock"></i></span> Security</div>
+
+  <div class="nav-item" data-page="tax-filing"><span class="icon"><i class="fa-solid fa-file-invoice"></i></span> Tax Filing</div>
+
+  <div class="nav-item" data-page="rag-assistant"><span class="icon"><i class="fa-solid fa-brain"></i></span> RAG Assistant</div>
+
+  <div class="nav-item" data-page="retirement"><span class="icon"><i class="fa-solid fa-chart-line"></i></span> Retirement Simulator</div>
+</div>
+<!-- Print -->
+<i class="fa-solid fa-print"></i>
+
+<!-- AI -->
+<i class="fa-solid fa-robot"></i> AI Financial Advisor</div>
           <div class="chat-messages" id="dashChat">
             <div class="chat-welcome" id="chatWelcome">
-              <div class="chat-welcome-icon">💬</div>
+              <div class="chat-welcome-icon"><i class="fa-solid fa-comments"></i></div>
               <h3>Hi! I'm your AI Advisor</h3>
               <p>Ask me anything about investments, taxes, SIPs, portfolio strategy, and more.</p>
               <div class="chat-features">
-                <div class="chat-feature-item" onclick="dashQuick('Portfolio advice')">📊 Portfolio</div>
-                <div class="chat-feature-item" onclick="dashQuick('Tax planning tips')">💸 Taxes</div>
-                <div class="chat-feature-item" onclick="dashQuick('SIP strategy')">📈 SIP Plan</div>
-                <div class="chat-feature-item" onclick="dashQuick('Risk assessment')">⚠️ Risk</div>
+                <div class="chat-feature-item" onclick="dashQuick('Portfolio advice')"><i class="fa-solid fa-briefcase"></i> Portfolio</div>
+                <div class="chat-feature-item" onclick="dashQuick('Tax planning tips')"><i class="fa-solid fa-money-bill-wave"></i> Taxes</div>
+                <div class="chat-feature-item" onclick="dashQuick('SIP strategy')"><i class="fa-solid fa-chart-line"></i> SIP Plan</div>
+                <div class="chat-feature-item" onclick="dashQuick('Risk assessment')"><i class="fa-solid fa-triangle-exclamation"></i> Risk</div>
               </div>
             </div>
           </div>
@@ -1575,7 +3037,7 @@
         <!-- RIGHT SIDE -->
         <div style="display:flex;flex-direction:column;gap:14px">
           <div class="card">
-            <div class="card-title">⚡ Core AI Agents</div>
+            <div class="card-title"> Core AI Agents</div>
             <div class="agent-tag"><div class="dot"></div> Financial Planning Agent</div>
             <div class="agent-tag"><div class="dot"></div> Tax Optimization Agent</div>
             <div class="agent-tag"><div class="dot"></div> Investment Advisor Agent</div>
@@ -1583,7 +3045,7 @@
           </div>
 
           <div class="card">
-            <div class="card-title">📊 Portfolio Allocation</div>
+            <div class="card-title"><i class="fa-solid fa-briefcase"></i> Portfolio Allocation</div>
             <div style="position:relative;height:220px;width:100%;max-width:320px;margin:0 auto;">
               <div class="chart-wrap"><canvas id="portfolioChart"></canvas></div>
             </div>
@@ -1600,7 +3062,7 @@
       <!-- BOTTOM -->
       <div class="bottom-grid">
         <div class="card">
-          <div class="card-title">📈 SIP Quick Calc</div>
+          <div class="card-title"><i class="fa-solid fa-chart-line"></i> SIP Quick Calc</div>
           <label>Monthly ₹ <strong id="sipAmtLbl">10,000</strong></label>
           <input type="range" min="1000" max="50000" step="500" value="10000" id="sipAmt" oninput="updateSIP()">
           <label>Years: <strong id="sipYrLbl">10</strong></label>
@@ -1612,17 +3074,17 @@
         </div>
 
         <div class="card">
-          <div class="card-title">💡 Tax Insights</div>
+          <div class="card-title"><i class="fa-solid fa-lightbulb"></i> Tax Insights</div>
           <div class="tax-row"><span>80C Used</span><span>₹1.2L / ₹1.5L <span class="badge badge-gold">80%</span></span></div>
           <div class="tax-row"><span>Health Insurance</span><span>₹18K / ₹25K</span></div>
           <div class="tax-row"><span>HRA Benefit</span><span>₹60K / ₹72K</span></div>
           <div style="margin-top:12px;padding:10px 12px;background:rgba(20,200,191,0.08);border:1px solid rgba(20,200,191,0.2);border-radius:8px;font-size:12px;color:var(--teal)">
-            💡 Save ₹38,500 more via NPS + ELSS contributions
+            <i class="fa-solid fa-lightbulb"></i> Save ₹38,500 more via NPS + ELSS contributions
           </div>
         </div>
 
         <div class="card">
-          <div class="card-title">🔒 Compliance</div>
+          <div class="card-title"><i class="fa-solid fa-lock"></i> Compliance</div>
           <div style="display:flex;flex-direction:column;gap:7px;margin-bottom:14px">
             <div style="font-size:13px"><span class="badge badge-green">✔ OK</span> Data Encryption</div>
             <div style="font-size:13px"><span class="badge badge-green">✔ OK</span> Audit Logs</div>
@@ -1636,18 +3098,18 @@
 
     <!-- ── AI CHAT PAGE ─────────────── -->
     <div id="chat" class="page">
-      <div class="page-title">🤖 AI <span>Chat</span></div>
+      <div class="page-title"><i class="fa-solid fa-robot"></i> AI <span>Chat</span></div>
       <div class="card" style="max-width:900px;margin:0 auto;flex:1;width:100%">
         <div class="chat-messages" id="chatMessages" style="height:420px">
           <div class="chat-welcome" id="chatPageWelcome">
-            <div class="chat-welcome-icon">🎯</div>
+            <div class="chat-welcome-icon"><i class="fa-solid fa-bullseye"></i></div>
             <h3>Financial Guidance at Your Fingertips</h3>
             <p>Ask questions about investments, tax planning, portfolio strategy, SIPs, risk assessment, or any financial topic.</p>
             <div class="chat-features">
-              <div class="chat-feature-item" onclick="chatQuick('How should I diversify my portfolio?')">📊 Portfolio</div>
-              <div class="chat-feature-item" onclick="chatQuick('Best tax saving strategies for 2024-25')">💸 Tax Strategy</div>
-              <div class="chat-feature-item" onclick="chatQuick('Should I invest in mutual funds or stocks?')">📈 Investments</div>
-              <div class="chat-feature-item" onclick="chatQuick('How much emergency fund do I need?')">🛡️ Emergency Fund</div>
+              <div class="chat-feature-item" onclick="chatQuick('How should I diversify my portfolio?')"><i class="fa-solid fa-briefcase"></i> Portfolio</div>
+              <div class="chat-feature-item" onclick="chatQuick('Best tax saving strategies for 2024-25')"><i class="fa-solid fa-money-bill-wave"></i> Tax Strategy</div>
+              <div class="chat-feature-item" onclick="chatQuick('Should I invest in mutual funds or stocks?')"><i class="fa-solid fa-chart-line"></i> Investments</div>
+              <div class="chat-feature-item" onclick="chatQuick('How much emergency fund do I need?')"><i class="fa-solid fa-shield-halved"></i> Emergency Fund</div>
             </div>
           </div>
         </div>
@@ -1687,7 +3149,7 @@
 
     <!-- ── SIP CALCULATOR ─────────────── -->
     <div id="sip" class="page">
-      <div class="page-title">📈 SIP <span>Calculator</span></div>
+      <div class="page-title"><i class="fa-solid fa-chart-line"></i> SIP <span>Calculator</span></div>
       <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 20px; align-items: start; max-width: 900px;">
         <div class="card">
 
@@ -1742,7 +3204,7 @@
 
     <!-- ── TAX PLANNER ─────────────── -->
     <div id="tax" class="page">
-      <div class="page-title">💸 Tax <span>Planner</span></div>
+      <div class="page-title"><i class="fa-solid fa-money-bill-wave"></i> Tax <span>Planner</span></div>
       <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: start; justify-content: center; max-width: 950px; width: 100%;">
         
         <div class="card" style="flex: 1; min-width: 320px; max-width: 450px;">
@@ -1762,7 +3224,7 @@
 
     <!-- ── PDF PARSER ─────────────── -->
     <div id="pdf" class="page center-page">
-      <div class="page-title">📄 PDF <span>Parser</span></div>
+      <div class="page-title"><i class="fa-solid fa-file-pdf"></i> PDF <span>Parser</span></div>
       <div class="card" style="max-width:480px">
         <div class="card-title">Upload Financial Document</div>
         <label>Select PDF (Form 16, Salary Slip, etc.)</label>
@@ -1774,7 +3236,7 @@
 
     <!-- ── MULTI AGENT ─────────────── -->
     <div id="agent" class="page center-page">
-      <div class="page-title">🧠 Multi <span>Agent</span></div>
+      <div class="page-title"><i class="fa-solid fa-brain"></i> Multi <span>Agent</span></div>
       <div class="card" style="max-width:600px">
         <div class="card-title">AI Multi-Agent Financial Analysis</div>
         <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px">
@@ -1793,7 +3255,7 @@
 
     <!---------- EXPENSE TRACK ------------------->
     <div id="expense" class="page">
-      <div class="page-title">💲 Expense Track and Insights</div>
+      <div class="page-title"><i class="fa-solid fa-dollar-sign"></i> Expense Track and Insights</div>
       <form id="expenseForm">
         <select id="category" required>
           <option value="">Select Category</option>
@@ -1841,7 +3303,7 @@
     <div style="display: flex; gap: 8px; flex: 1; min-width: 150px;">
       <input type="number" required min="0" id="amount" placeholder="Amount (₹)" style="flex: 1;">
       <button type="button" id="voiceBtn" class="btn btn-gold" style="padding: 10px 14px; min-width: 50px; border-radius: 14px;" title="Speak expense">
-        🎤
+        <i class="fa-solid fa-microphone"></i>
       </button>
     </div>
     
@@ -1896,7 +3358,7 @@
 
     <!-- ── NET WORTH TRACKER ────────────────────── -->
     <div id="networth" class="page">
-      <div class="page-title">💎 Net <span>Worth Tracker</span></div>
+      <div class="page-title"><i class="fa-solid fa-gem"></i> Net <span>Worth Tracker</span></div>
       <div class="stats-row" style="margin-bottom: 20px;">
         <div class="stat-card"><div class="stat-label">Total Assets</div><div class="stat-val" id="nwAssets">₹0</div></div>
         <div class="stat-card"><div class="stat-label">Total Liabilities</div><div class="stat-val" id="nwLiabilities" style="color: var(--red);">₹0</div></div>
@@ -1919,6 +3381,22 @@
               <tr><th style="padding: 8px;">Asset</th><th style="padding: 8px; text-align: right;">Value</th><th style="padding: 8px; text-align: center;">Action</th></tr>
             </thead>
             <tbody id="assetList"></tbody>
+            <tbody id="assetList">
+
+  <tr class="empty-state"><td colspan="3" style="text-align:center; color:var(--muted); padding:12px;">
+    No assets added yet
+  </td>
+</tr>
+</tbody>
+
+
+<tbody id="liabList">
+  <tr class="empty-state"><td colspan="3" style="text-align:center; color:var(--muted); padding:12px;">
+    No liabilities added yet
+  </td>
+</tr>
+</tbody>
+
           </table>
         </div>
 
@@ -2047,6 +3525,17 @@
         overlay.classList.remove('active');
       });
     }
+
+    function addNWItem(type) {
+  const listId = type === 'asset' ? 'assetList' : 'liabList';
+  const list = document.getElementById(listId);
+
+  // Remove empty state if present
+  const emptyRow = list.querySelector('.empty-state');
+  if (emptyRow) emptyRow.remove();
+
+}
+
 
     /* ══════════════════════════════════════════════
        HELPERS
@@ -2255,30 +3744,10 @@ async function runAgent() {
         appendMsg('dashChat', 'bot', data.reply, data.safety);
 
       } catch (e) {
-
-
-      } catch (e) {
-
-
-      } catch (e) {
-
-
-      } catch (e) {
-        appendMsg('dashChat', 'bot', '⚠ Could not reach server.');
-      }
-      setLoading('dashBtn', false);
-
-    } catch (e) {
-
-
-
         appendMsg('dashChat', 'bot', '⚠ Could not reach server.');
       }
       setLoading('dashBtn', false);
     }
-
-
-
     setLoading('dashBtn', false);
 }
 

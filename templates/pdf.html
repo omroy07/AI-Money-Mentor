@@ -1,27 +1,32 @@
-{% extends 'base.html' %}
-
-{% block title %}PDF Parser{% endblock %}
-
-{% block content %}
+{% extends 'base.html' %} {% block title %}PDF Parser{% endblock %} {% block
+content %}
 <div id="pdf" class="page center-page active">
-  <div class="page-title">📄 PDF <span>Parser</span></div>
-  <div class="card" style="max-width:480px">
+  <div class="page-title">
+    <i class="fa-solid fa-file-pdf"></i> PDF <span>Parser</span>
+  </div>
+  <div class="card" style="max-width: 480px">
     <div class="card-title">Upload Financial Document</div>
     <label>Select PDF (Form 16, Salary Slip, etc.)</label>
-    <input type="file" id="pdfFile" accept=".pdf" style="margin-top:8px">
-    <button class="btn btn-gold" style="margin-top:16px;width:100%" onclick="uploadPDF()" id="pdfBtn">
+    <input type="file" id="pdfFile" accept=".pdf" style="margin-top: 8px" />
+    <button
+      class="btn btn-gold"
+      style="margin-top: 16px; width: 100%"
+      onclick="uploadPDF()"
+      id="pdfBtn"
+    >
       Parse Document
     </button>
     <div id="pdfResult" class="result-box"></div>
   </div>
 </div>
-{% endblock %}
-
-{% block scripts %}
+{% endblock %} {% block scripts %}
 <script>
   async function uploadPDF() {
     const file = document.getElementById('pdfFile').files[0];
-    if (!file) { showResult('pdfResult', '⚠ Please select a PDF file.'); return; }
+    if (!file) {
+      showResult('pdfResult', '⚠ Please select a PDF file.');
+      return;
+    }
 
     const form = new FormData();
     form.append('file', file);
@@ -34,20 +39,32 @@
       } else {
         if (data.data && typeof data.data === 'object') {
           const docData = data.data;
-          const docType = docData.document_type || "Unknown Document";
-          const emp = docData.employer_organization || "N/A";
-          const gross = docData.gross_income ? "₹" + fmtNum(docData.gross_income) : "N/A";
-          const tds = docData.tax_deducted_tds ? "₹" + fmtNum(docData.tax_deducted_tds) : "N/A";
-          const score = docData.confidence_score ? (docData.confidence_score * 100).toFixed(0) + "%" : "N/A";
-          const summary = docData.summary_findings || "No summary available.";
+          const docType = docData.document_type || 'Unknown Document';
+          const emp = docData.employer_organization || 'N/A';
+          const gross = docData.gross_income
+            ? '₹' + fmtNum(docData.gross_income)
+            : 'N/A';
+          const tds = docData.tax_deducted_tds
+            ? '₹' + fmtNum(docData.tax_deducted_tds)
+            : 'N/A';
+          const score = docData.confidence_score
+            ? (docData.confidence_score * 100).toFixed(0) + '%'
+            : 'N/A';
+          const summary = docData.summary_findings || 'No summary available.';
 
-          let deductionsHtml = "";
-          if (docData.allowances_deductions && Object.keys(docData.allowances_deductions).length > 0) {
+          let deductionsHtml = '';
+          if (
+            docData.allowances_deductions &&
+            Object.keys(docData.allowances_deductions).length > 0
+          ) {
             deductionsHtml = Object.entries(docData.allowances_deductions)
-              .map(([k, v]) => `<div style="display:flex; justify-content:space-between"><span>${k}:</span> <strong>₹${fmtNum(v)}</strong></div>`)
-              .join("");
+              .map(
+                ([k, v]) =>
+                  `<div style="display:flex; justify-content:space-between"><span>${k}:</span> <strong>₹${fmtNum(v)}</strong></div>`,
+              )
+              .join('');
           } else {
-            deductionsHtml = "None detected";
+            deductionsHtml = 'None detected';
           }
 
           let html = `
@@ -72,7 +89,10 @@
           showResult('pdfResult', html);
         } else {
           const content = data.data || data.text || JSON.stringify(data);
-          showResult('pdfResult', `<pre style="white-space:pre-wrap;font-family:'JetBrains Mono',monospace;font-size:12px">${content}</pre>`);
+          showResult(
+            'pdfResult',
+            `<pre style="white-space:pre-wrap;font-family:'JetBrains Mono',monospace;font-size:12px">${content}</pre>`,
+          );
         }
       }
     } catch (e) {

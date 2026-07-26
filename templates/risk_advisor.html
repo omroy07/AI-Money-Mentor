@@ -1,233 +1,335 @@
-{% extends 'base.html' %}
-
-{% block title %}Risk Profile Advisor{% endblock %}
-
-{% block content %}
+{% extends 'base.html' %} {% block title %}Risk Profile Advisor{% endblock %} {%
+block content %}
 <div class="page active">
-  <div class="page-title">📋 Risk Profile & Portfolio Advisor</div>
+  <div class="page-title">
+    <i class="fa-solid fa-user"></i> Risk Profile & Portfolio Advisor
+  </div>
 
   <!-- QUESTIONNAIRE VIEW -->
   <div id="questionnaireView">
-    <div class="card" style="max-width:600px;margin:0 auto;">
+    <div class="card" style="max-width: 600px; margin: 0 auto">
       <div class="card-title">Risk Assessment Questionnaire</div>
-      <div style="font-size:13px;color:var(--muted);margin-bottom:20px;">
-        Answer these 6 questions to determine your risk profile and get personalized investment allocation recommendations.
+      <div style="font-size: 13px; color: var(--muted); margin-bottom: 20px">
+        Answer these 6 questions to determine your risk profile and get
+        personalized investment allocation recommendations.
       </div>
-      <form id="riskForm" style="display:flex;flex-direction:column;gap:20px;"></form>
+      <form
+        id="riskForm"
+        style="display: flex; flex-direction: column; gap: 20px"
+      ></form>
     </div>
   </div>
 
   <!-- RESULTS VIEW -->
-  <div id="resultsView" style="display:none;">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+  <div id="resultsView" style="display: none">
+    <div
+      style="
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      "
+    >
       <div>
-        <div style="font-size:20px;font-weight:700;" id="resultCategory"></div>
-        <div style="font-size:13px;color:var(--muted);">Risk Score: <span id="resultScore"></span>/100</div>
+        <div
+          style="font-size: 20px; font-weight: 700"
+          id="resultCategory"
+        ></div>
+        <div style="font-size: 13px; color: var(--muted)">
+          Risk Score: <span id="resultScore"></span>/100
+        </div>
       </div>
-      <button class="btn btn-ghost" onclick="showQuestionnaire()">Retake Assessment</button>
+      <button class="btn btn-ghost" onclick="showQuestionnaire()">
+        Retake Assessment
+      </button>
     </div>
 
     <!-- ALLOCATION PIE -->
-    <div class="card" style="margin-bottom:20px;">
+    <div class="card" style="margin-bottom: 20px">
       <div class="card-title">Recommended Asset Allocation</div>
-      <div style="display:flex;gap:24px;align-items:center;flex-wrap:wrap;">
+      <div
+        style="display: flex; gap: 24px; align-items: center; flex-wrap: wrap"
+      >
         <canvas id="allocationChart" width="200" height="200"></canvas>
-        <div id="allocationLegend" style="display:flex;flex-direction:column;gap:8px;"></div>
+        <div
+          id="allocationLegend"
+          style="display: flex; flex-direction: column; gap: 8px"
+        ></div>
       </div>
     </div>
 
     <!-- FUND SUGGESTIONS -->
-    <div class="card" style="margin-bottom:20px;">
+    <div class="card" style="margin-bottom: 20px">
       <div class="card-title">Suggested Mutual Funds</div>
       <div id="fundSuggestions"></div>
     </div>
 
     <!-- SIP PROJECTIONS -->
-    <div class="card" style="margin-bottom:20px;">
+    <div class="card" style="margin-bottom: 20px">
       <div class="card-title">SIP Growth Projection</div>
-      <div style="font-size:13px;color:var(--muted);margin-bottom:12px;">
-        Projected growth for <strong id="projMonthly"></strong>/month over <strong id="projYears"></strong> years
+      <div style="font-size: 13px; color: var(--muted); margin-bottom: 12px">
+        Projected growth for <strong id="projMonthly"></strong>/month over
+        <strong id="projYears"></strong> years
       </div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;" id="projectionCards"></div>
+      <div
+        style="
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+          gap: 12px;
+        "
+        id="projectionCards"
+      ></div>
     </div>
 
     <!-- DISCLAIMER -->
-    <div style="font-size:11px;color:var(--muted);text-align:center;padding:16px;border-top:1px solid var(--border);">
-      This is an AI-generated recommendation for educational purposes only. Please consult a SEBI-registered financial advisor before investing.
+    <div
+      style="
+        font-size: 11px;
+        color: var(--muted);
+        text-align: center;
+        padding: 16px;
+        border-top: 1px solid var(--border);
+      "
+    >
+      This is an AI-generated recommendation for educational purposes only.
+      Please consult a SEBI-registered financial advisor before investing.
     </div>
   </div>
 
   <!-- TOAST -->
-  <div id="toast" style="display:none;position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:var(--primary);color:#fff;padding:12px 24px;border-radius:8px;z-index:2000;font-size:14px;"></div>
+  <div
+    id="toast"
+    style="
+      display: none;
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--primary);
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: 8px;
+      z-index: 2000;
+      font-size: 14px;
+    "
+  ></div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-let allocationChart = null;
+  let allocationChart = null;
 
-document.addEventListener('DOMContentLoaded', () => {
-  loadProfile();
-});
+  document.addEventListener('DOMContentLoaded', () => {
+    loadProfile();
+  });
 
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.style.display = 'block';
-  setTimeout(() => { t.style.display = 'none'; }, 3000);
-}
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.style.display = 'block';
+    setTimeout(() => {
+      t.style.display = 'none';
+    }, 3000);
+  }
 
-async function api(url, opts = {}) {
-  const res = await fetch(url, { headers: { 'Content-Type': 'application/json', ...opts.headers }, ...opts });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.error || 'Request failed');
-  return data;
-}
+  async function api(url, opts = {}) {
+    const res = await fetch(url, {
+      headers: { 'Content-Type': 'application/json', ...opts.headers },
+      ...opts,
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Request failed');
+    return data;
+  }
 
-async function loadProfile() {
-  try {
-    const data = await api('/api/risk-profile');
-    if (data.profile) {
-      showResults(data.profile);
-    } else {
+  async function loadProfile() {
+    try {
+      const data = await api('/api/risk-profile');
+      if (data.profile) {
+        showResults(data.profile);
+      } else {
+        showQuestionnaire();
+      }
+    } catch (e) {
       showQuestionnaire();
     }
-  } catch (e) {
-    showQuestionnaire();
   }
-}
 
-async function showQuestionnaire() {
-  document.getElementById('questionnaireView').style.display = 'block';
-  document.getElementById('resultsView').style.display = 'none';
-  try {
-    const data = await api('/api/risk-profile/questions');
-    renderQuestionnaire(data.questions);
-  } catch (e) {
-    showToast('Failed to load questions');
+  async function showQuestionnaire() {
+    document.getElementById('questionnaireView').style.display = 'block';
+    document.getElementById('resultsView').style.display = 'none';
+    try {
+      const data = await api('/api/risk-profile/questions');
+      renderQuestionnaire(data.questions);
+    } catch (e) {
+      showToast('Failed to load questions');
+    }
   }
-}
 
-function renderQuestionnaire(questions) {
-  const form = document.getElementById('riskForm');
-  form.innerHTML = questions.map((q, i) => `
+  function renderQuestionnaire(questions) {
+    const form = document.getElementById('riskForm');
+    form.innerHTML =
+      questions
+        .map(
+          (q, i) => `
     <div>
       <label style="font-size:14px;font-weight:600;display:block;margin-bottom:8px;">
         ${i + 1}. ${q.question}
       </label>
       <div style="display:flex;flex-direction:column;gap:6px;">
-        ${q.options.map(opt => `
+        ${q.options
+          .map(
+            (opt) => `
           <label style="display:flex;align-items:center;gap:8px;padding:10px;background:var(--bg);border:1px solid var(--border);border-radius:8px;cursor:pointer;transition:border-color 0.15s;">
             <input type="radio" name="${q.key}" value="${opt}" required style="accent-color:var(--primary);">
             <span style="font-size:13px;text-transform:capitalize;">${opt.replace(/_/g, ' ')}</span>
           </label>
-        `).join('')}
+        `,
+          )
+          .join('')}
       </div>
     </div>
-  `).join('') + `
+  `,
+        )
+        .join('') +
+      `
     <button type="submit" class="btn btn-primary" style="align-self:flex-end;">Get My Risk Profile</button>
   `;
 
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const answers = {};
-    questions.forEach(q => {
-      const sel = form.querySelector(`input[name="${q.key}"]:checked`);
-      if (sel) answers[q.key] = sel.value;
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const answers = {};
+      questions.forEach((q) => {
+        const sel = form.querySelector(`input[name="${q.key}"]:checked`);
+        if (sel) answers[q.key] = sel.value;
+      });
+      try {
+        const data = await api('/api/risk-profile/assess', {
+          method: 'POST',
+          body: JSON.stringify(answers),
+        });
+        showResults(data.profile);
+        loadAdvice();
+      } catch (err) {
+        showToast(err.message);
+      }
     });
-    try {
-      const data = await api('/api/risk-profile/assess', { method: 'POST', body: JSON.stringify(answers) });
-      showResults(data.profile);
-      loadAdvice();
-    } catch (err) {
-      showToast(err.message);
-    }
-  });
-}
+  }
 
-async function showResults(profile) {
-  document.getElementById('questionnaireView').style.display = 'none';
-  document.getElementById('resultsView').style.display = 'block';
-  document.getElementById('resultCategory').textContent = profile.risk_category;
-  document.getElementById('resultScore').textContent = profile.risk_score;
+  async function showResults(profile) {
+    document.getElementById('questionnaireView').style.display = 'none';
+    document.getElementById('resultsView').style.display = 'block';
+    document.getElementById('resultCategory').textContent =
+      profile.risk_category;
+    document.getElementById('resultScore').textContent = profile.risk_score;
 
-  renderAllocationChart(profile);
-  loadAdvice();
-}
+    renderAllocationChart(profile);
+    loadAdvice();
+  }
 
-function renderAllocationChart(profile) {
-  const ctx = document.getElementById('allocationChart').getContext('2d');
-  if (allocationChart) allocationChart.destroy();
+  function renderAllocationChart(profile) {
+    const ctx = document.getElementById('allocationChart').getContext('2d');
+    if (allocationChart) allocationChart.destroy();
 
-  const data = [profile.equity_pct, profile.debt_pct, profile.gold_pct, profile.cash_pct];
-  const colors = ['#4caf50', '#2196f3', '#ffc107', '#9e9e9e'];
-  const labels = ['Equity', 'Debt', 'Gold', 'Cash'];
+    const data = [
+      profile.equity_pct,
+      profile.debt_pct,
+      profile.gold_pct,
+      profile.cash_pct,
+    ];
+    const colors = ['#4caf50', '#2196f3', '#ffc107', '#9e9e9e'];
+    const labels = ['Equity', 'Debt', 'Gold', 'Cash'];
 
-  allocationChart = new Chart(ctx, {
-    type: 'doughnut',
-    data: {
-      labels: labels,
-      datasets: [{ data, backgroundColor: colors, borderWidth: 0 }],
-    },
-    options: {
-      responsive: false,
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          callbacks: {
-            label: (ctx) => `${ctx.label}: ${ctx.parsed}%`,
+    allocationChart = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: labels,
+        datasets: [{ data, backgroundColor: colors, borderWidth: 0 }],
+      },
+      options: {
+        responsive: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: (ctx) => `${ctx.label}: ${ctx.parsed}%`,
+            },
           },
         },
+        cutout: '60%',
       },
-      cutout: '60%',
-    },
-  });
+    });
 
-  const legend = document.getElementById('allocationLegend');
-  legend.innerHTML = labels.map((l, i) => `
+    const legend = document.getElementById('allocationLegend');
+    legend.innerHTML = labels
+      .map(
+        (l, i) => `
     <div style="display:flex;align-items:center;gap:8px;">
       <div style="width:12px;height:12px;border-radius:3px;background:${colors[i]};"></div>
       <span style="font-size:13px;">${l}: ${data[i]}%</span>
     </div>
-  `).join('');
-}
-
-async function loadAdvice() {
-  try {
-    const data = await api('/api/risk-profile/advice');
-    renderFunds(data.suggestions);
-    renderProjections(data.projections, data.horizon_years);
-  } catch (e) {
-    console.error(e);
+  `,
+      )
+      .join('');
   }
-}
 
-function renderFunds(suggestions) {
-  const container = document.getElementById('fundSuggestions');
-  if (!suggestions || !Object.keys(suggestions).length) {
-    container.innerHTML = '<div style="color:var(--muted);font-size:13px;">No suggestions available</div>';
-    return;
+  async function loadAdvice() {
+    try {
+      const data = await api('/api/risk-profile/advice');
+      renderFunds(data.suggestions);
+      renderProjections(data.projections, data.horizon_years);
+    } catch (e) {
+      console.error(e);
+    }
   }
-  container.innerHTML = Object.entries(suggestions).map(([type, funds]) => `
+
+  function renderFunds(suggestions) {
+    const container = document.getElementById('fundSuggestions');
+    if (!suggestions || !Object.keys(suggestions).length) {
+      container.innerHTML =
+        '<div style="color:var(--muted);font-size:13px;">No suggestions available</div>';
+      return;
+    }
+    container.innerHTML = Object.entries(suggestions)
+      .map(
+        ([type, funds]) => `
     <div style="margin-bottom:12px;">
       <div style="font-size:13px;font-weight:600;text-transform:capitalize;margin-bottom:6px;">${type}</div>
       <div style="display:flex;flex-direction:column;gap:4px;">
-        ${funds.map(f => `
+        ${funds
+          .map(
+            (f) => `
           <div style="font-size:13px;padding:8px 12px;background:var(--bg);border:1px solid var(--border);border-radius:6px;">${f}</div>
-        `).join('')}
+        `,
+          )
+          .join('')}
       </div>
     </div>
-  `).join('');
-}
+  `,
+      )
+      .join('');
+  }
 
-function renderProjections(projections, years) {
-  document.getElementById('projMonthly').textContent = `₹${projections.expected?.monthly_sip?.toLocaleString() || '10,000'}`;
-  document.getElementById('projYears').textContent = years;
+  function renderProjections(projections, years) {
+    document.getElementById('projMonthly').textContent =
+      `₹${projections.expected?.monthly_sip?.toLocaleString() || '10,000'}`;
+    document.getElementById('projYears').textContent = years;
 
-  const container = document.getElementById('projectionCards');
-  const colors = { conservative: '#9e9e9e', expected: '#4caf50', optimistic: '#2196f3' };
-  const labels = { conservative: 'Conservative (8%)', expected: 'Expected (12%)', optimistic: 'Optimistic (16%)' };
+    const container = document.getElementById('projectionCards');
+    const colors = {
+      conservative: '#9e9e9e',
+      expected: '#4caf50',
+      optimistic: '#2196f3',
+    };
+    const labels = {
+      conservative: 'Conservative (8%)',
+      expected: 'Expected (12%)',
+      optimistic: 'Optimistic (16%)',
+    };
 
-  container.innerHTML = Object.entries(projections).map(([key, proj]) => `
+    container.innerHTML = Object.entries(projections)
+      .map(
+        ([key, proj]) => `
     <div style="padding:16px;background:var(--bg);border:1px solid var(--border);border-radius:8px;border-top:3px solid ${colors[key]};">
       <div style="font-size:12px;color:var(--muted);margin-bottom:4px;">${labels[key]}</div>
       <div style="font-size:20px;font-weight:700;color:${colors[key]};">₹${proj.future_value.toLocaleString()}</div>
@@ -235,7 +337,9 @@ function renderProjections(projections, years) {
         Invested: ₹${proj.total_invested.toLocaleString()} · Gain: ₹${proj.wealth_gain.toLocaleString()}
       </div>
     </div>
-  `).join('');
-}
+  `,
+      )
+      .join('');
+  }
 </script>
 {% endblock %}

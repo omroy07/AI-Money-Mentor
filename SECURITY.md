@@ -14,11 +14,11 @@ The app authenticates with **session cookies** (Flask-Login). To reduce the
 risk of Cross-Site Request Forgery (CSRF) and cookie theft, the following
 cookie attributes are configured in `app.py`:
 
-| Setting | Value | Why |
-| --- | --- | --- |
-| `SESSION_COOKIE_SAMESITE` | `Lax` | Prevents the session cookie from being sent on cross-site POST requests — the primary CSRF vector for cookie auth. |
-| `SESSION_COOKIE_HTTPONLY` | `True` | Keeps the cookie inaccessible to JavaScript, mitigating theft via XSS. |
-| `SESSION_COOKIE_SECURE` | `True` in production | Restricts the cookie to HTTPS so it can't leak over plaintext. Enabled when `FLASK_ENV=production`. |
+| Setting                   | Value                | Why                                                                                                                |
+| ------------------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `SESSION_COOKIE_SAMESITE` | `Lax`                | Prevents the session cookie from being sent on cross-site POST requests — the primary CSRF vector for cookie auth. |
+| `SESSION_COOKIE_HTTPONLY` | `True`               | Keeps the cookie inaccessible to JavaScript, mitigating theft via XSS.                                             |
+| `SESSION_COOKIE_SECURE`   | `True` in production | Restricts the cookie to HTTPS so it can't leak over plaintext. Enabled when `FLASK_ENV=production`.                |
 
 ### Token-based CSRF (follow-up)
 
@@ -36,3 +36,12 @@ would reject the existing JSON POST endpoints.
   sessions. See `.env.example`.
 - Never commit a real `.env` file; it is gitignored.
 - `FLASK_DEBUG` must never be enabled in production.
+
+## CodeQL Audit Report
+
+See [`docs/SECURITY_AUDIT.md`](docs/SECURITY_AUDIT.md) for the consolidated
+CodeQL / dependency-audit triage report (issue #521). It lists every CodeQL
+flag raised against the current `main`, the resolution path for each
+(hardcoded-credential removal, weak-hash replacement, XSS-via-`innerHTML`
+guarding, model-import deinterleaving, top-level import restoration) and
+the corresponding PR number.

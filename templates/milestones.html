@@ -1,57 +1,130 @@
-{% extends 'base.html' %}
-
-{% block title %}Milestones & SIPs{% endblock %}
-
-{% block content %}
+{% extends 'base.html' %} {% block title %}Milestones & SIPs{% endblock %} {%
+block content %}
 <div id="milestones" class="page active">
-  <div class="page-title">🔔 Milestones & <span>SIP Tracker</span></div>
+  <div class="page-title">
+    <i class="fa-solid fa-trophy"></i> Milestones & <span>SIP Tracker</span>
+  </div>
 
-  <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 20px; align-items: start; max-width: 1000px;">
+  <div
+    style="
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 20px;
+      align-items: start;
+      max-width: 1000px;
+    "
+  >
     <!-- LEFT COLUMN: Notifications -->
-    <div class="card" style="min-height: 500px;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-        <div class="card-title" style="margin: 0;">Milestone Notification Center</div>
-        <div style="display: flex; gap: 10px; align-items: center;">
-          <select id="filterRead" style="padding: 6px 12px; font-size: 12px; width: auto;" onchange="loadNotifications()">
+    <div class="card" style="min-height: 500px">
+      <div
+        style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 16px;
+        "
+      >
+        <div class="card-title" style="margin: 0">
+          Milestone Notification Center
+        </div>
+        <div style="display: flex; gap: 10px; align-items: center">
+          <select
+            id="filterRead"
+            style="padding: 6px 12px; font-size: 12px; width: auto"
+            onchange="loadNotifications()"
+          >
             <option value="all">All Alerts</option>
             <option value="unread" selected>Unread Only</option>
           </select>
-          <button class="btn btn-ghost" style="font-size: 11px; padding: 6px 10px; height: auto;" onclick="markAllAsRead()">
+          <button
+            class="btn btn-ghost"
+            style="font-size: 11px; padding: 6px 10px; height: auto"
+            onclick="markAllAsRead()"
+          >
             Read All
           </button>
         </div>
       </div>
 
-      <div id="notificationsList" style="display: flex; flex-direction: column; gap: 12px; max-height: 420px; overflow-y: auto; padding-right: 4px;">
-        <p style="color: var(--muted); font-size: 13px;">Loading notifications...</p>
+      <div
+        id="notificationsList"
+        style="
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+          max-height: 420px;
+          overflow-y: auto;
+          padding-right: 4px;
+        "
+      >
+        <p style="color: var(--muted); font-size: 13px">
+          Loading notifications...
+        </p>
       </div>
     </div>
 
     <!-- RIGHT COLUMN: SIP Schedules -->
-    <div style="display: flex; flex-direction: column; gap: 20px;">
+    <div style="display: flex; flex-direction: column; gap: 20px">
       <!-- Active SIPs List -->
-      <div class="card" style="min-height: 250px;">
+      <div class="card" style="min-height: 250px">
         <div class="card-title">Active SIP Schedules</div>
-        
-        <div id="sipList" style="display: flex; flex-direction: column; gap: 10px; max-height: 220px; overflow-y: auto;">
-          <p style="color: var(--muted); font-size: 13px;">No active SIP schedules set yet.</p>
+
+        <div
+          id="sipList"
+          style="
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 220px;
+            overflow-y: auto;
+          "
+        >
+          <p style="color: var(--muted); font-size: 13px">
+            No active SIP schedules set yet.
+          </p>
         </div>
       </div>
 
       <!-- Add SIP Schedule -->
       <div class="card">
         <div class="card-title">Add SIP Schedule</div>
-        
+
         <label>Investment Name</label>
-        <input type="text" id="sipName" placeholder="e.g. Axis Bluechip Mutual Fund" style="margin-bottom: 12px;">
+        <input
+          type="text"
+          id="sipName"
+          placeholder="e.g. Axis Bluechip Mutual Fund"
+          style="margin-bottom: 12px"
+        />
 
         <label>Monthly Contribution</label>
-        <input type="number" step="any" min="0.01" id="sipAmount" placeholder="e.g. 5000" style="margin-bottom: 12px;">
+        <input
+          type="number"
+          step="any"
+          min="0.01"
+          id="sipAmount"
+          placeholder="e.g. 5000"
+          style="margin-bottom: 12px"
+        />
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px;">
+        <div
+          style="
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 16px;
+          "
+        >
           <div>
             <label>Due Day of Month</label>
-            <input type="number" min="1" max="28" id="sipDay" placeholder="1-28" value="5">
+            <input
+              type="number"
+              min="1"
+              max="28"
+              id="sipDay"
+              placeholder="1-28"
+              value="5"
+            />
           </div>
           <div>
             <label>Currency</label>
@@ -64,15 +137,24 @@
           </div>
         </div>
 
-        <button class="btn btn-gold" style="width: 100%" onclick="addSipSchedule()" id="sipAddBtn">Set SIP Schedule</button>
-        <div id="sipResultMsg" class="result-box" style="margin-top: 10px;"></div>
+        <button
+          class="btn btn-gold"
+          style="width: 100%"
+          onclick="addSipSchedule()"
+          id="sipAddBtn"
+        >
+          Set SIP Schedule
+        </button>
+        <div
+          id="sipResultMsg"
+          class="result-box"
+          style="margin-top: 10px"
+        ></div>
       </div>
     </div>
   </div>
 </div>
-{% endblock %}
-
-{% block scripts %}
+{% endblock %} {% block scripts %}
 <script>
   document.addEventListener('DOMContentLoaded', () => {
     loadNotifications();
@@ -96,31 +178,32 @@
         return;
       }
 
-      container.innerHTML = list.map(n => {
-        let badgeColor = '';
-        let badgeText = '';
-        let icon = '';
+      container.innerHTML = list
+        .map((n) => {
+          let badgeColor = '';
+          let badgeText = '';
+          let icon = '';
 
-        if (n.category === 'goal') {
-          badgeColor = 'rgba(20,200,191,0.15)';
-          badgeText = '#14c8bf';
-          icon = '🎯';
-        } else if (n.category === 'budget') {
-          badgeColor = 'rgba(224,82,82,0.15)';
-          badgeText = '#e05252';
-          icon = '⚠️';
-        } else {
-          badgeColor = 'rgba(212,168,67,0.15)';
-          badgeText = 'var(--gold)';
-          icon = '📈';
-        }
+          if (n.category === 'goal') {
+            badgeColor = 'rgba(20,200,191,0.15)';
+            badgeText = '#14c8bf';
+            icon = '🎯';
+          } else if (n.category === 'budget') {
+            badgeColor = 'rgba(224,82,82,0.15)';
+            badgeText = '#e05252';
+            icon = '⚠️';
+          } else {
+            badgeColor = 'rgba(212,168,67,0.15)';
+            badgeText = 'var(--gold)';
+            icon = '📈';
+          }
 
-        const dateStr = new Date(n.triggered_at).toLocaleString();
-        const readBtn = !n.is_read 
-          ? `<button class="btn btn-ghost" style="padding: 4px 8px; font-size: 11px; height: auto; min-height: auto;" onclick="markAsRead(${n.id})">Mark Read</button>` 
-          : '';
+          const dateStr = new Date(n.triggered_at).toLocaleString();
+          const readBtn = !n.is_read
+            ? `<button class="btn btn-ghost" style="padding: 4px 8px; font-size: 11px; height: auto; min-height: auto;" onclick="markAsRead(${n.id})">Mark Read</button>`
+            : '';
 
-        return `
+          return `
           <div style="padding: 12px 14px; background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 10px; display: flex; flex-direction: column; gap: 6px;">
             <div style="display: flex; justify-content: space-between; align-items: start; gap: 10px;">
               <div style="display: flex; align-items: center; gap: 8px;">
@@ -136,9 +219,10 @@
             </div>
           </div>
         `;
-      }).join('');
+        })
+        .join('');
     } catch (e) {
-      console.error("Failed to load notifications:", e);
+      console.error('Failed to load notifications:', e);
     }
   }
 
@@ -147,7 +231,7 @@
       await fetch('/api/milestones/read', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: id })
+        body: JSON.stringify({ id: id }),
       });
       loadNotifications();
     } catch (e) {
@@ -160,7 +244,7 @@
       await fetch('/api/milestones/read', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({})
+        body: JSON.stringify({}),
       });
       loadNotifications();
     } catch (e) {
@@ -179,8 +263,9 @@
         return;
       }
 
-      container.innerHTML = list.map(s => {
-        return `
+      container.innerHTML = list
+        .map((s) => {
+          return `
           <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 10px;">
             <div style="display: flex; flex-direction: column; gap: 4px;">
               <strong style="color: var(--text); font-size: 13px;">${s.name}</strong>
@@ -201,9 +286,10 @@
             </div>
           </div>
         `;
-      }).join('');
+        })
+        .join('');
     } catch (e) {
-      console.error("Failed to load SIPs:", e);
+      console.error('Failed to load SIPs:', e);
     }
   }
 
@@ -227,12 +313,12 @@
           name: name,
           amount: parseFloat(amount),
           day_of_month: parseInt(day),
-          currency: currency
-        })
+          currency: currency,
+        }),
       });
       const data = await res.json();
       if (data.error) {
-        showResult('sipResultMsg', `⚠ ${data.error}`);
+        showResult('sipResultMsg', `⚠ ${esc(data.error)}`);
       } else {
         showResult('sipResultMsg', `✅ SIP Schedule added for ${name}!`);
         document.getElementById('sipName').value = '';
@@ -258,10 +344,12 @@
 
   async function paySip(id) {
     try {
-      const res = await fetch(`/api/sip/schedules/${id}/pay`, { method: 'POST' });
+      const res = await fetch(`/api/sip/schedules/${id}/pay`, {
+        method: 'POST',
+      });
       const data = await res.json();
       if (data.error) {
-        alert(`Error: ${data.error}`);
+        alert(`Error: ${esc(data.error)}`);
       } else {
         loadSipSchedules();
         loadNotifications(); // Reload milestones to show any new milestones!

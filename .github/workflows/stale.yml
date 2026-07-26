@@ -1,7 +1,7 @@
-name: "Automated Stale Issue/PR Cleanup"
+name: 'Automated Stale Issue/PR Cleanup'
 on:
   schedule:
-    - cron: "0 0 * * *"
+    - cron: '0 0 * * *'
   workflow_dispatch:
 
 jobs:
@@ -15,18 +15,18 @@ jobs:
         uses: actions/stale@v10
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-          stale-issue-message: "This issue has been automatically marked as stale because it has not had recent activity. It will be closed if no further activity occurs."
-          stale-pr-message: "This PR has been automatically marked as stale because it has not had recent activity. It will be closed if no further activity occurs."
-          close-issue-message: "This issue has been automatically closed due to inactivity."
-          close-pr-message: "This PR has been automatically closed due to inactivity."
+          stale-issue-message: 'This issue has been automatically marked as stale because it has not had recent activity. It will be closed if no further activity occurs.'
+          stale-pr-message: 'This PR has been automatically marked as stale because it has not had recent activity. It will be closed if no further activity occurs.'
+          close-issue-message: 'This issue has been automatically closed due to inactivity.'
+          close-pr-message: 'This PR has been automatically closed due to inactivity.'
           days-before-stale: 60
           days-before-close: 14
           days-before-issue-stale: 90
           days-before-issue-close: 30
           days-before-pr-stale: 30
           days-before-pr-close: 14
-          stale-issue-label: "stale"
-          stale-pr-label: "stale"
-          exempt-issue-labels: "pinned,security,bug,enhancement"
-          exempt-pr-labels: "pinned,security,dependencies"
+          stale-issue-label: 'stale'
+          stale-pr-label: 'stale'
+          exempt-issue-labels: 'pinned,security,bug,enhancement'
+          exempt-pr-labels: 'pinned,security,dependencies'
           operations-per-run: 100

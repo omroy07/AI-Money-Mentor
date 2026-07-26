@@ -1,38 +1,64 @@
-{% extends 'base.html' %}
-
-{% block title %}Tax Filing - AI Money Mentor{% endblock %}
-
-{% block content %}
+{% extends 'base.html' %} {% block title %}Tax Filing - AI Money Mentor{%
+endblock %} {% block content %}
 <div id="tax_filing" class="page active">
-  <div class="page-title">📑 Automated Tax <span>Filing</span></div>
+  <div class="page-title">
+    <i class="fa-solid fa-wand-magic-sparkles"></i> Automated Tax
+    <span>Filing</span>
+  </div>
 
-  <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 20px; max-width: 1400px;">
-    
+  <div
+    style="
+      display: grid;
+      grid-template-columns: 1.5fr 1fr;
+      gap: 20px;
+      max-width: 1400px;
+    "
+  >
     <!-- Left Panel -->
     <div>
       <!-- Income & Deductions -->
       <div class="card">
-        <div class="card-title">📊 Income & Deductions Summary</div>
+        <div class="card-title">
+          <i class="fa-solid fa-file-lines"></i> Income & Deductions Summary
+        </div>
         <div id="incomeDeductions"></div>
-        <button class="btn btn-gold" style="width:100%;margin-top:12px;" onclick="calculateTax()">🔍 Calculate Tax</button>
+        <button
+          class="btn btn-gold"
+          style="width: 100%; margin-top: 12px"
+          onclick="calculateTax()"
+        >
+          🔍 Calculate Tax
+        </button>
       </div>
 
       <!-- Tax Calculation Results -->
-      <div class="card" id="taxResultCard" style="display:none;">
-        <div class="card-title">💸 Tax Calculation</div>
+      <div class="card" id="taxResultCard" style="display: none">
+        <div class="card-title">
+          <i class="fa-solid fa-calculator"></i> Tax Calculation
+        </div>
         <div id="taxResult"></div>
       </div>
 
       <!-- ITR Generation -->
       <div class="card">
-        <div class="card-title">📄 Generate ITR</div>
-        <div style="display:flex;gap:10px;flex-wrap:wrap;">
-          <button class="btn btn-gold" onclick="generateITR('ITR-1')">📄 Generate ITR-1</button>
-          <button class="btn btn-gold" onclick="generateITR('ITR-2')">📄 Generate ITR-2</button>
-          <button class="btn btn-gold" onclick="generateITR('ITR-3')">📄 Generate ITR-3</button>
-          <button class="btn btn-ghost" onclick="generateITR('auto')">🤖 Auto Detect</button>
+        <div class="card-title">
+          <i class="fa-solid fa-gears"></i> Generate ITR
         </div>
-        <div id="itrResult" style="margin-top:12px;"></div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap">
+          <button class="btn btn-gold" onclick="generateITR('ITR-1')">
+            <i class="fa-solid fa-gears"></i> Generate ITR-1
+          </button>
+          <button class="btn btn-gold" onclick="generateITR('ITR-2')">
+            <i class="fa-solid fa-gears"></i> Generate ITR-2
+          </button>
+          <button class="btn btn-gold" onclick="generateITR('ITR-3')">
+            <i class="fa-solid fa-gears"></i> Generate ITR-3
+          </button>
+          <button class="btn btn-ghost" onclick="generateITR('auto')">
+            <i class="fa-solid fa-magnifying-glass"></i>Auto Detect
+          </button>
+        </div>
+        <div id="itrResult" style="margin-top: 12px"></div>
       </div>
     </div>
 
@@ -40,53 +66,85 @@
     <div>
       <!-- Tax Saving Recommendations -->
       <div class="card">
-        <div class="card-title">💡 Tax Saving Recommendations</div>
+        <div class="card-title">
+          <i class="fa-solid fa-lightbulb"></i> Tax Saving Recommendations
+        </div>
         <div id="recommendations">
-          <div class="text-muted" style="text-align:center;padding:20px;">Calculate tax to get recommendations</div>
+          <div class="text-muted" style="text-align: center; padding: 20px">
+            Calculate tax to get recommendations
+          </div>
         </div>
       </div>
 
       <!-- Form 16 Upload -->
       <div class="card">
-        <div class="card-title">📎 Upload Form 16</div>
+        <div class="card-title">
+          <i class="fa-solid fa-link"></i> Upload Form 16
+        </div>
         <form id="form16Upload" enctype="multipart/form-data">
-          <div style="border:2px dashed rgba(255,255,255,0.1);border-radius:14px;padding:20px;text-align:center;cursor:pointer;" onclick="document.getElementById('form16Input').click()">
-            <div style="font-size:36px;">📄</div>
-            <div style="font-size:13px;color:var(--muted);">Click to upload Form 16 PDF</div>
-            <input type="file" id="form16Input" accept=".pdf" style="display:none;" onchange="uploadForm16()">
+          <div
+            style="
+              border: 2px dashed rgba(255, 255, 255, 0.1);
+              border-radius: 14px;
+              padding: 20px;
+              text-align: center;
+              cursor: pointer;
+            "
+            onclick="document.getElementById('form16Input').click()"
+          >
+            <div style="font-size: 36px">
+              <i class="fa-solid fa-file-lines"></i>
+            </div>
+            <div style="font-size: 13px; color: var(--muted)">
+              Click to upload Form 16 PDF
+            </div>
+            <input
+              type="file"
+              id="form16Input"
+              accept=".pdf"
+              style="display: none"
+              onchange="uploadForm16()"
+            />
           </div>
-          <div id="form16Result" style="margin-top:10px;"></div>
+          <div id="form16Result" style="margin-top: 10px"></div>
         </form>
       </div>
 
       <!-- Filing Status -->
       <div class="card">
-        <div class="card-title">📋 Filing Status</div>
+        <div class="card-title">
+          <i class="fa-solid fa-circle-info"></i> Filing Status
+        </div>
         <div id="filingStatus">
-          <div class="text-muted" style="text-align:center;padding:20px;">No filing history</div>
+          <div class="text-muted" style="text-align: center; padding: 20px">
+            No filing history
+          </div>
         </div>
       </div>
     </div>
-
   </div>
 </div>
 
 <style>
   .tax-slab {
-    background:rgba(255,255,255,0.02);
-    border-radius:8px;
-    padding:10px;
-    margin:4px 0;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 8px;
+    padding: 10px;
+    margin: 4px 0;
   }
   .recommendation-item {
-    background:rgba(212,168,67,0.05);
-    border-left:3px solid #d4a843;
-    padding:10px;
-    margin:8px 0;
-    border-radius:4px;
+    background: rgba(212, 168, 67, 0.05);
+    border-left: 3px solid #d4a843;
+    padding: 10px;
+    margin: 8px 0;
+    border-radius: 4px;
   }
-  .recommendation-item .priority-high { border-left-color:#e05252; }
-  .recommendation-item .priority-medium { border-left-color:#f39c12; }
+  .recommendation-item .priority-high {
+    border-left-color: #e05252;
+  }
+  .recommendation-item .priority-medium {
+    border-left-color: #f39c12;
+  }
 </style>
 
 <script>
@@ -96,16 +154,16 @@
     const btn = document.querySelector('#incomeDeductions').nextElementSibling;
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner"></span> Calculating...';
-    
+
     try {
       const response = await fetch('/api/tax/filing/calculate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({})
+        body: JSON.stringify({}),
       });
-      
+
       const data = await response.json();
-      
+
       if (data.success) {
         currentTaxData = data.data;
         renderTaxResults(data.data);
@@ -114,17 +172,18 @@
     } catch (error) {
       alert('Error: ' + error.message);
     }
-    
+
     btn.disabled = false;
-    btn.innerHTML = '🔍 Calculate Tax';
+    btn.innerHTML =
+      '<i class="fa-solid fa-magnifying-glass"></i> Calculate Tax';
   }
 
   function renderTaxResults(data) {
     document.getElementById('taxResultCard').style.display = 'block';
-    
+
     const tax = data.tax_calculation;
     const recommended = tax.recommended_regime;
-    
+
     let html = `
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px;">
         <div style="background:rgba(255,255,255,0.02);border-radius:8px;padding:12px;text-align:center;">
@@ -133,7 +192,7 @@
         </div>
         <div style="background:rgba(255,255,255,0.02);border-radius:8px;padding:12px;text-align:center;">
           <div style="font-size:11px;color:var(--muted);">Taxable Income</div>
-          <div style="font-size:18px;font-weight:700;">₹${fmtNum(tax.taxable_income)}</div>
+          <div style="font-size:18px;font-weight:700;">₹${fmtNum(tax.taxable_income.new_regime)}</div>
         </div>
         <div style="background:rgba(212,168,67,0.05);border-radius:8px;padding:12px;text-align:center;">
           <div style="font-size:11px;color:var(--muted);">Tax Payable</div>
@@ -146,36 +205,37 @@
           <div style="font-size:20px;font-weight:700;color:${tax.new_regime.total_tax <= tax.old_regime.total_tax ? '#2ecc8a' : '#5a6a82'}">
             ₹${fmtNum(tax.new_regime.total_tax)}
           </div>
-          <div style="font-size:11px;color:var(--muted);">Effective Rate: ${tax.new_regime.effective_rate}%</div>
+          <div style="font-size:11px;color:var(--muted);">Taxable Income: ₹${fmtNum(tax.taxable_income.new_regime)}</div>
         </div>
         <div style="background:rgba(46,204,138,0.05);border-radius:8px;padding:12px;">
           <div style="font-size:12px;color:var(--muted);">Old Regime</div>
           <div style="font-size:20px;font-weight:700;color:${tax.old_regime.total_tax <= tax.new_regime.total_tax ? '#2ecc8a' : '#5a6a82'}">
             ₹${fmtNum(tax.old_regime.total_tax)}
           </div>
-          <div style="font-size:11px;color:var(--muted);">Effective Rate: ${tax.old_regime.effective_rate}%</div>
+          <div style="font-size:11px;color:var(--muted);">Taxable Income: ₹${fmtNum(tax.taxable_income.old_regime)}</div>
         </div>
       </div>
       <div style="margin-top:10px;padding:10px;background:rgba(212,168,67,0.1);border-radius:8px;text-align:center;">
         <strong>Recommended: ${recommended.toUpperCase()} Regime</strong>
-        <span style="color:#2ecc8a;margin-left:8px;">✅ Save ₹${fmtNum(tax.savings)}</span>
+        <span style="color:#2ecc8a;margin-left:8px;"><i class="fa-solid fa-circle-check"></i> Save ₹${fmtNum(tax.savings)}</span>
       </div>
     `;
-    
+
     document.getElementById('taxResult').innerHTML = html;
   }
 
   function renderRecommendations(data) {
     const container = document.getElementById('recommendations');
     const recs = data.recommendations || [];
-    
+
     if (recs.length === 0) {
-      container.innerHTML = '<div style="color:#2ecc8a;text-align:center;padding:20px;">✅ You are tax optimized!</div>';
+      container.innerHTML =
+        '<div style="color:#2ecc8a;text-align:center;padding:20px;"><i class="fa-solid fa-circle-check"></i> You are tax optimized!</div>';
       return;
     }
-    
+
     let html = '';
-    recs.forEach(r => {
+    recs.forEach((r) => {
       html += `
         <div class="recommendation-item priority-${r.priority}">
           <div style="display:flex;justify-content:space-between;">
@@ -193,31 +253,31 @@
   async function generateITR(formType) {
     const container = document.getElementById('itrResult');
     container.innerHTML = '<div class="text-muted">Generating ITR...</div>';
-    
+
     try {
       const response = await fetch('/api/tax/filing/itr/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ form_type: formType })
+        body: JSON.stringify({ form_type: formType }),
       });
-      
+
       const data = await response.json();
-      
+
       if (data.success) {
         const itr = data.itr;
         container.innerHTML = `
           <div style="background:rgba(46,204,138,0.05);border-radius:8px;padding:12px;">
-            <div style="font-weight:700;color:#2ecc8a;">✅ ${itr.form_type} Generated</div>
+            <div style="font-weight:700;color:#2ecc8a;"><i class="fa-solid fa-circle-check"></i> ${itr.form_type} Generated</div>
             <div style="font-size:13px;color:var(--muted);margin-top:4px;">
               Assessment Year: ${itr.assessment_year} | Income: ₹${fmtNum(itr.income.total)}
             </div>
             <div style="font-size:13px;color:var(--muted);">Tax Payable: ₹${fmtNum(itr.tax_calculation.new_regime.total_tax)}</div>
-            <button class="btn btn-gold" style="margin-top:8px;" onclick="downloadITR()">📥 Download ITR</button>
+            <button class="btn btn-gold" style="margin-top:8px;" onclick="downloadITR()"><i class="fa-solid fa-download"></i> Download ITR</button>
           </div>
         `;
       }
     } catch (error) {
-      container.innerHTML = `<div style="color:var(--red);">❌ ${error.message}</div>`;
+      container.innerHTML = `<div style="color:var(--red);"><i class="fa-solid fa-circle-xmark"></i> ${error.message}</div>`;
     }
   }
 
@@ -226,9 +286,11 @@
       alert('Calculate tax first');
       return;
     }
-    
+
     const itrData = currentTaxData.itr_data || currentTaxData;
-    const blob = new Blob([JSON.stringify(itrData, null, 2)], { type: 'application/json' });
+    const blob = new Blob([JSON.stringify(itrData, null, 2)], {
+      type: 'application/json',
+    });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -240,26 +302,26 @@
   async function uploadForm16() {
     const file = document.getElementById('form16Input').files[0];
     if (!file) return;
-    
+
     const result = document.getElementById('form16Result');
     result.innerHTML = '<div class="text-muted">Processing...</div>';
-    
+
     const formData = new FormData();
     formData.append('form16', file);
-    
+
     try {
       const response = await fetch('/api/tax/filing/form16/parse', {
         method: 'POST',
-        body: formData
+        body: formData,
       });
-      
+
       const data = await response.json();
-      
+
       if (data.success) {
         const d = data.data;
         result.innerHTML = `
           <div style="background:rgba(46,204,138,0.05);border-radius:8px;padding:12px;">
-            <div style="font-weight:700;color:#2ecc8a;">✅ Form 16 Parsed Successfully</div>
+            <div style="font-weight:700;color:#2ecc8a;"><i class="fa-solid fa-circle-check"></i> Form 16 Parsed Successfully</div>
             <div style="font-size:13px;color:var(--muted);margin-top:4px;">
               Employer: ${d.employer || 'N/A'} | PAN: ${d.pan || 'N/A'}
             </div>
@@ -269,10 +331,10 @@
           </div>
         `;
       } else {
-        result.innerHTML = `<div style="color:var(--red);">❌ ${data.error}</div>`;
+        result.innerHTML = `<div style="color:var(--red);"><i class="fa-solid fa-circle-xmark"></i> ${data.error}</div>`;
       }
     } catch (error) {
-      result.innerHTML = `<div style="color:var(--red);">❌ ${error.message}</div>`;
+      result.innerHTML = `<div style="color:var(--red);"><i class="fa-solid fa-circle-xmark"></i> ${error.message}</div>`;
     }
   }
 
@@ -282,7 +344,7 @@
   }
 
   // Load on page load
-  document.addEventListener('DOMContentLoaded', function() {
+  document.addEventListener('DOMContentLoaded', function () {
     calculateTax();
   });
 </script>

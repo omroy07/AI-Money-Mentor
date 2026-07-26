@@ -9,6 +9,7 @@ Run with:  pytest tests/test_sip.py -v
 
 import pytest
 from utils.sip import calculate_sip, calculate_stepup_sip
+from app import calcSIP
 
 
 class TestCalculateSip:
@@ -178,3 +179,16 @@ class TestCalculateStepupSip:
         assert result["inflation_applied"] == 0.0
         assert result["stepup_inflation_adjusted_value"] == result["stepup_nominal_value"]
         assert result["flat_inflation_adjusted_value"] == result["flat_nominal_value"]
+
+
+def test_sip_normal():
+    result = calcSIP(monthly=10000, rate=12, years=10)
+    assert result > 0
+
+def test_sip_zero_input():
+    result = calcSIP(monthly=0, rate=12, years=10)
+    assert result == 0
+
+def test_sip_edge_case_high_rate():
+    result = calcSIP(monthly=5000, rate=50, years=5)
+    assert result > 0

@@ -1,11 +1,12 @@
-{% extends 'base.html' %}
-
-{% block title %}Gamified Learning Hub{% endblock %}
-
+{% extends 'base.html' %} {% block title %}Gamified Learning Hub{% endblock %}
 {% block head %}
 <style>
   .learn-header {
-    background: linear-gradient(135deg, rgba(212, 168, 67, 0.15) 0%, rgba(20, 200, 191, 0.05) 100%);
+    background: linear-gradient(
+      135deg,
+      rgba(212, 168, 67, 0.15) 0%,
+      rgba(20, 200, 191, 0.05) 100%
+    );
     border: 1px solid var(--border);
     border-radius: 16px;
     padding: 24px;
@@ -109,7 +110,7 @@
     transition: opacity 0.3s;
     font-size: 11px;
     white-space: nowrap;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
   }
 
   .badge-item:hover .tooltip {
@@ -177,7 +178,9 @@
 
   .edu-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3), 0 0 15px rgba(20, 200, 191, 0.05);
+    box-shadow:
+      0 12px 24px rgba(0, 0, 0, 0.3),
+      0 0 15px rgba(20, 200, 191, 0.05);
     border-color: rgba(20, 200, 191, 0.3);
   }
 
@@ -238,7 +241,7 @@
     max-height: 85vh;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
     transform: scale(0.95);
     transition: transform 0.3s ease;
     overflow: hidden;
@@ -363,7 +366,7 @@
 
   /* Quiz Results and Feedback */
   .feedback-card {
-    background: rgba(255,255,255,0.01);
+    background: rgba(255, 255, 255, 0.01);
     border: 1px solid var(--border);
     border-radius: 12px;
     padding: 16px;
@@ -465,8 +468,14 @@
   }
 
   @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
   .points-popup {
@@ -481,16 +490,25 @@
   }
 
   @keyframes floatUpAndFade {
-    0% { opacity: 0; transform: translateY(0) scale(0.8); }
-    20% { opacity: 1; transform: translateY(-20px) scale(1.1); }
-    100% { opacity: 0; transform: translateY(-80px) scale(1); }
+    0% {
+      opacity: 0;
+      transform: translateY(0) scale(0.8);
+    }
+    20% {
+      opacity: 1;
+      transform: translateY(-20px) scale(1.1);
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(-80px) scale(1);
+    }
   }
 </style>
-{% endblock %}
-
-{% block content %}
+{% endblock %} {% block content %}
 <div id="learn" class="page active">
-  <div class="page-title">🎓 Learn & <span>Earn</span></div>
+  <div class="page-title">
+    <i class="fa-solid fa-trophy"></i> Learn & <span>Earn</span>
+  </div>
 
   <!-- Profile & Badges Header -->
   <div class="learn-header">
@@ -499,25 +517,43 @@
       <div class="user-stats">
         <div class="user-rank" id="userRank">Financial Apprentice</div>
         <div class="points-badge">
-          <span>🏆</span> <span id="userPoints">0</span> Pts
+          <span></span> <span id="userPoints">0</span> Pts
         </div>
       </div>
     </div>
-    
+
     <div>
-      <div style="font-size: 12px; color: var(--muted); font-weight: 600; margin-bottom: 6px; text-transform: uppercase;">Unlocked Badges</div>
+      <div
+        style="
+          font-size: 12px;
+          color: var(--muted);
+          font-weight: 600;
+          margin-bottom: 6px;
+          text-transform: uppercase;
+        "
+      >
+        Unlocked Badges
+      </div>
       <div class="badges-container" id="unlockedBadges">
         <!-- Rendered dynamically -->
-        <span class="text-muted" style="font-size: 13px;">No achievements unlocked yet.</span>
+        <span class="text-muted" style="font-size: 13px"
+          >No achievements unlocked yet.</span
+        >
       </div>
     </div>
   </div>
 
   <!-- Tab Navigation -->
   <div class="tab-nav">
-    <button class="tab-btn active" onclick="switchTab('tutorials')">📖 Tutorials</button>
-    <button class="tab-btn" onclick="switchTab('quizzes')">🧠 Quizzes</button>
-    <button class="tab-btn" onclick="switchTab('challenges')">🎯 Challenges</button>
+    <button class="tab-btn active" onclick="switchTab('tutorials')">
+      <i class="fa-solid fa-book-open"></i> Tutorials
+    </button>
+    <button class="tab-btn" onclick="switchTab('quizzes')">
+      <i class="fa-solid fa-circle-question"></i> Quizzes
+    </button>
+    <button class="tab-btn" onclick="switchTab('challenges')">
+      <i class="fa-solid fa-fire"></i> Challenges
+    </button>
   </div>
 
   <!-- TUTORIALS TAB -->
@@ -554,7 +590,13 @@
     </div>
     <div class="overlay-footer">
       <button class="btn btn-ghost" onclick="closeTutorial()">Close</button>
-      <button class="btn btn-gold" id="btnCompleteTutorial" onclick="completeTutorialAction()">Mark as Completed (+15 Pts)</button>
+      <button
+        class="btn btn-gold"
+        id="btnCompleteTutorial"
+        onclick="completeTutorialAction()"
+      >
+        Mark as Completed (+15 Pts)
+      </button>
     </div>
   </div>
 </div>
@@ -563,7 +605,10 @@
 <div id="quizModal" class="overlay-container">
   <div class="overlay-content">
     <!-- Active Quiz View -->
-    <div id="quizActiveView" style="display: flex; flex-direction: column; height: 100%;">
+    <div
+      id="quizActiveView"
+      style="display: flex; flex-direction: column; height: 100%"
+    >
       <div class="overlay-header">
         <div class="overlay-title" id="quizModalTitle">Quiz Title</div>
         <button class="close-btn" onclick="closeQuiz()">&times;</button>
@@ -572,39 +617,105 @@
         <div class="quiz-progress-bar">
           <div class="quiz-progress-fill" id="quizProgressFill"></div>
         </div>
-        <div id="quizQuestionNum" style="font-size: 12px; color: var(--muted); font-weight: 600; text-transform: uppercase; margin-bottom: 6px;">Question 1 of 3</div>
-        <div id="quizQuestionText" style="font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; margin-bottom: 20px;">Question Content</div>
-        
+        <div
+          id="quizQuestionNum"
+          style="
+            font-size: 12px;
+            color: var(--muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+          "
+        >
+          Question 1 of 3
+        </div>
+        <div
+          id="quizQuestionText"
+          style="
+            font-family: 'Syne', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 20px;
+          "
+        >
+          Question Content
+        </div>
+
         <div id="quizOptionsContainer">
           <!-- Option buttons loaded dynamically -->
         </div>
       </div>
       <div class="overlay-footer">
         <button class="btn btn-ghost" onclick="closeQuiz()">Quit</button>
-        <button class="btn btn-gold" id="btnNextQuestion" onclick="nextQuizQuestion()" disabled>Next Question &rarr;</button>
+        <button
+          class="btn btn-gold"
+          id="btnNextQuestion"
+          onclick="nextQuizQuestion()"
+          disabled
+        >
+          Next Question &rarr;
+        </button>
       </div>
     </div>
 
     <!-- Quiz Results View -->
-    <div id="quizResultsView" style="display: none; flex-direction: column; height: 100%;">
+    <div
+      id="quizResultsView"
+      style="display: none; flex-direction: column; height: 100%"
+    >
       <div class="overlay-header">
         <div class="overlay-title">Quiz Results</div>
         <button class="close-btn" onclick="closeQuiz()">&times;</button>
       </div>
       <div class="overlay-body">
-        <div style="text-align: center; margin-bottom: 24px;">
-          <div style="font-size: 48px;" id="resultsIcon">🎉</div>
-          <div style="font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 700; margin-top: 8px;" id="resultsScoreText">You scored 3/3!</div>
-          <div style="font-size: 14px; color: var(--gold2); font-weight: 600; margin-top: 4px;" id="resultsPointsEarned">+30 Points Awarded</div>
+        <div style="text-align: center; margin-bottom: 24px">
+          <div style="font-size: 48px" id="resultsIcon">
+            <i class="fa-solid fa-party-horn"></i>
+          </div>
+          <div
+            style="
+              font-family: 'Syne', sans-serif;
+              font-size: 24px;
+              font-weight: 700;
+              margin-top: 8px;
+            "
+            id="resultsScoreText"
+          >
+            You scored 3/3!
+          </div>
+          <div
+            style="
+              font-size: 14px;
+              color: var(--gold2);
+              font-weight: 600;
+              margin-top: 4px;
+            "
+            id="resultsPointsEarned"
+          >
+            +30 Points Awarded
+          </div>
         </div>
-        
-        <div style="font-family: 'Syne', sans-serif; font-weight: 700; font-size: 16px; margin-bottom: 14px; border-bottom: 1px solid var(--border); padding-bottom: 8px;">Review Answers</div>
+
+        <div
+          style="
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: 16px;
+            margin-bottom: 14px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 8px;
+          "
+        >
+          Review Answers
+        </div>
         <div id="quizResultsDetails">
           <!-- Question feedback items loaded dynamically -->
         </div>
       </div>
       <div class="overlay-footer">
-        <button class="btn btn-gold" onclick="closeQuiz()">Finish & Return</button>
+        <button class="btn btn-gold" onclick="closeQuiz()">
+          Finish & Return
+        </button>
       </div>
     </div>
   </div>
@@ -617,7 +728,7 @@
   let currentQuestionIndex = 0;
   let quizAnswers = {}; // map of questionId -> selectedOption
 
-  document.addEventListener("DOMContentLoaded", async () => {
+  document.addEventListener('DOMContentLoaded', async () => {
     // Initial fetch to load stats and lists
     await refreshAll();
   });
@@ -631,29 +742,31 @@
 
   // Calculate Rank name based on points
   function getRank(pts) {
-    if (pts < 100) return "Financial Apprentice";
-    if (pts < 300) return "Smart Saver";
-    if (pts < 600) return "Investing Scholar";
-    return "Wealth Mentor";
+    if (pts < 100) return 'Financial Apprentice';
+    if (pts < 300) return 'Smart Saver';
+    if (pts < 600) return 'Investing Scholar';
+    return 'Wealth Mentor';
   }
 
   // Calculate Avatar based on points
   function getAvatar(pts) {
-    if (pts < 100) return "👨‍🎓";
-    if (pts < 300) return "🌱";
-    if (pts < 600) return "📈";
-    return "👑";
+    if (pts < 100) return '👨‍🎓';
+    if (pts < 300) return '🌱';
+    if (pts < 600) return '📈';
+    return '👑';
   }
 
   async function loadStats() {
     try {
       // Points will be refreshed from challenges / tutorials dynamically, but achievements are best fetched via achievements api
-      const response = await fetch("/api/achievements");
+      const response = await fetch('/api/achievements');
       const data = await response.json();
-      
-      const badgeContainer = document.getElementById("unlockedBadges");
+
+      const badgeContainer = document.getElementById('unlockedBadges');
       if (data.achievements && data.achievements.length > 0) {
-        badgeContainer.innerHTML = data.achievements.map(ach => `
+        badgeContainer.innerHTML = data.achievements
+          .map(
+            (ach) => `
           <div class="badge-item">
             <span>${ach.icon}</span>
             <div class="tooltip">
@@ -661,68 +774,76 @@
               ${ach.desc}
             </div>
           </div>
-        `).join('');
+        `,
+          )
+          .join('');
       } else {
         badgeContainer.innerHTML = `<span class="text-muted" style="font-size:13px;">No achievements unlocked yet. Keep tracking!</span>`;
       }
     } catch (e) {
-      console.error("Failed to load achievements: ", e);
+      console.error('Failed to load achievements: ', e);
     }
   }
 
   function triggerPointsPopup(e, points) {
-    const popup = document.createElement("div");
-    popup.className = "points-popup";
+    const popup = document.createElement('div');
+    popup.className = 'points-popup';
     popup.innerText = `+${points} PTS`;
-    
+
     // Position near the button click event if available, otherwise center
     if (e && e.clientX) {
       popup.style.left = `${e.clientX - 30}px`;
       popup.style.top = `${e.clientY - 20}px`;
     } else {
-      popup.style.left = "50%";
-      popup.style.top = "50%";
-      popup.style.transform = "translate(-50%, -50%)";
+      popup.style.left = '50%';
+      popup.style.top = '50%';
+      popup.style.transform = 'translate(-50%, -50%)';
     }
-    
+
     document.body.appendChild(popup);
     setTimeout(() => popup.remove(), 1200);
   }
 
   function updateGlobalPoints(totalPoints) {
-    document.getElementById("userPoints").innerText = totalPoints;
-    document.getElementById("userRank").innerText = getRank(totalPoints);
-    document.getElementById("userAvatar").innerText = getAvatar(totalPoints);
-    
+    document.getElementById('userPoints').innerText = totalPoints;
+    document.getElementById('userRank').innerText = getRank(totalPoints);
+    document.getElementById('userAvatar').innerText = getAvatar(totalPoints);
+
     // Update sidebar counter
-    const sidebarPoints = document.getElementById("sidebar-user-points");
+    const sidebarPoints = document.getElementById('sidebar-user-points');
     if (sidebarPoints) {
       sidebarPoints.innerText = totalPoints;
     }
   }
 
   function switchTab(tabId) {
-    document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
-    document.querySelectorAll(".tab-content").forEach(content => content.classList.remove("active"));
-    
+    document
+      .querySelectorAll('.tab-btn')
+      .forEach((btn) => btn.classList.remove('active'));
+    document
+      .querySelectorAll('.tab-content')
+      .forEach((content) => content.classList.remove('active'));
+
     // Find matching button and activate
-    event.currentTarget.classList.add("active");
-    document.getElementById(`tab-${tabId}`).classList.add("active");
+    event.currentTarget.classList.add('active');
+    document.getElementById(`tab-${tabId}`).classList.add('active');
   }
 
   // ==================== TUTORIALS LOGIC ====================
   async function loadTutorials() {
     try {
-      const response = await fetch("/api/tutorials");
+      const response = await fetch('/api/tutorials');
       const data = await response.json();
-      
-      const grid = document.getElementById("tutorialsGrid");
+
+      const grid = document.getElementById('tutorialsGrid');
       if (!data.tutorials || data.tutorials.length === 0) {
         grid.innerHTML = `<p class="text-muted">No tutorials available.</p>`;
         return;
       }
 
-      grid.innerHTML = data.tutorials.map(t => `
+      grid.innerHTML = data.tutorials
+        .map(
+          (t) => `
         <div class="card edu-card">
           <div>
             <div class="card-category">${t.category}</div>
@@ -734,50 +855,56 @@
             <span style="font-size: 12px; font-weight: 600; color: ${t.completed ? 'var(--green)' : 'var(--muted)'}">
               ${t.completed ? '✅ Completed' : '📖 Unread'}
             </span>
-            <button class="btn btn-sm ${t.completed ? 'btn-ghost' : 'btn-gold'}" onclick="openTutorial(${t.id}, '${t.title.replace(/'/g, "\\'")}', \`${t.content.replace(/`/g, "\\`").replace(/\$/g, "\\$")}\`, ${t.completed})">
+            <button class="btn btn-sm ${t.completed ? 'btn-ghost' : 'btn-gold'}" onclick="openTutorial(${t.id}, '${t.title.replace(/'/g, "\\'")}', \`${t.content.replace(/`/g, '\\`').replace(/\$/g, '\\$')}\`, ${t.completed})">
               ${t.completed ? 'Review' : 'Read Lesson'}
             </button>
           </div>
         </div>
-      `).join('');
+      `,
+        )
+        .join('');
     } catch (e) {
-      console.error("Error loading tutorials:", e);
+      console.error('Error loading tutorials:', e);
     }
   }
 
   function openTutorial(id, title, content, completed) {
     currentTutorialId = id;
-    document.getElementById("modalTutorialTitle").innerText = title;
-    
+    document.getElementById('modalTutorialTitle').innerText = title;
+
     // Parse Markdown using marked
-    document.getElementById("modalTutorialBody").innerHTML = marked.parse(content);
-    
-    const btn = document.getElementById("btnCompleteTutorial");
+    document.getElementById('modalTutorialBody').innerHTML =
+      marked.parse(content);
+
+    const btn = document.getElementById('btnCompleteTutorial');
     if (completed) {
-      btn.innerText = "Completed";
+      btn.innerText = 'Completed';
       btn.disabled = true;
-      btn.className = "btn btn-ghost";
+      btn.className = 'btn btn-ghost';
     } else {
-      btn.innerText = "Mark as Completed (+15 Pts)";
+      btn.innerText = 'Mark as Completed (+15 Pts)';
       btn.disabled = false;
-      btn.className = "btn btn-gold";
+      btn.className = 'btn btn-gold';
     }
-    
-    const modal = document.getElementById("tutorialModal");
-    modal.classList.add("active");
+
+    const modal = document.getElementById('tutorialModal');
+    modal.classList.add('active');
   }
 
   function closeTutorial() {
-    document.getElementById("tutorialModal").classList.remove("active");
+    document.getElementById('tutorialModal').classList.remove('active');
     currentTutorialId = null;
   }
 
   async function completeTutorialAction() {
     if (!currentTutorialId) return;
     try {
-      const response = await fetch(`/api/tutorials/${currentTutorialId}/complete`, { method: "POST" });
+      const response = await fetch(
+        `/api/tutorials/${currentTutorialId}/complete`,
+        { method: 'POST' },
+      );
       const data = await response.json();
-      
+
       if (data.success) {
         if (data.points_awarded > 0) {
           triggerPointsPopup(event, data.points_awarded);
@@ -787,25 +914,26 @@
         await refreshAll();
       }
     } catch (e) {
-      console.error("Failed to complete tutorial:", e);
+      console.error('Failed to complete tutorial:', e);
     }
   }
 
   // ==================== QUIZZES LOGIC ====================
   async function loadQuizzes() {
     try {
-      const response = await fetch("/api/quizzes");
+      const response = await fetch('/api/quizzes');
       const data = await response.json();
-      
-      const grid = document.getElementById("quizzesGrid");
+
+      const grid = document.getElementById('quizzesGrid');
       if (!data.quizzes || data.quizzes.length === 0) {
         grid.innerHTML = `<p class="text-muted">No quizzes available.</p>`;
         return;
       }
 
-      grid.innerHTML = data.quizzes.map(q => {
-        const attempted = q.high_score !== null;
-        return `
+      grid.innerHTML = data.quizzes
+        .map((q) => {
+          const attempted = q.high_score !== null;
+          return `
           <div class="card edu-card">
             <div>
               <div class="card-category">Quiz (${q.total_questions} Questions)</div>
@@ -823,9 +951,10 @@
             </div>
           </div>
         `;
-      }).join('');
+        })
+        .join('');
     } catch (e) {
-      console.error("Error loading quizzes:", e);
+      console.error('Error loading quizzes:', e);
     }
   }
 
@@ -834,47 +963,49 @@
       activeQuizId = quizId;
       const response = await fetch(`/api/quizzes/${quizId}/questions`);
       const data = await response.json();
-      
+
       quizQuestions = data.questions;
       currentQuestionIndex = 0;
       quizAnswers = {};
-      
-      document.getElementById("quizModalTitle").innerText = quizTitle;
-      document.getElementById("quizActiveView").style.display = "flex";
-      document.getElementById("quizResultsView").style.display = "none";
-      
+
+      document.getElementById('quizModalTitle').innerText = quizTitle;
+      document.getElementById('quizActiveView').style.display = 'flex';
+      document.getElementById('quizResultsView').style.display = 'none';
+
       loadQuizQuestion();
-      
-      const modal = document.getElementById("quizModal");
-      modal.classList.add("active");
+
+      const modal = document.getElementById('quizModal');
+      modal.classList.add('active');
     } catch (e) {
-      console.error("Failed to start quiz:", e);
+      console.error('Failed to start quiz:', e);
     }
   }
 
   function loadQuizQuestion() {
     if (currentQuestionIndex >= quizQuestions.length) return;
-    
+
     const question = quizQuestions[currentQuestionIndex];
-    document.getElementById("quizQuestionNum").innerText = `Question ${currentQuestionIndex + 1} of ${quizQuestions.length}`;
-    document.getElementById("quizQuestionText").innerText = question.question_text;
-    
-    const pct = ((currentQuestionIndex) / quizQuestions.length) * 100;
-    document.getElementById("quizProgressFill").style.width = `${pct}%`;
-    
-    const container = document.getElementById("quizOptionsContainer");
+    document.getElementById('quizQuestionNum').innerText =
+      `Question ${currentQuestionIndex + 1} of ${quizQuestions.length}`;
+    document.getElementById('quizQuestionText').innerText =
+      question.question_text;
+
+    const pct = (currentQuestionIndex / quizQuestions.length) * 100;
+    document.getElementById('quizProgressFill').style.width = `${pct}%`;
+
+    const container = document.getElementById('quizOptionsContainer');
     container.innerHTML = `
       <button class="option-btn" id="opt-A" onclick="selectOption('A')"><strong>A.</strong> ${question.option_a}</button>
       <button class="option-btn" id="opt-B" onclick="selectOption('B')"><strong>B.</strong> ${question.option_b}</button>
       <button class="option-btn" id="opt-C" onclick="selectOption('C')"><strong>C.</strong> ${question.option_c}</button>
       <button class="option-btn" id="opt-D" onclick="selectOption('D')"><strong>D.</strong> ${question.option_d}</button>
     `;
-    
-    const nextBtn = document.getElementById("btnNextQuestion");
+
+    const nextBtn = document.getElementById('btnNextQuestion');
     if (currentQuestionIndex === quizQuestions.length - 1) {
-      nextBtn.innerText = "Submit Quiz";
+      nextBtn.innerText = 'Submit Quiz';
     } else {
-      nextBtn.innerText = "Next Question \u2192";
+      nextBtn.innerText = 'Next Question \u2192';
     }
     nextBtn.disabled = true;
   }
@@ -882,11 +1013,13 @@
   function selectOption(opt) {
     const q = quizQuestions[currentQuestionIndex];
     quizAnswers[q.id] = opt;
-    
-    document.querySelectorAll(".option-btn").forEach(btn => btn.classList.remove("selected"));
-    document.getElementById(`opt-${opt}`).classList.add("selected");
-    
-    document.getElementById("btnNextQuestion").disabled = false;
+
+    document
+      .querySelectorAll('.option-btn')
+      .forEach((btn) => btn.classList.remove('selected'));
+    document.getElementById(`opt-${opt}`).classList.add('selected');
+
+    document.getElementById('btnNextQuestion').disabled = false;
   }
 
   async function nextQuizQuestion() {
@@ -901,52 +1034,56 @@
   async function submitQuizAction() {
     try {
       const response = await fetch(`/api/quizzes/${activeQuizId}/submit`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ answers: quizAnswers })
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ answers: quizAnswers }),
       });
       const data = await response.json();
-      
+
       if (data.success) {
-        document.getElementById("quizProgressFill").style.width = `100%`;
-        document.getElementById("quizActiveView").style.display = "none";
-        document.getElementById("quizResultsView").style.display = "flex";
-        
+        document.getElementById('quizProgressFill').style.width = `100%`;
+        document.getElementById('quizActiveView').style.display = 'none';
+        document.getElementById('quizResultsView').style.display = 'flex';
+
         // Populate results summary
         const pct = Math.round((data.score / data.total_questions) * 100);
-        document.getElementById("resultsScoreText").innerText = `You scored ${data.score}/${data.total_questions} (${pct}%)`;
-        document.getElementById("resultsPointsEarned").innerText = `+${data.points_awarded} Points Earned`;
-        
+        document.getElementById('resultsScoreText').innerText =
+          `You scored ${data.score}/${data.total_questions} (${pct}%)`;
+        document.getElementById('resultsPointsEarned').innerText =
+          `+${data.points_awarded} Points Earned`;
+
         if (pct === 100) {
-          document.getElementById("resultsIcon").innerText = "🏆";
+          document.getElementById('resultsIcon').innerText = '🏆';
         } else if (pct >= 50) {
-          document.getElementById("resultsIcon").innerText = "🎉";
+          document.getElementById('resultsIcon').innerText = '🎉';
         } else {
-          document.getElementById("resultsIcon").innerText = "📚";
+          document.getElementById('resultsIcon').innerText = '📚';
         }
-        
+
         triggerPointsPopup(null, data.points_awarded);
         updateGlobalPoints(data.total_points);
-        
+
         // Detailed feedback
-        const detailsContainer = document.getElementById("quizResultsDetails");
-        detailsContainer.innerHTML = data.details.map(d => `
+        const detailsContainer = document.getElementById('quizResultsDetails');
+        detailsContainer.innerHTML = data.details
+          .map(
+            (d) => `
           <div class="feedback-card ${d.is_correct ? 'correct' : 'incorrect'}">
             <div style="font-weight: 700; font-size: 14px;">
               ${d.is_correct ? '✅' : '❌'} ${d.question_text}
             </div>
             
             <div style="font-size: 13px; margin-top: 8px; display: grid; gap: 4px;">
-              <div style="color: ${d.user_answer === 'A' ? (d.is_correct ? 'var(--green)' : 'var(--red)') : (d.correct_option === 'A' ? 'var(--green)' : 'inherit')}">
+              <div style="color: ${d.user_answer === 'A' ? (d.is_correct ? 'var(--green)' : 'var(--red)') : d.correct_option === 'A' ? 'var(--green)' : 'inherit'}">
                 <strong>A.</strong> ${d.options.A} ${d.user_answer === 'A' ? '(Your Answer)' : ''} ${d.correct_option === 'A' ? '(Correct)' : ''}
               </div>
-              <div style="color: ${d.user_answer === 'B' ? (d.is_correct ? 'var(--green)' : 'var(--red)') : (d.correct_option === 'B' ? 'var(--green)' : 'inherit')}">
+              <div style="color: ${d.user_answer === 'B' ? (d.is_correct ? 'var(--green)' : 'var(--red)') : d.correct_option === 'B' ? 'var(--green)' : 'inherit'}">
                 <strong>B.</strong> ${d.options.B} ${d.user_answer === 'B' ? '(Your Answer)' : ''} ${d.correct_option === 'B' ? '(Correct)' : ''}
               </div>
-              <div style="color: ${d.user_answer === 'C' ? (d.is_correct ? 'var(--green)' : 'var(--red)') : (d.correct_option === 'C' ? 'var(--green)' : 'inherit')}">
+              <div style="color: ${d.user_answer === 'C' ? (d.is_correct ? 'var(--green)' : 'var(--red)') : d.correct_option === 'C' ? 'var(--green)' : 'inherit'}">
                 <strong>C.</strong> ${d.options.C} ${d.user_answer === 'C' ? '(Your Answer)' : ''} ${d.correct_option === 'C' ? '(Correct)' : ''}
               </div>
-              <div style="color: ${d.user_answer === 'D' ? (d.is_correct ? 'var(--green)' : 'var(--red)') : (d.correct_option === 'D' ? 'var(--green)' : 'inherit')}">
+              <div style="color: ${d.user_answer === 'D' ? (d.is_correct ? 'var(--green)' : 'var(--red)') : d.correct_option === 'D' ? 'var(--green)' : 'inherit'}">
                 <strong>D.</strong> ${d.options.D} ${d.user_answer === 'D' ? '(Your Answer)' : ''} ${d.correct_option === 'D' ? '(Correct)' : ''}
               </div>
             </div>
@@ -955,17 +1092,19 @@
               <strong>Explanation:</strong> ${d.explanation || 'No explanation provided.'}
             </div>
           </div>
-        `).join('');
-        
+        `,
+          )
+          .join('');
+
         await refreshAll();
       }
     } catch (e) {
-      console.error("Quiz submission error:", e);
+      console.error('Quiz submission error:', e);
     }
   }
 
   function closeQuiz() {
-    document.getElementById("quizModal").classList.remove("active");
+    document.getElementById('quizModal').classList.remove('active');
     activeQuizId = null;
     quizQuestions = [];
     quizAnswers = {};
@@ -974,38 +1113,41 @@
   // ==================== CHALLENGES LOGIC ====================
   async function loadChallenges() {
     try {
-      const response = await fetch("/api/challenges");
+      const response = await fetch('/api/challenges');
       const data = await response.json();
-      
+
       // Update points and rank again in case streak challenge got solved
       updateGlobalPoints(data.total_points);
-      
-      const container = document.getElementById("challengesList");
+
+      const container = document.getElementById('challengesList');
       if (!data.challenges || data.challenges.length === 0) {
         container.innerHTML = `<p class="text-muted">No challenges available.</p>`;
         return;
       }
-      
+
       // Notify user about newly completed challenges if any
       if (data.newly_completed && data.newly_completed.length > 0) {
-        data.newly_completed.forEach(ch => {
-          alert(`🏆 Challenge Completed: ${ch === 'expense_streak_7' ? 'Consistent Tracker' : (ch === 'portfolio_builder_2' ? 'Portfolio Builder' : 'Goal Setter')}! Points added!`);
+        data.newly_completed.forEach((ch) => {
+          alert(
+            `🏆 Challenge Completed: ${ch === 'expense_streak_7' ? 'Consistent Tracker' : ch === 'portfolio_builder_2' ? 'Portfolio Builder' : 'Goal Setter'}! Points added!`,
+          );
         });
       }
 
-      container.innerHTML = data.challenges.map(ch => {
-        const pct = (ch.progress / ch.target) * 100;
-        let progressLabel = "";
-        
-        if (ch.key === "expense_streak_7") {
-          progressLabel = `${ch.progress} / ${ch.target} Days streak`;
-        } else if (ch.key === "portfolio_builder_2") {
-          progressLabel = `${ch.progress} / ${ch.target} Investments`;
-        } else {
-          progressLabel = `₹${fmtNum(ch.progress)} / ₹${fmtNum(ch.target)}`;
-        }
-        
-        return `
+      container.innerHTML = data.challenges
+        .map((ch) => {
+          const pct = (ch.progress / ch.target) * 100;
+          let progressLabel = '';
+
+          if (ch.key === 'expense_streak_7') {
+            progressLabel = `${ch.progress} / ${ch.target} Days streak`;
+          } else if (ch.key === 'portfolio_builder_2') {
+            progressLabel = `${ch.progress} / ${ch.target} Investments`;
+          } else {
+            progressLabel = `₹${fmtNum(ch.progress)} / ₹${fmtNum(ch.target)}`;
+          }
+
+          return `
           <div class="challenge-item">
             <div class="challenge-info">
               <div class="challenge-title">
@@ -1035,9 +1177,10 @@
             </div>
           </div>
         `;
-      }).join('');
+        })
+        .join('');
     } catch (e) {
-      console.error("Error loading challenges:", e);
+      console.error('Error loading challenges:', e);
     }
   }
 </script>

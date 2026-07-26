@@ -42,6 +42,10 @@ from models import (
     GroupExpense, GroupExpenseSplit, GroupSettlement,
     Watchlist, WatchlistItem, WatchlistAlert,
     RiskProfile, InsurancePolicy, InsuranceRecommendation,
+    BankConnection, BankTransaction, FraudAlert, Notification,
+    NotificationPreference, InvestmentGoal, GoalAllocation,
+    GoalContribution, GoalRecommendation, Couple,
+    CoupleSubscription, User,
 )
 
 
@@ -126,16 +130,6 @@ def _register_failed_login(username):
 def _reset_failed_login(username):
     _failed_login_attempts.pop(username, None)
 
-# ---------------- IMPORT MODELS ----------------
-from models import (
-    db, Expense, Asset, Liability, BudgetLimit, BudgetAlert, 
-    PriceAlert, PriceAlertEvent, FinancialGoal, RecurringExpense, 
-    Portfolio, Account, Transaction, LedgerEntry,
-    BankConnection, BankTransaction, FraudAlert, Notification,
-    NotificationPreference, InvestmentGoal, GoalAllocation,
-    GoalContribution, GoalRecommendation, Couple
-)
-
 # ---------------- IMPORT UTILS ----------------
 from utils.sip import calculate_sip, calculate_goal_sip, calculate_stepup_sip
 from utils.tax import calculate_tax, tax_optimization_module
@@ -185,9 +179,10 @@ from utils.rag_system import RAGSystem
 from utils.fx import convert_to_base, get_rate
 from utils.loan_planner import data_input
 
-
-app = Flask(__name__)
-
+# Continue configuring the same app instance initialized above (line 64).
+# NOTE: A duplicate `app = Flask(__name__)` was previously here, which
+# silently detached SocketIO (line 67) and the rate Limiter (line 76)
+# from the active app context. Removed to fix #584.
 
 # ---------------- EMAIL CONFIG ----------------
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
@@ -202,6 +197,11 @@ mail = Mail(app)
 # ---------------- DATABASE ----------------
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///money_mentor.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+# ---------------- UPLOAD SIZE LIMIT ----------------
+# Reject request payloads larger than 16 MB to prevent memory exhaustion
+# and Denial of Service via oversized file uploads.
+app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024  # 16 MB
 
 # ---------------- SECRET KEY ----------------
 # SECRET_KEY signs session cookies. In production it MUST come from the
@@ -243,8 +243,6 @@ app.config["SESSION_COOKIE_SECURE"] = (
 login_manager = LoginManager()
 login_manager.init_app(app)
 db.init_app(app)
-
-from models import User
 
 with app.app_context():
     db.create_all()
@@ -351,9 +349,6 @@ def process_recurring_expenses():
     today = date.today()
     try:
 
-
-        from models import db, Expense, Asset, Liability, BudgetLimit, BudgetAlert, PriceAlert, PriceAlertEvent, FinancialGoal, RecurringExpense, Portfolio, Account, Transaction, LedgerEntry, FxRateCache, FinancialGoalMilestone, RecurringIncome, IncomeOccurrence
-
         
         # Get all active recurring expenses due today
 
@@ -403,11 +398,9 @@ def process_recurring_expenses():
         print(f"❌ Error processing recurring expenses: {e}")
 
 
-# ---------------- SCHEDULER ----------------
-scheduler = BackgroundScheduler()
-scheduler.add_job(send_weekly_reports, trigger=CronTrigger(day_of_week='mon', hour=9, minute=0), id='weekly_email_job', replace_existing=True)
-scheduler.add_job(process_recurring_expenses, trigger=CronTrigger(hour=9, minute=0), id='recurring_expense_job', replace_existing=True)
-# Add scheduler for subscription detection if separate frequency needed (currently bundled with recurring expense processing)
+# NOTE: Scheduler jobs (weekly reports, recurring expenses) are
+# consolidated into a single BackgroundScheduler instance at the bottom
+# of this file to prevent orphaned thread pools. See #588.
 
 def process_recurring_incomes():
     """Process recurring incomes and add them to income occurrences"""
@@ -415,7 +408,6 @@ def process_recurring_incomes():
     today = date.today()
     
     try:
-        from models import db, RecurringIncome, IncomeOccurrence
         
         # Get all active recurring incomes due today
         due_incomes = RecurringIncome.query.filter(
@@ -500,34 +492,7 @@ def auto_login():
             db.session.commit()
         login_user(user)
 
-# ============================================
-# SCHEDULER - Runs weekly email and recurring expenses
-# ============================================
-scheduler = BackgroundScheduler()
-
-# Weekly email job - Every Monday at 9:00 AM
-scheduler.add_job(
-    func=send_weekly_reports,
-    trigger=CronTrigger(day_of_week='mon', hour=9, minute=0),
-    id='weekly_email_job',
-    replace_existing=True
-)
-
-# Recurring expenses job - Every day at 9:00 AM
-scheduler.add_job(
-    func=process_recurring_expenses,
-    trigger=CronTrigger(hour=9, minute=0),
-    id='recurring_expense_job',
-    replace_existing=True
-)
-
-# Recurring incomes job - Every day at 9:00 AM
-scheduler.add_job(
-    func=process_recurring_incomes,
-    trigger=CronTrigger(hour=9, minute=0),
-    id='recurring_income_job',
-    replace_existing=True
-)
+# NOTE: Scheduler jobs moved to consolidated scheduler at bottom of file. See #588.
 
 
 
@@ -674,6 +639,7 @@ def validate_password_strength(password):
 
 # ---------------- HOME ----------------
 @app.route("/register", methods=["POST"])
+@limiter.limit("5 per minute")
 def register():
     data = request.json or {}
     username = data.get("username")
@@ -961,7 +927,6 @@ def export_parsed_expenses():
             return jsonify({'success': False, 'error': 'No transactions to export'}), 400
         
         # Save to expense tracker
-        from models import Expense
         count = 0
         for exp in expenses:
             expense = Expense(
@@ -1001,11 +966,7 @@ def voice_test():
     })
 
 
-# ---------------- COUPLE FINANCE PLANNER ----------------
-
-
-  # ---------------- COUPLE FINANCE PLANNER ----------------
-        # ---------------- MFA SYSTEM ----------------
+# ---------------- MFA SYSTEM ----------------
 from utils.mfa_system import MFASystem
 
 @app.route('/security-settings')
@@ -1023,12 +984,8 @@ def couple_planner_page():
 
 @app.route('/api/mfa/status', methods=['GET'])
 @login_required
-
 def mfa_status():
     """Get MFA status"""
-
-def couple_status():
-
     try:
         mfa = MFASystem(current_user)
         status = mfa.get_mfa_status()
@@ -1038,7 +995,6 @@ def couple_status():
 
 @app.route('/api/mfa/totp/setup', methods=['GET'])
 @login_required
-
 def mfa_totp_setup():
     """Setup TOTP"""
     try:
@@ -1056,54 +1012,28 @@ def mfa_totp_setup():
             'error': str(e)
         }), 500
 
-def couple_invite():
-    try:
-        data = request.json
-        email = data.get('email')
-        if not email:
-            return jsonify({'error': 'Email is required'}), 400
-        result = couple_manager.create_invitation(current_user.id, email)
-        return jsonify(result)
-
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
 @app.route('/api/mfa/totp/verify', methods=['POST'])
 @login_required
-
 def mfa_totp_verify():
     """Verify TOTP code"""
     try:
         data = request.json
         code = data.get('code')
-        
+
         if not code:
             return jsonify({'error': 'Code is required'}), 400
-        
+
         mfa = MFASystem(current_user)
         if mfa.verify_totp(code):
             return jsonify({'success': True, 'message': 'TOTP verified and enabled'})
         else:
             return jsonify({'error': 'Invalid code'}), 400
-        
+
     except Exception as e:
         return jsonify({
             'success': False,
             'error': str(e)
         }), 500
-
-
-def couple_accept():
-    try:
-        data = request.json
-        token = data.get('token')
-        if not token:
-            return jsonify({'error': 'Token is required'}), 400
-        result = couple_manager.accept_invitation(current_user.id, token)
-        return jsonify(result)
-
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
 
 @app.route('/api/mfa/webauthn/setup', methods=['GET'])
 @login_required
@@ -1131,92 +1061,41 @@ def mfa_webauthn_verify():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@app.route('/api/couple/goals', methods=['GET'])
-@login_required
-def get_couple_goals():
-    """Get shared goals"""
-    try:
-        status = couple_manager.get_couple_status(current_user.id)
-
-        if not status.get('has_couple'):
-            return jsonify({'error': 'No couple found'}), 400
-
-        goals = couple_manager.get_shared_goals(status['couple_id'])
-
-        return jsonify({
-            'success': True,
-            'goals': goals
-        })
-
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
 @app.route('/api/mfa/devices', methods=['GET'])
 @login_required
-
 def mfa_get_devices():
     """Get trusted devices"""
     try:
         mfa = MFASystem(current_user)
         devices = mfa.get_trusted_devices()
         return jsonify({'success': True, 'devices': devices})
-    
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-def create_goal():
-    try:
-        data = request.json
-        status = couple_manager.get_couple_status(current_user.id)
-        if not status.get('has_couple'):
-            return jsonify({'error': 'No couple found'}), 400
-        result = couple_manager.create_shared_goal(status['couple_id'], data)
-        return jsonify(result)
-
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/mfa/devices/add', methods=['POST'])
 @login_required
-
 def mfa_add_device():
     """Add trusted device"""
     try:
         data = request.json
         device_name = data.get('device_name')
-        
+
         if not device_name:
             return jsonify({'error': 'Device name is required'}), 400
-        
+
         mfa = MFASystem(current_user)
         device = mfa.add_trusted_device(
             device_name,
             request.headers.get('User-Agent'),
             request.remote_addr
         )
-        
+
         return jsonify({'success': True, 'device': device.to_dict()})
-    
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-def contribute_goal():
-    try:
-        data = request.json
-        goal_id = data.get('goal_id')
-        amount = data.get('amount')
-        note = data.get('note', '')
-        if not goal_id or not amount:
-            return jsonify({'error': 'Goal ID and amount required'}), 400
-        result = couple_manager.add_goal_contribution(current_user.id, goal_id, amount, note)
-        return jsonify(result)
-
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/mfa/devices/remove/<int:device_id>', methods=['DELETE'])
 @login_required
-
 def mfa_remove_device(device_id):
     """Remove trusted device"""
     try:
@@ -1225,29 +1104,11 @@ def mfa_remove_device(device_id):
             return jsonify({'success': True})
         else:
             return jsonify({'error': 'Device not found'}), 404
-
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500 
-    
-
-def get_split_expenses():
-    try:
-        status = couple_manager.get_couple_status(current_user.id)
-        if not status.get('has_couple'):
-            return jsonify({'error': 'No couple found'}), 400
-        settled = request.args.get('settled')
-        if settled is not None:
-            settled = settled.lower() == 'true'
-        expenses = couple_manager.get_split_expenses(status['couple_id'], settled)
-        summary = couple_manager.get_expense_summary(status['couple_id'])
-        return jsonify({'success': True, 'expenses': expenses, 'summary': summary})
-
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/mfa/backup-codes', methods=['POST'])
 @login_required
-
 def mfa_generate_backup_codes():
     """Generate backup codes"""
     try:
@@ -1268,7 +1129,6 @@ def mfa_security_events():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-
 @app.route('/api/mfa/disable', methods=['POST'])
 @login_required
 def mfa_disable():
@@ -1279,7 +1139,6 @@ def mfa_disable():
             return jsonify({'success': True, 'message': 'MFA disabled'})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-
 
 # ---------------- DOCUMENT PARSER ----------------
 from utils.document_parser import DocumentParser
@@ -1347,7 +1206,6 @@ def document_parser_page():
 #             return jsonify({'success': False, 'error': 'No transactions to export'}), 400
         
 #         # Save to expense tracker
-#         from models import Expense
 #         count = 0
 #         for exp in expenses:
 #             expense = Expense(
@@ -2108,7 +1966,7 @@ def couple_unlink():
 
 @app.route('/api/couple/goals', methods=['GET'])
 @login_required
-def get_goals():
+def get_couple_shared_goals():
 
     """Get shared goals"""
 
@@ -3716,7 +3574,6 @@ def subscriptions_page():
 # API: List subscriptions
 @app.route('/api/subscriptions', methods=['GET'])
 def list_subscriptions():
-    from models import CoupleSubscription, User
     user_id = 1  # placeholder for current user auth
     subs = CoupleSubscription.query.filter(
         (CoupleSubscription.user_id == user_id) | (CoupleSubscription.partner_user_id == user_id)
@@ -6948,12 +6805,7 @@ def get_risk_advice():
 
 
 
-if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
-    scheduler = BackgroundScheduler()
-    scheduler.add_job(check_all_budgets_job, 'interval', days=1)
-    scheduler.add_job(check_all_recurring_expenses_job, 'interval', days=1)
-    scheduler.add_job(check_stock_alerts_job, 'interval', minutes=10)
-    scheduler.start()
+# NOTE: Scheduler jobs moved to consolidated scheduler at bottom of file. See #588.
 
 
 # ---------------- WEB SOCKET EVENTS ----------------
@@ -7585,14 +7437,28 @@ def tax_optimize():
 
 
 
-# ---------------- ADDITIONAL SCHEDULERS ----------------
+# ---------------- CONSOLIDATED SCHEDULER (#588) ----------------
+# All background jobs are registered on a SINGLE BackgroundScheduler
+# instance to prevent orphaned thread pools and duplicate job execution.
 if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
     scheduler = BackgroundScheduler()
-    scheduler.add_job(check_all_budgets_job, 'interval', days=1)
-    scheduler.add_job(check_all_recurring_expenses_job, 'interval', days=1)
-    scheduler.add_job(check_stock_alerts_job, 'interval', minutes=10)
-    scheduler.add_job(check_sip_due_reminders, 'interval', days=1)
+    # Weekly reports - Every Monday at 9:00 AM
+    scheduler.add_job(send_weekly_reports, trigger=CronTrigger(day_of_week='mon', hour=9, minute=0), id='weekly_email_job', replace_existing=True)
+    # Recurring expenses - Every day at 9:00 AM
+    scheduler.add_job(process_recurring_expenses, trigger=CronTrigger(hour=9, minute=0), id='recurring_expense_job', replace_existing=True)
+    # Recurring incomes - Every day at 9:00 AM
+    scheduler.add_job(process_recurring_incomes, trigger=CronTrigger(hour=9, minute=0), id='recurring_income_job', replace_existing=True)
+    # Budget checks - Daily
+    scheduler.add_job(check_all_budgets_job, 'interval', days=1, id='budget_check_job', replace_existing=True)
+    # Recurring expense alerts - Daily
+    scheduler.add_job(check_all_recurring_expenses_job, 'interval', days=1, id='recurring_expense_alert_job', replace_existing=True)
+    # Stock alerts - Every 10 minutes
+    scheduler.add_job(check_stock_alerts_job, 'interval', minutes=10, id='stock_alert_job', replace_existing=True)
+    # SIP due reminders - Daily
+    scheduler.add_job(check_sip_due_reminders, 'interval', days=1, id='sip_reminder_job', replace_existing=True)
     scheduler.start()
+    import atexit
+    atexit.register(lambda: scheduler.shutdown())
 
 
 # ---------------- RUN ----------------

@@ -145,16 +145,25 @@ class TaxFilingSystem:
             'total_tax': round(tax + cess, 2),
             'effective_rate': round((tax + cess) / taxable_income * 100, 2) if taxable_income > 0 else 0
         }
-    
     def calculate_tax(self) -> Dict:
         """Calculate tax liability"""
         gross_total = self.income['total']
         total_deductions = self.deductions['total']
-        taxable_income = max(0, gross_total - total_deductions)
-        
+
+        # Old regime allows all deductions (80C, 80D, 80E, 80G, 80TTA, HRA,
+        # standard deduction).
+        old_regime_taxable_income = max(0, gross_total - total_deductions)
+
+        # New regime disallows most deductions - only the standard
+        # deduction applies. Using total_deductions here would leak
+        # old-regime-only deductions into the new regime calculation and
+        # understate new regime tax.
+        new_regime_deductions = self.deductions.get('standard_deduction', 50000)
+        new_regime_taxable_income = max(0, gross_total - new_regime_deductions)
+
         # Calculate under both regimes
-        new_regime = self.calculate_tax_new_regime(taxable_income)
-        old_regime = self.calculate_tax_old_regime(taxable_income)
+        new_regime = self.calculate_tax_new_regime(new_regime_taxable_income)
+        old_regime = self.calculate_tax_old_regime(old_regime_taxable_income)
         
         # Determine recommended regime
         recommended = 'new' if new_regime['total_tax'] <= old_regime['total_tax'] else 'old'
@@ -162,7 +171,10 @@ class TaxFilingSystem:
         return {
             'gross_total_income': gross_total,
             'total_deductions': total_deductions,
-            'taxable_income': taxable_income,
+            'taxable_income': {
+                'new_regime': new_regime_taxable_income,
+                'old_regime': old_regime_taxable_income
+            },
             'new_regime': new_regime,
             'old_regime': old_regime,
             'recommended_regime': recommended,
@@ -345,9 +357,11 @@ class TaxFilingSystem:
     
     def get_filing_status(self) -> Dict:
         """Get tax filing status"""
+        tax_result = self.calculate_tax()
+        payment_due_income = tax_result['taxable_income'][f"{tax_result['recommended_regime']}_regime"]
         return {
             'status': 'pending',
             'last_filed': self.user.get('last_filed', None),
             'pending_refund': self.user.get('pending_refund', 0),
-            'payment_due': self.calculate_tax()['taxable_income'] > 0
+            'payment_due': payment_due_income > 0
         }

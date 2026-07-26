@@ -289,13 +289,27 @@ class LedgerSystem:
         if not account:
             raise ValueError(f"Account {account_id} not found")
         
-        # Get all ledger entries for this account
+      # Fetch all entries oldest-first so we can replay them into a running
+        # balance. balance_after must reflect the account's balance
+        # immediately after that specific entry, not the account's current
+        # (present-day) balance, so we can't just read account.balance here.
         entries = LedgerEntry.query.filter_by(account_id=account_id).order_by(
-            LedgerEntry.timestamp.desc()
-        ).limit(limit).all()
+            LedgerEntry.timestamp.asc()
+        ).all()
+        
+        running_balance = 0.0
+        history_with_balance = []
+        for entry in entries:
+            delta = float(entry.amount) if entry.entry_type == 'CREDIT' else -float(entry.amount)
+            running_balance += delta
+            history_with_balance.append((entry, running_balance))
+        
+        # Display most-recent-first, then apply the limit
+        history_with_balance.reverse()
+        history_with_balance = history_with_balance[:limit]
         
         result = []
-        for entry in entries:
+        for entry, balance_after in history_with_balance:
             transaction = Transaction.query.get(entry.transaction_id)
             if transaction:
                 result.append({
@@ -307,7 +321,7 @@ class LedgerSystem:
                     'description': entry.description or transaction.description,
                     'timestamp': entry.timestamp.isoformat(),
                     'status': transaction.status,
-                    'balance_after': float(account.balance)  # Approximate
+                    'balance_after': round(balance_after, 2)
                 })
         
         return result

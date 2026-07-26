@@ -1,167 +1,311 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>RAG Assistant - AI Money Mentor</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
     <style>
-        body { background: #070b12; color: #eef0f5; font-family: 'Instrument Sans', sans-serif; }
-        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
-        .card { background: rgba(15,22,38,0.96); border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; padding: 24px; margin-bottom: 20px; }
-        .btn-gold { background: linear-gradient(135deg, #f3d687, #d4a843); color: #0a0e18; border: none; padding: 10px 24px; border-radius: 999px; font-weight: 700; }
-        .btn-gold:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(212,168,67,0.3); }
-        .text-gold { color: #d4a843; }
-        .text-muted { color: #5a6a82; }
-        .form-control { background: rgba(17,26,46,0.9); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; color: #eef0f5; }
-        .form-control:focus { background: rgba(17,26,46,0.95); border-color: #d4a843; color: #eef0f5; box-shadow: 0 0 0 3px rgba(212,168,67,0.1); }
-        .form-control::file-selector-button { background: rgba(212,168,67,0.2); color: #d4a843; border: none; border-radius: 8px; padding: 8px 16px; cursor: pointer; }
-        .chat-messages { height: 400px; overflow-y: auto; padding: 16px; background: rgba(255,255,255,0.02); border-radius: 14px; border: 1px solid rgba(255,255,255,0.04); }
-        .msg { padding: 12px 16px; border-radius: 12px; margin-bottom: 10px; max-width: 85%; }
-        .msg.user { background: rgba(212,168,67,0.15); border: 1px solid rgba(212,168,67,0.2); align-self: flex-end; margin-left: auto; }
-        .msg.bot { background: rgba(20,200,191,0.08); border: 1px solid rgba(20,200,191,0.15); align-self: flex-start; margin-right: auto; }
-        .msg .sender { font-size: 10px; color: #5a6a82; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em; }
-        .msg .source { font-size: 11px; color: #d4a843; margin-top: 8px; }
-        .file-badge { display: inline-block; padding: 4px 12px; background: rgba(212,168,67,0.15); border-radius: 20px; font-size: 12px; color: #d4a843; margin: 4px; }
-        .loading { display: inline-block; width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.1); border-top-color: #d4a843; border-radius: 50%; animation: spin 0.8s linear infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .upload-progress { display: none; }
-        .upload-progress.active { display: block; }
+      body {
+        background: #070b12;
+        color: #eef0f5;
+        font-family: 'Instrument Sans', sans-serif;
+      }
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .card {
+        background: rgba(15, 22, 38, 0.96);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 18px;
+        padding: 24px;
+        margin-bottom: 20px;
+      }
+      .btn-gold {
+        background: linear-gradient(135deg, #f3d687, #d4a843);
+        color: #0a0e18;
+        border: none;
+        padding: 10px 24px;
+        border-radius: 999px;
+        font-weight: 700;
+      }
+      .btn-gold:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(212, 168, 67, 0.3);
+      }
+      .text-gold {
+        color: #d4a843;
+      }
+      .text-muted {
+        color: #5a6a82;
+      }
+      .form-control {
+        background: rgba(17, 26, 46, 0.9);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 14px;
+        color: #eef0f5;
+      }
+      .form-control:focus {
+        background: rgba(17, 26, 46, 0.95);
+        border-color: #d4a843;
+        color: #eef0f5;
+        box-shadow: 0 0 0 3px rgba(212, 168, 67, 0.1);
+      }
+      .form-control::file-selector-button {
+        background: rgba(212, 168, 67, 0.2);
+        color: #d4a843;
+        border: none;
+        border-radius: 8px;
+        padding: 8px 16px;
+        cursor: pointer;
+      }
+      .chat-messages {
+        height: 400px;
+        overflow-y: auto;
+        padding: 16px;
+        background: rgba(255, 255, 255, 0.02);
+        border-radius: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.04);
+      }
+      .msg {
+        padding: 12px 16px;
+        border-radius: 12px;
+        margin-bottom: 10px;
+        max-width: 85%;
+      }
+      .msg.user {
+        background: rgba(212, 168, 67, 0.15);
+        border: 1px solid rgba(212, 168, 67, 0.2);
+        align-self: flex-end;
+        margin-left: auto;
+      }
+      .msg.bot {
+        background: rgba(20, 200, 191, 0.08);
+        border: 1px solid rgba(20, 200, 191, 0.15);
+        align-self: flex-start;
+        margin-right: auto;
+      }
+      .msg .sender {
+        font-size: 10px;
+        color: #5a6a82;
+        margin-bottom: 4px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      .msg .source {
+        font-size: 11px;
+        color: #d4a843;
+        margin-top: 8px;
+      }
+      .file-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        background: rgba(212, 168, 67, 0.15);
+        border-radius: 20px;
+        font-size: 12px;
+        color: #d4a843;
+        margin: 4px;
+      }
+      .loading {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid rgba(255, 255, 255, 0.1);
+        border-top-color: #d4a843;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      .upload-progress {
+        display: none;
+      }
+      .upload-progress.active {
+        display: block;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <div>
-                <h1 class="text-gold">🧠 RAG Knowledge Assistant</h1>
-                <p class="text-muted">Upload documents and ask questions about them</p>
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h1 class="text-gold">
+            <i class="fa-solid fa-brain"></i> RAG Knowledge Assistant
+          </h1>
+          <p class="text-muted">
+            Upload documents and ask questions about them
+          </p>
+        </div>
+        <a href="/" class="btn btn-gold">← Back to Dashboard</a>
+      </div>
+
+      <div class="row">
+        <!-- Left: Upload & Documents -->
+        <div class="col-md-4">
+          <div class="card">
+            <h5><i class="fa-solid fa-upload"></i> Upload Document</h5>
+            <form id="uploadForm">
+              <div class="mb-3">
+                <label class="form-label text-muted">Select Document</label>
+                <input
+                  type="file"
+                  class="form-control"
+                  id="fileInput"
+                  accept=".pdf,.docx,.xlsx,.txt,.png,.jpg,.jpeg"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label class="form-label text-muted"
+                  >Document Name (Optional)</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="docName"
+                  placeholder="e.g., Form 16 2024"
+                />
+              </div>
+              <button type="submit" class="btn btn-gold w-100" id="uploadBtn">
+                📤 Upload
+              </button>
+              <div class="upload-progress text-center mt-3" id="uploadProgress">
+                <div class="loading"></div>
+                <p class="text-muted mt-2">Processing document...</p>
+              </div>
+            </form>
+            <div id="uploadResult" class="mt-3"></div>
+          </div>
+
+          <div class="card">
+            <h5><i class="fa-solid fa-upload"></i> Uploaded Documents</h5>
+            <div id="documentsList">
+              <div class="text-center text-muted py-4">
+                No documents uploaded yet
+              </div>
             </div>
-            <a href="/" class="btn btn-gold">← Back to Dashboard</a>
+            <button class="btn btn-danger w-100 mt-3" onclick="clearAll()">
+              <i class="fa-solid fa-trash"></i> Clear All Documents
+            </button>
+          </div>
         </div>
 
-        <div class="row">
-            <!-- Left: Upload & Documents -->
-            <div class="col-md-4">
-                <div class="card">
-                    <h5>📄 Upload Document</h5>
-                    <form id="uploadForm">
-                        <div class="mb-3">
-                            <label class="form-label text-muted">Select Document</label>
-                            <input type="file" class="form-control" id="fileInput" accept=".pdf,.docx,.xlsx,.txt,.png,.jpg,.jpeg" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label text-muted">Document Name (Optional)</label>
-                            <input type="text" class="form-control" id="docName" placeholder="e.g., Form 16 2024">
-                        </div>
-                        <button type="submit" class="btn btn-gold w-100" id="uploadBtn">📤 Upload</button>
-                        <div class="upload-progress text-center mt-3" id="uploadProgress">
-                            <div class="loading"></div>
-                            <p class="text-muted mt-2">Processing document...</p>
-                        </div>
-                    </form>
-                    <div id="uploadResult" class="mt-3"></div>
+        <!-- Right: Chat -->
+        <div class="col-md-8">
+          <div class="card">
+            <h5><i class="fa-solid fa-comments"></i> Ask Questions</h5>
+            <div class="chat-messages" id="chatMessages">
+              <div class="text-center text-muted py-4" id="chatWelcome">
+                <div style="font-size: 48px">
+                  <i class="fa-solid fa-file-lines"></i>
                 </div>
-
-                <div class="card">
-                    <h5>📚 Uploaded Documents</h5>
-                    <div id="documentsList">
-                        <div class="text-center text-muted py-4">No documents uploaded yet</div>
-                    </div>
-                    <button class="btn btn-danger w-100 mt-3" onclick="clearAll()">🗑️ Clear All Documents</button>
-                </div>
+                <p class="mt-2">Upload a document and ask questions about it</p>
+                <p class="small">Supported: PDF, DOCX, XLSX, TXT, PNG, JPG</p>
+              </div>
             </div>
-
-            <!-- Right: Chat -->
-            <div class="col-md-8">
-                <div class="card">
-                    <h5>💬 Ask Questions</h5>
-                    <div class="chat-messages" id="chatMessages">
-                        <div class="text-center text-muted py-4" id="chatWelcome">
-                            <div style="font-size: 48px;">📚</div>
-                            <p class="mt-2">Upload a document and ask questions about it</p>
-                            <p class="small">Supported: PDF, DOCX, XLSX, TXT, PNG, JPG</p>
-                        </div>
-                    </div>
-                    <div class="chat-input-row mt-3">
-                        <div style="display:flex; gap: 10px; width:100%;">
-                            <input type="text" class="form-control" id="chatInput" placeholder="Ask about your document..." onkeypress="if(event.key==='Enter') sendQuery()">
-                            <button class="btn btn-gold" onclick="sendQuery()">Send</button>
-                        </div>
-                    </div>
-                </div>
+            <div class="chat-input-row mt-3">
+              <div style="display: flex; gap: 10px; width: 100%">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="chatInput"
+                  placeholder="Ask about your document..."
+                  onkeypress="if (event.key === 'Enter') sendQuery();"
+                />
+                <button class="btn btn-gold" onclick="sendQuery()">Send</button>
+              </div>
             </div>
+          </div>
         </div>
+      </div>
     </div>
 
     <script>
-        let isProcessing = false;
+      let isProcessing = false;
 
-        // Upload document
-        document.getElementById('uploadForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const fileInput = document.getElementById('fileInput');
-            const docName = document.getElementById('docName').value;
-            const file = fileInput.files[0];
-            
-            if (!file) {
-                alert('Please select a file');
-                return;
-            }
-            
-            const formData = new FormData();
-            formData.append('file', file);
-            formData.append('doc_name', docName);
-            
-            document.getElementById('uploadProgress').classList.add('active');
-            document.getElementById('uploadBtn').disabled = true;
-            document.getElementById('uploadResult').innerHTML = '';
-            
-            try {
-                const response = await fetch('/api/rag/upload', {
-                    method: 'POST',
-                    body: formData
-                });
-                
-                const data = await response.json();
-                
-                document.getElementById('uploadProgress').classList.remove('active');
-                document.getElementById('uploadBtn').disabled = false;
-                
-                if (data.success) {
-                    document.getElementById('uploadResult').innerHTML = `
+      // Upload document
+      document
+        .getElementById('uploadForm')
+        .addEventListener('submit', async function (e) {
+          e.preventDefault();
+
+          const fileInput = document.getElementById('fileInput');
+          const docName = document.getElementById('docName').value;
+          const file = fileInput.files[0];
+
+          if (!file) {
+            alert('Please select a file');
+            return;
+          }
+
+          const formData = new FormData();
+          formData.append('file', file);
+          formData.append('doc_name', docName);
+
+          document.getElementById('uploadProgress').classList.add('active');
+          document.getElementById('uploadBtn').disabled = true;
+          document.getElementById('uploadResult').innerHTML = '';
+
+          try {
+            const response = await fetch('/api/rag/upload', {
+              method: 'POST',
+              body: formData,
+            });
+
+            const data = await response.json();
+
+            document
+              .getElementById('uploadProgress')
+              .classList.remove('active');
+            document.getElementById('uploadBtn').disabled = false;
+
+            if (data.success) {
+              document.getElementById('uploadResult').innerHTML = `
                         <div class="alert alert-success">✅ Document uploaded successfully!</div>
                     `;
-                    loadDocuments();
-                    document.getElementById('fileInput').value = '';
-                    document.getElementById('docName').value = '';
-                } else {
-                    document.getElementById('uploadResult').innerHTML = `
+              loadDocuments();
+              document.getElementById('fileInput').value = '';
+              document.getElementById('docName').value = '';
+            } else {
+              document.getElementById('uploadResult').innerHTML = `
                         <div class="alert alert-danger">❌ ${data.error}</div>
                     `;
-                }
-            } catch (error) {
-                document.getElementById('uploadProgress').classList.remove('active');
-                document.getElementById('uploadBtn').disabled = false;
-                document.getElementById('uploadResult').innerHTML = `
+            }
+          } catch (error) {
+            document
+              .getElementById('uploadProgress')
+              .classList.remove('active');
+            document.getElementById('uploadBtn').disabled = false;
+            document.getElementById('uploadResult').innerHTML = `
                     <div class="alert alert-danger">❌ Error: ${error.message}</div>
                 `;
-            }
+          }
         });
 
-        // Load documents
-        async function loadDocuments() {
-            try {
-                const response = await fetch('/api/rag/documents');
-                const data = await response.json();
-                
-                const container = document.getElementById('documentsList');
-                
-                if (data.success && data.documents.length > 0) {
-                    let html = '<div style="max-height:200px;overflow-y:auto;">';
-                    data.documents.forEach(doc => {
-                        const name = doc.metadata?.doc_name || doc.path.split('/').pop() || 'Unknown';
-                        html += `
+      // Load documents
+      async function loadDocuments() {
+        try {
+          const response = await fetch('/api/rag/documents');
+          const data = await response.json();
+
+          const container = document.getElementById('documentsList');
+
+          if (data.success && data.documents.length > 0) {
+            let html = '<div style="max-height:200px;overflow-y:auto;">';
+            data.documents.forEach((doc) => {
+              const name =
+                doc.metadata?.doc_name ||
+                doc.path.split('/').pop() ||
+                'Unknown';
+              html += `
                             <div class="d-flex justify-content-between align-items-center p-2" style="border-bottom:1px solid rgba(255,255,255,0.04);">
                                 <div>
                                     <span class="file-badge">${name}</span>
@@ -171,148 +315,149 @@
                                 <button class="btn btn-sm btn-danger" onclick="deleteDoc('${doc.doc_id}')">🗑️</button>
                             </div>
                         `;
-                    });
-                    html += '</div>';
-                    container.innerHTML = html;
-                } else {
-                    container.innerHTML = '<div class="text-center text-muted py-4">No documents uploaded yet</div>';
-                }
-            } catch (error) {
-                console.error('Error loading documents:', error);
-            }
+            });
+            html += '</div>';
+            container.innerHTML = html;
+          } else {
+            container.innerHTML =
+              '<div class="text-center text-muted py-4">No documents uploaded yet</div>';
+          }
+        } catch (error) {
+          console.error('Error loading documents:', error);
         }
+      }
 
-        // Delete document
-        async function deleteDoc(docId) {
-            if (!confirm('Delete this document?')) return;
-            
-            try {
-                const response = await fetch('/api/rag/delete', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ doc_id: docId })
-                });
-                
-                const data = await response.json();
-                if (data.success) {
-                    loadDocuments();
-                }
-            } catch (error) {
-                console.error('Error deleting:', error);
-            }
+      // Delete document
+      async function deleteDoc(docId) {
+        if (!confirm('Delete this document?')) return;
+
+        try {
+          const response = await fetch('/api/rag/delete', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ doc_id: docId }),
+          });
+
+          const data = await response.json();
+          if (data.success) {
+            loadDocuments();
+          }
+        } catch (error) {
+          console.error('Error deleting:', error);
         }
+      }
 
-        // Clear all documents
-        async function clearAll() {
-            if (!confirm('Delete all documents?')) return;
-            
-            try {
-                const response = await fetch('/api/rag/clear', {
-                    method: 'POST'
-                });
-                
-                const data = await response.json();
-                if (data.success) {
-                    loadDocuments();
-                    document.getElementById('chatMessages').innerHTML = `
+      // Clear all documents
+      async function clearAll() {
+        if (!confirm('Delete all documents?')) return;
+
+        try {
+          const response = await fetch('/api/rag/clear', {
+            method: 'POST',
+          });
+
+          const data = await response.json();
+          if (data.success) {
+            loadDocuments();
+            document.getElementById('chatMessages').innerHTML = `
                         <div class="text-center text-muted py-4" id="chatWelcome">
                             <div style="font-size: 48px;">📚</div>
                             <p class="mt-2">Upload a document and ask questions about it</p>
                             <p class="small">Supported: PDF, DOCX, XLSX, TXT, PNG, JPG</p>
                         </div>
                     `;
-                }
-            } catch (error) {
-                console.error('Error clearing:', error);
-            }
+          }
+        } catch (error) {
+          console.error('Error clearing:', error);
         }
+      }
 
-        // Send query
-        async function sendQuery() {
-            const input = document.getElementById('chatInput');
-            const question = input.value.trim();
-            
-            if (!question) return;
-            if (isProcessing) return;
-            
-            input.value = '';
-            isProcessing = true;
-            
-            // Add user message
-            const messages = document.getElementById('chatMessages');
-            const welcome = document.getElementById('chatWelcome');
-            if (welcome) welcome.style.display = 'none';
-            
-            messages.innerHTML += `
+      // Send query
+      async function sendQuery() {
+        const input = document.getElementById('chatInput');
+        const question = input.value.trim();
+
+        if (!question) return;
+        if (isProcessing) return;
+
+        input.value = '';
+        isProcessing = true;
+
+        // Add user message
+        const messages = document.getElementById('chatMessages');
+        const welcome = document.getElementById('chatWelcome');
+        if (welcome) welcome.style.display = 'none';
+
+        messages.innerHTML += `
                 <div class="msg user">
                     <div class="sender">You</div>
                     ${question}
                 </div>
             `;
-            
-            // Add loading indicator
-            const loadingId = 'loading_' + Date.now();
-            messages.innerHTML += `
+
+        // Add loading indicator
+        const loadingId = 'loading_' + Date.now();
+        messages.innerHTML += `
                 <div class="msg bot" id="${loadingId}">
                     <div class="sender">AI Assistant</div>
                     <div class="loading"></div>
                 </div>
             `;
-            
-            messages.scrollTop = messages.scrollHeight;
-            
-            try {
-                const response = await fetch('/api/rag/query', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ question })
-                });
-                
-                const data = await response.json();
-                
-                // Remove loading indicator
-                const loadingEl = document.getElementById(loadingId);
-                if (loadingEl) loadingEl.remove();
-                
-                if (data.success) {
-                    let sourceHtml = '';
-                    if (data.sources && data.sources.length > 0) {
-                        sourceHtml = `<div class="source">📄 Sources: ${data.sources.join(', ')}</div>`;
-                    }
-                    
-                    messages.innerHTML += `
+
+        messages.scrollTop = messages.scrollHeight;
+
+        try {
+          const response = await fetch('/api/rag/query', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ question }),
+          });
+
+          const data = await response.json();
+
+          // Remove loading indicator
+          const loadingEl = document.getElementById(loadingId);
+          if (loadingEl) loadingEl.remove();
+
+          if (data.success) {
+            let sourceHtml = '';
+            if (data.sources && data.sources.length > 0) {
+              sourceHtml = `<div class="source">📄 Sources: ${data.sources.join(', ')}</div>`;
+            }
+
+            messages.innerHTML += `
                         <div class="msg bot">
                             <div class="sender">AI Assistant</div>
                             ${data.answer}
                             ${sourceHtml}
                         </div>
                     `;
-                } else {
-                    messages.innerHTML += `
+          } else {
+            messages.innerHTML += `
                         <div class="msg bot">
                             <div class="sender">AI Assistant</div>
                             ❌ ${data.answer || 'Error processing query'}
                         </div>
                     `;
-                }
-            } catch (error) {
-                const loadingEl = document.getElementById(loadingId);
-                if (loadingEl) loadingEl.remove();
-                
-                messages.innerHTML += `
+          }
+        } catch (error) {
+          const loadingEl = document.getElementById(loadingId);
+          if (loadingEl) loadingEl.remove();
+
+          messages.innerHTML += `
                     <div class="msg bot">
                         <div class="sender">AI Assistant</div>
                         ❌ Error: ${error.message}
                     </div>
                 `;
-            }
-            
-            messages.scrollTop = messages.scrollHeight;
-            isProcessing = false;
         }
 
-        // Load documents on page load
-        loadDocuments();
+        messages.scrollTop = messages.scrollHeight;
+        isProcessing = false;
+      }
+
+      // Load documents on page load
+      loadDocuments();
     </script>
-</body>
+  </body>
 </html>
