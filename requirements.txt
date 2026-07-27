@@ -32,7 +32,7 @@ joblib==1.5.3
 
 # FIRE Planner Dependencies
 scipy==1.13.1
-matplotlib==3.8.0
+matplotlib==3.10.9
 scipy==1.18.0
 matplotlib==3.10.9
 seaborn==0.13.0
