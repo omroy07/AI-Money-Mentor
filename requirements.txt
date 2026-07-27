@@ -11,7 +11,13 @@ fpdf2==2.8.7
 flask-login>=0.6.3
 werkzeug>=3.1.8
 flask-mail==0.10.0
+requests==2.34.2
 
+# Security / MFA Dependencies
+Flask-Limiter==4.1.1
+pyotp==2.10.0
+qrcode==8.2
+webauthn==3.0.0
 # Voice Assistant Dependencies
 SpeechRecognition==3.17.0
 pyaudio==0.2.14
@@ -25,6 +31,8 @@ numpy==1.26.0
 joblib==1.5.3
 
 # FIRE Planner Dependencies
+scipy==1.13.1
+matplotlib==3.8.0
 scipy==1.18.0
 matplotlib==3.10.9
 seaborn==0.13.0
