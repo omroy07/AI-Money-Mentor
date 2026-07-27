@@ -1,4 +1,5 @@
 import re
+import io
 from flask import Flask, request, jsonify, render_template, make_response
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
@@ -184,6 +185,7 @@ from utils.safety_engine import SafetyEngine
 from utils.rag_system import RAGSystem
 from utils.fx import convert_to_base, get_rate
 from utils.loan_planner import data_input
+from utils.couple_finance import CoupleFinanceManager
 
 
 app = Flask(__name__)
