@@ -60,8 +60,11 @@ logger = logging.getLogger(__name__)
 
 load_dotenv()
 
+from flask_wtf.csrf import CSRFProtect
+
 # ---------------- INIT APP ----------------
 app = Flask(__name__)
+csrf = CSRFProtect(app)
 
 # ---------------- INIT SOCKETIO ----------------
 socketio = SocketIO(app, cors_allowed_origins="*")
