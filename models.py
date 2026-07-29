@@ -4,6 +4,7 @@ Replaces the previous module-level in-memory lists (expense_data,
 assets_data, liabilities_data) with SQLite-backed storage via
 Flask-SQLAlchemy, so data survives server restarts.
 """
+import json
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from flask_login import UserMixin
