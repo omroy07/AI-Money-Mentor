@@ -1460,7 +1460,63 @@ class InsurancePolicy(db.Model):
             "expiry_date": self.expiry_date,
             "created_at": self.created_at.isoformat() if self.created_at else None
         }
+class Tutorial(db.Model):
+    __tablename__ = 'tutorials'
 
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(200), nullable=False)
+    description = db.Column(db.String(500))
+    content = db.Column(db.Text, nullable=False)
+    category = db.Column(db.String(100))
+    points_reward = db.Column(db.Integer, default=0, nullable=False)
+
+
+class Quiz(db.Model):
+    __tablename__ = 'quizzes'
+
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(200), nullable=False)
+    description = db.Column(db.String(500))
+    points_reward = db.Column(db.Integer, default=0, nullable=False)
+
+    questions = db.relationship('Question', backref='quiz', lazy=True, cascade='all, delete-orphan')
+
+
+class Question(db.Model):
+    __tablename__ = 'questions'
+
+    id = db.Column(db.Integer, primary_key=True)
+    quiz_id = db.Column(db.Integer, db.ForeignKey('quizzes.id'), nullable=False)
+    question_text = db.Column(db.Text, nullable=False)
+    option_a = db.Column(db.String(255), nullable=False)
+    option_b = db.Column(db.String(255), nullable=False)
+    option_c = db.Column(db.String(255), nullable=False)
+    option_d = db.Column(db.String(255), nullable=False)
+    correct_option = db.Column(db.String(1), nullable=False)  # 'A', 'B', 'C', or 'D'
+    explanation = db.Column(db.Text)
+
+
+class UserTutorialProgress(db.Model):
+    __tablename__ = 'user_tutorial_progress'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    user = db.relationship('User', backref=db.backref('tutorial_progress', lazy=True))
+    tutorial_id = db.Column(db.Integer, db.ForeignKey('tutorials.id'), nullable=False)
+    tutorial = db.relationship('Tutorial')
+    completed = db.Column(db.Boolean, default=False, nullable=False)
+    completed_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+
+class UserChallenge(db.Model):
+    __tablename__ = 'user_challenges'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    user = db.relationship('User', backref=db.backref('challenges', lazy=True))
+    challenge_key = db.Column(db.String(100), nullable=False)
+    completed = db.Column(db.Boolean, default=True, nullable=False)
+    completed_at = db.Column(db.DateTime, default=datetime.utcnow)
 class UserQuizAttempt(db.Model):
     __tablename__ = 'user_quiz_attempts'
     
