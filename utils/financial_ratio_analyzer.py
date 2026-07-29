@@ -13,6 +13,9 @@ class FinancialRatioAnalyzer:
     Comprehensive Financial Ratio Analysis Engine
     """
     
+    # Ratios where a LOWER value than the benchmark is actually better
+    LOWER_IS_BETTER = {'debt_to_equity', 'debt_ratio'}
+    
     def __init__(self, financial_data: Dict):
         """
         Initialize with financial data
@@ -171,9 +174,6 @@ class FinancialRatioAnalyzer:
         
         return benchmarks.get(industry, benchmarks['general'])
     
-    def _get_status(self, value: float, benchmark: float) -> str:
-    # Ratios where a LOWER value than the benchmark is actually better
-    LOWER_IS_BETTER = {'debt_to_equity', 'debt_ratio'}
 
     def _get_status(self, value: float, benchmark: float, ratio_key: str = None) -> str:
         """Get status based on comparison with benchmark"""
