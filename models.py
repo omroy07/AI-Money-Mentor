@@ -78,7 +78,7 @@ class User(UserMixin, db.Model):
 
 class Portfolio(db.Model):
     __tablename__ = "portfolio"
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), index=True, nullable=False)
     user = db.relationship("User", backref=db.backref("portfolio", lazy=True, cascade="all, delete-orphan"))
     id = db.Column(db.Integer, primary_key=True)
     symbol = db.Column(db.String(20), nullable=False)
@@ -118,7 +118,7 @@ class Portfolio(db.Model):
 
 class CryptoHolding(db.Model):
     __tablename__ = "crypto_holdings"
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), index=True, nullable=False)
     user = db.relationship("User", backref=db.backref("crypto_holdings", lazy=True, cascade="all, delete-orphan"))
     id = db.Column(db.Integer, primary_key=True)
     symbol = db.Column(db.String(20), nullable=False)
@@ -160,7 +160,7 @@ class CryptoHolding(db.Model):
 
 class PriceAlert(db.Model):
     __tablename__ = "price_alerts"
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), index=True, nullable=False)
     user = db.relationship("User", backref=db.backref("price_alerts", lazy=True, cascade="all, delete-orphan"))
     id = db.Column(db.Integer, primary_key=True)
     symbol = db.Column(db.String(20), nullable=False)
@@ -230,7 +230,7 @@ class Expense(db.Model):
 
     user_id = db.Column(
         db.Integer,
-        db.ForeignKey("users.id"),
+        db.ForeignKey("users.id"), index=True,
         nullable=False
     )
     user = db.relationship(
@@ -273,8 +273,8 @@ class CoupleSubscription(db.Model):
     __tablename__ = "couple_subscriptions"
 
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-    partner_user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), index=True, nullable=False)
+    partner_user_id = db.Column(db.Integer, db.ForeignKey("users.id"), index=True, nullable=False)
 
     title = db.Column(db.String(100), nullable=False)
     amount = db.Column(db.Float, nullable=False)
@@ -288,7 +288,7 @@ class CoupleSubscription(db.Model):
 
 class Asset(db.Model):
     __tablename__ = "assets"
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), index=True, nullable=False)
     user = db.relationship("User", backref=db.backref("assets", lazy=True, cascade="all, delete-orphan"))
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), nullable=False)
@@ -306,7 +306,7 @@ class Asset(db.Model):
 
 class Liability(db.Model):
     __tablename__ = "liabilities"
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), index=True, nullable=False)
     user = db.relationship("User", backref=db.backref("liabilities", lazy=True, cascade="all, delete-orphan"))
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), nullable=False)
@@ -321,7 +321,7 @@ class Liability(db.Model):
 
 class BudgetLimit(db.Model):
     __tablename__ = "budget_limits"
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), index=True, nullable=False)
     user = db.relationship("User", backref=db.backref("budget_limits", lazy=True, cascade="all, delete-orphan"))
     id = db.Column(db.Integer, primary_key=True)
     category = db.Column(db.String(120), nullable=False)
@@ -340,7 +340,7 @@ class BudgetLimit(db.Model):
 
 class BudgetAlert(db.Model):
     __tablename__ = "budget_alerts"
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), index=True, nullable=False)
     user = db.relationship("User", backref=db.backref("budget_alerts", lazy=True, cascade="all, delete-orphan"))
     id = db.Column(db.Integer, primary_key=True)
     category = db.Column(db.String(120), nullable=False)
@@ -373,7 +373,7 @@ class FinancialGoal(db.Model):
     # Optional AI-generated plan/tactics
     ai_milestone_tactics = db.Column(db.Text, nullable=True)  # plain text, 3-5 bullet points
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), index=True, nullable=False)
     user = db.relationship("User", backref=db.backref("financial_goals", lazy=True, cascade="all, delete-orphan"))
 
     def to_dict(self):
@@ -397,7 +397,7 @@ class FinancialGoal(db.Model):
 class ChildGoal(db.Model):
     __tablename__ = "child_goals"
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), index=True, nullable=False)
     child_name = db.Column(db.String(120), nullable=False)
     goal_type = db.Column(db.String(50), nullable=False)  # e.g., 'Education', 'Wedding'
     target_year = db.Column(db.Integer, nullable=False)  # year when goal is needed
@@ -486,7 +486,7 @@ class FxRateCache(db.Model):
 class FinancialGoalMilestone(db.Model):
     __tablename__ = "financial_goal_milestones"
     id = db.Column(db.Integer, primary_key=True)
-    goal_id = db.Column(db.Integer, db.ForeignKey("financial_goals.id"), nullable=False)
+    goal_id = db.Column(db.Integer, db.ForeignKey("financial_goals.id"), index=True, nullable=False)
     month = db.Column(db.String(7), nullable=False)  # e.g., "2026-06"
     target_amount_for_month = db.Column(db.Float, nullable=False)
     status = db.Column(db.String(20), default="planned")  # planned, completed
@@ -494,7 +494,7 @@ class FinancialGoalMilestone(db.Model):
 class RecurringIncome(db.Model):
     __tablename__ = 'recurring_incomes'
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), index=True, nullable=False)
     amount = db.Column(db.Float, nullable=False)
     category = db.Column(db.String(50), nullable=False)  # Salary, Rent, Freelance, Other
     source = db.Column(db.String(100), nullable=False)    # Employer/Source Name
@@ -526,8 +526,8 @@ class RecurringIncome(db.Model):
 class IncomeOccurrence(db.Model):
     __tablename__ = 'income_occurrences'
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    recurring_income_id = db.Column(db.Integer, db.ForeignKey('recurring_incomes.id'), nullable=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), index=True, nullable=False)
+    recurring_income_id = db.Column(db.Integer, db.ForeignKey('recurring_incomes.id'), index=True, nullable=True)
     amount = db.Column(db.Float, nullable=False)
     category = db.Column(db.String(50), nullable=False)
     source = db.Column(db.String(100), nullable=False)
@@ -559,7 +559,7 @@ class Account(db.Model):
     __tablename__ = 'accounts'
     
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)  # ✅ FIXED
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), index=True, nullable=False)  # ✅ FIXED
     account_type = db.Column(db.String(50), nullable=False)
     account_name = db.Column(db.String(100), nullable=False)
     balance = db.Column(db.Numeric(15, 2), default=0.00)
@@ -600,7 +600,7 @@ class Transaction(db.Model):
     
     id = db.Column(db.Integer, primary_key=True)
     reference_id = db.Column(db.String(100), unique=True, nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)  # ✅ FIXED
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), index=True, nullable=False)  # ✅ FIXED
     transaction_type = db.Column(db.String(50), nullable=False)
     status = db.Column(db.String(20), default='PENDING')
     total_amount = db.Column(db.Numeric(15, 2), nullable=False)
@@ -632,8 +632,8 @@ class LedgerEntry(db.Model):
     __tablename__ = 'ledger_entries'
     
     id = db.Column(db.Integer, primary_key=True)
-    transaction_id = db.Column(db.Integer, db.ForeignKey('transactions.id'), nullable=False)
-    account_id = db.Column(db.Integer, db.ForeignKey('accounts.id'), nullable=False)
+    transaction_id = db.Column(db.Integer, db.ForeignKey('transactions.id'), index=True, nullable=False)
+    account_id = db.Column(db.Integer, db.ForeignKey('accounts.id'), index=True, nullable=False)
     entry_type = db.Column(db.String(10), nullable=False)  # DEBIT or CREDIT
     amount = db.Column(db.Numeric(15, 2), nullable=False)
     description = db.Column(db.Text)
@@ -662,8 +662,8 @@ class Couple(db.Model):
     __tablename__ = 'couples'
     
     id = db.Column(db.Integer, primary_key=True)
-    user1_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    user2_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    user1_id = db.Column(db.Integer, db.ForeignKey('users.id'), index=True, nullable=False)
+    user2_id = db.Column(db.Integer, db.ForeignKey('users.id'), index=True, nullable=True)
     status = db.Column(db.String(20), default='PENDING')  # PENDING, ACTIVE, DECLINED, UNLINKED
     invitation_token = db.Column(db.String(100), unique=True, nullable=True)
     invitation_expires = db.Column(db.DateTime, nullable=True)
@@ -691,7 +691,7 @@ class SharedGoal(db.Model):
     __tablename__ = 'shared_goals'
     
     id = db.Column(db.Integer, primary_key=True)
-    couple_id = db.Column(db.Integer, db.ForeignKey('couples.id'), nullable=False)
+    couple_id = db.Column(db.Integer, db.ForeignKey('couples.id'), index=True, nullable=False)
     name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text)
     target_amount = db.Column(db.Numeric(15, 2), nullable=False)
@@ -731,8 +731,8 @@ class GoalContribution(db.Model):
     __tablename__ = 'goal_contributions'
     
     id = db.Column(db.Integer, primary_key=True)
-    goal_id = db.Column(db.Integer, db.ForeignKey('shared_goals.id'), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    goal_id = db.Column(db.Integer, db.ForeignKey('shared_goals.id'), index=True, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), index=True, nullable=False)
     amount = db.Column(db.Numeric(15, 2), nullable=False)
     note = db.Column(db.String(200))
     contributed_at = db.Column(db.DateTime, default=datetime.utcnow)
@@ -756,11 +756,11 @@ class SplitExpense(db.Model):
     __tablename__ = 'split_expenses'
     
     id = db.Column(db.Integer, primary_key=True)
-    couple_id = db.Column(db.Integer, db.ForeignKey('couples.id'), nullable=False)
+    couple_id = db.Column(db.Integer, db.ForeignKey('couples.id'), index=True, nullable=False)
     total_amount = db.Column(db.Numeric(15, 2), nullable=False)
     description = db.Column(db.String(200), nullable=False)
     category = db.Column(db.String(50), default='Other')
-    payer_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    payer_id = db.Column(db.Integer, db.ForeignKey('users.id'), index=True, nullable=False)
     split_type = db.Column(db.String(20), default='EQUAL')  # EQUAL, PERCENTAGE, CUSTOM
     user1_share = db.Column(db.Numeric(15, 2), nullable=True)
     user2_share = db.Column(db.Numeric(15, 2), nullable=True)
@@ -796,7 +796,7 @@ class CoupleBudget(db.Model):
     __tablename__ = 'couple_budgets'
     
     id = db.Column(db.Integer, primary_key=True)
-    couple_id = db.Column(db.Integer, db.ForeignKey('couples.id'), nullable=False)
+    couple_id = db.Column(db.Integer, db.ForeignKey('couples.id'), index=True, nullable=False)
     category = db.Column(db.String(50), nullable=False)
     combined_limit = db.Column(db.Numeric(15, 2), nullable=False)
     month = db.Column(db.String(7), nullable=False)  # YYYY-MM
@@ -822,7 +822,7 @@ class CoupleTaxPlan(db.Model):
     __tablename__ = 'couple_tax_plans'
     
     id = db.Column(db.Integer, primary_key=True)
-    couple_id = db.Column(db.Integer, db.ForeignKey('couples.id'), nullable=False)
+    couple_id = db.Column(db.Integer, db.ForeignKey('couples.id'), index=True, nullable=False)
     user1_income = db.Column(db.Numeric(15, 2), nullable=False)
     user2_income = db.Column(db.Numeric(15, 2), nullable=False)
     regime = db.Column(db.String(20), default='NEW')  # NEW, OLD
@@ -850,8 +850,8 @@ class CoupleAlert(db.Model):
     __tablename__ = 'couple_alerts'
     
     id = db.Column(db.Integer, primary_key=True)
-    couple_id = db.Column(db.Integer, db.ForeignKey('couples.id'), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    couple_id = db.Column(db.Integer, db.ForeignKey('couples.id'), index=True, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), index=True, nullable=False)
     type = db.Column(db.String(50), nullable=False)  # INVITATION, GOAL, EXPENSE, BUDGET
     message = db.Column(db.Text, nullable=False)
     is_read = db.Column(db.Boolean, default=False)
@@ -886,7 +886,7 @@ class BankConnection(db.Model):
     __tablename__ = 'bank_connections'
     
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), index=True, nullable=False)
     provider = db.Column(db.String(50), nullable=False)  # upi, netbanking, card
     account_name = db.Column(db.String(100), nullable=False)
     account_number = db.Column(db.String(50), nullable=True)
@@ -916,8 +916,8 @@ class BankTransaction(db.Model):
     __tablename__ = 'bank_transactions'
     
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    connection_id = db.Column(db.Integer, db.ForeignKey('bank_connections.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), index=True, nullable=False)
+    connection_id = db.Column(db.Integer, db.ForeignKey('bank_connections.id'), index=True, nullable=False)
     transaction_id = db.Column(db.String(100), unique=True, nullable=False)
     amount = db.Column(db.Numeric(15, 2), nullable=False)
     currency = db.Column(db.String(10), default='INR')
@@ -955,8 +955,8 @@ class FraudAlert(db.Model):
     __tablename__ = 'fraud_alerts'
     
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    transaction_id = db.Column(db.Integer, db.ForeignKey('bank_transactions.id'), nullable=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), index=True, nullable=False)
+    transaction_id = db.Column(db.Integer, db.ForeignKey('bank_transactions.id'), index=True, nullable=True)
     alert_type = db.Column(db.String(50), nullable=False)  # high_amount, unusual_category, suspicious_pattern, etc.
     severity = db.Column(db.String(20), default='medium')  # low, medium, high
     message = db.Column(db.Text, nullable=False)
@@ -989,7 +989,7 @@ class InvestmentGoal(db.Model):
     __tablename__ = 'investment_goals'
     
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), index=True, nullable=False)
     name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text)
     category = db.Column(db.String(20), nullable=False)  # short_term, medium_term, long_term
@@ -1040,7 +1040,7 @@ class GoalAllocation(db.Model):
     __tablename__ = 'goal_allocations'
     
     id = db.Column(db.Integer, primary_key=True)
-    goal_id = db.Column(db.Integer, db.ForeignKey('investment_goals.id'), nullable=False)
+    goal_id = db.Column(db.Integer, db.ForeignKey('investment_goals.id'), index=True, nullable=False)
     asset_type = db.Column(db.String(50), nullable=False)  # equity, debt, gold, real_estate, cash
     percentage = db.Column(db.Numeric(5, 2), nullable=False)  # Percentage of allocation
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
@@ -1062,7 +1062,7 @@ class GoalRecommendation(db.Model):
     __tablename__ = 'goal_recommendations'
     
     id = db.Column(db.Integer, primary_key=True)
-    goal_id = db.Column(db.Integer, db.ForeignKey('investment_goals.id'), nullable=False)
+    goal_id = db.Column(db.Integer, db.ForeignKey('investment_goals.id'), index=True, nullable=False)
     type = db.Column(db.String(50), nullable=False)  # allocation, contribution, timeline, priority
     message = db.Column(db.Text, nullable=False)
     suggestion = db.Column(db.Text)
@@ -1090,7 +1090,7 @@ class Notification(db.Model):
     __tablename__ = 'notifications'
     
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), index=True, nullable=False)
     type = db.Column(db.String(50), nullable=False)  # overspend, anomaly, goal_completed, investment_opportunity, etc.
     title = db.Column(db.String(100), nullable=False)
     message = db.Column(db.Text, nullable=False)
@@ -1130,7 +1130,7 @@ class NotificationPreference(db.Model):
     __tablename__ = 'notification_preferences'
     
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), index=True, nullable=False)
     type = db.Column(db.String(50), nullable=False)  # notification type
     enabled = db.Column(db.Boolean, default=True)
     email_notification = db.Column(db.Boolean, default=True)
@@ -1161,7 +1161,7 @@ class MFASetting(db.Model):
     __tablename__ = 'mfa_settings'
     
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), index=True, nullable=False)
     mfa_enabled = db.Column(db.Boolean, default=False)
     totp_secret = db.Column(db.String(100), nullable=True)
     totp_enabled = db.Column(db.Boolean, default=False)
@@ -1189,7 +1189,7 @@ class TrustedDevice(db.Model):
     __tablename__ = 'trusted_devices'
     
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), index=True, nullable=False)
     device_name = db.Column(db.String(100), nullable=False)
     device_type = db.Column(db.String(50), nullable=True)  # browser, mobile, desktop
     user_agent = db.Column(db.String(255), nullable=True)
@@ -1216,7 +1216,7 @@ class SecurityEvent(db.Model):
     __tablename__ = 'security_events'
     
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), index=True, nullable=False)
     event_type = db.Column(db.String(50), nullable=False)  # login, mfa_enabled, mfa_disabled, backup_code_used, device_added
     severity = db.Column(db.String(20), default='info')  # info, warning, critical
     details = db.Column(db.Text, nullable=True)
@@ -1241,7 +1241,7 @@ class SecurityEvent(db.Model):
 class MilestoneNotification(db.Model):
     __tablename__ = "milestone_notifications"
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), index=True, nullable=False)
     title = db.Column(db.String(150), nullable=False)
     message = db.Column(db.Text, nullable=False)
     category = db.Column(db.String(50), nullable=False)  # goal, budget, sip
@@ -1269,7 +1269,7 @@ class MilestoneNotification(db.Model):
 class SipSchedule(db.Model):
     __tablename__ = "sip_schedules"
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), index=True, nullable=False)
     name = db.Column(db.String(120), nullable=False)
     amount = db.Column(db.Float, nullable=False)
     day_of_month = db.Column(db.Integer, nullable=False)
@@ -1305,7 +1305,7 @@ class Watchlist(db.Model):
     __tablename__ = 'watchlists'
 
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), index=True, nullable=False)
     name = db.Column(db.String(80), nullable=False, default='My Watchlist')
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
@@ -1327,7 +1327,7 @@ class WatchlistItem(db.Model):
     __tablename__ = 'watchlist_items'
 
     id = db.Column(db.Integer, primary_key=True)
-    watchlist_id = db.Column(db.Integer, db.ForeignKey('watchlists.id'), nullable=False)
+    watchlist_id = db.Column(db.Integer, db.ForeignKey('watchlists.id'), index=True, nullable=False)
     symbol = db.Column(db.String(30), nullable=False)
     name = db.Column(db.String(120), nullable=True)
     asset_type = db.Column(db.String(20), default='stock')  # stock, mutual_fund
@@ -1355,8 +1355,8 @@ class WatchlistAlert(db.Model):
     __tablename__ = 'watchlist_alerts'
 
     id = db.Column(db.Integer, primary_key=True)
-    item_id = db.Column(db.Integer, db.ForeignKey('watchlist_items.id'), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    item_id = db.Column(db.Integer, db.ForeignKey('watchlist_items.id'), index=True, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), index=True, nullable=False)
     condition = db.Column(db.String(20), nullable=False)  # above, below, cross
     target_price = db.Column(db.Float, nullable=False)
     is_triggered = db.Column(db.Boolean, default=False)
@@ -1388,7 +1388,7 @@ class RiskProfile(db.Model):
     __tablename__ = 'risk_profiles'
 
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), index=True, nullable=False)
     risk_category = db.Column(db.String(20), nullable=False)  # Conservative, Moderate, Aggressive
     risk_score = db.Column(db.Float, nullable=False)  # 0-100 score
     # Questionnaire answers
@@ -1434,7 +1434,7 @@ class InsurancePolicy(db.Model):
     __tablename__ = "insurance_policies"
     
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), index=True, nullable=False)
     user = db.relationship("User", backref=db.backref("insurance_policies", lazy=True, cascade="all, delete-orphan"))
     
     policy_name = db.Column(db.String(100), nullable=False)
@@ -1464,9 +1464,9 @@ class UserQuizAttempt(db.Model):
     __tablename__ = 'user_quiz_attempts'
     
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), index=True, nullable=False)
     user = db.relationship('User', backref=db.backref('quiz_attempts', lazy=True))
-    quiz_id = db.Column(db.Integer, db.ForeignKey('quizzes.id'), nullable=False)
+    quiz_id = db.Column(db.Integer, db.ForeignKey('quizzes.id'), index=True, nullable=False)
     quiz = db.relationship('Quiz')
     score = db.Column(db.Integer, nullable=False)  # number of correct answers
     total_questions = db.Column(db.Integer, nullable=False)
@@ -1476,7 +1476,7 @@ class InsuranceRecommendation(db.Model):
     __tablename__ = "insurance_recommendations"
     
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False, unique=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), index=True, nullable=False, unique=True)
     user = db.relationship("User", backref=db.backref("insurance_recommendation", uselist=False, cascade="all, delete-orphan"))
     
     age = db.Column(db.Integer, nullable=False)
@@ -1526,7 +1526,7 @@ class ExpenseGroup(db.Model):
     name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.String(300), nullable=True)
     currency = db.Column(db.String(10), default='INR', nullable=False)
-    created_by = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    created_by = db.Column(db.Integer, db.ForeignKey('users.id'), index=True, nullable=False)
     is_active = db.Column(db.Boolean, default=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
@@ -1554,8 +1554,8 @@ class GroupMember(db.Model):
     __tablename__ = 'group_members'
 
     id = db.Column(db.Integer, primary_key=True)
-    group_id = db.Column(db.Integer, db.ForeignKey('expense_groups.id'), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    group_id = db.Column(db.Integer, db.ForeignKey('expense_groups.id'), index=True, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), index=True, nullable=False)
     role = db.Column(db.String(20), default='member')  # admin, member
     nickname = db.Column(db.String(80), nullable=True)
     joined_at = db.Column(db.DateTime, default=datetime.utcnow)
@@ -1583,11 +1583,11 @@ class GroupExpense(db.Model):
     __tablename__ = 'group_expenses'
 
     id = db.Column(db.Integer, primary_key=True)
-    group_id = db.Column(db.Integer, db.ForeignKey('expense_groups.id'), nullable=False)
+    group_id = db.Column(db.Integer, db.ForeignKey('expense_groups.id'), index=True, nullable=False)
     description = db.Column(db.String(200), nullable=False)
     amount = db.Column(db.Numeric(15, 2), nullable=False)
     category = db.Column(db.String(50), default='Other')
-    paid_by = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    paid_by = db.Column(db.Integer, db.ForeignKey('users.id'), index=True, nullable=False)
     split_type = db.Column(db.String(20), default='EQUAL')  # EQUAL, PERCENTAGE, EXACT
     expense_date = db.Column(db.Date, nullable=False)
     receipt_url = db.Column(db.String(300), nullable=True)
@@ -1618,8 +1618,8 @@ class GroupExpenseSplit(db.Model):
     __tablename__ = 'group_expense_splits'
 
     id = db.Column(db.Integer, primary_key=True)
-    expense_id = db.Column(db.Integer, db.ForeignKey('group_expenses.id'), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    expense_id = db.Column(db.Integer, db.ForeignKey('group_expenses.id'), index=True, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), index=True, nullable=False)
     amount = db.Column(db.Numeric(15, 2), nullable=False)
     percentage = db.Column(db.Numeric(5, 2), nullable=True)
     is_settled = db.Column(db.Boolean, default=False)
@@ -1642,9 +1642,9 @@ class GroupSettlement(db.Model):
     __tablename__ = 'group_settlements'
 
     id = db.Column(db.Integer, primary_key=True)
-    group_id = db.Column(db.Integer, db.ForeignKey('expense_groups.id'), nullable=False)
-    from_user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    to_user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    group_id = db.Column(db.Integer, db.ForeignKey('expense_groups.id'), index=True, nullable=False)
+    from_user_id = db.Column(db.Integer, db.ForeignKey('users.id'), index=True, nullable=False)
+    to_user_id = db.Column(db.Integer, db.ForeignKey('users.id'), index=True, nullable=False)
     amount = db.Column(db.Numeric(15, 2), nullable=False)
     note = db.Column(db.String(200), nullable=True)
     settled_at = db.Column(db.DateTime, default=datetime.utcnow)
