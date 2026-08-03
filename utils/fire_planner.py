@@ -58,13 +58,153 @@ class FIREPlanner:
         self.inflation_rate = inflation_rate
         self.withdrawal_rate = withdrawal_rate
         self.life_expectancy = life_expectancy
-        
+
         # Derived values
         self.years_to_retirement = retirement_age - current_age
         self.retirement_years = life_expectancy - retirement_age
-        self.target_corpus = annual_expenses * 25  # 4% rule: 25x annual expenses
+        self.target_corpus = annual_expenses * (1 / withdrawal_rate) if withdrawal_rate > 0 else annual_expenses * 25
         self.yearly_savings = monthly_savings * 12
-        
+
+    def compute_lean_fat_projections(self) -> Dict:
+        """
+        Compute Lean / Regular / Fat FIRE corpus targets.
+
+        The "Lean FIRE" and "Fat FIRE" terminology describes how lavish the
+        post-retirement lifestyle is expected to be:
+
+          - Lean FIRE   = corpus needed to fund 50% of current annual expenses
+          - Regular     = corpus needed at the configured withdrawal rate
+                          (default 4% rule, i.e. 25x annual expenses)
+          - Fat FIRE    = corpus needed to fund 150% of current annual expenses
+
+        All numbers are *today's-rupee* targets — the planner already applies
+        inflation to the simulator itself, so we leave these as constant
+        nominal anchors and let the time-series projection handle the
+        compounded growth/decay story.
+
+        Returns:
+            Dict with the three corpus targets and their implied multiplier.
+        """
+        multiplier = 1.0 / self.withdrawal_rate if self.withdrawal_rate > 0 else 25.0
+        regular = self.annual_expenses * multiplier
+        return {
+            'lean': {
+                'name': 'Lean FIRE',
+                'annual_expenses': round(self.annual_expenses * 0.5, 2),
+                'target_corpus': round(regular * 0.5, 2),
+                'multiplier_of_expenses': round(multiplier * 0.5, 2),
+                'description': 'Minimalist retirement — 50% of current expenses, no frills',
+            },
+            'regular': {
+                'name': 'Regular FIRE',
+                'annual_expenses': round(self.annual_expenses, 2),
+                'target_corpus': round(regular, 2),
+                'multiplier_of_expenses': round(multiplier, 2),
+                'description': f'Maintain current lifestyle at the {self.withdrawal_rate:.1%} withdrawal rate',
+            },
+            'fat': {
+                'name': 'Fat FIRE',
+                'annual_expenses': round(self.annual_expenses * 1.5, 2),
+                'target_corpus': round(regular * 1.5, 2),
+                'multiplier_of_expenses': round(multiplier * 1.5, 2),
+                'description': 'Lavish retirement — 150% of current expenses, travel + hobbies',
+            },
+        }
+
+    def get_timeline_projection(self, iterations: int = 200) -> Dict:
+        """
+        Compute a year-by-year time series that traces both the accumulation
+        phase (current_age → retirement_age) and the decumulation phase
+        (retirement_age → life_expectancy).
+
+        For each calendar year we aggregate the simulation paths into 5th /
+        25th / 50th (median) / 75th / 95th percentiles. The phase column lets
+        the UI colour the chart and compute the "when does the corpus hit
+        zero" line.
+
+        Args:
+            iterations: Monte Carlo iterations used to populate the percentile
+                        bands. 200 keeps the route under ~1s on commodity
+                        hardware; tests pin it lower.
+
+        Returns:
+            Dict with `ages`, `phases`, `percentiles`, `median_path`,
+            `depletion_age` and the `target_corpus` reference line.
+        """
+        mc_results = self.run_monte_carlo(iterations=iterations)
+        paths = mc_results['all_paths']
+
+        total_years = self.years_to_retirement + self.retirement_years
+        ages = [self.current_age + offset for offset in range(total_years)]
+
+        # Per-year percentile bands across all paths.
+        # Each path may have stopped early (corpus depleted) — pad with 0.
+        per_year_arrays: List[List[float]] = [[] for _ in range(total_years)]
+        for path in paths:
+            portfolio = path['portfolio']
+            for offset, value in enumerate(portfolio):
+                per_year_arrays[offset].append(max(value, 0.0))
+
+        percentiles_by_year: Dict[str, List[float]] = {
+            '5th': [],
+            '25th': [],
+            '50th': [],
+            '75th': [],
+            '95th': [],
+        }
+        for year_values in per_year_arrays:
+            if not year_values:
+                for key in percentiles_by_year:
+                    percentiles_by_year[key].append(0.0)
+                continue
+            arr = np.array(year_values, dtype=float)
+            p5, p25, p50, p75, p95 = np.percentile(arr, [5, 25, 50, 75, 95])
+            percentiles_by_year['5th'].append(round(float(p5), 2))
+            percentiles_by_year['25th'].append(round(float(p25), 2))
+            percentiles_by_year['50th'].append(round(float(p50), 2))
+            percentiles_by_year['75th'].append(round(float(p75), 2))
+            percentiles_by_year['95th'].append(round(float(p95), 2))
+
+        median_path = percentiles_by_year['50th']
+
+        # Phase label per year: 'accumulation' until retirement_age (incl.),
+        # 'retirement' thereafter.
+        phases = []
+        for age in ages:
+            if age < self.retirement_age:
+                phases.append('accumulation')
+            else:
+                phases.append('retirement')
+
+        # Depletion age — first year where the 50th percentile hits zero
+        # during retirement. None if the corpus never depletes.
+        depletion_age = None
+        for idx, phase in enumerate(phases):
+            if phase != 'retirement':
+                continue
+            if median_path[idx] <= 0:
+                depletion_age = ages[idx]
+                break
+
+        # Target corpus reference line for the chart — drawn against today's
+        # nominal rupee. The chart can overlay inflation-adjusted variants if
+        # it wants.
+        target_reference = [round(self.target_corpus, 2)] * total_years
+
+        return {
+            'ages': ages,
+            'phases': phases,
+            'percentiles': percentiles_by_year,
+            'median_path': median_path,
+            'target_corpus': round(self.target_corpus, 2),
+            'target_reference_line': target_reference,
+            'depletion_age': depletion_age,
+            'retirement_age': self.retirement_age,
+            'life_expectancy': self.life_expectancy,
+            'iterations': iterations,
+            'success_probability': mc_results['success']['probability'],
+        }
+
     def run_monte_carlo(self, iterations: int = 1000) -> Dict:
         """
         Run Monte Carlo simulation for FIRE planning
@@ -454,12 +594,16 @@ class FIREPlanner:
                 'current_corpus': self.current_corpus,
                 'monthly_savings': self.monthly_savings,
                 'target_corpus': self.target_corpus,
+                'withdrawal_rate': self.withdrawal_rate,
+                'life_expectancy': self.life_expectancy,
                 'shortfall': round(self.target_corpus - self.current_corpus, 2) if self.target_corpus > self.current_corpus else 0
             },
             'monte_carlo': mc_results,
             'withdrawal_strategy': withdrawal_strategy,
             'sensitivity': sensitivity,
             'recommendations': recommendations,
+            'lean_fat_projections': self.compute_lean_fat_projections(),
+            'timeline_projection': self.get_timeline_projection(iterations=200),
             'status': self._get_status(mc_results)
         }
     

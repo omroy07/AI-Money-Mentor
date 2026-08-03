@@ -2340,18 +2340,88 @@ def fire_planner_page():
 def fire_plan():
     try:
         data = request.json
+        # Issue #305 — life_expectancy + withdrawal_rate are now first-class
+        # inputs. They flow straight into the FIREPlanner constructor so the
+        # lean/fat projections, target_corpus, and timeline_projection all
+        # react to the user's choice. Default life_expectancy is 85
+        # (4% rule assumption) and withdrawal_rate is 0.04 (the canonical
+        # Bengen safe-withdrawal rule).
+        current_age = int(data.get('current_age', 30))
+        retirement_age = int(data.get('retirement_age', 45))
+        life_expectancy = int(data.get('life_expectancy', 85))
+        # Guard: retirement_age must precede life_expectancy by at least one
+        # year, otherwise the timeline projection produces a zero-length
+        # retirement phase and the percentiles array ends up empty.
+        if life_expectancy <= retirement_age:
+            return jsonify({
+                'success': False,
+                'error': 'life_expectancy must be greater than retirement_age'
+            }), 400
+        if retirement_age <= current_age:
+            return jsonify({
+                'success': False,
+                'error': 'retirement_age must be greater than current_age'
+            }), 400
+        withdrawal_rate = float(data.get('withdrawal_rate', 0.04))
+        if withdrawal_rate <= 0 or withdrawal_rate > 0.20:
+            return jsonify({
+                'success': False,
+                'error': 'withdrawal_rate must be between 0 and 0.20 (20%)'
+            }), 400
         planner = FIREPlanner(
-            current_age=data.get('current_age', 30),
-            retirement_age=data.get('retirement_age', 45),
-            annual_expenses=data.get('annual_expenses', 500000),
-            current_corpus=data.get('current_corpus', 1000000),
-            monthly_savings=data.get('monthly_savings', 30000),
-            return_mean=data.get('return_mean', 0.10),
-            return_std=data.get('return_std', 0.15),
-            inflation_rate=data.get('inflation_rate', 0.06)
+            current_age=current_age,
+            retirement_age=retirement_age,
+            annual_expenses=float(data.get('annual_expenses', 500000)),
+            current_corpus=float(data.get('current_corpus', 1000000)),
+            monthly_savings=float(data.get('monthly_savings', 30000)),
+            return_mean=float(data.get('return_mean', 0.10)),
+            return_std=float(data.get('return_std', 0.15)),
+            inflation_rate=float(data.get('inflation_rate', 0.06)),
+            withdrawal_rate=withdrawal_rate,
+            life_expectancy=life_expectancy,
         )
         plan = planner.get_plan_summary()
         return jsonify({'success': True, 'data': plan, 'visualization': planner.get_visualization_data()})
+    except (TypeError, ValueError) as e:
+        return jsonify({'success': False, 'error': f'Invalid input: {e}'}), 400
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/fire/timeline', methods=['POST'])
+@login_required
+def fire_timeline():
+    """Issue #305 — dedicated endpoint for the year-by-year timeline graph.
+
+    Useful when the UI only needs to refresh the timeline band (e.g. when the
+    user is dragging the inflation slider) without re-running the full
+    Monte Carlo + sensitivity + recommendations pipeline.
+    """
+    try:
+        data = request.json
+        iterations = max(50, min(500, int(data.get('iterations', 200))))
+        current_age = int(data.get('current_age', 30))
+        retirement_age = int(data.get('retirement_age', 45))
+        life_expectancy = int(data.get('life_expectancy', 85))
+        if life_expectancy <= retirement_age or retirement_age <= current_age:
+            return jsonify({'success': False, 'error': 'Invalid age inputs'}), 400
+        planner = FIREPlanner(
+            current_age=current_age,
+            retirement_age=retirement_age,
+            annual_expenses=float(data.get('annual_expenses', 500000)),
+            current_corpus=float(data.get('current_corpus', 1000000)),
+            monthly_savings=float(data.get('monthly_savings', 30000)),
+            return_mean=float(data.get('return_mean', 0.10)),
+            return_std=float(data.get('return_std', 0.15)),
+            inflation_rate=float(data.get('inflation_rate', 0.06)),
+            withdrawal_rate=float(data.get('withdrawal_rate', 0.04)),
+            life_expectancy=life_expectancy,
+        )
+        return jsonify({
+            'success': True,
+            'timeline': planner.get_timeline_projection(iterations=iterations),
+        })
+    except (TypeError, ValueError) as e:
+        return jsonify({'success': False, 'error': f'Invalid input: {e}'}), 400
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -2361,14 +2431,16 @@ def fire_quick():
     try:
         data = request.json
         planner = FIREPlanner(
-            current_age=data.get('current_age', 30),
-            retirement_age=data.get('retirement_age', 45),
+            current_age=int(data.get('current_age', 30)),
+            retirement_age=int(data.get('retirement_age', 45)),
             annual_expenses=data.get('annual_expenses', 500000),
             current_corpus=data.get('current_corpus', 1000000),
             monthly_savings=data.get('monthly_savings', 30000),
             return_mean=data.get('return_mean', 0.10),
             return_std=data.get('return_std', 0.15),
-            inflation_rate=data.get('inflation_rate', 0.06)
+            inflation_rate=data.get('inflation_rate', 0.06),
+            withdrawal_rate=float(data.get('withdrawal_rate', 0.04)),
+            life_expectancy=int(data.get('life_expectancy', 85)),
         )
         mc_results = planner.run_monte_carlo(iterations=200)
         return jsonify({
