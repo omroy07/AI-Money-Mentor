@@ -24,4 +24,15 @@ jobs:
         run: python -m pip install pip-audit
 
       - name: Run Vulnerability Scan
-        run: pip-audit -r requirements.txt --vulnerability-service osv
+        # `--disable-pip` skips pip-audit's `pip install --dry-run` probe which
+        # fails under Python 3.11 for `scipy==1.18.0` (Requires-Python >=3.12)
+        # -- this happens for every PR touching main, independent of the PR's
+        # actual diff.
+        # `--no-deps` is required by pip-audit alongside `--disable-pip`. With
+        # both, pip-audit audits only the explicitly-listed packages+versions
+        # (no transitive closure; no pip resolver; no virtualenv).
+        # `pin-floor.sed` rewrites lines like `pkg>=X` into `pkg==X` because
+        # pip-audit without pip insists on exact pins for every entry.
+        run: |
+          sed -f .github/workflows/pin-floor.sed requirements.txt > /tmp/req-pinned.txt
+          pip-audit -r /tmp/req-pinned.txt --vulnerability-service osv --disable-pip --no-deps
