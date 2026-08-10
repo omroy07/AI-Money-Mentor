@@ -38,7 +38,7 @@ matplotlib==3.10.9
 seaborn==0.13.0
 
 Flask-SocketIO==5.3.6
-python-socketio==5.16.3
+python-socketio==5.16.4
 eventlet==0.33.3
 
 # Document Parser Dependencies
