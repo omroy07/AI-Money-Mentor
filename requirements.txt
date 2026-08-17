@@ -7,7 +7,7 @@ pdfplumber==0.11.10
 python-dotenv==1.2.2
 flask-sqlalchemy==3.1.1
 apscheduler==3.11.2
-fpdf2==2.8.7
+fpdf2==2.8.8
 flask-login>=0.6.3
 werkzeug>=3.1.8
 flask-mail==0.10.0
