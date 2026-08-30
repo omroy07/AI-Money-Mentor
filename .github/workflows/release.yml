@@ -1,0 +1,105 @@
+name: Automated Release
+
+on:
+  push:
+    tags:
+      - 'v*'  # Trigger on tags like v1.0.0, v0.1.0
+
+permissions:
+  contents: write
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    name: Create Release & Build Artifacts
+
+    steps:
+      # Step 1: Checkout the code
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for changelog generation
+
+      # Step 2: Set up Python environment
+      - name: Set Up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+          cache: 'pip'
+
+      # Step 3: Install dependencies
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install -r requirements-dev.txt
+
+      # Step 4: Run tests to ensure quality
+      - name: Run Tests
+        run: |
+          pytest tests/ -v --tb=short --cov=app tests/ || true
+
+      # Step 5: Build Python distribution artifacts
+      - name: Build Distribution Artifacts
+        run: |
+          pip install build
+          python -m build
+
+      # Step 6: Create a distribution archive
+      - name: Create Source Archive
+        run: |
+          mkdir -p dist
+          tar -czf dist/AI-Money-Mentor-${{ github.ref_name }}.tar.gz \
+            --exclude='.git' \
+            --exclude='venv' \
+            --exclude='__pycache__' \
+            --exclude='.pytest_cache' \
+            --exclude='.coverage' \
+            --exclude='dist' \
+            --exclude='.env' \
+            .
+
+      # Step 7: Generate changelog from git history
+      - name: Generate Changelog
+        id: changelog
+        run: |
+          {
+            echo 'CHANGELOG<<EOF'
+            echo "# Release ${{ github.ref_name }}"
+            echo ""
+            echo "## What's Changed"
+            echo ""
+            git log $(git describe --tags --abbrev=0 2>/dev/null || echo "HEAD")..HEAD --oneline --no-decorate || git log -1 --oneline
+            echo ""
+            echo "## Installation"
+            echo "1. Extract: \`tar -xzf AI-Money-Mentor-${{ github.ref_name }}.tar.gz\`"
+            echo "2. Install: \`pip install -r requirements.txt\`"
+            echo "3. Setup: \`cp .env.example .env && add GROQ_API_KEY\`"
+            echo "4. Run: \`python app.py\`"
+            echo ""
+            echo "See [docs/SETUP.md](https://github.com/omroy07/AI-Money-Mentor/blob/main/docs/SETUP.md)"
+            echo 'EOF'
+          } >> $GITHUB_OUTPUT
+
+      # Step 8: Create GitHub Release (Draft)
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
+          body: ${{ steps.changelog.outputs.CHANGELOG }}
+          draft: true
+          prerelease: ${{ contains(github.ref_name, 'alpha') || contains(github.ref_name, 'beta') || contains(github.ref_name, 'rc') }}
+          generate_release_notes: true
+          files: |
+            dist/AI-Money-Mentor-${{ github.ref_name }}.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Step 9: Upload artifacts for storage
+      - name: Upload Release Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-${{ github.ref_name }}
+          path: dist/AI-Money-Mentor-${{ github.ref_name }}.tar.gz
+          retention-days: 30

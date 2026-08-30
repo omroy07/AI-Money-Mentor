@@ -1,0 +1,14 @@
+# Syntax: path  @owner1 @owner2
+# Lines starting with # are comments.
+# Replace the example owners with the actual GitHub usernames for your maintainers.
+
+# Specific directories (edit as needed)
+
+# Docs – any file under the docs folder
+/docs/ @omroy07
+
+# CI / workflow files – all workflow YAMLs
+.github/workflows/ @omroy07
+
+# Default owners for the entire repository (fallback)
+* @omroy07

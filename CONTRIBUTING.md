@@ -292,6 +292,29 @@ Before opening an issue, please:
 
 ---
 
+## Releasing
+
+The project uses GitHub Actions to automatically draft a release, generate a changelog, build distribution artifacts, and attach them when a new semantic version tag is pushed.
+
+### How to create a release
+
+```bash
+# 1. Create a git tag using semantic versioning
+git tag v1.0.0 -m "Release version 1.0.0"
+
+# 2. Push the tag to GitHub
+git push origin v1.0.0
+```
+
+After pushing the tag:
+1. GitHub Actions will run tests and build artifacts.
+2. A draft release will be created under the Releases tab.
+3. Review the changelog and click "Publish Release" when ready.
+
+For alpha/beta/RC versions, use pre-release tags like `v1.0.0-alpha` or `v1.0.0-rc.1`.
+
+---
+
 ## Coding Standards
 
 ### Python
