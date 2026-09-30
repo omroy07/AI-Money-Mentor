@@ -6441,7 +6441,7 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
     scheduler.add_job(check_sip_due_reminders, 'interval', days=1, id='sip_reminder_job', replace_existing=True)
     scheduler.start()
     import atexit
-    atexit.register(lambda: scheduler.shutdown())
+    atexit.register(lambda: scheduler.running and scheduler.shutdown())
 
 
 # ---------------- RUN ----------------
