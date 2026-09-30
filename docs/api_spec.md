@@ -114,3 +114,89 @@ This document details the backend REST API endpoints exposed by the Flask applic
     }
   }
   ```
+
+---
+
+## 📊 Portfolio Risk Analysis Endpoint
+
+- **Purpose**: Provides portfolio risk, diversification, and asset concentration insights with optional AI explanation.
+- **URL**: `/api/portfolio/risk-analysis`
+- **Method**: `POST`
+- **Login Requirement**: Requires authentication (`@login_required`)
+- **Rate Limit**: 10 per minute
+- **Request Headers**: `Content-Type: application/json`
+- **Request Body**:
+  ```json
+  {
+    "holdings": [
+      {
+        "name": "Reliance",
+        "amount": 50000.0,
+        "category": "equity"
+      }
+    ],
+    "use_ai": true
+  }
+  ```
+  - `holdings` (list of objects): Each holding must have `name` (string), `amount` (positive float), and `category` (string).
+  - `use_ai` (optional boolean, default `true`): Whether to fetch an AI-powered explanation.
+- **Accepted Category Aliases**: `stock`, `stocks`, `equity`, `equities`, `mutual fund`, `etf`, `index fund`, `bond`, `bonds`, `debt`, `fixed income`, `fd`, `ppf`, `epf`, `gold`, `sgb`, `gold etf`, `real estate`, `property`, `reit`, `real_estate`, `cash`, `savings`, `liquid`, `crypto`, `cryptocurrency`, `bitcoin`.
+- **Success Response (200 OK)**:
+  ```json
+  {
+    "analysis": {
+      "total_value": 50000.0,
+      "weights": {
+        "holdings": [
+          {"name": "Reliance", "weight_percent": 100.0}
+        ],
+        "asset_classes": {
+          "equity": 100.0,
+          "debt": 0.0,
+          "gold": 0.0,
+          "real_estate": 0.0,
+          "cash": 0.0,
+          "crypto": 0.0
+        }
+      },
+      "expected_return_percent": 12.0,
+      "volatility_percent": 18.0,
+      "sharpe_ratio": 0.33,
+      "average_correlation": 0.0,
+      "risk_score": 60.0,
+      "risk_label": "High",
+      "diversification_score": 0.0,
+      "concentration_flags": [
+        {
+          "type": "single_holding",
+          "subject": "Reliance",
+          "weight_percent": 100.0,
+          "threshold_percent": 25.0,
+          "message": "High concentration in single holding: Reliance"
+        }
+      ],
+      "scenarios": [
+        {
+          "name": "equity_crash",
+          "portfolio_change_percent": -30.0,
+          "portfolio_change_amount": -15000.0,
+          "by_class": {"equity": -30.0}
+        }
+      ],
+      "assumptions": {},
+      "disclaimer": "Educational analysis based on fixed assumptions. Not financial advice."
+    },
+    "explanation": {
+      "summary": "Your portfolio indicates a High risk profile.",
+      "tips": ["Regularly review your asset allocation."],
+      "alternatives": ["Increase debt share to lower volatility."],
+      "source": "template",
+      "disclaimer": "Educational analysis based on fixed assumptions. Not financial advice."
+    }
+  }
+  ```
+  - The `analysis` object contains: `total_value`, `weights`, `expected_return_percent`, `volatility_percent`, `sharpe_ratio`, `average_correlation`, `risk_score`, `risk_label`, `diversification_score`, `concentration_flags`, `scenarios`, `assumptions`, and `disclaimer`.
+  - The `explanation` object contains: `summary`, `tips`, `alternatives`, `source`, and `disclaimer`.
+- **Error Responses**:
+  - `400 Bad Request`: Returns `{"error": "<error message>"}` for missing/invalid holdings or categories.
+  - `500 Internal Server Error`: Returns `{"error": "Portfolio analysis failed."}` for unexpected failures.
