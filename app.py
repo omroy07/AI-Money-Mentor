@@ -54,6 +54,8 @@ from models import (
 
 from utils.portfolio_optimizer import PortfolioOptimizer
 from utils.insurance_planner import calculate_hlv, recommend_health_cover
+from utils.goal_planner import plan_goal
+from utils.goal_explainer import explain_goal
 
 # Load environment variables from .env file (if present)
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
@@ -484,11 +486,6 @@ def auto_login():
 
 # NOTE: Scheduler jobs moved to consolidated scheduler at bottom of file. See #588.
 
-
-
-scheduler.start()
-atexit.register(lambda: scheduler.shutdown())
-
 # ============================================
 # ROUTES
 # ============================================
@@ -783,6 +780,82 @@ def analyze_portfolio():
         })
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+
+# ---------------- FINANCIAL GOAL RECOMMENDATION ----------------
+@app.route('/api/goal-recommendation', methods=['POST'])
+@login_required
+def goal_recommendation():
+    """POST /api/goal-recommendation.
+
+    Deterministic maths lives in utils/goal_planner.plan_goal(); the AI
+    layer in utils/goal_explainer only explains the supplied numbers.
+
+    Example body::
+
+        {
+            "target": 80000,
+            "months": 8,
+            "monthly_income": 35000,
+            "monthly_expenses": 25000,
+            "current_savings": 0
+        }
+    """
+    try:
+        data = request.get_json(silent=True) or {}
+        if not isinstance(data, dict):
+            return jsonify({'error': 'Request body must be a JSON object'}), 400
+
+        target = validate_float(data.get("target"), "target", min_val=0.01)
+        months = validate_int(data.get("months"), "months", min_val=1)
+        monthly_income = validate_float(data.get("monthly_income"), "monthly_income", min_val=0.01)
+        monthly_expenses = data.get("monthly_expenses")
+        if monthly_expenses is not None:
+            monthly_expenses = validate_float(monthly_expenses, "monthly_expenses", min_val=0.0)
+        current_savings = validate_float(
+            data.get("current_savings", 0.0), "current_savings", min_val=0.0
+        )
+        expenses_by_category = data.get("expenses_by_category") or {}
+        if not isinstance(expenses_by_category, dict):
+            return jsonify({'error': 'expenses_by_category must be an object'}), 400
+
+        # Deterministic core (no Flask, no AI calls inside).
+        plan = plan_goal(
+            target=target,
+            months=months,
+            income=monthly_income,
+            expenses=monthly_expenses,
+            current_savings=current_savings,
+            expenses_by_category=expenses_by_category,
+        )
+
+        # AI explanation layer: uses only the numbers above, never recalculates.
+        # `client` is None when GROQ_API_KEY is missing -> deterministic fallback.
+        ai_explanation = explain_goal(plan, client=client)
+
+        return jsonify({
+            'success': True,
+            'target': plan['target'],
+            'months': plan['months'],
+            'required_monthly_savings': plan['required_monthly_savings'],
+            'status': plan['status'],
+            'achievable': plan['achievable'],
+            'savings_ratio': plan['savings_ratio_pct'],
+            'months_to_goal': plan['months_to_goal'],
+            'message': plan['message'],
+            'available_surplus': plan['available_surplus'],
+            'ai_explanation': ai_explanation,
+            'budget_adjustments': plan['budget_adjustments'],
+            'alternatives': plan['alternatives'],
+        })
+    except ValidationError as ve:
+        return jsonify({'error': str(ve)}), 400
+    except ValueError as ve:
+        return jsonify({'error': str(ve)}), 400
+    except Exception as e:
+        logger.exception("goal-recommendation failed")
+        return jsonify({'error': 'Failed to build goal recommendation'}), 500
+
 
 # ---------------- DOCUMENT PARSER ----------------
 from utils.document_parser import DocumentParser
