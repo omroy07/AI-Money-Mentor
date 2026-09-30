@@ -12,6 +12,7 @@ import json
 
 from models import db, BankConnection, BankTransaction, FraudAlert, User
 from utils.anomaly_detector import AnomalyDetector
+from utils.ai_categorizer import AICategorizer
 
 
 class BankIntegration:
@@ -26,6 +27,7 @@ class BankIntegration:
             'card': self._get_card_provider()
         }
         self.anomaly_detector = AnomalyDetector()
+        self.categorizer = AICategorizer()
     
     def _get_upi_provider(self):
         return {'name': 'UPI', 'oauth_url': 'https://api.upi.com/oauth', 'scopes': ['transactions', 'balance']}
@@ -189,29 +191,13 @@ class BankIntegration:
         return transactions
     
     def _categorize_transaction(self, transaction: Dict) -> str:
-        """Categorize transaction using ML (simulated)"""
-        categories = ['Food', 'Transport', 'Entertainment', 'Shopping', 'Utilities', 'Healthcare', 'Rent', 'Other']
-        
-        description = transaction.get('description', '').lower()
-        merchant = transaction.get('merchant', '').lower()
-        
-        keywords = {
-            'Food': ['food', 'restaurant', 'cafe', 'meal', 'grocery', 'swiggy', 'zomato'],
-            'Transport': ['uber', 'ola', 'cab', 'taxi', 'petrol', 'metro', 'bus', 'train'],
-            'Entertainment': ['netflix', 'amazon', 'prime', 'movie', 'theatre', 'spotify'],
-            'Shopping': ['amazon', 'flipkart', 'myntra', 'shopping', 'mall', 'market'],
-            'Utilities': ['electricity', 'water', 'gas', 'broadband', 'phone', 'internet'],
-            'Healthcare': ['hospital', 'doctor', 'medicine', 'medical', 'clinic'],
-            'Rent': ['rent', 'lease', 'house', 'property']
-        }
-        
-        text = f"{description} {merchant}"
-        for category, words in keywords.items():
-            for word in words:
-                if word in text:
-                    return category
-        
-        return 'Other'
+        """Categorize a synced transaction using the shared expense rules."""
+        description = transaction.get('description')
+        merchant = transaction.get('merchant')
+        combined_description = " ".join(
+            value for value in (description, merchant) if isinstance(value, str)
+        )
+        return self.categorizer.categorize(combined_description)["category"]
     
     def _extract_merchant(self, transaction: Dict) -> str:
         """Extract merchant from transaction"""

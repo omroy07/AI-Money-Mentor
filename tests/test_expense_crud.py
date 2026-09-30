@@ -5,6 +5,7 @@ from models import Expense
 
 @pytest.fixture
 def client():
+    original_csrf_enabled = app.config.get("WTF_CSRF_ENABLED", True)
     # Save existing expenses using ORM to prevent SQLite file I/O locks
     with app.app_context():
         db.create_all()
@@ -28,6 +29,7 @@ def client():
         db.session.commit()
         
     app.config["TESTING"] = True
+    app.config["WTF_CSRF_ENABLED"] = False
     with app.test_client() as client:
         with app.app_context():
             from models import User
@@ -62,6 +64,7 @@ def client():
             e.merchant_name = data["merchant_name"]
             db.session.add(e)
         db.session.commit()
+    app.config["WTF_CSRF_ENABLED"] = original_csrf_enabled
 
 def test_expense_crud_operations(client):
     # 1. Create an expense via add_expense
@@ -134,3 +137,53 @@ def test_expense_crud_not_found(client):
     
     res = client.delete("/expense/9999")
     assert res.status_code == 404
+
+
+def test_categorize_expense_api_returns_subcategory_and_confidence(client):
+    response = client.post("/api/expenses/categorize", json={
+        "description": "Spent ₹850 on Zomato",
+    })
+
+    assert response.status_code == 200
+    assert response.json["category"] == "Food"
+    assert response.json["subcategory"] == "Food Delivery"
+    assert response.json["confidence"] >= 0.9
+
+
+def test_categorize_expense_api_handles_missing_description(client):
+    response = client.post("/api/expenses/categorize", json={})
+
+    assert response.status_code == 200
+    assert response.json["category"] == "Other"
+    assert response.json["confidence"] < 0.5
+
+
+def test_add_expense_categorizes_description_when_category_is_omitted(client):
+    response = client.post("/add_expense", json={
+        "description": "Swiggy order ₹450",
+        "amount": 450.0,
+        "date": "2026-06-10",
+    })
+
+    assert response.status_code == 200
+    assert response.json["category"] == "Food"
+    assert response.json["ai_confidence"] >= 0.9
+
+    with app.app_context():
+        expense = Expense.query.first()
+        assert expense.category == "Food"
+        assert expense.ai_confidence >= 0.9
+        assert expense.original_ai_category == "Food"
+
+
+def test_add_expense_preserves_explicit_user_category(client):
+    response = client.post("/add_expense", json={
+        "category": "Travel",
+        "description": "Zomato order ₹450",
+        "amount": 450.0,
+        "date": "2026-06-10",
+    })
+
+    assert response.status_code == 200
+    assert response.json["category"] == "Travel"
+    assert response.json["ai_confidence"] == 0.0
