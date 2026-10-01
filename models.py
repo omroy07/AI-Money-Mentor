@@ -706,7 +706,7 @@ class SharedGoal(db.Model):
     
     # Relationships
     couple = db.relationship("Couple", backref=db.backref("shared_goals", lazy=True, cascade="all, delete-orphan"))
-    contributions = db.relationship("GoalContribution", backref=db.backref("goal", lazy=True, cascade="all, delete-orphan"), lazy=True, cascade='all, delete-orphan')
+    contributions = db.relationship("GoalContribution", backref=db.backref("goal", lazy=True), lazy=True, cascade='all, delete-orphan')
     
     def to_dict(self):
         return {
@@ -1006,8 +1006,7 @@ class InvestmentGoal(db.Model):
     completed_at = db.Column(db.DateTime, nullable=True)
     
     user = db.relationship("User", backref=db.backref("investment_goals", lazy=True, cascade="all, delete-orphan"))
-    allocations = db.relationship("GoalAllocation", backref=db.backref("goal", lazy=True, cascade="all, delete-orphan"), lazy=True, cascade='all, delete-orphan')
-    contributions = db.relationship("GoalContribution", backref=db.backref("goal", lazy=True, cascade="all, delete-orphan"), lazy=True, cascade='all, delete-orphan')
+    allocations = db.relationship("GoalAllocation", backref=db.backref("goal", lazy=True), lazy=True, cascade='all, delete-orphan')
     
     def to_dict(self):
         progress = (float(self.current_amount) / float(self.target_amount) * 100) if float(self.target_amount) > 0 else 0
