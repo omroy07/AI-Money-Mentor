@@ -183,6 +183,7 @@ from utils.rag_system import RAGSystem
 from utils.fx import convert_to_base, get_rate
 from utils.loan_planner import data_input
 from utils.couple_finance import CoupleFinanceManager
+from utils.portfolio_explainer import handle_risk_request
 
 # Continue configuring the same app instance initialized above (line 64).
 # NOTE: A duplicate `app = Flask(__name__)` was previously here, which
@@ -783,6 +784,14 @@ def analyze_portfolio():
         })
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+@app.route("/api/portfolio/risk-analysis", methods=["POST"])
+@limiter.limit("10 per minute")
+@login_required
+def portfolio_risk_analysis():
+    data = request.get_json(silent=True)
+    payload, status = handle_risk_request(data)
+    return jsonify(payload), status
 
 # ---------------- DOCUMENT PARSER ----------------
 from utils.document_parser import DocumentParser
