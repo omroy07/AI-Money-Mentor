@@ -9,7 +9,7 @@ flask-sqlalchemy==3.1.1
 apscheduler==3.11.2
 fpdf2==2.8.7
 flask-login>=0.6.3
-werkzeug>=3.1.8
+werkzeug>=3.1.9
 flask-mail==0.10.0
 requests==2.34.2
 
