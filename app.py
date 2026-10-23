@@ -3848,9 +3848,12 @@ def tax():
         if not isinstance(data, dict):
             raise ValidationError("Request body must be a JSON object")
         income = validate_float(data.get("income"), "income", min_val=0.0)
-        deduction_80c = validate_float(data.get("deduction_80c", 0.0), "deduction_80c", min_val=0.0)
-        deduction_80d = validate_float(data.get("deduction_80d", 0.0), "deduction_80d", min_val=0.0)
-        deduction_hra = validate_float(data.get("deduction_hra", 0.0), "deduction_hra", min_val=0.0)
+        raw_80c = 0.0 if data.get("deduction_80c") is None else data.get("deduction_80c")
+        deduction_80c = validate_float(raw_80c, "deduction_80c", min_val=0.0)
+        raw_80d = 0.0 if data.get("deduction_80d") is None else data.get("deduction_80d")
+        deduction_80d = validate_float(raw_80d, "deduction_80d", min_val=0.0)
+        raw_hra = 0.0 if data.get("deduction_hra") is None else data.get("deduction_hra")
+        deduction_hra = validate_float(raw_hra, "deduction_hra", min_val=0.0)
         hra_inputs = data.get("hra_inputs")
         if hra_inputs is not None:
             if not isinstance(hra_inputs, dict):

@@ -28,8 +28,11 @@ def calculate_hra_exemption(basic_salary, rent_paid, hra_received, is_metro):
 
 
 def calculate_tax(income, deduction_80c=0.0, deduction_80d=0.0, deduction_hra=0.0, hra_inputs=None):
-    # Income represents Gross Annual Income
-    
+    income = max(0.0, float(income or 0.0))
+    deduction_80c = max(0.0, float(deduction_80c or 0.0))
+    deduction_80d = max(0.0, float(deduction_80d or 0.0))
+    deduction_hra = max(0.0, float(deduction_hra or 0.0))
+
     # Calculate HRA exemption if hra_inputs is provided
     hra_details = None
     if hra_inputs:
@@ -65,43 +68,40 @@ def calculate_tax(income, deduction_80c=0.0, deduction_80d=0.0, deduction_hra=0.
     elif taxable_new <= 2000000:
         tax_new = 400000 * 0.05 + 400000 * 0.10 + 400000 * 0.15 + (taxable_new - 1600000) * 0.20
     elif taxable_new <= 2400000:
-        tax_new = 400000 * 0.05 + 400000 * 0.10 + 400000 * 0.15 + 400000 * 0.20+ (taxable_new - 2000000) * 0.25
+        tax_new = 400000 * 0.05 + 400000 * 0.10 + 400000 * 0.15 + 400000 * 0.20 + (taxable_new - 2000000) * 0.25
     else:
-        tax_new = 400000 * 0.05 + 400000 * 0.10 + 400000 * 0.15 + 400000 * 0.20 + 400000 * 0.25+ (taxable_new - 2400000) * 0.30
+        tax_new = 400000 * 0.05 + 400000 * 0.10 + 400000 * 0.15 + 400000 * 0.20 + 400000 * 0.25 + (taxable_new - 2400000) * 0.30
         
     # Rebate under Sec 87A for New Regime:
     if taxable_new <= 1200000:
         tax_new = 0.0
     # marginal relief
     else:
-        diff_amt=taxable_new-1200000
-        if diff_amt<=tax_new:
-            tax_new=diff_amt
+        diff_amt = taxable_new - 1200000
+        if diff_amt <= tax_new:
+            tax_new = diff_amt
 
     # surcharge
-    if taxable_new<=5000000:
-        surcharge_rate=0.0
-    elif taxable_new<=10000000:
-        surcharge_rate=10.0
-    elif taxable_new<=200000000:
-        surcharge_rate=15.0
+    if taxable_new <= 5000000:
+        surcharge_rate = 0.0
+    elif taxable_new <= 10000000:
+        surcharge_rate = 10.0
+    elif taxable_new <= 200000000:
+        surcharge_rate = 15.0
     else:
-        surcharge_rate=25.0
-    surcharge=tax_new*(surcharge_rate/100)
+        surcharge_rate = 25.0
+    surcharge = tax_new * (surcharge_rate / 100)
         
     cess_new = tax_new * 0.04
-    total_new = round(tax_new + cess_new+surcharge, 2)
-    
-    
-    
+    total_new = round(tax_new + cess_new + surcharge, 2)
     
     # 2. Old Regime Calculation with custom deductions
     # Deductions cap logic:
     # 80C capped at 1.5 Lakhs (150,000)
     # 80D capped at 25,000 (standard limit)
-    ded_80c = min(150000.0, float(deduction_80c))
-    ded_80d = min(25000.0, float(deduction_80d))
-    ded_hra = float(deduction_hra)
+    ded_80c = min(150000.0, deduction_80c)
+    ded_80d = min(25000.0, deduction_80d)
+    ded_hra = deduction_hra
     
     std_deduction_old = 50000
     total_deductions_old = std_deduction_old + ded_80c + ded_80d + ded_hra
@@ -128,24 +128,27 @@ def calculate_tax(income, deduction_80c=0.0, deduction_80d=0.0, deduction_hra=0.
         
     cess_old = tax_old * 0.04
     # surcharge
-    if taxable_old<=5000000:
-        surcharge_rate_=0.0
-    elif taxable_old<=10000000:
-        surcharge_rate_=10.0
-    elif taxable_old<=200000000:
-        surcharge_rate_=15.0
-    elif taxable_old<=50000000:
-        surcharge_rate_=25.0
+    if taxable_old <= 5000000:
+        surcharge_rate_ = 0.0
+    elif taxable_old <= 10000000:
+        surcharge_rate_ = 10.0
+    elif taxable_old <= 200000000:
+        surcharge_rate_ = 15.0
+    elif taxable_old <= 50000000:
+        surcharge_rate_ = 25.0
     else:
-        surcharge_rate_=37.0
-    surcharge_old=tax_old*(surcharge_rate_/100)
+        surcharge_rate_ = 37.0
+    surcharge_old = tax_old * (surcharge_rate_ / 100)
 
+    total_old = round(tax_old + cess_old + surcharge_old, 2)
     
-    total_old = round(tax_old + cess_old+ surcharge_old, 2)
-    
+    is_equal = (total_new == total_old)
+    recommended_regime = "New Regime" if total_new < total_old else "Old Regime"
+
     res_dict = {
         "gross_income": income,
         "deductions_applied": {
+            "standard_deduction": std_deduction_old,
             "80c": ded_80c,
             "80d": ded_80d,
             "hra": ded_hra,
@@ -153,21 +156,24 @@ def calculate_tax(income, deduction_80c=0.0, deduction_80d=0.0, deduction_hra=0.
         },
         "new_regime": {
             "standard_deduction": std_deduction_new,
+            "total_deductions": std_deduction_new,
             "taxable_income": taxable_new,
             "base_tax": round(tax_new, 2),
             "cess": round(cess_new, 2),
-            "surcharge":round(surcharge, 2),
+            "surcharge": round(surcharge, 2),
             "total_tax": total_new,
         },
         "old_regime": {
             "standard_deduction": std_deduction_old,
+            "total_deductions": total_deductions_old,
             "taxable_income": taxable_old,
             "base_tax": round(tax_old, 2),
             "cess": round(cess_old, 2),
-            "surcharge":round(surcharge_old, 2),
+            "surcharge": round(surcharge_old, 2),
             "total_tax": total_old
         },
-        "recommended": "New Regime" if total_new < total_old else "Old Regime",
+        "is_equal": is_equal,
+        "recommended": recommended_regime,
         "savings": round(abs(total_old - total_new), 2)
     }
 

@@ -161,3 +161,130 @@ class TestCalculateTax:
         assert res["scenario_a"]["deductions_applied"]["hra"] == 120000.0
         assert res["scenario_b"]["deductions_applied"]["hra"] == 140000.0
 
+
+class TestTaxRegimeComparator:
+    """Unit tests for Old vs New tax regime side-by-side comparator and recommendation."""
+
+    def test_side_by_side_regime_comparison_structure(self):
+        """Calculator returns complete side-by-side details for both Old and New regimes."""
+        result = calculate_tax(1200000, deduction_80c=150000, deduction_80d=25000, deduction_hra=60000)
+        
+        # Verify both regimes have all required comparison attributes
+        for regime in ("new_regime", "old_regime"):
+            assert regime in result
+            details = result[regime]
+            for key in ("standard_deduction", "taxable_income", "base_tax", "cess", "surcharge", "total_tax"):
+                assert key in details
+                assert isinstance(details[key], (int, float))
+
+        # Verify deductions breakdown
+        assert "deductions_applied" in result
+        assert result["deductions_applied"]["80c"] == 150000.0
+        assert result["deductions_applied"]["80d"] == 25000.0
+        assert result["deductions_applied"]["hra"] == 60000.0
+        assert result["deductions_applied"]["total"] == 50000 + 150000 + 25000 + 60000
+
+        # Recommendation and savings
+        assert result["recommended"] in ("New Regime", "Old Regime")
+        assert result["savings"] >= 0
+
+    def test_recommends_new_regime_when_zero_deductions(self):
+        """When user has no 80C/80D/HRA deductions, New Regime provides lower tax and is recommended."""
+        # At 15 Lakhs income:
+        # New Regime standard deduction is 75,000, Old Regime standard deduction is 50,000
+        # New regime has wider slabs and lower rates
+        result = calculate_tax(1500000, deduction_80c=0, deduction_80d=0, deduction_hra=0)
+        assert result["new_regime"]["total_tax"] < result["old_regime"]["total_tax"]
+        assert result["recommended"] == "New Regime"
+        assert result["savings"] == round(result["old_regime"]["total_tax"] - result["new_regime"]["total_tax"], 2)
+
+    def test_recommends_old_regime_when_deductions_are_high(self):
+        """When user has high deductions, Old Regime becomes cheaper and is recommended."""
+        # Income 13L with high HRA and 80C/80D brings Old taxable income under 5L (zero tax)
+        # while New Regime has taxable income 12.25L with 26,000 tax
+        result = calculate_tax(1300000, deduction_80c=150000, deduction_80d=25000, deduction_hra=650000)
+        assert result["old_regime"]["total_tax"] < result["new_regime"]["total_tax"]
+        assert result["recommended"] == "Old Regime"
+        assert result["savings"] == round(result["new_regime"]["total_tax"] - result["old_regime"]["total_tax"], 2)
+
+    def test_section_80c_deduction_capped_at_150000(self):
+        """Section 80C deduction must be capped at statutory ₹1,50,000 limit."""
+        result = calculate_tax(1000000, deduction_80c=250000)
+        assert result["deductions_applied"]["80c"] == 150000.0
+        # Total = 50k (std) + 150k (80c) = 200k
+        assert result["old_regime"]["taxable_income"] == 800000.0
+
+    def test_section_80d_deduction_capped_at_25000(self):
+        """Section 80D deduction must be capped at statutory ₹25,000 standard limit."""
+        result = calculate_tax(1000000, deduction_80d=60000)
+        assert result["deductions_applied"]["80d"] == 25000.0
+        # Total = 50k (std) + 25k (80d) = 75k
+        assert result["old_regime"]["taxable_income"] == 925000.0
+
+    def test_new_regime_disallows_80c_80d_and_hra(self):
+        """New Regime does not allow 80C, 80D or HRA deductions; only ₹75,000 standard deduction applies."""
+        result_with_deductions = calculate_tax(1200000, deduction_80c=150000, deduction_80d=25000, deduction_hra=80000)
+        result_without_deductions = calculate_tax(1200000, deduction_80c=0, deduction_80d=0, deduction_hra=0)
+        
+        # New regime taxable income and total tax must remain identical regardless of 80C/80D/HRA
+        assert result_with_deductions["new_regime"]["taxable_income"] == result_without_deductions["new_regime"]["taxable_income"]
+        assert result_with_deductions["new_regime"]["total_tax"] == result_without_deductions["new_regime"]["total_tax"]
+        assert result_with_deductions["new_regime"]["standard_deduction"] == 75000.0
+
+    def test_savings_strictly_equals_difference(self):
+        """Savings field is always exact absolute difference between New and Old regime tax."""
+        for income in (700000, 1000000, 1500000, 2500000):
+            res = calculate_tax(income, deduction_80c=120000, deduction_80d=20000, deduction_hra=50000)
+            expected_savings = round(abs(res["old_regime"]["total_tax"] - res["new_regime"]["total_tax"]), 2)
+            assert res["savings"] == expected_savings
+
+    def test_equal_tax_liability_zero_tax(self):
+        """When income is zero or below rebate thresholds for both regimes, both taxes are 0 and savings is 0."""
+        res = calculate_tax(300000)
+        assert res["new_regime"]["total_tax"] == 0.0
+        assert res["old_regime"]["total_tax"] == 0.0
+        assert res["savings"] == 0.0
+        assert res["is_equal"] is True
+
+    def test_negative_inputs_clamped(self):
+        """Negative inputs are clamped to zero and do not corrupt calculation."""
+        res = calculate_tax(-100000, deduction_80c=-50000, deduction_80d=-10000, deduction_hra=-20000)
+        assert res["gross_income"] == 0.0
+        assert res["new_regime"]["total_tax"] == 0.0
+        assert res["old_regime"]["total_tax"] == 0.0
+
+    def test_tax_route_post_returns_comparator_data(self):
+        """Flask route POST /tax accepts income and deductions and returns comparator results."""
+        from app import app
+        app.config["WTF_CSRF_ENABLED"] = False
+        app.config["TESTING"] = True
+        client = app.test_client()
+        response = client.post("/tax", json={
+            "income": 1200000,
+            "deduction_80c": 150000,
+            "deduction_80d": 25000,
+            "deduction_hra": 50000
+        })
+        assert response.status_code == 200
+        data = response.get_json()
+        assert "tax" in data
+        tax_res = data["tax"]
+        assert "new_regime" in tax_res
+        assert "old_regime" in tax_res
+        assert "recommended" in tax_res
+        assert "savings" in tax_res
+        assert tax_res["gross_income"] == 1200000
+        assert tax_res["deductions_applied"]["80c"] == 150000
+        assert tax_res["deductions_applied"]["80d"] == 25000
+        assert tax_res["deductions_applied"]["hra"] == 50000
+
+    def test_tax_route_post_validation(self):
+        """Flask route POST /tax returns 400 on negative or invalid income."""
+        from app import app
+        app.config["WTF_CSRF_ENABLED"] = False
+        app.config["TESTING"] = True
+        client = app.test_client()
+        response = client.post("/tax", json={"income": -500})
+        assert response.status_code == 400
+
+

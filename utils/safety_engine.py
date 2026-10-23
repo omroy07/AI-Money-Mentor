@@ -278,6 +278,7 @@ class SafetyEngine:
         """Generate a safe fallback response when violations are detected"""
         violation_text = '\n'.join([f"• {v}" for v in violations])
         warning_text = '\n'.join([f"• {w}" for w in warnings])
+        warning_block = f"**Warnings:**\n{warning_text}" if warnings else ""
         
         return f"""
 ⚠️ **Safety Check: AI Response Modified**
@@ -287,7 +288,7 @@ The AI generated a response that didn't pass our safety checks.
 **Issues detected:**
 {violation_text}
 
-{f'**Warnings:**\n{warning_text}' if warnings else ''}
+{warning_block}
 
 **Safe Response:**
 I want to ensure I provide accurate financial guidance. 

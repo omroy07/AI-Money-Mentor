@@ -599,9 +599,24 @@ async function calcTax() {
     return;
   }
 
+  const deduction_80c = document.getElementById('tax80c')
+    ? document.getElementById('tax80c').value || 0
+    : 0;
+  const deduction_80d = document.getElementById('tax80d')
+    ? document.getElementById('tax80d').value || 0
+    : 0;
+  const deduction_hra = document.getElementById('taxHra')
+    ? document.getElementById('taxHra').value || 0
+    : 0;
+
   setLoading('taxBtn', true);
   try {
-    const data = await apiFetch('/tax', { income: parseFloat(income) });
+    const data = await apiFetch('/tax', {
+      income: parseFloat(income),
+      deduction_80c: parseFloat(deduction_80c),
+      deduction_80d: parseFloat(deduction_80d),
+      deduction_hra: parseFloat(deduction_hra),
+    });
 
     if (data.error) {
       showResult('taxResult', `⚠ ${esc(data.error)}`);
@@ -609,62 +624,98 @@ async function calcTax() {
       const taxRes = data.tax;
       document.getElementById('taxComparisonCard').style.display = 'block';
 
+      const isNewBetter =
+        taxRes.new_regime.total_tax < taxRes.old_regime.total_tax;
+      const isOldBetter =
+        taxRes.old_regime.total_tax < taxRes.new_regime.total_tax;
+      const isEqual =
+        taxRes.is_equal ||
+        taxRes.new_regime.total_tax === taxRes.old_regime.total_tax;
+
+      let bannerHtml = `
+        <div style="margin-bottom:18px; padding:14px 16px; border-radius:10px; background:${isEqual ? 'rgba(212,168,67,0.08)' : 'rgba(46,204,138,0.08)'}; border:1px solid ${isEqual ? 'rgba(212,168,67,0.25)' : 'rgba(46,204,138,0.25)'}; display:flex; gap:12px; align-items:center;">
+          <div style="font-size:22px; color:${isEqual ? 'var(--gold2)' : '#2ecc8a'};"><i class="fa-solid ${isEqual ? 'fa-scale-balanced' : 'fa-circle-check'}"></i></div>
+          <div>
+            <div style="font-weight:700; color:${isEqual ? 'var(--gold2)' : '#2ecc8a'};">${isEqual ? 'Both Regimes Result in Equal Tax' : `Recommended: ${esc(taxRes.recommended)}`}</div>
+            <div style="font-size:12px; color:var(--text); margin-top:2px;">
+              ${isEqual ? `Total tax is identical at ₹${fmtNum(taxRes.new_regime.total_tax)}.` : `You save ₹${fmtNum(taxRes.savings)} annually under ${esc(taxRes.recommended)}.`}
+            </div>
+          </div>
+        </div>
+      `;
+
       let tableHtml = `
             <table style="width:100%; border-collapse:collapse; font-size:13px; text-align:left; color:var(--text);">
               <thead>
                 <tr style="border-bottom:1px solid var(--border); color:var(--muted); font-size:11px; text-transform:uppercase;">
                   <th style="padding:10px 0;">Particulars</th>
-                  <th style="padding:10px 0;">Old Regime</th>
-                  <th style="padding:10px 0; color:var(--gold);">New Regime</th>
+                  <th style="padding:10px 0; ${isOldBetter ? 'color:#2ecc8a; font-weight:700;' : ''}">Old Regime ${isOldBetter ? '★' : ''}</th>
+                  <th style="padding:10px 0; ${isNewBetter ? 'color:#2ecc8a; font-weight:700;' : ''}">New Regime ${isNewBetter ? '★' : ''}</th>
                 </tr>
               </thead>
               <tbody>
                 <tr style="border-bottom:1px solid var(--border);">
                   <td style="padding:10px 0;">Gross Income</td>
                   <td style="padding:10px 0;">₹${fmtNum(taxRes.gross_income)}</td>
-                  <td style="padding:10px 0; color:var(--gold);">₹${fmtNum(taxRes.gross_income)}</td>
+                  <td style="padding:10px 0;">₹${fmtNum(taxRes.gross_income)}</td>
                 </tr>
                 <tr style="border-bottom:1px solid var(--border);">
                   <td style="padding:10px 0;">Std Deduction</td>
-                  <td style="padding:10px 0;">-₹${fmtNum(taxRes.old_regime.standard_deduction)}</td>
-                  <td style="padding:10px 0; color:var(--gold);">-₹${fmtNum(taxRes.new_regime.standard_deduction)}</td>
+                  <td style="padding:10px 0; color:#e06c75;">-₹${fmtNum(taxRes.old_regime.standard_deduction)}</td>
+                  <td style="padding:10px 0; color:#e06c75;">-₹${fmtNum(taxRes.new_regime.standard_deduction)}</td>
                 </tr>
                 <tr style="border-bottom:1px solid var(--border);">
+                  <td style="padding:10px 0;">Section 80C</td>
+                  <td style="padding:10px 0; color:#e06c75;">-₹${fmtNum((taxRes.deductions_applied && taxRes.deductions_applied['80c']) || 0)}</td>
+                  <td style="padding:10px 0; color:var(--muted);">N/A</td>
+                </tr>
+                <tr style="border-bottom:1px solid var(--border);">
+                  <td style="padding:10px 0;">Section 80D</td>
+                  <td style="padding:10px 0; color:#e06c75;">-₹${fmtNum((taxRes.deductions_applied && taxRes.deductions_applied['80d']) || 0)}</td>
+                  <td style="padding:10px 0; color:var(--muted);">N/A</td>
+                </tr>
+                <tr style="border-bottom:1px solid var(--border);">
+                  <td style="padding:10px 0;">HRA Exemption</td>
+                  <td style="padding:10px 0; color:#e06c75;">-₹${fmtNum((taxRes.deductions_applied && taxRes.deductions_applied['hra']) || 0)}</td>
+                  <td style="padding:10px 0; color:var(--muted);">N/A</td>
+                </tr>
+                <tr style="border-bottom:1px solid var(--border); font-weight:600;">
+                  <td style="padding:10px 0;">Total Deductions</td>
+                  <td style="padding:10px 0; color:#e06c75;">-₹${fmtNum(taxRes.old_regime.total_deductions || 50000)}</td>
+                  <td style="padding:10px 0; color:#e06c75;">-₹${fmtNum(taxRes.new_regime.total_deductions || taxRes.new_regime.standard_deduction)}</td>
+                </tr>
+                <tr style="border-bottom:1px solid var(--border); font-weight:600;">
                   <td style="padding:10px 0;">Taxable Income</td>
                   <td style="padding:10px 0;">₹${fmtNum(taxRes.old_regime.taxable_income)}</td>
-                  <td style="padding:10px 0; color:var(--gold);">₹${fmtNum(taxRes.new_regime.taxable_income)}</td>
+                  <td style="padding:10px 0;">₹${fmtNum(taxRes.new_regime.taxable_income)}</td>
                 </tr>
                 <tr style="border-bottom:1px solid var(--border);">
                   <td style="padding:10px 0;">Base Tax</td>
                   <td style="padding:10px 0;">₹${fmtNum(taxRes.old_regime.base_tax)}</td>
-                  <td style="padding:10px 0; color:var(--gold);">₹${fmtNum(taxRes.new_regime.base_tax)}</td>
+                  <td style="padding:10px 0;">₹${fmtNum(taxRes.new_regime.base_tax)}</td>
                 </tr>
                 <tr style="border-bottom:1px solid var(--border);">
                   <td style="padding:10px 0;">Cess (4%)</td>
                   <td style="padding:10px 0;">₹${fmtNum(taxRes.old_regime.cess)}</td>
-                  <td style="padding:10px 0; color:var(--gold);">₹${fmtNum(taxRes.new_regime.cess)}</td>
+                  <td style="padding:10px 0;">₹${fmtNum(taxRes.new_regime.cess)}</td>
                 </tr>
                 <tr style="font-weight:700; font-size:15px; border-bottom:2px solid var(--border);">
                   <td style="padding:12px 0;">Total Tax</td>
-                  <td style="padding:12px 0;">₹${fmtNum(taxRes.old_regime.total_tax)}</td>
-                  <td style="padding:12px 0; color:#2ecc8a;">₹${fmtNum(taxRes.new_regime.total_tax)}</td>
+                  <td style="padding:12px 0; color:${isOldBetter ? '#2ecc8a' : isEqual ? '#2ecc8a' : 'var(--text)'};">₹${fmtNum(taxRes.old_regime.total_tax)} ${isOldBetter ? '✔' : ''}</td>
+                  <td style="padding:12px 0; color:${isNewBetter ? '#2ecc8a' : isEqual ? '#2ecc8a' : 'var(--text)'};">₹${fmtNum(taxRes.new_regime.total_tax)} ${isNewBetter ? '✔' : ''}</td>
                 </tr>
               </tbody>
             </table>
-            
-            <div style="margin-top:16px; padding:12px 14px; background:rgba(46,204,138,0.08); border:1px solid rgba(46,204,138,0.2); border-radius:8px; color:#2ecc8a; font-size:13px; line-height:1.5;">
-              <strong>Recommendation:</strong> Select the <strong>${esc(taxRes.recommended)}</strong>.<br/>
-              You will save <strong>₹${fmtNum(taxRes.savings)}</strong> annually with this regime.
-            </div>
           `;
-      document.getElementById('taxComparisonResult').innerHTML = tableHtml;
+      document.getElementById('taxComparisonResult').innerHTML =
+        bannerHtml + tableHtml;
 
       showResult(
         'taxResult',
         `
-            <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em">Tax Payable (${esc(taxRes.recommended)})</div>
+            <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em">Lower-Tax Option: ${esc(taxRes.recommended)}</div>
             <div class="result-big" style="color:#2ecc8a;">₹${fmtNum(taxRes.recommended === 'New Regime' ? taxRes.new_regime.total_tax : taxRes.old_regime.total_tax)}</div>
-            <div style="font-size:12px;color:var(--muted);margin-top:4px">Annual Savings: ₹${fmtNum(taxRes.savings)}</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:4px">${isEqual ? 'Both regimes have equal tax liability.' : 'Annual Savings: ₹' + fmtNum(taxRes.savings)}</div>
           `,
       );
     }
