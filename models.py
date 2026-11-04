@@ -328,6 +328,20 @@ class BudgetLimit(db.Model):
     category = db.Column(db.String(120), nullable=False)
     limit_amount = db.Column(db.Float, nullable=False)
     currency = db.Column(db.String(10), default='INR', nullable=False)
+    thresholds = db.Column(db.String(120), default="80,90,100", nullable=True)
+
+    @property
+    def threshold_list(self):
+        if not self.thresholds:
+            return [80, 90, 100]
+        if isinstance(self.thresholds, (list, tuple, set)):
+            parsed = [int(t) for t in self.thresholds if str(t).isdigit() and int(t) > 0]
+            return sorted(list(set(parsed))) or [80, 90, 100]
+        try:
+            parts = [int(t.strip()) for t in str(self.thresholds).split(",") if t.strip() and t.strip().isdigit() and int(t.strip()) > 0]
+            return sorted(list(set(parts))) or [80, 90, 100]
+        except Exception:
+            return [80, 90, 100]
 
     def to_dict(self):
         return {
@@ -335,6 +349,7 @@ class BudgetLimit(db.Model):
             "category": self.category,
             "limit_amount": self.limit_amount,
             "currency": self.currency,
+            "thresholds": self.threshold_list,
             "user_id": self.user_id
         }
 
@@ -1725,4 +1740,14 @@ class UserSettings(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
     weekly_email_enabled = db.Column(db.Boolean, default=True)
+    budget_email_enabled = db.Column(db.Boolean, default=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'email': self.email,
+            'weekly_email_enabled': self.weekly_email_enabled,
+            'budget_email_enabled': self.budget_email_enabled,
+            'created_at': self.created_at.isoformat() if self.created_at else None
+        }

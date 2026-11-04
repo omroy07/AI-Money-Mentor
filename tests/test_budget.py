@@ -135,3 +135,189 @@ def test_delete_budget_limit_not_found(client):
     assert res.status_code == 404
     data = json.loads(res.data)
     assert "not found" in data["error"].lower()
+
+
+def test_configurable_thresholds(client):
+    """Budgets and thresholds are configurable via POST /budget/limits."""
+    # 1. Configure with list of thresholds [80, 100]
+    res = client.post("/budget/limits", json={
+        "category": "Travel",
+        "limit_amount": 2000.0,
+        "currency": "INR",
+        "thresholds": [80, 100]
+    })
+    assert res.status_code == 200
+    data = json.loads(res.data)
+    assert data["status"] == "success"
+    assert data["limit"]["thresholds"] == [80, 100]
+
+    # Verify GET /budget/limits returns configured thresholds
+    res = client.get("/budget/limits")
+    assert res.status_code == 200
+    limits = json.loads(res.data)
+    travel_limit = next(l for l in limits if l["category"] == "Travel")
+    assert travel_limit["thresholds"] == [80, 100]
+
+    # 2. Configure with string of comma-separated thresholds "50, 80, 100"
+    res = client.post("/budget/limits", json={
+        "category": "Shopping",
+        "limit_amount": 1500.0,
+        "currency": "INR",
+        "thresholds": "50, 80, 100"
+    })
+    assert res.status_code == 200
+    data = json.loads(res.data)
+    assert data["limit"]["thresholds"] == [50, 80, 100]
+
+    # 3. Verify GET /budget/status reflects configured thresholds per category
+    res = client.get("/budget/status?month=2026-06")
+    assert res.status_code == 200
+    status_data = json.loads(res.data)
+    shop_status = next(c for c in status_data["categories"] if c["category"] == "Shopping")
+    assert shop_status["thresholds"] == [50, 80, 100]
+
+
+def test_alert_triggered_once_per_threshold_per_period(client):
+    """Alerts must trigger exactly once per threshold per period (month)."""
+    # Configure budget for Food with thresholds [80, 100]
+    client.post("/budget/limits", json={
+        "category": "Groceries",
+        "limit_amount": 1000.0,
+        "thresholds": [80, 100]
+    })
+
+    # Period 1: 2026-06
+    # 70% spend (700) -> no alert
+    client.post("/add_expense", json={"category": "Groceries", "amount": 700.0, "date": "2026-06-01"})
+    alerts = json.loads(client.get("/budget/alerts").data)
+    assert len(alerts) == 0
+
+    # 85% spend total (add 150 -> 850 total) -> triggers 80% alert
+    client.post("/add_expense", json={"category": "Groceries", "amount": 150.0, "date": "2026-06-05"})
+    alerts = json.loads(client.get("/budget/alerts").data)
+    assert len(alerts) == 1
+    assert alerts[0]["threshold"] == 80
+    assert alerts[0]["year_month"] == "2026-06"
+
+    # Additional spend in same month staying below 100% (add 50 -> 900 total)
+    # 80% was already triggered this period, 90% is NOT a configured threshold -> no new alert
+    client.post("/add_expense", json={"category": "Groceries", "amount": 50.0, "date": "2026-06-10"})
+    alerts = json.loads(client.get("/budget/alerts").data)
+    assert len(alerts) == 1
+
+    # Cross 100% (add 150 -> 1050 total, 105%) -> triggers 100% alert
+    client.post("/add_expense", json={"category": "Groceries", "amount": 150.0, "date": "2026-06-15"})
+    alerts = json.loads(client.get("/budget/alerts").data)
+    assert len(alerts) == 2
+    thresholds = [a["threshold"] for a in alerts]
+    assert 80 in thresholds
+    assert 100 in thresholds
+
+    # Further spend in same month (add 200 -> 1250 total, 125%)
+    # Neither 80% nor 100% should re-trigger for 2026-06
+    client.post("/add_expense", json={"category": "Groceries", "amount": 200.0, "date": "2026-06-20"})
+    alerts = json.loads(client.get("/budget/alerts").data)
+    assert len(alerts) == 2
+
+    # Period 2: 2026-07 (new month)
+    # Spending 850 in new month triggers 80% alert for 2026-07
+    client.post("/add_expense", json={"category": "Groceries", "amount": 850.0, "date": "2026-07-02"})
+    alerts = json.loads(client.get("/budget/alerts").data)
+    assert len(alerts) == 3
+    new_month_alert = next(a for a in alerts if a["year_month"] == "2026-07")
+    assert new_month_alert["threshold"] == 80
+
+
+def test_in_app_notification_created_on_alert(client):
+    """When a threshold is crossed, an in-app notification is created."""
+    from models import Notification
+
+    client.post("/budget/limits", json={
+        "category": "Dining",
+        "limit_amount": 500.0,
+        "thresholds": [80, 100]
+    })
+
+    # Cross 80% (420 / 500 = 84%)
+    client.post("/add_expense", json={"category": "Dining", "amount": 420.0, "date": "2026-06-01"})
+
+    with app.app_context():
+        notifs = Notification.query.filter_by(type="budget_alert").all()
+        assert len(notifs) >= 1
+        notif_80 = next(n for n in notifs if "80%" in n.title)
+        assert notif_80.category == "budget"
+        assert notif_80.severity == "medium"
+        assert "Dining" in notif_80.message
+        assert notif_80.action_url == "/budget"
+
+    # Cross 100% (add 100 -> 520 / 500 = 104%)
+    client.post("/add_expense", json={"category": "Dining", "amount": 100.0, "date": "2026-06-02"})
+
+    with app.app_context():
+        notifs = Notification.query.filter_by(type="budget_alert").all()
+        notif_100 = next(n for n in notifs if "100%" in n.title)
+        assert notif_100.severity == "high"
+
+
+def test_email_sent_on_threshold_and_opt_out(client, monkeypatch):
+    """Email is sent when threshold is crossed; users can opt out of emails."""
+    sent_emails = []
+
+    def mock_send(msg):
+        sent_emails.append(msg)
+
+    monkeypatch.setattr("app.mail.send", mock_send)
+
+    # 1. Set budget limit
+    client.post("/budget/limits", json={
+        "category": "Entertainment",
+        "limit_amount": 1000.0,
+        "thresholds": [80, 100]
+    })
+
+    # Cross 80% (850) -> User is not opted out, so email should be sent
+    client.post("/add_expense", json={"category": "Entertainment", "amount": 850.0, "date": "2026-08-01"})
+    assert len(sent_emails) == 1
+    assert "80%" in sent_emails[0].subject
+    assert "Entertainment" in sent_emails[0].subject
+    assert "test@example.com" in sent_emails[0].recipients
+
+    # 2. User opts out of budget emails
+    res = client.post("/budget/email-settings", json={"budget_email_enabled": False})
+    assert res.status_code == 200
+    assert json.loads(res.data)["budget_email_enabled"] is False
+
+    # Check GET /budget/email-settings confirms opted out
+    res = client.get("/budget/email-settings")
+    assert json.loads(res.data)["budget_email_enabled"] is False
+
+    # Cross 100% (add 200 -> 1050) -> In-app alert created, but NO email sent!
+    client.post("/add_expense", json={"category": "Entertainment", "amount": 200.0, "date": "2026-08-02"})
+    assert len(sent_emails) == 1  # Still 1, no new email sent!
+
+    alerts = json.loads(client.get("/budget/alerts").data)
+    assert any(a["threshold"] == 100 and a["category"] == "Entertainment" for a in alerts)
+
+    # 3. User opts back in
+    client.post("/budget/email-settings", json={"budget_email_enabled": True})
+    res = client.get("/budget/email-settings")
+    assert json.loads(res.data)["budget_email_enabled"] is True
+
+
+def test_unsubscribe_endpoints(client):
+    """Dedicated unsubscribe endpoint opts the user out of budget alert emails."""
+    # Test POST /api/budget/unsubscribe
+    res = client.post("/api/budget/unsubscribe", json={"email": "test@example.com"})
+    assert res.status_code == 200
+    data = json.loads(res.data)
+    assert data["status"] == "success"
+
+    # Verify user is now opted out
+    res = client.get("/budget/email-settings")
+    assert json.loads(res.data)["budget_email_enabled"] is False
+
+    # Test GET /budget/unsubscribe HTML response
+    res = client.get("/budget/unsubscribe?email=test@example.com")
+    assert res.status_code == 200
+    assert b"Unsubscribed Successfully" in res.data
+
