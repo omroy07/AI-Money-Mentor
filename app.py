@@ -2807,37 +2807,136 @@ def add_portfolio_holding():
 # ---------------- PORTFOLIO OPTIMIZER ----------------
 
 
+@app.route('/api/email-settings', methods=['GET'])
+def get_email_settings():
+    email = request.args.get('email')
+    if not email and current_user.is_authenticated:
+        email = current_user.email
+    if not email:
+        return jsonify({'error': 'Email is required'}), 400
+
+    setting = UserSettings.query.filter_by(email=email).first()
+    weekly_enabled = setting.weekly_email_enabled if setting else True
+    budget_enabled = setting.budget_email_enabled if (setting and hasattr(setting, 'budget_email_enabled')) else True
+
+    return jsonify({
+        'success': True,
+        'email': email,
+        'weekly_email_enabled': weekly_enabled,
+        'budget_email_enabled': budget_enabled
+    })
+
 @app.route('/api/update-email', methods=['POST'])
 def update_email():
-    data = request.json
+    data = request.json or {}
     email = data.get('email')
     enabled = data.get('enabled', True)
+    budget_enabled = data.get('budget_email_enabled')
     if not email:
         return jsonify({'error': 'Email is required'}), 400
     
     setting = UserSettings.query.filter_by(email=email).first()
     if setting:
         setting.weekly_email_enabled = enabled
+        if budget_enabled is not None:
+            setting.budget_email_enabled = bool(budget_enabled)
     else:
-        setting = UserSettings(email=email, weekly_email_enabled=enabled)
+        setting = UserSettings(
+            email=email,
+            weekly_email_enabled=enabled,
+            budget_email_enabled=bool(budget_enabled) if budget_enabled is not None else True
+        )
         db.session.add(setting)
+
+    # Sync NotificationPreference if user exists
+    user = User.query.filter_by(email=email).first()
+    if user and budget_enabled is not None:
+        pref = NotificationPreference.query.filter_by(user_id=user.id, type="budget_alert").first()
+        if pref:
+            pref.email_notification = bool(budget_enabled)
+        else:
+            pref = NotificationPreference(
+                user_id=user.id,
+                type="budget_alert",
+                enabled=True,
+                email_notification=bool(budget_enabled),
+                in_app_notification=True
+            )
+            db.session.add(pref)
         
     db.session.commit()
     return jsonify({'success': True, 'message': 'Settings updated successfully'})
 
 @app.route('/api/unsubscribe', methods=['POST'])
 def unsubscribe():
-    data = request.json
+    data = request.json or {}
     email = data.get('email')
+    notif_type = data.get('type')  # 'weekly', 'budget', or 'all'
     if not email:
         return jsonify({'error': 'Email is required'}), 400
         
     setting = UserSettings.query.filter_by(email=email).first()
-    if setting:
+    if not setting:
+        setting = UserSettings(email=email)
+        db.session.add(setting)
+
+    if notif_type == 'weekly':
         setting.weekly_email_enabled = False
-        db.session.commit()
+    elif notif_type == 'budget':
+        setting.budget_email_enabled = False
+    else:
+        setting.weekly_email_enabled = False
+        setting.budget_email_enabled = False
+
+    user = User.query.filter_by(email=email).first()
+    if user and notif_type in ('budget', 'all', None):
+        pref = NotificationPreference.query.filter_by(user_id=user.id, type="budget_alert").first()
+        if pref:
+            pref.email_notification = False
+        else:
+            pref = NotificationPreference(
+                user_id=user.id,
+                type="budget_alert",
+                enabled=True,
+                email_notification=False
+            )
+            db.session.add(pref)
         
+    db.session.commit()
     return jsonify({'success': True, 'message': 'Unsubscribed successfully'})
+
+@app.route('/api/budget/unsubscribe', methods=['POST'])
+def api_budget_unsubscribe():
+    data = request.json or {}
+    email = data.get('email')
+    if not email and current_user.is_authenticated:
+        email = current_user.email
+    if not email:
+        return jsonify({'error': 'Email is required'}), 400
+
+    user = User.query.filter_by(email=email).first()
+    if user:
+        pref = NotificationPreference.query.filter_by(user_id=user.id, type="budget_alert").first()
+        if pref:
+            pref.email_notification = False
+        else:
+            pref = NotificationPreference(
+                user_id=user.id,
+                type="budget_alert",
+                enabled=True,
+                email_notification=False
+            )
+            db.session.add(pref)
+
+    setting = UserSettings.query.filter_by(email=email).first()
+    if setting:
+        setting.budget_email_enabled = False
+    else:
+        setting = UserSettings(email=email, budget_email_enabled=False)
+        db.session.add(setting)
+
+    db.session.commit()
+    return jsonify({'status': 'success', 'message': f'Successfully unsubscribed {email} from budget alerts.'})
 
 # ---------------- TEST EMAIL ROUTES ----------------
 @app.route('/test-email')
@@ -3566,6 +3665,20 @@ Be friendly, supportive, and encouraging."""
         return jsonify({"reply": "⚠️ I'm having trouble connecting. Please try again in a moment."}), 500
 
 # ---------------- SIP ----------------
+def calcSIP(monthly, rate, years):
+    from utils.sip import calculate_sip
+    if monthly <= 0:
+        return 0
+    res = calculate_sip(monthly, rate, years)
+    return res["nominal_value"]
+
+def calcScore(income, expenses, savings, invest, debt, emergency):
+    if income <= 0:
+        return {"score": 0}
+    from utils.money_score import calculate_money_score
+    score = calculate_money_score(income, expenses, savings, invest, debt, emergency)
+    return {"score": score}
+
 @app.route("/sip", methods=["GET", "POST"])
 def sip():
     if request.method == "GET":
@@ -4635,6 +4748,8 @@ def expense_detail(expense_id):
  
 
         db.session.commit()
+        ym = expense.date[:7] if len(expense.date) >= 7 else None
+        run_threshold_checks(current_user.id, expense.category, ym)
         return jsonify({"status": "success", "expense": expense.to_dict()})
     except ValidationError as e:
         raise e
@@ -4994,7 +5109,63 @@ def get_net_worth():
     })
 
 
-# ---------------- BUDGET THRESHOLD CHECKS ----------------
+# ---------------- BUDGET THRESHOLD CHECKS & NOTIFICATIONS ----------------
+def is_budget_email_opted_out(user_id):
+    """Check if the user has opted out of budget alert emails."""
+    user = User.query.filter_by(id=user_id).first()
+    if not user or not user.email:
+        return True
+
+    # Check notification preference
+    pref = NotificationPreference.query.filter_by(user_id=user_id, type="budget_alert").first()
+    if pref and (not pref.enabled or not pref.email_notification):
+        return True
+
+    # Check user settings by email
+    setting = UserSettings.query.filter_by(email=user.email).first()
+    if setting and hasattr(setting, "budget_email_enabled") and setting.budget_email_enabled is False:
+        return True
+
+    return False
+
+
+def send_budget_alert_email(user_email, category, threshold, total_spent, limit_amount, currency, year_month):
+    """Send an email notification when a budget threshold is reached or exceeded."""
+    try:
+        subject = f"⚠️ Budget Alert: {category} spending reached {threshold}%"
+        try:
+            html = render_template(
+                'budget_alert_email.html',
+                category=category,
+                threshold=threshold,
+                total_spent=total_spent,
+                limit_amount=limit_amount,
+                currency=currency,
+                year_month=year_month,
+                dashboard_url="http://localhost:5000/budget",
+                opt_out_url=f"http://localhost:5000/budget/unsubscribe?email={user_email}"
+            )
+        except Exception:
+            html = f"""
+            <h2>Budget Alert: {category} spending reached {threshold}%</h2>
+            <p>Your spending in category <strong>{category}</strong> for {year_month} has reached <strong>{threshold}%</strong> of your budget limit.</p>
+            <p>Total Spent: ₹{total_spent:,.2f} / Limit: ₹{limit_amount:,.2f} ({currency})</p>
+            <p><a href="http://localhost:5000/budget">View Budget</a></p>
+            <p style="font-size: 11px; color: #888;">To stop receiving budget alerts, <a href="http://localhost:5000/budget/unsubscribe?email={user_email}">unsubscribe here</a>.</p>
+            """
+        msg = Message(
+            subject=subject,
+            recipients=[user_email],
+            html=html
+        )
+        mail.send(msg)
+        app.logger.info(f"Budget alert email sent to {user_email} for {category} ({threshold}%)")
+        return True
+    except Exception as e:
+        app.logger.warning(f"Failed to send budget alert email to {user_email}: {e}")
+        return False
+
+
 def run_threshold_checks(user_id, category, year_month=None):
     if not year_month:
         import datetime
@@ -5008,17 +5179,14 @@ def run_threshold_checks(user_id, category, year_month=None):
         Expense.date.like(f"{year_month}%")
     ).all()
 
-    total_spent = sum(e.amount for e in expenses)
-    pct = total_spent / limit.limit_amount
-
-    
     total_spent = sum(convert_to_base(e.amount, e.currency) for e in expenses)
     limit_amount_inr = convert_to_base(limit.limit_amount, limit.currency)
     pct = total_spent / limit_amount_inr if limit_amount_inr > 0 else 0.0
 
-
     triggered = []
-    for threshold in [100, 90, 80]:
+    # Check each configured threshold
+    thresholds = sorted(limit.threshold_list, reverse=True)
+    for threshold in thresholds:
         target = threshold / 100.0
         if pct >= target:
             exists = BudgetAlert.query.filter_by(
@@ -5039,7 +5207,7 @@ def run_threshold_checks(user_id, category, year_month=None):
                 triggered.append(threshold)
                 print(f"\n[EMAIL ALERT] Budget Alert: {category} spending reached {threshold}%\n", file=sys.stderr)
 
-                # Add milestone notification
+                # Milestone notification (legacy compatibility)
                 title = f"Budget Alert: {threshold}% Limit Crossed"
                 message = f"Your spending in category '{category}' has reached {threshold}% of your limit (₹{total_spent:,.2f} of ₹{limit_amount_inr:,.2f})."
                 notification = MilestoneNotification(
@@ -5051,6 +5219,42 @@ def run_threshold_checks(user_id, category, year_month=None):
                     milestone_value=float(threshold)
                 )
                 db.session.add(notification)
+
+                # In-app real-time notification
+                try:
+                    notification_system.send_notification(user_id, {
+                        'type': 'budget_alert',
+                        'title': f"Budget Alert: {threshold}% Limit Crossed",
+                        'message': f"Your spending in '{category}' has reached {threshold}% of your budget (₹{total_spent:,.2f} of ₹{limit_amount_inr:,.2f}).",
+                        'severity': 'high' if threshold >= 100 else 'medium',
+                        'category': 'budget',
+                        'action_url': '/budget',
+                        'action_label': 'View Budget',
+                        'metadata': {
+                            'category': category,
+                            'threshold': threshold,
+                            'spent': total_spent,
+                            'limit': limit_amount_inr,
+                            'year_month': year_month
+                        }
+                    })
+                except Exception as e:
+                    app.logger.warning(f"[run_threshold_checks] in-app notification error: {e}")
+
+                # Email notification (if user has not opted out)
+                if not is_budget_email_opted_out(user_id):
+                    user = User.query.filter_by(id=user_id).first()
+                    if user and user.email:
+                        send_budget_alert_email(
+                            user_email=user.email,
+                            category=category,
+                            threshold=threshold,
+                            total_spent=total_spent,
+                            limit_amount=limit_amount_inr,
+                            currency=limit.currency,
+                            year_month=year_month
+                        )
+
     if triggered:
         db.session.commit()
     return triggered
@@ -5066,19 +5270,41 @@ def budget_limits():
                 raise ValidationError("Request body must be a JSON object")
             category = validate_string(data.get("category"), "category")
             limit_amount = validate_float(data.get("limit_amount"), "limit_amount", min_val=0.0)
-
             currency = validate_string(data.get("currency", "INR"), "currency")
 
+            thresholds_raw = data.get("thresholds")
+            thresholds_str = "80,90,100"
+            if thresholds_raw is not None:
+                if isinstance(thresholds_raw, (list, tuple, set)):
+                    vals = [int(x) for x in thresholds_raw if str(x).isdigit() and int(x) > 0]
+                elif isinstance(thresholds_raw, str):
+                    vals = [int(x.strip()) for x in thresholds_raw.split(",") if x.strip().isdigit() and int(x.strip()) > 0]
+                elif isinstance(thresholds_raw, (int, float)) and int(thresholds_raw) > 0:
+                    vals = [int(thresholds_raw)]
+                else:
+                    vals = [80, 100]
+                if vals:
+                    thresholds_str = ",".join(str(x) for x in sorted(list(set(vals))))
+                else:
+                    thresholds_str = "80,100"
 
             limit = BudgetLimit.query.filter_by(user_id=current_user.id, category=category).first()
             if limit:
                 limit.limit_amount = limit_amount
                 limit.currency = currency
+                if thresholds_raw is not None or not limit.thresholds:
+                    limit.thresholds = thresholds_str
             else:
-                limit = BudgetLimit(user_id=current_user.id, category=category, limit_amount=limit_amount, currency=currency)
+                limit = BudgetLimit(
+                    user_id=current_user.id,
+                    category=category,
+                    limit_amount=limit_amount,
+                    currency=currency,
+                    thresholds=thresholds_str
+                )
                 db.session.add(limit)
             db.session.commit()
-            return jsonify({"status": "success"})
+            return jsonify({"status": "success", "limit": limit.to_dict()})
         except ValidationError as e:
             raise e
         except Exception as e:
@@ -5093,41 +5319,32 @@ def budget_status():
     import datetime
     year_month = request.args.get("month", datetime.datetime.now().strftime("%Y-%m"))
     limits = BudgetLimit.query.filter_by(user_id=current_user.id).all()
+    limits_map = {l.category: (l.limit_amount, l.currency, l.threshold_list) for l in limits}
 
-    limits_dict = {l.category: l.limit_amount for l in limits}
     expenses = Expense.query.filter(Expense.user_id == current_user.id, Expense.date.like(f"{year_month}%")).all()
-    spent_by_category = {}
-    for e in expenses:
-        spent_by_category[e.category] = spent_by_category.get(e.category, 0.0) + e.amount
-    status_list = []
-    all_categories = set(limits_dict.keys()) | set(spent_by_category.keys())
 
-    limits_map = {l.category: (l.limit_amount, l.currency) for l in limits}
-    
-    expenses = Expense.query.filter(Expense.user_id == current_user.id, Expense.date.like(f"{year_month}%")).all()
-    
     spent_by_category_inr = {}
     for e in expenses:
         spent_by_category_inr[e.category] = spent_by_category_inr.get(e.category, 0.0) + convert_to_base(e.amount, e.currency)
-        
+
     status_list = []
     all_categories = set(limits_map.keys()) | set(spent_by_category_inr.keys())
-    
+
     total_budgeted_inr = 0.0
     total_spent_inr = sum(spent_by_category_inr.values())
 
-
     for cat in sorted(all_categories):
-        lim_orig, lim_curr = limits_map.get(cat, (0.0, 'INR'))
+        lim_orig, lim_curr, lim_thresh = limits_map.get(cat, (0.0, 'INR', [80, 90, 100]))
         lim_inr = convert_to_base(lim_orig, lim_curr)
         total_budgeted_inr += lim_inr
-        
+
         spent_inr = spent_by_category_inr.get(cat, 0.0)
         pct = (spent_inr / lim_inr * 100) if lim_inr > 0 else 0.0
         status_list.append({
             "category": cat,
             "limit_amount": lim_orig,
             "currency": lim_curr,
+            "thresholds": lim_thresh,
             "spent": spent_inr,
             "percentage": round(pct, 2)
         })
@@ -5157,6 +5374,89 @@ def delete_budget_limit(limit_id):
         return jsonify({"status": "success", "deleted_category": limit.category})
     except Exception as e:
         return jsonify({"error": str(e)}), 400
+
+@app.route("/budget/email-settings", methods=["GET", "POST"])
+@login_required
+def budget_email_settings():
+    """Get or update budget alert email preferences for the authenticated user."""
+    if request.method == "POST":
+        data = request.json or {}
+        enabled = bool(data.get("budget_email_enabled", data.get("enabled", True)))
+
+        if current_user.email:
+            setting = UserSettings.query.filter_by(email=current_user.email).first()
+            if setting:
+                setting.budget_email_enabled = enabled
+            else:
+                setting = UserSettings(email=current_user.email, budget_email_enabled=enabled)
+                db.session.add(setting)
+
+        pref = NotificationPreference.query.filter_by(user_id=current_user.id, type="budget_alert").first()
+        if pref:
+            pref.email_notification = enabled
+        else:
+            pref = NotificationPreference(
+                user_id=current_user.id,
+                type="budget_alert",
+                enabled=True,
+                email_notification=enabled,
+                in_app_notification=True
+            )
+            db.session.add(pref)
+
+        db.session.commit()
+        return jsonify({"status": "success", "budget_email_enabled": enabled})
+    else:
+        opted_out = is_budget_email_opted_out(current_user.id)
+        return jsonify({
+            "status": "success",
+            "budget_email_enabled": not opted_out,
+            "email": current_user.email
+        })
+
+@app.route("/budget/unsubscribe", methods=["GET", "POST"])
+def budget_unsubscribe():
+    """Unsubscribe a user from budget alert emails."""
+    if request.method == "POST":
+        data = request.json or {}
+        email = data.get("email")
+    else:
+        email = request.args.get("email")
+
+    if not email and current_user.is_authenticated:
+        email = current_user.email
+
+    if not email:
+        return jsonify({"error": "Email is required to unsubscribe"}), 400
+
+    user = User.query.filter_by(email=email).first()
+    if user:
+        pref = NotificationPreference.query.filter_by(user_id=user.id, type="budget_alert").first()
+        if pref:
+            pref.email_notification = False
+        else:
+            pref = NotificationPreference(
+                user_id=user.id,
+                type="budget_alert",
+                enabled=True,
+                email_notification=False,
+                in_app_notification=True
+            )
+            db.session.add(pref)
+
+    setting = UserSettings.query.filter_by(email=email).first()
+    if setting:
+        setting.budget_email_enabled = False
+    else:
+        setting = UserSettings(email=email, budget_email_enabled=False)
+        db.session.add(setting)
+
+    db.session.commit()
+
+    if request.headers.get("Accept", "").startswith("application/json") or request.method == "POST":
+        return jsonify({"status": "success", "message": f"Successfully unsubscribed {email} from budget alerts."})
+
+    return render_template("budget_unsubscribed.html", email=email)
 
 # ---------------- FINANCIAL GOALS TRACKER ----------------
 def _months_diff(start_dt, end_dt):

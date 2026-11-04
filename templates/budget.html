@@ -28,7 +28,7 @@ block content %}
           <option value="Other">Other</option>
         </select>
         <label for="limitAmt">Limit Amount & Currency</label>
-        <div style="display: flex; gap: 8px; margin-bottom: 16px">
+        <div style="display: flex; gap: 8px; margin-bottom: 12px">
           <input
             type="number"
             required
@@ -59,6 +59,14 @@ block content %}
             <option value="SGD">SGD ($)</option>
           </select>
         </div>
+        <label for="limitThresholds">Alert Thresholds (%)</label>
+        <input
+          type="text"
+          id="limitThresholds"
+          placeholder="e.g. 80, 100"
+          value="80, 100"
+          style="margin-bottom: 16px"
+        />
         <button
           type="submit"
           id="limitBtn"
@@ -68,6 +76,50 @@ block content %}
           Set Budget Limit
         </button>
       </form>
+
+      <!-- EMAIL ALERTS OPT-IN / OPT-OUT -->
+      <div
+        style="
+          margin-top: 15px;
+          padding: 12px;
+          background: rgba(255, 255, 255, 0.02);
+          border: 1px solid var(--border);
+          border-radius: 8px;
+        "
+      >
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+          "
+        >
+          <span style="font-size: 12px; font-weight: 600;">
+            <i class="fa-solid fa-envelope"></i> Budget Email Alerts
+          </span>
+          <label
+            style="
+              margin: 0;
+              font-size: 12px;
+              display: flex;
+              align-items: center;
+              gap: 6px;
+              cursor: pointer;
+            "
+          >
+            <input
+              type="checkbox"
+              id="budgetEmailToggle"
+              onchange="toggleBudgetEmail(this.checked)"
+              checked
+            />
+            <span id="budgetEmailStatusText">Enabled</span>
+          </label>
+        </div>
+        <div style="font-size: 11px; color: var(--muted); margin-top: 4px;">
+          Receive warnings at configured thresholds. You can opt out anytime.
+        </div>
+      </div>
 
       <!-- TRIGGER CHECK IN REAL-TIME -->
       <button
@@ -214,7 +266,35 @@ block content %}
       .slice(0, 7);
     loadBudgetStatus();
     loadAlertsFeed();
+    loadBudgetEmailSetting();
   });
+
+  async function loadBudgetEmailSetting() {
+    try {
+      const res = await fetch('/budget/email-settings');
+      const data = await res.json();
+      if (data.status === 'success') {
+        const toggle = document.getElementById('budgetEmailToggle');
+        const text = document.getElementById('budgetEmailStatusText');
+        if (toggle && text) {
+          toggle.checked = data.budget_email_enabled;
+          text.textContent = data.budget_email_enabled ? 'Enabled' : 'Disabled (Opted Out)';
+        }
+      }
+    } catch (e) {
+      console.warn('Could not load email settings:', e);
+    }
+  }
+
+  async function toggleBudgetEmail(enabled) {
+    const text = document.getElementById('budgetEmailStatusText');
+    if (text) text.textContent = enabled ? 'Enabled' : 'Disabled (Opted Out)';
+    try {
+      await apiFetch('/budget/email-settings', { budget_email_enabled: enabled });
+    } catch (e) {
+      alert('Failed to update email preferences.');
+    }
+  }
 
   const limitForm = document.getElementById('limitForm');
   if (limitForm) {
@@ -225,6 +305,13 @@ block content %}
         document.getElementById('limitAmt').value,
       );
       const currency = document.getElementById('limitCurrency').value;
+      const thresholdsStr = document.getElementById('limitThresholds').value;
+      const thresholds = thresholdsStr
+        ? thresholdsStr
+            .split(',')
+            .map((s) => parseInt(s.trim()))
+            .filter((n) => !isNaN(n) && n > 0)
+        : [80, 100];
 
       setLoading('limitBtn', true);
       try {
@@ -232,6 +319,7 @@ block content %}
           category,
           limit_amount,
           currency,
+          thresholds,
         });
         if (data.status === 'success') {
           document.getElementById('limitAmt').value = '';
@@ -319,6 +407,9 @@ block content %}
             <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); font-family: monospace;">
               <span>Spent: ₹${fmtNum(item.spent)}</span>
               <span>Limit: ${limitDisplay}</span>
+            </div>
+            <div style="font-size: 10px; color: var(--gold); margin-top: 4px; font-family: monospace;">
+              Thresholds: ${(item.thresholds && item.thresholds.length) ? item.thresholds.join('%, ') + '%' : '80%, 100%'}
             </div>
           </div>
         `;
