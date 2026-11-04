@@ -92,6 +92,39 @@ APScheduler handles background tasks:
 - **In-memory caching**: Stock data cached in process memory for 10 minutes (no Redis)
 - **No migration framework**: Schema resets on deploy unless data is manually preserved
 
+## Modular Feature Blueprints
+
+To incrementally decouple `app.py` (~7000 lines) and reduce merge conflicts, self-contained functional areas are organized into Flask Blueprints under `src/features/`.
+
+### Directory Convention
+
+```
+src/features/<feature_name>/
+├── __init__.py       # Exports the feature blueprint (e.g. fire_planner_bp)
+└── routes.py         # Blueprint instance, route decorators, and view logic
+```
+
+### Feature Blueprints Inventory
+
+| Blueprint Name | Module | Prefix / Routes | Description |
+| -------------- | ------ | --------------- | ----------- |
+| `fire_planner` | `src.features.fire_planner` | `/fire-planner`, `/api/fire/plan`, `/api/fire/quick` | Interactive FIRE retirement path calculator & Monte Carlo simulation |
+
+### Blueprint Extraction Pattern (How to repeat for next areas)
+
+1. **Create Package**:
+   - Add directory `src/features/<feature_name>/`.
+   - In `routes.py`, define `<feature_name>_bp = Blueprint('<feature_name>', __name__)` and transfer the route handlers.
+   - In `__init__.py`, export the blueprint: `from .routes import <feature_name>_bp`.
+
+2. **Register in `app.py`**:
+   - Import `<feature_name>_bp` and register via `app.register_blueprint(<feature_name>_bp)`.
+   - Optionally re-export handler functions in `app.py` if legacy code or tests import them directly.
+
+3. **Verify Compatibility**:
+   - Ensure all route URLs, methods, and JSON response shapes remain 100% unchanged.
+   - Run tests: `pytest tests/test_<feature_name>.py`.
+
 ## Route Inventory
 
 The `app.py` file defines approximately 90+ routes covering:

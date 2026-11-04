@@ -143,7 +143,6 @@ from utils.portfolio_optimizer import PortfolioOptimizer
 from utils.voice_assistant import MultiLanguageVoiceAssistant
 from utils.financial_predictor import FinancialPredictor
 from utils.auto_rebalancer import AutoRebalancer
-from utils.fire_planner import FIREPlanner
 from utils.bank_integration import BankIntegration
 from utils.scenario_planner import get_user_snapshot, job_change, new_loan, add_child, project_snapshot
 from utils.ledger import LedgerSystem
@@ -2331,58 +2330,11 @@ def analyze_rebalance():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
         
-    # ---------------- FIRE PLANNER ----------------
-@app.route('/fire-planner')
-@login_required
+    # ---------------- FIRE PLANNER (BLUEPRINT) ----------------
+from src.features.fire_planner import fire_planner_bp
+from src.features.fire_planner.routes import fire_planner_page, fire_plan, fire_quick
 
-def fire_planner_page():
-    return render_template('fire_planner.html', active_page='fire_planner')
-
-@app.route('/api/fire/plan', methods=['POST'])
-@login_required
-def fire_plan():
-    try:
-        data = request.json
-        planner = FIREPlanner(
-            current_age=data.get('current_age', 30),
-            retirement_age=data.get('retirement_age', 45),
-            annual_expenses=data.get('annual_expenses', 500000),
-            current_corpus=data.get('current_corpus', 1000000),
-            monthly_savings=data.get('monthly_savings', 30000),
-            return_mean=data.get('return_mean', 0.10),
-            return_std=data.get('return_std', 0.15),
-            inflation_rate=data.get('inflation_rate', 0.06)
-        )
-        plan = planner.get_plan_summary()
-        return jsonify({'success': True, 'data': plan, 'visualization': planner.get_visualization_data()})
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-@app.route('/api/fire/quick', methods=['POST'])
-@login_required
-def fire_quick():
-    try:
-        data = request.json
-        planner = FIREPlanner(
-            current_age=data.get('current_age', 30),
-            retirement_age=data.get('retirement_age', 45),
-            annual_expenses=data.get('annual_expenses', 500000),
-            current_corpus=data.get('current_corpus', 1000000),
-            monthly_savings=data.get('monthly_savings', 30000),
-            return_mean=data.get('return_mean', 0.10),
-            return_std=data.get('return_std', 0.15),
-            inflation_rate=data.get('inflation_rate', 0.06)
-        )
-        mc_results = planner.run_monte_carlo(iterations=200)
-        return jsonify({
-            'success': True,
-            'success_probability': mc_results['success']['probability'],
-            'median_corpus': mc_results['corpus']['median'],
-            'target_corpus': planner.target_corpus
-        })
-    except Exception as e:
-
-        return jsonify({'error': str(e)}), 500
+app.register_blueprint(fire_planner_bp)
 
 
         # ---------------- SCENARIO PLANNER ----------------
