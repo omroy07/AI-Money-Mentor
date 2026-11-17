@@ -130,6 +130,7 @@ def _reset_failed_login(username):
 
 # ---------------- IMPORT UTILS ----------------
 from utils.sip import calculate_sip, calculate_goal_sip, calculate_stepup_sip
+from utils.llm_client import complete as llm_complete
 from utils.tax import calculate_tax, tax_optimization_module
 from utils.pdf_parser import extract_income
 from utils.money_score import calculate_money_score
@@ -3932,15 +3933,17 @@ def tax():
 
             try:
 
-                ai_res = client.chat.completions.create(
-                    model="llama-3.1-8b-instant",
-                    messages=[
+                llm = llm_complete(
+                    client,
+                    [
                         {"role": "system", "content": "You are a professional Indian tax consultant. Answer ONLY with the requested JSON schema and no conversational filler."},
                         {"role": "user", "content": prompt}
-                    ]
+                    ],
                 )
+                if not llm.ok:
+                    raise RuntimeError(f"LLM unavailable ({llm.error})")
                 import json
-                content = ai_res.choices[0].message.content.strip()
+                content = llm.text
                 if content.startswith("```"):
                     if content.startswith("```json"):
                         content = content[7:]
@@ -5343,14 +5346,15 @@ def get_goals():
                             f"Required monthly savings: ₹{monthly_needed:,.2f}\n\n"
                             f"Give 3-4 practical, actionable tips to reach this financial goal faster in India. Keep it concise."
                         )
-                        res = client.chat.completions.create(
-                            model="llama-3.1-8b-instant",
-                            messages=[
+                        llm = llm_complete(
+                            client,
+                            [
                                 {"role": "system", "content": "You are a helpful Indian personal finance advisor."},
                                 {"role": "user", "content": prompt}
-                            ]
+                            ],
+                            fallback_text="AI recommendations unavailable.",
                         )
-                        ai_recommendations[goal["id"]] = res.choices[0].message.content.strip()
+                        ai_recommendations[goal["id"]] = llm.text
                     except Exception as ai_err:
                         app.logger.error(f"Goal AI Recommendation Error: {str(ai_err)}")
                         ai_recommendations[goal["id"]] = "AI recommendations unavailable."
