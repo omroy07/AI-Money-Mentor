@@ -47,6 +47,7 @@ from models import (
 )
 
 from utils.portfolio_optimizer import PortfolioOptimizer
+from utils.formatting import format_inr
 from utils.insurance_planner import calculate_hlv, recommend_health_cover
 
 # Load environment variables from .env file (if present)
@@ -59,6 +60,7 @@ from flask_wtf.csrf import CSRFProtect
 
 # ---------------- INIT APP ----------------
 app = Flask(__name__)
+app.jinja_env.filters['inr'] = format_inr
 csrf = CSRFProtect(app)
 
 # ---------------- INIT SOCKETIO ----------------
