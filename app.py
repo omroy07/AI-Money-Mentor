@@ -1,6 +1,7 @@
 import re
 import io
-from flask import Flask, request, jsonify, render_template, make_response
+import uuid
+from flask import Flask, request, jsonify, render_template, make_response, g
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
 from datetime import datetime, timedelta, date
@@ -23,6 +24,7 @@ from flask_login import (
     login_required,
     LoginManager
 )
+from werkzeug.exceptions import HTTPException
 from werkzeug.security import (
     generate_password_hash,
     check_password_hash
@@ -93,9 +95,7 @@ def require_json(f):
 @app.errorhandler(429)
 def ratelimit_handler(e):
     logger.warning("429 Rate limit hit by %s", get_remote_address())
-    return jsonify({
-        "error": "Too many requests. Please slow down and try again later."
-    }), 429
+    return error_response(429, "Too many requests. Please slow down and try again later.", "Too many requests. Please slow down and try again later.")
 
 
 # ---- Account lockout (brute-force protection) ----
@@ -3437,48 +3437,107 @@ def ai_status():
 
 
 # ---------------- ERROR HANDLERS ----------------
+# Every JSON error uses one shape: success, error, code, plus message, status_code
+# and request_id. Unexpected errors never include exception text; the full
+# traceback is logged server-side with the request id.
+_GENERIC_500_MESSAGE = "An unexpected error occurred. Please try again later."
+
+
+@app.before_request
+def assign_request_id():
+    g.request_id = uuid.uuid4().hex[:12]
+
+
+def error_response(status, error, message):
+    g.error_sanitized = True
+    payload = {
+        "success": False,
+        "error": error,
+        "code": status,
+        "message": message,
+        "status_code": status,
+        "request_id": getattr(g, "request_id", None),
+    }
+    resp = jsonify(payload)
+    resp.status_code = status
+    return resp
+
+
+def _wants_html():
+    return request.accept_mimetypes.accept_html and not request.accept_mimetypes.accept_json
+
+
 @app.errorhandler(ValidationError)
 def handle_validation_error(error):
     logger.warning("ValidationError: %s", error)
-    return jsonify({"error": "Bad Request", "message": str(error), "status_code": 400}), 400
+    return error_response(400, "Bad Request", str(error))
 
 @app.errorhandler(400)
 def bad_request(error):
     logger.warning("400 Bad Request: %s", error)
-    return jsonify({"error": "Bad Request", "message": "The request could not be understood.", "status_code": 400}), 400
+    return error_response(400, "Bad Request", "The request could not be understood.")
 
 @app.errorhandler(403)
 def forbidden(error):
     logger.warning("403 Forbidden: %s", error)
-    if request.accept_mimetypes.accept_html and not request.accept_mimetypes.accept_json:
+    if _wants_html():
         return render_template("403.html", active_page=None), 403
-    return jsonify({"error": "Forbidden", "message": "You do not have permission to access this resource.", "status_code": 403}), 403
+    return error_response(403, "Forbidden", "You do not have permission to access this resource.")
 
 @app.errorhandler(401)
 def unauthorized(error):
     logger.info("401 Unauthorized: %s %s", request.method, request.path)
-    if request.accept_mimetypes.accept_html and not request.accept_mimetypes.accept_json:
+    if _wants_html():
         return render_template("401.html", active_page=None), 401
-    return jsonify({"error": "Unauthorized", "message": "You must be signed in to access this resource.", "status_code": 401}), 401
+    return error_response(401, "Unauthorized", "You must be signed in to access this resource.")
 
 @app.errorhandler(404)
 def not_found(error):
     logger.info("404 Not Found: %s %s", request.method, request.path)
-    if request.accept_mimetypes.accept_html and not request.accept_mimetypes.accept_json:
+    if _wants_html():
         return render_template("404.html", active_page=None), 404
-    return jsonify({"error": "Not Found", "message": "The requested endpoint does not exist.", "status_code": 404}), 404
+    return error_response(404, "Not Found", "The requested endpoint does not exist.")
 
 @app.errorhandler(405)
 def method_not_allowed(error):
     logger.warning("405 Method Not Allowed: %s %s", request.method, request.path)
-    return jsonify({"error": "Method Not Allowed", "message": str(error), "status_code": 405}), 405
+    return error_response(405, "Method Not Allowed", "This method is not allowed for the requested endpoint.")
 
 @app.errorhandler(500)
 def internal_server_error(error):
-    logger.exception("500 Internal Server Error at %s %s", request.method, request.path)
-    if request.accept_mimetypes.accept_html and not request.accept_mimetypes.accept_json:
+    logger.exception("500 Internal Server Error at %s %s [request %s]", request.method, request.path, getattr(g, "request_id", "-"))
+    if _wants_html():
         return render_template("500.html", active_page=None), 500
-    return jsonify({"error": "Internal Server Error", "message": "An unexpected error occurred. Please try again later.", "status_code": 500}), 500
+    return error_response(500, "Internal Server Error", _GENERIC_500_MESSAGE)
+
+@app.errorhandler(Exception)
+def unhandled_exception(error):
+    if isinstance(error, HTTPException):
+        # Codes without a dedicated handler above (409, 413, 415, ...)
+        code = error.code or 500
+        if code >= 500:
+            return internal_server_error(error)
+        return error_response(code, error.name, error.description)
+    return internal_server_error(error)
+
+
+@app.after_request
+def sanitize_500_json(response):
+    """Routes that catch an exception and return str(e) with a 500 would leak
+    internals. Log that body and replace it with the generic error."""
+    if (
+        response.status_code == 500
+        and response.is_json
+        and not response.direct_passthrough
+        and not getattr(g, "error_sanitized", False)
+    ):
+        logger.error(
+            "500 response from %s %s [request %s] replaced: %s",
+            request.method, request.path, getattr(g, "request_id", "-"),
+            response.get_data(as_text=True)[:500],
+        )
+        return error_response(500, "Internal Server Error", _GENERIC_500_MESSAGE)
+    return response
 
 
 # ---------------- AI CHAT WITH SAFETY ENGINE ----------------
