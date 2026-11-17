@@ -18,6 +18,7 @@
       rel="stylesheet"
     />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{{ url_for('static', filename='scripts/format_inr.js') }}"></script>
     <style>
       body {
         background: #070b12;
@@ -739,10 +740,9 @@
           if (data.success && data.has_couple) {
             // Update stats
             document.getElementById('combinedNetWorth').textContent =
-              '₹' +
-              (
-                data.combined_net_worth?.combined_net_worth || 0
-              ).toLocaleString();
+              formatINR(data.combined_net_worth?.combined_net_worth || 0, {
+                decimals: 0,
+              });
             document.getElementById('totalGoals').textContent =
               data.goals?.length || 0;
             document.getElementById('pendingExpenses').textContent =
@@ -871,8 +871,8 @@
                                 </div>
                                 <div class="mt-2">
                                     <div class="d-flex justify-content-between">
-                                        <span>₹${(goal.current_amount || 0).toLocaleString()}</span>
-                                        <span>₹${(goal.target_amount || 0).toLocaleString()}</span>
+                                        <span>${formatINR(goal.current_amount || 0, { decimals: 0 })}</span>
+                                        <span>${formatINR(goal.target_amount || 0, { decimals: 0 })}</span>
                                     </div>
                                     <div class="goal-progress">
                                         <div class="fill" style="width:${Math.min(progress, 100)}%;"></div>
@@ -968,13 +968,13 @@
           const summary = data.summary || {};
           document.getElementById('expenseSummary').innerHTML = `
                     <div class="col-md-3">
-                        <div class="stat-card"><div class="label">Total</div><div class="value" style="font-size:20px;">₹${(summary.total_expenses || 0).toLocaleString()}</div></div>
+                        <div class="stat-card"><div class="label">Total</div><div class="value" style="font-size:20px;">${formatINR(summary.total_expenses || 0, { decimals: 0 })}</div></div>
                     </div>
                     <div class="col-md-3">
-                        <div class="stat-card"><div class="label">Settled</div><div class="value" style="font-size:20px;color:#2ecc8a;">₹${(summary.total_settled || 0).toLocaleString()}</div></div>
+                        <div class="stat-card"><div class="label">Settled</div><div class="value" style="font-size:20px;color:#2ecc8a;">${formatINR(summary.total_settled || 0, { decimals: 0 })}</div></div>
                     </div>
                     <div class="col-md-3">
-                        <div class="stat-card"><div class="label">Pending</div><div class="value" style="font-size:20px;color:#f39c12;">₹${(summary.total_pending || 0).toLocaleString()}</div></div>
+                        <div class="stat-card"><div class="label">Pending</div><div class="value" style="font-size:20px;color:#f39c12;">${formatINR(summary.total_pending || 0, { decimals: 0 })}</div></div>
                     </div>
                     <div class="col-md-3">
                         <div class="stat-card"><div class="label">Status</div><div class="value" style="font-size:16px;">${summary.settlement_status || 'BALANCED'}</div></div>
@@ -1007,7 +1007,7 @@
                             <td><strong>${exp.description}</strong></td>
                             <td><span class="badge bg-secondary">${exp.category}</span></td>
                             <td><span class="split-badge ${splitClass}">${exp.split_type}</span></td>
-                            <td>₹${(exp.total_amount || 0).toLocaleString()}</td>
+                            <td>${formatINR(exp.total_amount || 0, { decimals: 0 })}</td>
                             <td>${statusBadge}</td>
                             <td>${!exp.settled ? `<button class="btn btn-sm btn-success" onclick="settleExpense(${exp.id})">Settle</button>` : ''}</td>
                         </tr>
@@ -1146,9 +1146,9 @@
             html += `
                         <tr>
                             <td><strong>${b.category}</strong></td>
-                            <td>₹${b.limit.toLocaleString()}</td>
-                            <td>₹${b.spent.toLocaleString()}</td>
-                            <td class="${b.remaining >= 0 ? 'text-success' : 'text-danger'}">₹${b.remaining.toLocaleString()}</td>
+                            <td>${formatINR(b.limit, { decimals: 0 })}</td>
+                            <td>${formatINR(b.spent, { decimals: 0 })}</td>
+                            <td class="${b.remaining >= 0 ? 'text-success' : 'text-danger'}">${formatINR(b.remaining, { decimals: 0 })}</td>
                             <td>
                                 <div class="goal-progress" style="width:150px;">
                                     <div class="fill" style="width:${Math.min(pct, 100)}%;background:${color};"></div>
@@ -1227,13 +1227,13 @@
                                 <div class="col-md-4">
                                     <div class="stat-card">
                                         <div class="label">Total Tax</div>
-                                        <div class="value" style="font-size:24px;">₹${(data.plan.total_tax || 0).toLocaleString()}</div>
+                                        <div class="value" style="font-size:24px;">${formatINR(data.plan.total_tax || 0, { decimals: 0 })}</div>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="stat-card">
                                         <div class="label">Potential Savings</div>
-                                        <div class="value" style="font-size:24px;color:#2ecc8a;">₹${(data.plan.total_savings || 0).toLocaleString()}</div>
+                                        <div class="value" style="font-size:24px;color:#2ecc8a;">${formatINR(data.plan.total_savings || 0, { decimals: 0 })}</div>
                                     </div>
                                 </div>
                             </div>
